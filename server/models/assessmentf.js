@@ -5,23 +5,19 @@ const assessmentSchema = new mongoose.Schema({
          type: Number, 
          required: true,
          },
-
-  title: {
-     type: String, 
-     required: true, 
-    },
-
-  metaTitle: { 
-    type: String, 
-    required: true,
- },
-  slug: { 
+        
+  assessment_name: {
     type: String,
-     required: true,
-     },
+    required: true,
+  },
   summary: { 
     type: String,
      required: true,
+    },
+    slug: {
+      type: String,
+      required: false,
+      
     },
   type: {
      type: Number,
@@ -59,7 +55,34 @@ const assessmentSchema = new mongoose.Schema({
   content: { 
     type: String, 
     required:true 
-}
+},
+  questions: [
+    {
+      question: {
+        type: String,
+        required: true,
+      },
+      options: [
+        {
+          text: {
+            type: String,
+            required: true,
+          },
+          points: {
+            type: Number,
+            required: true,
+          },
+        },
+      ],
+    },
+  ],
+
+
+
+ 
 });
 
-exports.Assessment = mongoose.model('Assessment', assessmentSchema);
+
+const Assessment = mongoose.model('Assessment', assessmentSchema);
+
+module.exports = Assessment;
