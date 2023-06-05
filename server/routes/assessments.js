@@ -1,100 +1,73 @@
-const {Assessment} =require('../models/assessmentf');
 const express = require('express');
 const router = express.Router();
+const  Assessment  = require('../models/assessmentf');
 
+// GET all assessments
+router.get('/', async (req, res) => {
+  try {
+    const assessments = await Assessment.find();
+    res.json(assessments);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve assessments' });
+  }
+});
 
-// Get all assessments
-router.get(`/`, async (req, res) =>{
-  Assessment.find()
-    .then((assessments) => {
-      res.status(200).json(assessments);
+// GET a specific assessment by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const assessment = await Assessment.findById(req.params.id);
+    if (!assessment) {
+      return res.status(404).json({ error: 'Assessment not found' });
+    }
+    res.json(assessment);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve assessment' });
+  }
+});
+
+// CREATE a new assessment
+router.post('/', (req, res) => {
+  const assessmentData = req.body;
+
+  const assessment = new Assessment(assessmentData);
+
+  assessment.save()
+    .then(() => {
+      res.status(201).json({ message: 'assessment created successfully' });
     })
     .catch((error) => {
-      res.status(500).json({ error: 'Failed to fetch assessments', details: error });
+      res.status(500).json({ error: 'Failed to create assessment', details: error });
     });
 });
 
-// Get an assessment by ID
-router.get(':id', (req, res) => {
-  const assessmentId = req.params.id;
-
-  Assessment.findById(assessmentId)
-    .then((assessment) => {
-      if (!assessment) {
-        return res.status(404).json({ message: 'Assessment not found' });
-      }
-      res.status(200).json(assessment);
-    })
-    .catch((error) => {
-      res.status(500).json({ error: 'Failed to fetch assessment', details: error });
-    });
-});
-
-
-
-// Create an assessment
-router.post('/', async (req, res) => {
-let assessment = new Assessment({
-    hostId: req.body.hostId,
-    title: req.body.title,
-      metaTitle: req.body.metaTitle,
-      slug: req.body.slug,
-      summary: req.body.summary,
-      type:req.body.type,
-      score: req.body.score,
-      published:req.body.published,
-      startsAt:req.body.startsAt,
-     endsAt:req.body.endsAt,
-     content:req.body.content
-      
-    
-})
-assessment = await assessment.save();
-
-    if(!assessment)
-    return res.status(400).send('the assessment cannot be created!')
-
-    res.send(assessment);
-})
-// Update an assessment by ID
-router.put('/:id',async (req, res)=> {
+// UPDATE an existing assessment
+router.put('/:id', async (req, res) => {
+  try {
     const assessment = await Assessment.findByIdAndUpdate(
-        req.params.id,
-        {
-     hostId: req.body.hostId,
-    title: req.body.title,
-      metaTitle: req.body.metaTitle,
-      slug: req.body.slug,
-      summary: req.body.summary,
-      type:req.body.type,
-      score: req.body.score,
-      published:req.body.published,
-      startsAt:req.body.startsAt,
-     endsAt:req.body.endsAt,
-     content:req.body.content
-        },
-        { new: true}
-    )
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!assessment) {
+      return res.status(404).json({ error: 'Assessment not found' });
+    }
+    res.json(assessment);
+  } catch (error) {
+    res.status(400).json({ error: 'Failed to update assessment' });
+  }
+});
 
-    if(!Assessment)
-    return res.status(400).send('the Assesment cannot be updated!')
-
-    res.send(assessment);
-})
-// Delete an assessment by ID
-router.delete('/:id', (req, res) => {
-  const assessmentId = req.params.id;
-
-  Assessment.findByIdAndRemove(assessmentId)
-    .then((assessment) => {
-      if (!assessment) {
-        return res.status(404).json({ message: 'Assessment not found' });
-      }
-      res.status(200).json({ message: 'Assessment deleted successfully' });
-    })
-    .catch((error) => {
-      res.status(500).json({ error: 'Failed to delete assessment', details: error });
-    });
+// DELETE an assessment
+router.delete('/:id', async (req, res) => {
+  try {
+    const assessment = await Assessment.findByIdAndDelete(req.params.id);
+    if (!assessment) {
+      return res.status(404).json({ error: 'Assessment not found' });
+    }
+    res.json({ message: 'Assessment deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete assessment' });
+  }
 });
 
 module.exports = router;
