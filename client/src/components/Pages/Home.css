@@ -1,0 +1,88 @@
+
+
+.homepageBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.homepageBannerText {
+  font-size: 2.5rem;
+  text-align: left;
+}
+
+.homePageBannerParagraph {
+  text-align: left;
+  font-size: 1rem;
+}
+
+.homepageBannerButtonsandtext {
+  flex: 1;
+  padding: 5rem;
+
+}
+
+.homepageBackgroundImage {
+  flex: 0 0 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.homepageBackgroundImage img {
+  max-width: 100%;
+  height: auto;
+}
+
+.linkButton {
+  display: block;
+  padding: 12px 24px;
+  border-radius: 5px;
+  font-size: 1rem;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  margin: 1rem;
+}
+
+.linkButton.primary {
+  background: linear-gradient(90deg, #D67449 10.90%, #5179BD 100%);
+  color: #fff;
+}
+
+.linkButton.secondary {
+  background: white;
+  color: #D67449;
+  border: 2px solid #D67449;
+}
+
+.linkButton.secondary:hover {
+  background: #D67449;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .homepageBanner {
+    flex-direction: column;
+  }
+
+  .homepageBannerText {
+    font-size: 2rem;
+  }
+
+  .homePageBannerParagraph {
+    font-size: 1.6rem;
+    line-height: 2.2rem;
+  }
+
+  .linkButton {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+  }
+
+  .homepageBackgroundImage {
+    flex-basis: 100%;
+  }
+}

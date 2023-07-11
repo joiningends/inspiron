@@ -1,0 +1,95 @@
+.filter-container {
+  background-color: #5179BD;
+  border-radius: 5px;
+  padding: 15px;
+  color: white;
+}
+
+.filter-label {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.filter-field-label {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.selected-options-container {
+  margin-top: 25px;
+}
+
+.selected-options-label {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.selected-option {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  margin-right: 6px;
+  margin-bottom: 6px;
+  background-color: #ddd;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.no-options {
+  color: #999;
+  font-style: italic;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .filter-container {
+    padding: 12px;
+  }
+
+  .filter-label {
+    font-size: 18px;
+  }
+
+  .filter-field-label {
+    font-size: 14px;
+  }
+
+  .checkbox-label {
+    font-size: 12px;
+  }
+
+  .selected-option {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}

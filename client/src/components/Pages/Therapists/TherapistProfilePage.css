@@ -1,0 +1,448 @@
+.primaryDetailsDiv{
+  border: 1px solid #D9D9D9;
+  width: 30%;
+  margin-left: 8rem;
+}
+
+.addressesDetailBottomsDiv{
+  display: flex;
+  justify-content: space-between;
+}
+
+.addressesDetailsDiv{
+  border: 1px solid #D9D9D9;
+  width: 80%;
+  margin-left: 8.9%;
+  margin-top: 1rem;
+}
+
+.modalContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 5px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.modal label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.modal input[type="email"],
+.modal input[type="text"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.modal .buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.modal .saveButton,
+.modal .cancelButton {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal .saveButton {
+  background-color: #4caf50;
+  color: #fff;
+  margin-right: 1rem;
+}
+
+
+
+.personalDetailsDIV{
+  display: flex;
+}
+
+.primaryDetalsUpperPart{
+  border-bottom:  1px solid #D9D9D9;
+  display: flex;
+justify-content: space-between;
+}
+
+.primaryDetailsTitle{
+  color: #1D1D1F;
+font-size: 16px;
+font-family: Poppins;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+}
+
+.primaryDetailsLowerPart1{
+  display: flex;
+}
+
+.primaryDetailsLowerPart1div1{
+  width: 45%;
+  align-items: flex-start;
+}
+
+
+.editIcon {
+  display: flex;
+  align-items: center;
+  background:#D67449; ;
+}
+
+.editText {
+  margin-left: 6px;
+  color: #FFFFFF;
+  font-size: 14px;
+}
+
+.editIcon > svg {
+  color: #FFFFFF;
+
+}
+
+
+.primaryDetailsLowerPart1div1{
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.primaryDetailsLowerPart1div2{
+  display: flex;
+  flex-direction: column;
+  justify-content: baseline;
+  align-items: baseline;
+  padding: 1rem;
+}
+
+.fullnameH1{
+  color: #666;
+font-size: 14px;
+font-family: Poppins;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+text-transform: uppercase;
+}
+
+
+.itemsOfPrimaryDetails{
+color: #1D1D1F;
+font-size: 16px;
+font-family: Poppins;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+}
+
+.editFormModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.editForm {
+  background-color: #fff;
+  width: 80%;
+  max-width: 600px;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.editFormHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.editFormBody {
+  margin-bottom: 1rem;
+}
+
+.editFormBody label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.editFormBody input,
+.editFormBody select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.editFormFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.saveButton,
+.cancelButton {
+  padding: 0.5rem 1rem;
+  margin-left: 1rem;
+}
+
+.editFormContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.editForm {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 100%;
+}
+
+.editForm h2 {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.editForm label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.editForm input[type="text"] {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.editForm .buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.editForm button {
+  margin-left: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+.editForm button:hover {
+  background-color: #0056b3;
+}
+
+.primaryDetalsUpperPart {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.primaryDetailsTitle {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.editIcon {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.editIcon:hover {
+  opacity: 0.8;
+}
+
+.editText {
+  margin-left: 0.5rem;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.fullnameH1 {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.itemsOfPrimaryDetails {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.addressesDetailsDiv {
+  margin-top: 2rem;
+}
+
+.addressesDetailBottomsDiv {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+.addressesDetailBottomsDiv > div {
+  margin-bottom: 1rem;
+}
+
+/* Add any additional CSS styles as needed */
+.educationForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+.educationForm h2 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.educationForm label {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.educationForm input {
+  width: 100%;
+  padding: 0.3rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.9rem;
+}
+
+.educationFormButtons {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.8rem;
+}
+
+.educationFormButtons button {
+  margin: 0 0.3rem;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+.educationFormButtons button:first-child {
+  background-color: #4caf50;
+  color: white;
+}
+
+.educationFormButtons button:last-child {
+  background-color: #f44336;
+  color: white;
+}
+
+.educationDetailsDiv {
+  margin-top: 2rem;
+}
+
+.educationHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.educationHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.editEducationIcon {
+  cursor: pointer;
+  color: #777;
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+.editEducationIcon:hover {
+  color: #333;
+}
+
+.educationItem {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.educationItem:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.educationItem .label {
+  font-size: 0.8rem;
+  color: #777;
+  margin-right: 1rem;
+  text-transform: uppercase;
+}
+
+.educationItem .collegeNameText {
+  font-weight: bold;
+  color: #333;
+}
+
+.educationItem .educationLevelText {
+  color: #777;
+}
+
+/* Additional Styles */
+
+.educationItem .deleteEducationIcon {
+  cursor: pointer;
+  color: #777;
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+.educationItem .deleteEducationIcon:hover {
+  color: #ff5252;
+}

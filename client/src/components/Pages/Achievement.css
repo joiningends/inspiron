@@ -1,0 +1,42 @@
+* {
+  box-sizing: border-box;
+}
+
+.achievement-container {
+  display: flex;
+  padding: 1rem;
+  margin-left: 5rem;
+  flex-wrap: wrap;
+}
+
+.achievement-item {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  flex-basis: calc(50% - 10px);
+  align-items: center;
+  border-radius: 2rem;
+  border: 1px solid rgb(76, 85, 165);
+  margin-left: 1rem;
+  max-width: 40rem;
+  margin-bottom: 0.7rem;
+  font-size: 0.2rem;
+}
+.img {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+
+.des {
+  color: black;
+  font-size: 0.7rem;
+  font-family: Poppins;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .achievement-item {
+    flex-basis: 100%;
+  }
+}

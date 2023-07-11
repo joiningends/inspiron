@@ -1,0 +1,245 @@
+/* Dashboard.css */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.therapistsDetailsAvailability{
+  display: flex;
+  margin-left: 5rem;
+}
+
+.therapistQuantintity{
+  display: flex;
+  flex-direction: row;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  max-width: 80rem; /* Set the maximum width of the table */
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  font-size: 14px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a box shadow for a subtle 3D effect */
+  border-radius: 8px; /* Add border radius for a softer look */
+}
+
+thead {
+  background-color: #68B545; /* Set the header background color */
+  color: white; /* Set the text color */
+}
+
+th,
+td {
+  padding: 1rem; /* Adjust the padding for a comfortable spacing */
+  text-align: center; /* Align the content in the center */
+  position: relative; /* Add position relative to td element */
+}
+
+th {
+  font-weight: bold;
+  white-space: nowrap; /* Prevent the header text from wrapping */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add ellipsis for longer header text */
+  color: white; /* Set the text color */
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+  background-color: #f1f1f1; /* Update the hover background color */
+  transition: background-color 0.3s ease; /* Add transition effect for a smooth animation */
+}
+
+tbody td:first-child {
+  font-weight: bold;
+}
+
+.therapist-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.details-button {
+  border: 2px solid #D67449; /* Set the border color */
+  color: #D67449; /* Set the font color */
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Add transition effect for a smooth hover animation */
+}
+
+.details-button:hover {
+  background-color: #D67449; /* Update the hover background color */
+  color: white; /* Set the font color on hover */
+}
+
+/* Add separator between td elements */
+td:not(:last-child):after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 70%;
+  background-color: #CCCCCC; /* Set the separator color */
+}
+
+/* Align details properly */
+td {
+  vertical-align: middle;
+}
+
+td:first-child {
+  display: flex;
+  align-items: center;
+}
+
+/* Reduce table width */
+@media (max-width: 600px) {
+  table {
+    max-width: 100%; /* Set the maximum width to 100% for responsiveness */
+  }
+  
+  td:before {
+    content: attr(data-label); /* Use the "data-label" attribute as content */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    padding-left: 10px; /* Add left padding for better readability */
+    font-weight: bold;
+    text-align: left;
+  }
+  
+  td {
+    padding: 10px 0; /* Adjust the padding for better readability */
+    text-align: left;
+  }
+  
+  td:not(:last-child):after {
+    display: none; /* Hide the separator on smaller screens */
+  }
+}
+
+.details-button {
+  border: 2px solid #D67449;
+  color: #D67449;
+  background-color: transparent;
+  padding: 8px 16px; /* Adjust the padding for a smaller button size */
+  font-size: 14px; /* Adjust the font size as needed */
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* On smaller screens */
+@media (max-width: 600px) {
+  .details-button {
+    padding: 6px 12px; /* Adjust the padding for smaller screens */
+    font-size: 12px; /* Adjust the font size for smaller screens */
+  }
+}
+
+/* Styling for the Create Therapist Form */
+.createTherapistForm {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 9999; /* Set a high z-index to ensure it appears on top */
+  animation: fadeIn 0.3s ease;
+}
+
+.createTherapistForm form {
+  background-color: white;
+  width: 400px; /* Adjust the width as needed */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease;
+}
+
+.createTherapistForm h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  background-color: #D67449; /* Set the background color for the form name */
+  color: white; /* Set the text color for the form name */
+  padding: 10px; /* Adjust the padding for the form name */
+  border-top-left-radius: 8px; /* Add border radius to match the form container */
+  border-top-right-radius: 8px; /* Add border radius to match the form container */
+}
+
+.createTherapistForm label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px; /* Adjust the font size for labels */
+}
+
+.createTherapistForm input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5rem;
+  font-size: 14px; /* Adjust the font size for input fields */
+}
+
+.createTherapistForm button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #D67449;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 14px; /* Adjust the font size for buttons */
+}
+
+.createTherapistForm button[type="button"] {
+  background-color: #CCCCCC;
+}
+
+.createTherapistForm button[type="submit"] {
+  background-color: #68B545;
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
