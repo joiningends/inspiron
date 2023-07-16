@@ -3226,4 +3226,5 @@ server/inspiron/node_modules/xtend/package.json
 server/inspiron/node_modules/xtend/README.md
 server/inspiron/node_modules/xtend/test.js
 server/inspiron/yarn.lock
-client/yarn.lock
+server/inspiron/.env
+
