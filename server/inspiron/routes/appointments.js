@@ -4,6 +4,7 @@ const appointmentController = require('../controller/appointmentController');
 
 // POST /appointments
 router.post('/', appointmentController.createAppointment);
+router.get('/:id', appointmentController.getAppointmentById);
 router.get('/therapists/:therapistId', appointmentController.getAppointmentsByTherapist);
 router.get('/therapists/:therapistId/upcoming', appointmentController.getUpcomingAppointmentsByTherapist);
 router.get('/therapists/:therapistId/all', appointmentController.getAllAppointmentsByTherapist);
@@ -14,5 +15,7 @@ router.put('/:appointmentId', appointmentController.updateAppointment);
 
 // DELETE /appointments/:appointmentId
 router.delete('/:appointmentId', appointmentController.deleteAppointment);
+router.get('/therapists/:therapistId/ended-meetcall', appointmentController.getAppointmentsByTherapistWithEndedMeetCall);
 
+router.get('/', appointmentController.retrieveAppointments);
 module.exports = router;
