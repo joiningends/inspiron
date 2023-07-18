@@ -3,16 +3,16 @@ const mongoose = require('mongoose');
 const assessmentSchema = new mongoose.Schema({
     hostId: {
          type: Number, 
-         required: true,
+         required: false,
          },
         
   assessment_name: {
     type: String,
-    required: true,
+    required: false,
   },
   summary: { 
     type: String,
-     required: true,
+     required: false,
     },
     slug: {
       type: String,
@@ -23,6 +23,14 @@ const assessmentSchema = new mongoose.Schema({
      type: Number,
       default: 0 
     },
+    image: {
+      type: String,
+      default: ''
+  },
+  images: [{
+      type: String
+  }],
+ 
     assessmentScore: { 
     type: Number,
      default: 0
@@ -30,7 +38,7 @@ const assessmentSchema = new mongoose.Schema({
   
   published: {
      type: Number, 
-     required: true, 
+     required: false, 
     },
   createdAt: { 
     type: Date,
@@ -46,32 +54,32 @@ const assessmentSchema = new mongoose.Schema({
     },
   startsAt: {
      type: Object, 
-     required: true,
+     required: false,
     },
   endsAt: { 
     type: Object,
      
-     required: true,
+     required: false,
     },
   content: { 
     type: String, 
-    required:true 
+    required:false
 },
   questions: [
     {
       question: {
         type: String,
-        required: true,
+        required: false,
       },
       options: [
         {
           text: {
             type: String,
-            required: true,
+            required: false,
           },
           points: {
             type: Number,
-            required: true,
+            required: false,
           },
         },
       ],
@@ -83,7 +91,7 @@ const assessmentSchema = new mongoose.Schema({
       max: Number,
       expertise: [String],
     },
-    required: true,
+    required: false,
   },
   medium: {
     type: {
@@ -91,7 +99,7 @@ const assessmentSchema = new mongoose.Schema({
       max: Number,
       expertise: [String],
     },
-    required: true,
+    required: false,
   },
   high: {
     type: {
@@ -99,7 +107,7 @@ const assessmentSchema = new mongoose.Schema({
       max: Number,
       expertise: [String],
     },
-    required: true,
+    required: false,
   },
 
 

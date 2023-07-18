@@ -7,33 +7,22 @@ const appointmentSchema = new mongoose.Schema({
     required: true,
   },
   user: {
-    name: {
-      type: String,
-      required: false,
-    },
-    gender: {
-      type: String,
-      required: false,
-    },
-    age: {
-      type: Number,
-      required:false,
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   },
   dateTime: {
     type: Date,
     required: false,
   },
-  session: {
-    mode: {
-      type: String,
-      required: false,
-    },
-    duration: {
-      type: Number,
-      required: false,
-    },
+  sessionMode: {
+    type: String,
+    enum: ['Online', 'Offline', 'Both'],
+    default: 'Online',
   },
+  
+  
+ 
 });
 
 exports.Appointment = mongoose.model('Appointment', appointmentSchema);

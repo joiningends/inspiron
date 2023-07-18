@@ -5,6 +5,11 @@ const therapistSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  
+  image: {
+    type: String,
+    default: ''
+},
   dob: {
       type:Date,
       require:false,
@@ -99,11 +104,26 @@ type:Number
       body: String,
     },
   ],
-  availability: {
-    type: Map,
-    of: [String],
-    required: false,
-  },
+  availability: [{
+    location: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      
+    },
+   
+    
+      day: {
+        type: [String],
+        required: true
+      },
+      timeSlot: {
+        type: [String],
+        required: true
+      },
+  }],
+  
+
+  
   education: [
     {
       collegeName: String,
@@ -117,7 +137,9 @@ type:Number
   },
   meetLink: {
     type: String,
-  }
+  },
+  
+  
  
 });
 
