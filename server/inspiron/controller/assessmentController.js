@@ -1,4 +1,5 @@
 const Assessment = require('../models/assessmentf');
+const multer = require('multer');
 
 // GET all assessments
 async function getAllAssessments(req, res) {
@@ -24,23 +25,57 @@ async function getAssessmentById(req, res) {
 }
 
 // CREATE a new assessment
-async function createAssessment(req, res) {
-  const assessmentData = req.body;
+const createAssessment = async (req, res) => {
 
   try {
-    const assessment = await Assessment.create(assessmentData);
-    res.status(201).json({ message: 'Assessment created successfully', assessment });
+    const file = req.file;
+    if (!file) {
+      return res.status(400).send('No image in the request');
+    }
+    const fileName = file.filename;
+    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+    const imagePath = `${basePath}${fileName}`;
+    const assessmentData = {
+      hostId: req.body.hostId,
+      assessment_name: req.body.assessment_name,
+      summary: req.body.summary,
+      slug: req.body.slug,
+      type: req.body.type,
+      image: imagePath,
+      images: req.body.images,
+      assessmentScore: req.body.assessmentScore,
+      published: req.body.published,
+      startsAt: req.body.startsAt,
+      endsAt: req.body.endsAt,
+      content: req.body.content,
+      questions: req.body.questions,
+      low: req.body.low,
+      medium: req.body.medium,
+      high: req.body.high,
+    };
+    const assessment = new Assessment(assessmentData);
+    const savedAssessment = await assessment.save();
+    res.status(201).json({ message: 'Assessment created successfully', assessment: savedAssessment });
   } catch (error) {
     res.status(500).json({ error: 'Failed to create assessment', details: error });
   }
-}
+};
 
 // UPDATE an existing assessment
 async function updateAssessment(req, res) {
   try {
+    const file = req.file;
+    let imagePath;
+    if (file) {
+      const fileName = file.filename;
+      const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+      imagePath = `${basePath}${fileName}`;
+    } else {
+      imagePath = req.body.image;
+    }
     const assessment = await Assessment.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { ...req.body, image: imagePath },
       { new: true }
     );
     if (!assessment) {
@@ -82,11 +117,11 @@ async function generateReport(req, res) {
       assessmentScore = user.assessmentScore;
     } else {
       // User is not logged in, retrieve the score from localStorage
-      assessmentScore = localStorage.getItem('assessmentScore');
+      assessmentScore = req.body.assessmentScore || req.query.assessmentScore;
     }
 
     // Generate the report based on the assessment score
-    const report = generateReport(assessmentScore);
+    const report = generateReportText(assessmentScore);
 
     res.status(200).json({ report });
   } catch (error) {
@@ -115,9 +150,9 @@ async function getAssessmentReport(req, res) {
       assessmentDescription = user.assessmentDescription;
     } else {
       // User is not logged in, retrieve the score from localStorage
-      assessmentScore = localStorage.getItem('assessmentScore');
-      assessmentName = localStorage.getItem('assessmentName');
-      assessmentDescription = localStorage.getItem('assessmentDescription');
+      assessmentScore = req.body.assessmentScore || req.query.assessmentScore;
+      assessmentName = req.body.assessmentName || req.query.assessmentName;
+      assessmentDescription = req.body.assessmentDescription || req.query.assessmentDescription;
     }
 
     let report = '';
@@ -150,6 +185,6 @@ module.exports = {
   createAssessment,
   updateAssessment,
   deleteAssessment,
-  generateReport,
-  getAssessmentReport
+  //generateReport,
+  //getAssessmentReport
 };

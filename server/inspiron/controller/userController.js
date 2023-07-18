@@ -29,29 +29,46 @@ const getUserById = async (req, res) => {
 // Create a new user
 const createUser = async (req, res) => {
   try {
-    let user = new User({
-      firstname: req.body.firstname,
-      middlename: req.body.middlename,
-      lastname: req.body.lastname,
-      mobile: req.body.mobile,
-      email: req.body.email,
-      passwordHash: bcrypt.hashSync(req.body.password, 10),
-      host: req.body.host,
-      intro: req.body.intro,
-      profile: req.body.profile,
-      isAdmin: req.body.isAdmin,
-      assessmentScore: req.body.assessmentScore,
-    });
-    user = await user.save();
+    const {
+      name,
+      age,
+      mobile,
+      gender,
+      email,
+      password,
+      host,
+      intro,
+      profile,
+      assessmentScore,
+    } = req.body;
 
-    if (!user) {
-      return res.status(400).send('the user cannot be created!');
-    }
+    const passwordHash = bcrypt.hashSync(password, 10);
+const user = new User({
+  name,
+  age,
+  mobile,
+  gender,
+  email,
+  passwordHash,
+  host,
+  intro,
+  profile,
+  assessmentScore,
+});
 
-    res.send(user);
-  } catch (error) {
-    res.status(500).json({ success: false });
-  }
+const savedUser = await user.save();
+
+if (!savedUser) {
+  return res.status(400).send('The user could not be created!');
+}
+
+res.send(savedUser);
+} catch (error) {
+console.error('Failed to create user:', error);
+res
+  .status(500)
+  .json({ success: false, error: 'An error occurred while creating the user' });
+}
 };
 
 // Update a user

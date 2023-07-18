@@ -5,10 +5,11 @@ const { User } = require('../models/user');
 
 // Create a new appointment
 exports.createAppointment = async (req, res) => {
-  const { therapistId, userId, dateTime, sessionMode, sessionDuration } = req.body;
+  const { therapistId, userId, dateTime, sessionMode } = req.body;
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select('name age gender');
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -16,25 +17,52 @@ exports.createAppointment = async (req, res) => {
     const newAppointment = new Appointment({
       therapist: therapistId,
       user: {
+        _id: userId,
         name: user.name,
-        gender: user.gender,
         age: user.age,
+        gender: user.gender,
       },
       dateTime,
-      session: {
-        mode: sessionMode,
-        duration: sessionDuration,
-      },
+      sessionMode,
     });
 
+    // Save the appointment
     const savedAppointment = await newAppointment.save();
 
-    res.status(201).json(savedAppointment);
+    // Populate the user details in the saved appointment
+    const populatedAppointment = await savedAppointment
+      .populate('user', 'name age gender')
+      .execPopulate();
+
+    res.status(201).json(populatedAppointment);
   } catch (error) {
     console.error('Error creating appointment:', error);
     res.status(500).json({ error: 'An error occurred while creating the appointment' });
   }
 };
+
+
+exports.getAppointmentById = async (req, res) => {
+  const appointmentId = req.params.id;
+
+  try {
+    const appointment = await Appointment.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found' });
+    }
+
+    res.status(200).json(appointment);
+  } catch (error) {
+    console.error('Error retrieving appointment:', error);
+    res.status(500).json({ error: 'An error occurred while retrieving the appointment' });
+  }
+};
+
+
+
+
+
 exports.getAppointmentsByTherapist = async (req, res) => {
     const therapistId = req.params.therapistId;
   
@@ -153,7 +181,67 @@ exports.getAllAppointmentsByTherapist = async (req, res) => {
     }
   };
   
-  
-  
  
+
+  exports.getAppointmentsByTherapistWithEndedMeetCall = async (req, res) => {
+    try {
+      const therapistId = cc
   
+      // Update the appointment's googleMeetCallStatus to 'ended'
+      const appointments = await Appointment.find({
+        therapist: therapistId,
+        googleMeetCallStatus: 'ended'
+      }).populate('user', 'name age gender'); // Populate the 'user' field with 'name', 'age', and 'gender'
+  
+      if (appointments.length === 0) {
+        return res.status(404).json({ error: 'No appointments found with ended Google Meet calls' });
+      }
+  
+      res.status(200).json(appointments);
+    } catch (error) {
+      console.error('Failed to retrieve appointments with ended Google Meet calls:', error);
+      res.status(500).json({ error: 'Failed to retrieve appointments with ended Google Meet calls' });
+    }
+  };
+  exports.retrieveAppointments = (req, res) => {
+    Appointment.find({}, 'userName userAge userGender dateTime')
+    .exec((err, appointments) => {
+      if (err) {
+        console.error('Error retrieving appointments:', err);
+        res.status(500).json({ error: 'An error occurred while retrieving appointments.' });
+      } else {
+        // Exclude the "user" field from each appointment
+        const appointmentsWithoutUser = appointments.map(appointment => {
+          const { user, ...appointmentWithoutUser } = appointment.toObject();
+          return appointmentWithoutUser;
+        });
+        res.json(appointmentsWithoutUser);
+      }
+    });
+};
+exports.coin = (req, res) => {
+const userId = req.params.UserId; 
+
+
+const amountSpent = req.params.amountSpent; // Retrieve the amount spent dynamically
+
+User.findByIdAndUpdate(userId, { $inc: { coins: -amountSpent } }, { new: true })
+  .then(updatedUser => {
+    // Create the appointment and associate it with the user
+    const appointmentData = {
+      user: userId,
+      // Other appointment details
+      ...appointmentDetails,
+    };
+
+    return Appointment.create(appointmentData);
+  })
+  .then(createdAppointment => {
+    // Handle successful appointment creation
+    console.log('Appointment created:', createdAppointment);
+  })
+  .catch(error => {
+    // Handle errors
+    console.error('Error creating appointment:', error);
+  })
+}

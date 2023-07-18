@@ -1,20 +1,87 @@
 const { Therapist } = require('../models/therapist');
+const { Appointment } = require('../models/appointment');
+const Category = require('../models/category');
+const Patient = require('../models/patient');
 
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const mongoose = require('mongoose');
+
+const getTherapistDetails = async (req, res) => {
+  const therapistId = req.params.id;
+  const userId = req.query.userId; // Assuming you have the user's ID
+
+  try {
+    const therapist = await Therapist.findById(therapistId)
+      .select('-availability._id')
+      .populate({
+        path: 'availability.location',
+        select: 'centerName centerAddress contactNo -_id', // Exclude _id field from location details
+      });
+
+    if (!therapist) {
+      return res.status(404).json({ error: 'Therapist not found' });
+    }
+
+    // Check if the user has an appointment with the therapist
+    const appointment = await Appointment.findOne({ therapist: therapistId, user: userId });
+
+    if (appointment && appointment.sessionMode === 'Offline') {
+      // If the user has an appointment with 'Offline' session mode, show the location
+      therapist.availability.forEach((availability) => {
+        availability.location = availability.location;
+      });
+    } else {
+      // If the user doesn't have an appointment or the session mode is 'Online', remove the location
+      therapist.availability.forEach((availability) => {
+        availability.location = undefined;
+      });
+    }
+
+    res.json(therapist);
+  } catch (error) {
+    console.error('Failed to retrieve therapist details:', error);
+    res.status(500).json({ error: 'An error occurred while retrieving therapist details' });
+  }
+};
+
 
 const getAllTherapists = async (req, res) => {
   try {
-    let filter = {};
-    if (req.query.categories) {
-      filter.category = { $in: req.query.categories.split(',') };
-    }
+    const therapists = await Therapist.find().populate({
+      path: 'availability',
+      select: 'day timeSlot -_id',
+      populate: {
+        path: 'location',
+        select: '-_id',
+      },
+    });
 
-    const therapists = await Therapist.find(filter, { assessmentScoreRange: 0 });
-    res.json(therapists);
+    const modifiedProfiles = therapists.map(therapist => {
+      // Modify therapist profile here
+      // For example, remove the location field
+      therapist.availability.forEach(availability => {
+        availability.location = undefined;
+      });
+
+      return therapist;
+    });
+
+    const completeProfiles = modifiedProfiles.filter(
+      therapist =>
+        therapist.expertise.length !== 0 &&
+        therapist.experiencelevel !== null &&
+        therapist.meetLink !== ""
+    );
+
+    if (completeProfiles.length === 0) {
+      return res.status(404).json({ error: 'No therapist profiles are complete or available yet.' });
+    } else {
+      return res.json(completeProfiles);
+    }
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve therapist' });
+    res.status(500).json({ error: 'Failed to retrieve therapists' });
   }
 };
 
@@ -154,21 +221,33 @@ await therapist.save();
 
 
 // Update a therapist by ID
-const updateTherapist = (req, res) => {
-  const therapistId = req.params.id;
-  const updatedData = req.body;
+const updateTherapistImage = async (req, res) => {
+  try {
+    const file = req.file;
 
-  Therapist.findByIdAndUpdate(therapistId, updatedData, { new: true })
-    .then((therapist) => {
-      if (!therapist) {
-        return res.status(404).json({ message: 'Therapist not found' });
-      }
-      res.status(200).json({ message: 'Therapist updated successfully', therapist });
-    })
-    .catch((error) => {
-      res.status(500).json({ error: 'Failed to update therapist', details: error });
-    });
-};
+    if (!file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+
+    const fileName = file.filename;
+    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+    const imagePath = `${basePath}${fileName}`;
+
+    const therapist = await Therapist.findByIdAndUpdate(
+      req.params.id,
+      { image: imagePath },
+      { new: true }
+    );
+
+    if (!therapist) {
+      return res.status(404).json({ error: 'Therapist not found' });
+    }
+
+    res.json({ image: therapist.image });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update therapist image' });
+  }};
+
 
 
 
@@ -302,19 +381,25 @@ const updateAvailability = async (req, res) => {
   const { availability } = req.body;
 
   try {
-    const therapist = await Therapist.findByIdAndUpdate(
-      therapistId,
-      { availability },
-      { new: true }
-    );
-
+    const therapist = await Therapist.findById(therapistId)
     if (!therapist) {
-      return res.status(404).json({ success: false, message: 'Therapist not found' });
+      return res.status(404).json({ success: false, error: 'Therapist not found' });
     }
 
-    res.json({ availability: therapist.availability });
+    // Update the therapist's availability
+    therapist.availability = availability;
+    await therapist.save();
+
+    // Populate the updated availability with location details, excluding sessionDuration and timeBetweenSessions
+    const populatedAvailability = await therapist.populate({
+      path: 'availability.location',
+      select: '-sessionDuration -timeBetweenSessions -_id',
+    }).execPopulate();
+
+    // Return the updated therapist's availability in the response
+    return res.json({ success: true, message: 'Availability updated successfully', availability: populatedAvailability.availability });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({ success: false, error: error.message });
   }
 };
 
@@ -360,14 +445,108 @@ const getTherapistmeetlink = async (req, res) => {
   }
 };
 
+const createPatient = async (req, res) => {
+  try {
+    const {
+      fullName,
+      age,
+      sex,
+      pronouns,
+      height,
+      weight,
+      fullAddress,
+      contactDetails,
+      emergencyContactName,
+      emergencyContactNumber,
+      education,
+      occupation,
+      socioeconomicStatus,
+      informant,
+      relationshipWithPatient,
+      durationOfStayWithPatient,
+      information,
+      religionEthnicity,
+      dateOfBirth,
+      languagesKnown,
+      foreignLanguage,
+      maritalStatus,
+      reference,
+      depressiveSymptoms,
+      maniaSymptoms,
+      anxietySymptoms,
+      ocdSymptoms,
+      physicalSymptoms,
+      psychosisSymptoms,
+      personalityTraits,
+      deliberateSelfHarm,
+      appetite,
+      sleep,
+      sexualDysfunction,
+      headachesPains,
+      cognitiveFunctions,
+      description
+    } = req.body;
+
+    const newPatient = new Patient({
+      fullName,
+      age,
+      sex,
+      pronouns,
+      height,
+      weight,
+      fullAddress,
+      contactDetails,
+      emergencyContactName,
+      emergencyContactNumber,
+      education,
+      occupation,
+      socioeconomicStatus,
+      informant,
+      relationshipWithPatient,
+      durationOfStayWithPatient,
+      information,
+      religionEthnicity,
+      dateOfBirth,
+      languagesKnown,
+      foreignLanguage,
+      maritalStatus,
+      reference,
+      depressiveSymptoms,
+      maniaSymptoms,
+      anxietySymptoms,
+      ocdSymptoms,
+      physicalSymptoms,
+      psychosisSymptoms,
+      personalityTraits,
+      deliberateSelfHarm,
+      appetite,
+      sleep,
+      sexualDysfunction,
+      headachesPains,
+      cognitiveFunctions,
+      description
+    });
+
+   
+    const savedPatient = await newPatient.save();
+    const populatedPatient = await savedPatient.populate('cognitiveFunctions').execPopulate();
+
+    res.status(201).json({ success: true, patient: populatedPatient });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 
 module.exports = {
+  getTherapistDetails,
 getAllTherapists,
   getTherapists,
   getTherapistById,
   createTherapistfull,
   createTherapist,
-  updateTherapist,
+  //updateTherapist,
+  updateTherapistImage,
   //createTherapistPassword,
  // handlePasswordReset,
   //therapistLogin,
@@ -379,4 +558,6 @@ getAllTherapists,
   updateAvailability,
   deleteTherapist,
   getTherapistmeetlink,
+  //updateTherapistLocation,
+  createPatient,
 };
