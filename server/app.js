@@ -37,7 +37,7 @@ const expertisesRoutes = require("./routes/expertise");
 
 
 const api = process.env.API_URL;
-
+const PORT = process.env.PORT ||4000;
 app.use(`${api}/appointments`, appointmentsRoutes);
 app.use(`${api}/users`, usersRoutes);
 app.use(`${api}/therapists`,  therapistsRoutes);
@@ -68,6 +68,6 @@ mongoose.connect(process.env.CONNECTION_STRING,{
     console.log(err);
   });
 //Server
-app.listen(3000, () => {
-  console.log("server is running http://localhost:3000");
+app.listen(PORT, () => {
+  console.log("server is running http://localhost:"+PORT);
 });
