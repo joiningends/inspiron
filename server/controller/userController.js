@@ -1,7 +1,7 @@
 const { User } = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const { Therapist } = require('../models/therapist');
 // Get all users
 const getUsers = async (req, res) => {
   try {
@@ -108,67 +108,127 @@ const updateUser = async (req, res) => {
   }
 };
 
-// User login
+
+
+
 const loginUser = async (req, res) => {
-  const { email, password, assessmentScore } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    // Check if the user is the admin
+    if (email === 'admin@example.com' && password === 'adminpassword') {
+      const secret = process.env.secret;
+      const token = jwt.sign(
+        {
+          userId: 'admin-id', // You can use an actual admin ID from your database here.
+          role: 'admin',
+        },
+        secret,
+        { expiresIn: '30d' }
+      );
 
-    if (!user) {
-      return res.status(400).send('The user not found');
+      return res.status(200).send({ user: email, role: 'admin', token: token });
     }
+
+    // Check if the user is a therapist
+    const therapist = await Therapist.findOne({ email });
+
+    if (therapist) {
+      if (therapist.password === password) { // Directly compare the password from the database
+        const secret = process.env.secret;
+        const token = jwt.sign(
+          {
+            userId: therapist.id,
+            role: 'therapist',
+          },
+          secret,
+          { expiresIn: '30d' }
+        );
+
+        return res.status(200).send({ user: therapist.email, role: 'therapist', token: token });
+      }
+    }
+
+    // Check if the user is a regular user
+    const user = await User.findOne({ email });
 
     if (user && bcrypt.compareSync(password, user.passwordHash)) {
       const secret = process.env.secret;
       const token = jwt.sign(
         {
           userId: user.id,
-          isAdmin: user.isAdmin,
+          role: 'user',
         },
         secret,
         { expiresIn: '30d' }
       );
 
-      user.assessmentScore = assessmentScore;
-      await user.save();
-
-      res.status(200).send({ user: user.email, token: token });
-    } else {
-      res.status(400).send('Password is wrong!');
+      return res.status(200).send({ user: user.email, role: 'user', token: token });
     }
+
+    // If the user is not found or the password is wrong, return an error
+    res.status(400).send('Invalid email or password!');
   } catch (error) {
     res.status(500).json({ error: 'Failed to log in' });
   }
 };
+   
 
-// Register a new user
+  
 const registerUser = async (req, res) => {
   try {
-    let user = new User({
-      firstname: req.body.firstname,
-      middlename: req.body.middlename,
-      lastname: req.body.lastname,
-      mobile: req.body.mobile,
-      email: req.body.email,
-      passwordHash: bcrypt.hashSync(req.body.password, 10),
-      host: req.body.host,
-      intro: req.body.intro,
-      profile: req.body.profile,
-      isAdmin: req.body.isAdmin,
-      assessmentScore: req.body.assessmentScore,
-    });
-    user = await user.save();
+    const {
+      name,
+      age,
+      mobile,
+      gender,
+      email,
+      password,
+      host,
+      intro,
+      profile,
+      assessmentScore,
+    } = req.body;
 
-    if (!user) {
-      return res.status(400).send('the user cannot be created!');
+    // Check if the user with the provided email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).send('User with this email already exists');
     }
 
-    res.send(user);
+    // Hash the password before storing it in the database
+    const passwordHash = bcrypt.hashSync(password, 10);
+
+    // Create a new user with the provided data
+    const newUser = new User({
+      name,
+      age,
+      mobile,
+      gender,
+      email,
+      passwordHash,
+      host,
+      intro,
+      profile,
+      assessmentScore,
+    });
+
+    // Save the user in the database
+    const savedUser = await newUser.save();
+
+    if (!savedUser) {
+      return res.status(400).send('Failed to register the user');
+    }
+
+    // Send the registered user data in the response
+    res.status(201).json(savedUser);
   } catch (error) {
-    res.status(500).json({ success: false });
+    res.status(500).json({ error: 'Failed to register the user' });
   }
 };
+
+
+
 
 // Delete a user
 const deleteUser = async (req, res) => {

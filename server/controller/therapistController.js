@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const getTherapistDetails = async (req, res) => {
   const therapistId = req.params.id;
@@ -49,7 +50,7 @@ const getTherapistDetails = async (req, res) => {
 
 const getAllTherapists = async (req, res) => {
   try {
-    const therapists = await Therapist.find({});
+    const therapists = await Therapist.find({}).populate('expertise');
 
     const populatedTherapists = await Promise.all(
       therapists.map(async therapist => {
@@ -57,7 +58,8 @@ const getAllTherapists = async (req, res) => {
           therapist.availability.map(async availability => {
             const category = await Category.findById(availability.location);
             if (!category) {
-              throw new Error('Invalid category ID');
+              // Skip adding this therapist to the result if the category is invalid
+              return null;
             }
             const locationDetails = {
               centerName: category.centerName,
@@ -72,18 +74,24 @@ const getAllTherapists = async (req, res) => {
             };
           })
         );
+
+        // Remove any null values from the populatedAvailability array
+        const filteredAvailability = populatedAvailability.filter(availability => availability !== null);
+
         return {
           ...therapist.toObject(),
-          availability: populatedAvailability
+          availability: filteredAvailability
         };
       })
     );
 
+    // Filter therapists with complete profiles
     const completeProfiles = populatedTherapists.filter(
       therapist =>
         therapist.expertise && therapist.expertise.length !== 0 &&
         therapist.expriencelevel !== null &&
-        therapist.meetLink !== ""
+        therapist.meetLink !== "" &&
+        therapist.availability.length > 0  // Ensure at least one valid availability is present
     );
 
     if (completeProfiles.length === 0) {
@@ -92,7 +100,7 @@ const getAllTherapists = async (req, res) => {
       return res.json(completeProfiles);
     }
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve therapists' , details: error.message });
+    res.status(500).json({ error: 'Failed to retrieve therapists', details: error.message });
   }
 };
 
@@ -133,7 +141,36 @@ const getTherapists = async (req, res) => {
       assessmentScoreRange: 0, // Exclude the assessmentScoreRange field
     }).populate('expertise'); // Include expertise details
 
-    res.json(therapists);
+    // Populate the therapists' availability with location details
+    const populatedTherapists = await Promise.all(
+      therapists.map(async therapist => {
+        const populatedAvailability = await Promise.all(
+          therapist.availability.map(async availability => {
+            const category = await Category.findById(availability.location);
+            if (!category) {
+              throw new Error('Invalid category ID');
+            }
+            const locationDetails = {
+              centerName: category.centerName,
+              centerAddress: category.centerAddress,
+              contactNo: category.contactNo
+            };
+            return {
+              location: locationDetails,
+              day: availability.day,
+              timeSlot: availability.timeSlot,
+              _id: availability._id
+            };
+          })
+        );
+        return {
+          ...therapist.toObject(),
+          availability: populatedAvailability
+        };
+      })
+    );
+
+    res.json(populatedTherapists);
   } catch (error) {
     console.error('Error:', error); // Add this line for additional error details during debugging
     res.status(500).json({ error: 'Failed to retrieve therapists' });
@@ -143,30 +180,48 @@ const getTherapists = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
 // Get a specific therapist by ID
 const getTherapistById = (req, res) => {
   const therapistId = req.params.id;
 
   Therapist.findById(therapistId)
-    .then((therapist) => {
+  .populate('expertise')
+    .then(async (therapist) => {
       if (!therapist) {
         return res.status(404).json({ message: 'Therapist not found' });
       }
-      res.status(200).json(therapist);
+
+      // Filter availability data based on the provided therapist ID
+      const populatedAvailability = await Promise.all(
+        therapist.availability.map(async (availability) => {
+          const category = await Category.findById(availability.location);
+          if (!category) {
+            throw new Error('Invalid category ID');
+          }
+          const locationDetails = {
+            centerName: category.centerName,
+            centerAddress: category.centerAddress,
+            contactNo: category.contactNo
+          };
+          return {
+            location: locationDetails,
+            day: availability.day,
+            timeSlot: availability.timeSlot,
+            _id: availability._id
+          };
+        })
+      );
+
+      // Return the therapist data with filtered availability
+      res.status(200).json({ ...therapist.toObject(), availability: populatedAvailability });
     })
     .catch((error) => {
       res.status(500).json({ error: 'Failed to retrieve therapist', details: error });
     });
 };
+
+
+
 const createTherapistfull = async (req, res) => {
   try {
     const therapistData = req.body;
@@ -182,39 +237,49 @@ const createTherapistfull = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
+const createRandomPassword = () => {
+  const length = 10;
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let randomPassword = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length);
+    randomPassword += charset[randomIndex];
+  }
+  return randomPassword;
+};
 const createTherapist = async (req, res) => {
   try {
     // Extract the required data from the request body
     const { name, email, mobile, availability } = req.body;
     if (!name) {
-      return res.status(400).json({ message: 'Name is required' });
+      return res.status(400).json({ message: "Name is required" });
     }
 
     // Check if the email is provided and valid
     if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
+      return res.status(400).json({ message: "Email is required" });
     }
 
     const emailRegex = /^\S+@\S+\.\S+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ message: 'Invalid email format' });
+      return res.status(400).json({ message: "Invalid email format" });
     }
 
     // Check if the mobile number is provided and valid
     if (!mobile) {
-      return res.status(400).json({ message: 'Mobile number is required' });
+      return res.status(400).json({ message: "Mobile number is required" });
     }
 
     const mobileRegex = /^\d{10}$/;
     if (!mobileRegex.test(mobile)) {
-      return res.status(400).json({ message: 'Invalid mobile number format' });
+      return res.status(400).json({ message: "Invalid mobile number format" });
     }
 
-    
+    // Generate a random password
+    const randomPassword = createRandomPassword();
 
-    // Create therapist object with populated availability
-    const therapist = new Therapist({ name, email, mobile, availability });
+    // Create therapist object with populated availability and passwordHash
+    const therapist = new Therapist({ name, email, mobile, availability, password: randomPassword });
     await therapist.save();
    
     // Create the transporter and mail options
@@ -232,12 +297,14 @@ const createTherapist = async (req, res) => {
     const mailOptions = {
       from: 'inspiron434580@gmail.com',
       to: therapist.email,
-      subject: 'Therapist Account Created',
+      subject: "Therapist Account Created",
       html: `
         <p>Your therapist account has been successfully created.</p>
+        <p>Your login details are:</p>
+        <p>Email: ${therapist.email}</p>
+        <p>Password: ${randomPassword}</p>
       `,
     };
-
     await transporter.sendMail(mailOptions);
 
     res.status(200).json({ success: true, message: 'Therapist created successfully' });
@@ -245,6 +312,7 @@ const createTherapist = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
 
 const updateTherapist = (req, res) => {
   const therapistId = req.params.id;
@@ -261,6 +329,43 @@ const updateTherapist = (req, res) => {
       res.status(500).json({ error: 'Failed to update therapist', details: error });
     });
 };
+
+
+
+const updateTherapists = async (req, res) => {
+  const therapistId = req.params.id;
+  const { expertise, experienceLevel, meetLink } = req.body;
+
+  try {
+    const therapist = await Therapist.findById(therapistId);
+
+    if (!therapist) {
+      return res.status(404).json({ error: 'Therapist not found' });
+    }
+
+    // Update the fields
+    if (expertise) {
+      therapist.expertise = expertise;
+    }
+
+    if (experienceLevel) {
+      therapist.experienceLevel = experienceLevel;
+    }
+
+    if (meetLink) {
+      therapist.meetLink = meetLink;
+    }
+
+    // Save the updated therapist
+    const updatedTherapist = await therapist.save();
+
+    res.status(200).json(updatedTherapist);
+  } catch (error) {
+    console.error('Error updating therapist details:', error);
+    res.status(500).json({ error: 'An error occurred while updating therapist details' });
+  }
+};
+
 
 
 
@@ -292,6 +397,12 @@ const updateTherapistImage = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Failed to update therapist image' });
   }};
+
+
+
+
+
+ 
 
 
 
@@ -577,6 +688,7 @@ getAllTherapists,
   createTherapistfull,
   createTherapist,
   updateTherapist,
+  updateTherapists,
   updateTherapistImage,
   //createTherapistPassword,
  // handlePasswordReset,

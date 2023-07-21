@@ -119,7 +119,12 @@ onsets: {
   type: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Onset',
-  }
+  },
+  heading:
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Heading',
+    },
      
 },
   

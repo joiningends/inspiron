@@ -1,10 +1,7 @@
 const mongoose = require('mongoose');
 
 const illnessSchema = new mongoose.Schema({
-  Onset:{
-    type: String,
-    required:true,
-  },
+ 
   headings: [
     {
       name: {

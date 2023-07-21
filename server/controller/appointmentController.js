@@ -1,6 +1,5 @@
 const { Appointment } = require('../models/appointment');
 const { User } = require('../models/user');
-
 exports.createAppointment = async (req, res) => {
   const { therapistId, userId, dateTime, sessionMode } = req.body;
 
@@ -13,12 +12,7 @@ exports.createAppointment = async (req, res) => {
 
     const newAppointment = new Appointment({
       therapist: therapistId,
-      user: {
-        _id: userId,
-        name: user.name,
-        age: user.age,
-        gender: user.gender,
-      },
+      user: userId, // Store the user's ObjectId directly in the appointment
       dateTime,
       sessionMode,
     });
@@ -26,10 +20,10 @@ exports.createAppointment = async (req, res) => {
     // Save the appointment
     const savedAppointment = await newAppointment.save();
 
-    // Populate the user details in the saved appointment
-    const populatedAppointment = await savedAppointment
+    // Now, fetch the populated user details and update the appointment object
+    const populatedAppointment = await Appointment.findById(savedAppointment._id)
       .populate('user', 'name age gender')
-      .execPopulate();
+      .exec();
 
     res.status(201).json(populatedAppointment);
   } catch (error) {
@@ -39,11 +33,13 @@ exports.createAppointment = async (req, res) => {
 };
 
 
+
+
 exports.getAppointmentById = async (req, res) => {
   const appointmentId = req.params.id;
 
   try {
-    const appointment = await Appointment.findById(appointmentId);
+    const appointment = await Appointment.findById(appointmentId).populate('user', 'name age gender');
 
     if (!appointment) {
       return res.status(404).json({ error: 'Appointment not found' });
@@ -64,7 +60,7 @@ exports.getAppointmentsByTherapist = async (req, res) => {
     const therapistId = req.params.therapistId;
   
     try {
-      const appointments = await Appointment.find({ therapist: therapistId });
+      const appointments = await Appointment.find({ therapist: therapistId }).populate('user', 'name age gender');
       res.status(200).json(appointments);
     } catch (error) {
       console.error('Error retrieving appointments:', error);
@@ -91,7 +87,7 @@ exports.getTodayAppointmentsByTherapist = async (req, res) => {
     const todayAppointments = await Appointment.find({
       therapist: therapistId,
       dateTime: { $gte: today, $lt: tomorrow },
-    });
+    }).populate('user', 'name age gender');
 
     const todayPatientsCount = todayAppointments.length;
 
@@ -108,35 +104,45 @@ exports.getTodayAppointmentsByTherapist = async (req, res) => {
 exports.getUpcomingAppointmentsByTherapist = async (req, res) => {
   const therapistId = req.params.therapistId;
 
-  // Get the current date and time
+  // Get the current date (without the time component)
   const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0); // Set the time to 00:00:00.000
 
   try {
+    // Fetch upcoming appointments (greater than or equal to the current date)
     const upcomingAppointments = await Appointment.find({
       therapist: therapistId,
       dateTime: { $gte: currentDate },
+    }).populate('user', 'name age gender');
+
+    // Fetch past appointments (less than the current date)
+    const pastAppointments = await Appointment.find({
+      therapist: therapistId,
+      dateTime: { $lt: currentDate },
     });
 
     const upcomingPatientsCount = upcomingAppointments.length;
+    
 
     res.status(200).json({
-      appointments: upcomingAppointments,
-      totalPatients: upcomingPatientsCount
+      upcomingAppointments: upcomingAppointments,
+      
+      totalUpcomingPatients: upcomingPatientsCount,
+      
     });
   } catch (error) {
-    console.error('Error retrieving upcoming appointments:', error);
-    res.status(500).json({ error: 'An error occurred while retrieving upcoming appointments' });
+    console.error('Error retrieving appointments:', error);
+    res.status(500).json({ error: 'An error occurred while retrieving appointments' });
   }
 };
-
-// Get all appointments by therapist
 exports.getAllAppointmentsByTherapist = async (req, res) => {
   const therapistId = req.params.therapistId;
 
   try {
+    // Fetch all appointments
     const allAppointments = await Appointment.find({
       therapist: therapistId,
-    });
+    }).populate('user', 'name age gender');
 
     const allPatientsCount = allAppointments.length;
 
@@ -157,7 +163,7 @@ exports.getAllAppointmentsByTherapist = async (req, res) => {
     const updateData = req.body;
   
     try {
-      const updatedAppointment = await Appointment.findByIdAndUpdate(appointmentId, updateData, { new: true });
+      const updatedAppointment = await Appointment.findByIdAndUpdate(appointmentId, updateData, { new: true }).populate('user', 'name age gender');
       res.status(200).json(updatedAppointment);
     } catch (error) {
       console.error('Error updating appointment:', error);

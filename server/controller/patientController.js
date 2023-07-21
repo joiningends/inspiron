@@ -30,8 +30,8 @@ exports.createPatient = async (req, res) => {
       maritalStatus,
       courtshipDuration,
       reference,
-      therapists,
-      onsets,
+      
+     
     } = req.body;
 
     const therapistId = req.params.id;
@@ -68,17 +68,74 @@ exports.createPatient = async (req, res) => {
       maritalStatus,
       courtshipDuration,
       reference,
-      therapists,
-      onsets,
+      
+      
     });
 
     const savedPatient = await newPatient.save();
 
-    // Add the patient to the therapist's patient list
-    therapist.patients.push(savedPatient._id);
-    await therapist.save();
-
+    
     res.status(201).json({ success: true, patient: savedPatient });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+
+
+
+
+
+
+exports.updateOnsetHeading = async (req, res) => {
+  try {
+    // Get the patient ID from the request body
+    const { patientId } = req.body;
+
+    // Find the patient by ID and ensure it's associated with the therapist
+    const patient = await Patient.findOne({ _id: patientId, therapist: req.params.id })
+      .populate('onset')
+      .populate('heading');
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found or not associated with the therapist' });
+    }
+
+    // Fetch the updated onset and heading details from the request body
+    const { onsetData, headingData } = req.body;
+
+    // Update the onset data
+    if (onsetData) {
+      if (!patient.onsets) {
+        // If the patient doesn't have an onset, create a new one and associate it with the patient
+        const newOnset = new Onset(onsetData);
+        await newOnset.save();
+        patient.onsets = newOnset._id;
+      } else {
+        // If the patient has an onset, update its data
+        Object.assign(patient.onsets, onsetData);
+        await patient.onsets.save();
+      }
+    }
+
+    // Update the heading data
+    if (headingData) {
+      if (!patient.heading) {
+        // If the patient doesn't have a heading, create a new one and associate it with the patient
+        const newHeading = new Heading(headingData);
+        await newHeading.save();
+        patient.heading = newHeading._id;
+      } else {
+        // If the patient has a heading, update its data
+        Object.assign(patient.heading, headingData);
+        await patient.heading.save();
+      }
+    }
+
+    // Save the updated patient
+    await patient.save();
+
+    res.status(200).json({ success: true, patient });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

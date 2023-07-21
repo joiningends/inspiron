@@ -3,8 +3,8 @@ const Illness = require('../models/illnesse');
 // Create a new illness
 exports.createIllness = async (req, res) => {
   try {
-    const { Onset, headings } = req.body;
-    const newIllness = new Illness({ Onset, headings });
+    const { headings } = req.body;
+    const newIllness = new Illness({  headings });
     const savedIllness = await newIllness.save();
     res.status(201).json(savedIllness);
   } catch (error) {
@@ -40,10 +40,10 @@ exports.getIllnessById = async (req, res) => {
 exports.updateIllnessById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { Onset, headings } = req.body;
+    const {  headings } = req.body;
     const updatedIllness = await Illness.findByIdAndUpdate(
       id,
-      { Onset, headings },
+      { headings },
       { new: true }
     );
     if (!updatedIllness) {

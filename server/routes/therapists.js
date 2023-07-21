@@ -41,6 +41,7 @@ router.post('/full', therapistController.createTherapistfull);
 router.get('/:id/meetlink', therapistController.getTherapistmeetlink);
 
 router.put('/:id', therapistController.updateTherapist);
+router.put('/:id/approve', therapistController.updateTherapists);
 router.put('/:id/primaryDetails', therapistController.updatePrimaryDetails);
 router.put('/:id/ContactDetails', therapistController.updateContactDetails);
 router.put('/:id/address', therapistController. updateAddresses);

@@ -1,35 +1,42 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const bcrypt = require('bcrypt');
 
 const therapistSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
   },
-  
   image: {
     type: String,
-    default: ''
-},
+    default: "",
+  },
   dob: {
-      type:Date,
-      require:false,
+    type: Date,
+    require: false,
   },
   age: {
-    type:Number,
-    require:false,
+    type: Number,
+    require: false,
   },
-expriencelevel:{
-type:Number
-},
+  expriencelevel: {
+    type: Number,
+  },
 
-  gender:{
-    type:String,
-    require:false,
+  gender: {
+    type: String,
+    require: false,
   },
   email: {
     type: String,
-    require:true,
+    require: true,
+    unique: true,
   },
+  
+  password: {
+    type: String,
+    
+},
+
   mobile: {
     type: String,
     required: true,
@@ -40,35 +47,37 @@ type:Number
   },
   currentaddress: {
     type: String,
-    required: false
+    required: false,
   },
   permanentaddress: {
     type: String,
-    required: false
+    required: false,
   },
 
   designation: {
     type: String,
     required: false,
   },
-  expertise:[{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Expertise',
-  }],
+  expertise: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Expertise",
+    },
+  ],
   modeOfSession: {
     type: [String],
     required: false,
   },
- 
+
   languages: {
     type: [String],
     required: false,
   },
   sessionPrice: {
     type: Number,
-    required: false
+    required: false,
   },
-  
+
   nextAvailableDateTime: {
     type: Date,
     default: Date.now,
@@ -79,7 +88,6 @@ type:Number
   },
   usersRecommended: {
     type: [String],
-    required: true,
   },
   lastBooked: {
     type: Date,
@@ -105,32 +113,24 @@ type:Number
       body: String,
     },
   ],
-  availability: [{
-    location: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Category',
-      
-    },
-    
-    
+  availability: [
+    {
+      location: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+      },
       day: {
         type: [String],
-        required: false
+        required: false,
       },
-      timeSlot: {
-        type: [String],
-        required: false
-      },
-  }],
-  
-
-  
+    },
+  ],
   education: [
     {
       collegeName: String,
       educationLevel: String,
-      field:String,
-      duration:Number,
+      field: String,
+      duration: Number,
     },
   ],
   password: {
@@ -139,14 +139,21 @@ type:Number
   meetLink: {
     type: String,
   },
-  
-  patients: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Patient'
-  }]
- 
- 
+  sessions: {
+    date: { type: Date },
+    timeSlots: [
+      {
+        startTime: { type: String },
+        endTime: { type: String },
+        sessionType: {
+          type: String,
+        },
+        location: { type: String },
+      },
+    ],
+    
+  },
 });
 
 
-exports.Therapist = mongoose.model('Therapist', therapistSchema);
+exports.Therapist = mongoose.model("Therapist", therapistSchema);

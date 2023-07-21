@@ -57,6 +57,7 @@ required:true,
         required: true,
      
     },
+    
     coins: {
         type: Number,
         default: 0,

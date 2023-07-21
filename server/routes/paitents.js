@@ -6,6 +6,6 @@ const patientController = require('../controller/patientController');
 
 // Patient routes
 router.post('/therapists/:id/paitents', patientController.createPatient);
-//router.put('/therapists/:therapistId/paitents/:patientId/headings',patientController.updatePatient);
+router.put('/therapists/:therapistId/paitents/:id',patientController.updateOnsetHeading);
 
 module.exports = router;

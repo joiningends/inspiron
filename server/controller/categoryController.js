@@ -38,10 +38,9 @@ const getAllCategories = async (req, res) => {
 
 // Get a single category by ID
 const getCategoryById = async (req, res) => {
-  const { categoryId } = req.params;
-
+  
   try {
-    const category = await Category.findById(categoryId);
+    const category = await Category.findById(req.params.id);
     
     if (!category) {
       return res.status(404).json({ error: 'Category not found' });
@@ -56,11 +55,10 @@ const getCategoryById = async (req, res) => {
 
 // Update a category by ID
 const updateCategory = async (req, res) => {
-  const { categoryId } = req.params;
-
+  
   try {
     const updatedCategory = await Category.findByIdAndUpdate(
-      categoryId,
+      req.params.id,
       { $set: req.body },
       { new: true }
     );
@@ -78,11 +76,10 @@ const updateCategory = async (req, res) => {
 
 // Delete a category by ID
 const deleteCategory = async (req, res) => {
-  const { categoryId } = req.params;
-
+  
   try {
-    const deletedCategory = await Category.findByIdAndDelete(categoryId);
-
+    const deletedCategory = await Category.findByIdAndDelete(req.params.id);
+    
     if (!deletedCategory) {
       return res.status(404).json({ error: 'Category not found' });
     }
@@ -93,6 +90,7 @@ const deleteCategory = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while deleting the category' });
   }
 };
+
 
 module.exports = {
   createCategory,

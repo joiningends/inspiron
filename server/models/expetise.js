@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const expertiseSchema = new mongoose.Schema({
   type: {
     type: [String],
-    required: true
+    required: true,
+    unique: true
   }
 });
 
