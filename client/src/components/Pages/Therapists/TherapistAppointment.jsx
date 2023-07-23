@@ -5,32 +5,62 @@ import {
   getUpcomingAppointmentsByTherapist,
 } from "../../redux/Action";
 import { useDispatch, useSelector } from "react-redux";
+import jwt_decode from "jwt-decode";
 
 function TherapistAppointment() {
   const [activeButton, setActiveButton] = useState(1);
   const dispatch = useDispatch();
-  const therapistId = "648c25acf73426520d1ea2b4";
+
   const todayAppointments = useSelector(state => state.todayAppointments);
   const allAppointments = useSelector(state => state.appointmentByTherapist);
   const upcomingAppointments = useSelector(state => state.upcomingAppointments);
+
+  const [therapistId, setTherapistId] = useState(null);
+  useEffect(() => {
+    // Assuming you have the JWT token stored in local storage under the key "jwtToken"
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // Decoding the token
+      const decodedToken = jwt_decode(token);
+
+      // Accessing the 'id' from the payload
+      const id = decodedToken.userId;
+
+      // Setting the therapistId state with the extracted ID
+      setTherapistId(id);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchTherapistData = async () => {
+      if (therapistId) {
+        try {
+          // Call the API to fetch therapist data with the therapistId
+          await dispatch(fetchTodayAppointments(therapistId));
+          await dispatch(getUpcomingAppointmentsByTherapist(therapistId));
+          await dispatch(getAppointmentsByTherapist(therapistId));
+        } catch (error) {
+          // Handle the error here (e.g., show an error message)
+          console.error("Error fetching therapist data:", error);
+        }
+      }
+    };
+
+    fetchTherapistData();
+  }, [therapistId]);
 
   console.log(upcomingAppointments);
   console.log(allAppointments);
   console.log(todayAppointments);
 
-  useEffect(() => {
-    dispatch(fetchTodayAppointments(therapistId));
-    dispatch(getUpcomingAppointmentsByTherapist(therapistId));
-    dispatch(getAppointmentsByTherapist(therapistId));
-  }, []);
-
   const handleButtonClick = buttonId => {
     setActiveButton(buttonId);
   };
 
-  const handleDetailsClick = (patientId) => {
+  const handleDetailsClick = patientId => {
     // Open a new page with the patient's details
-    window.open(`/patient-details/${patientId}`, '_blank');
+    window.open(`/patient-details/${patientId}`, "_blank");
   };
 
   let tableData;

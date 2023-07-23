@@ -1,4 +1,4 @@
-import React, { useEffect} from "react";
+import React, { useEffect, useState } from "react";
 import "./TherapistHomePage.css"; // Import the CSS file for styling
 import { fetchTodayAppointments } from "../../redux/Action";
 import {
@@ -8,24 +8,56 @@ import {
 } from "../../redux/Action";
 import { useDispatch, useSelector } from "react-redux";
 import inspironWheel from "../inspironwhitewheel.png";
+import jwt_decode from "jwt-decode";
 
 const TherapistHomePage = () => {
   const dispatch = useDispatch();
-  const therapistId = "648c25acf73426520d1ea2b4";
+
   const todayAppointments = useSelector(state => state.todayAppointments);
   const allAppointments = useSelector(state => state.appointmentByTherapist);
   const therapist = useSelector(state => state.therapist);
   const upcomingAppointments = useSelector(state => state.totalPatients);
+  const [therapistId, setTherapistId] = useState(null);
+
+  useEffect(() => {
+    // Assuming you have the JWT token stored in local storage under the key "jwtToken"
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // Decoding the token
+      const decodedToken = jwt_decode(token);
+
+      // Accessing the 'id' from the payload
+      const id = decodedToken.userId;
+
+      // Setting the therapistId state with the extracted ID
+      setTherapistId(id);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchTherapistData = async () => {
+      if (therapistId) {
+        try {
+          // Call the API to fetch therapist data with the therapistId
+          await dispatch(fetchTherapist(therapistId));
+          await dispatch(fetchTodayAppointments(therapistId));
+          await dispatch(getAppointmentsByTherapist(therapistId));
+          await dispatch(getUpcomingAppointmentsByTherapist(therapistId));
+        } catch (error) {
+          // Handle the error here (e.g., show an error message)
+          console.error("Error fetching therapist data:", error);
+        }
+      }
+    };
+
+    fetchTherapistData();
+  }, [therapistId]);
 
   console.log(therapist);
   console.log(todayAppointments);
   console.log(allAppointments);
-  useEffect(() => {
-    dispatch(fetchTodayAppointments(therapistId));
-    dispatch(fetchTherapist(therapistId));
-    dispatch(getAppointmentsByTherapist(therapistId));
-    dispatch(getUpcomingAppointmentsByTherapist(therapistId));
-  }, []);
+  useEffect(() => {}, []);
 
   const handleDetails = appointmentId => {
     // Handle details button click for the given appointmentId

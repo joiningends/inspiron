@@ -1,0 +1,100 @@
+.back-button {
+  display: flex;
+  align-items: center;
+  background-color: #D67449;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.back-icon {
+  margin-right: 5px;
+}
+
+.create-assessment-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #D67449;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.create-assessment-icon {
+  margin-left: 5px;
+}
+
+.form-container {
+  background-color: #F5F5F5;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.form-input {
+  margin-bottom: 10px;
+}
+
+.form-label {
+  font-weight: bold;
+}
+
+.question-container {
+  margin-bottom: 20px;
+}
+
+.question-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #DADADA;
+  border-radius: 5px;
+}
+
+.option-container {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.option-input {
+  flex: 1;
+  margin-right: 10px;
+  padding: 10px;
+  border: 1px solid #DADADA;
+  border-radius: 5px;
+}
+
+.points-container {
+  display: flex;
+  align-items: center;
+}
+
+.points-input {
+  width: 50px;
+  padding: 10px;
+  border: 1px solid #DADADA;
+  border-radius: 5px;
+  margin-left: 10px;
+}
+
+.add-question-button {
+  display: flex;
+  align-items: center;
+  background-color: #D67449;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.add-question-icon {
+  margin-right: 5px;
+}

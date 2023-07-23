@@ -33,32 +33,43 @@ const Signin = () => {
     setShowPassword(false);
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    console.log(formData);
 
-    // Check if token and user exist in localStorage
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    const storedToken = localStorage.getItem("token");
+    try {
+      // Send login request to the backend
+      const response = await fetch("http://localhost:4000/api/v1/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    if (storedUser && storedToken) {
-      // Check if the email matches
-      // Redirect to "/home" page
-      window.location.href = "/FindTherapist";
-      return; // Stop further execution after redirecting
-    } else {
-      // User or token not found in localStorage
-      console.log("User or token not found in localStorage");
+      if (response.ok) {
+        // Login successful, extract and store user information and token
+        const data = await response.json();
+        const { user, token, role } = data;
+
+        // Store the user information and token in localStorage or other secure storage mechanisms
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("role", JSON.stringify(role));
+        localStorage.setItem("token", token);
+        // Clear the form data
+        setFormData({
+          email: "",
+          password: "",
+        });
+
+        // Redirect to the "/FindTherapist" page
+        window.location.href = "/FindTherapist";
+      } else {
+        // Login failed
+        console.log("Login failed");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
     }
-
-    // Dispatch the login action with the form data
-    dispatch(login(formData));
-
-    // Clear the form data
-    setFormData({
-      email: "",
-      password: "",
-    });
   };
 
   return (

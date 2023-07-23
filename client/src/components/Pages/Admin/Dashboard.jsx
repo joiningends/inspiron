@@ -8,12 +8,35 @@ import rightSideArrow from "./right-arrow.png";
 
 function Dashboard() {
   const dispatch = useDispatch();
-  const therapists = useSelector(state => state.therapists);
   const [showForm, setShowForm] = useState(false); // State to control the visibility of the form
   const [address, setAddress] = useState("");
   const [mobile, setPhoneNumebr] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+
+  const [therapistsData, setTherapistsDetails] = useState({
+    totalTherapists: 0,
+    therapists: [],
+  });
+
+  useEffect(() => {
+    // Function to fetch therapist details using Axios
+    const fetchTherapistsDetails = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:4000/api/v1/therapists/total-therapists"
+        );
+        // Assuming the response data is an object with 'totalTherapists' and 'therapists' properties
+        console.log(response.data);
+        setTherapistsDetails(response.data);
+      } catch (error) {
+        console.error("Error fetching therapist details:", error);
+      }
+    };
+
+    // Call the function to fetch therapist details
+    fetchTherapistsDetails();
+  }, []);
 
   const [availableAddress, setAvailableAddress] = React.useState(null);
 
@@ -23,15 +46,12 @@ function Dashboard() {
     });
   }, []);
 
-  useEffect(() => {
-    dispatch(fetchTherapists());
-  }, []);
-
   console.log(availableAddress);
 
   const handleDetails = therapistId => {
-    // Handle the details button click for a specific therapist
-    console.log("Details clicked for therapist ID:", therapistId);
+    // Open a new window with the therapist details
+    const url = `/therapists-Details/${therapistId}`;
+    window.open(url, "_blank");
   };
 
   const handleCreateTherapist = () => {
@@ -52,9 +72,9 @@ function Dashboard() {
       email,
       availability: [
         {
-          location: "64ad535203b565d28f98de73",
+          location: address,
           day: [], // Add the desired day value(s) here
-          timeSlot: [], // Add the desired time slot value(s) here
+          timeSlots: [], // Add the desired time slot value(s) here
         },
       ],
     });
@@ -65,12 +85,17 @@ function Dashboard() {
         email,
         availability: [
           {
-            location: "64ad535203b565d28f98de73",
+            location: address,
+            day: [], // Add the desired day value(s) here
+            timeSlots: [], // Add the desired time slot value(s) here
           },
         ],
       })
       .then(function (response) {
         console.log(response);
+        // Close the form and refresh the page
+        setShowForm(false);
+        window.location.reload();
       })
       .catch(function (error) {
         console.log(error);
@@ -78,17 +103,20 @@ function Dashboard() {
     console.log("Form submitted");
   };
 
+  console.log("Available Addresses:", availableAddress);
   let optionItems = availableAddress?.map(item => (
-    <option key={item}>{`${item?.centerName}, ${item?.centerAddress}`}</option>
+    <option key={item?._id} value={item?._id}>
+      {`${item?.centerName}, ${item?.centerAddress}`}
+    </option>
   ));
 
   return (
     <>
       <div className="therapistsDetailsAvailability">
         <div className="therapistQuantintity">
-          <div>1</div>
+          {/* <div>1</div>
           <div>2</div>
-          <div>3</div>
+          <div>3</div> */}
         </div>
         <div
           className="therapistCreateButton"
@@ -135,7 +163,7 @@ function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            {therapists?.map(therapist => (
+            {therapistsData.therapists.map(therapist => (
               <tr key={therapist._id}>
                 <td>
                   <img
@@ -148,7 +176,7 @@ function Dashboard() {
                 <td>{therapist?.gender}</td>
                 <td style={{ color: "#D67449" }}>{therapist?.email}</td>
                 <td>{therapist?.mobile}</td>
-                <td>{therapist?.patients}</td>
+                <td>{therapist?.patients?.length}</td>
                 <td>{therapist?.totalRevenue}</td>
                 <td>
                   <button

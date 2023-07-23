@@ -1,0 +1,742 @@
+* {
+  box-sizing: border-box;
+  font-family: Poppins;
+}
+
+.profileDetails {
+  margin-left: 4rem;
+  margin-right: 4rem;
+}
+
+.subDetails {
+  font-size: 2rem;
+}
+
+
+.achievement-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  margin-left: 7rem;
+}
+
+.achievement-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  width: 100%;
+  max-width: 18rem;
+  border: 3px solid #5179BD;
+  padding: 1rem;
+  border-radius: 1rem;
+  font-size: 1rem;
+  color: #000;
+  min-height: 7rem;
+  max-height: 10rem;
+  margin: 0.6rem;
+}
+
+.achievement-img {
+  flex: 0 0 auto;
+  margin-right: 10px;
+  align-self: flex-start;
+}
+
+.des {
+  /* Your existing styles */
+  align-self: flex-start;
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  /* overflow-wrap: break-word; */
+  word-break: break-all;
+}
+
+@media (max-width: 768px) {
+  .achievement-container {
+    margin-left: 1rem;
+  }
+  
+  .achievement-item {
+    max-width: 100%;
+    margin: 1rem;
+  }
+}
+
+
+
+.achievement-img img {
+  width: 50px; /* Adjust the width as needed */
+  height: 50px; /* Adjust the height as needed */
+}
+
+.achievement-description {
+  flex: 1 1 auto;
+  text-align: right;
+}
+
+
+.mode {
+  color: #ffffff;
+  display: flex;
+  background-color: #68b545;
+  width: 25%;
+  height: 7rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-left: 6.6rem;
+}
+
+.modeImage {
+  width: 2.5rem;
+  margin-left: 3rem;
+  margin-top: -0.7rem;
+}
+
+.modeTitle {
+  height: 1rem;
+  margin-left: -3rem;
+}
+
+.modeImg {
+  width: 1rem;
+}
+
+.mode1 {
+  text-align: left;
+}
+
+.modeChoice {
+  margin-top: 1rem;
+  display: flex;
+}
+
+.session-mode {
+  border: 1px solid white;
+  padding: 0.3rem;
+  border-radius: 1rem;
+}
+
+.profileIcons {
+  height: 3rem;
+  padding: 0.4rem;
+}
+
+.lastUserDetailRow {
+  font-size: 0.8rem;
+}
+
+.container2 {
+  display: flex;
+  margin-top: 2rem;
+}
+
+.container1 {
+  display: flex;
+  background-color: #68b545;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.heading {
+  color: white;
+  font-size: 2rem;
+}
+
+.designation {
+  color: white;
+  font-size: 2rem;
+  padding: 2%;
+  text-indent: -0.8rem;
+}
+
+.bookknowBtnLayout{
+  margin-top: 3rem;
+  border-radius: 7rem;
+}
+
+.aboutDoctor {
+  color: #ffffff;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.imgDiv {
+  flex-basis: 25rem;
+  max-width: 80%;
+  max-height: 100%;
+  justify-content: center;
+}
+
+.doctorImg {
+  margin-left: -1rem;
+  margin-right: -5rem;
+  margin-top: 1%;
+  max-width: 55%;
+  height: auto;
+  border-radius: 5%;
+  min-width: 12%;
+}
+
+.aboutDiv {
+  display: flex;
+  width: 40%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-left: -3rem;
+}
+
+.bookNowBtn {
+  margin-top: 22%;
+  background: linear-gradient(90deg, #d67449 10.9%, #5179bd 100%);
+  color: #ffffff;
+  text-align: center;
+  height: 3rem;
+  border: none;
+  width: 10rem;
+  border-radius: 10px;
+  margin-right: -10rem;
+  font-size: 1.2rem;
+}
+
+.profile-div2 {
+  display: flex;
+  width: 20%;
+  justify-content: center;
+  align-items: center;
+}
+
+.mode1 {
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .container1 {
+    flex-direction: column;
+  }
+
+  .imgDiv {
+    flex-basis: 100%;
+  }
+
+  .aboutDiv {
+    width: 100%;
+    height: 20%;
+    align-items: center;
+  }
+
+  .div2 {
+    width: 100%;
+    margin-top: 2rem;
+    text-align: center;
+    height: 50%;
+  }
+
+  .div2 button {
+    height: 3rem;
+    width: 30%;
+    margin-bottom: 2rem;
+    margin-right: 2rem;
+  }
+}
+
+.container2 {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.education {
+  flex: 1;
+}
+
+.achievement {
+  flex: 1;
+}
+
+.offering {
+  display: flex;
+  justify-content: space-between;
+  border: 1.5px solid #68b545;
+  border-radius: 25px;
+  max-width: 80rem;
+  margin-left: 7rem;
+  align-items: center;
+  cursor: pointer;
+}
+
+.allOfferings {
+  display: none;
+  margin-top: 1rem;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  transform: scale(0.9);
+}
+
+.offering.active + .allOfferings {
+  display: block;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.addMinusimg {
+  height: 1rem;
+  width: 1rem;
+  margin-right: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.offeringtext {
+  color: black;
+  text-align: center;
+  margin-left: 3rem;
+  font-size: small;
+}
+
+.offeringtext {
+  font-size: 1rem;
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 2rem;
+  line-height: 36px;
+}
+
+@media (max-width: 768px) {
+  .container2 {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+
+  .education {
+    width: 100%;
+  }
+
+  .achievement {
+    width: 100%;
+  }
+}
+
+/* New CSS code starts here */
+.booktime-container1 {
+  display: flex;
+}
+
+.booktime-imgDiv {
+  flex-basis: 25rem;
+  max-width: 80%;
+  max-height: 100%;
+  justify-content: center;
+}
+
+.booktime-doctorImg {
+  margin-left: -1rem;
+  margin-right: -5rem;
+  margin-top: 1%;
+  max-width: 55%;
+  height: auto;
+  border-radius: 5%;
+  min-width: 12%;
+}
+
+.booktime-aboutDiv {
+  display: flex;
+  width: 40%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-left: -3rem;
+}
+
+.booktime-containerr2 {
+  display: flex;
+}
+
+.booktime-containerr {
+  display: flex;
+}
+
+.booktime-miniContainer {
+  display: flex;
+}
+
+.booktime-dateColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.booktime-dateSelect {
+  font-size: 1rem;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.booktime-time {
+  margin-bottom: 0.5rem;
+}
+
+.booktime-title {
+  color: white;
+  font-size: 2rem;
+}
+
+.booktime-pagination {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.booktime-pagination button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+.booktime-pagination button.active {
+  font-weight: bold;
+}
+
+.noAvailability {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 1.2rem;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .booktime-container1 {
+    flex-direction: column;
+  }
+
+  .booktime-imgDiv {
+    flex-basis: 100%;
+  }
+
+  .booktime-aboutDiv {
+    width: 100%;
+    height: 20%;
+    align-items: center;
+  }
+
+  .booktime-aboutDiv p {
+    height: 50%;
+    text-align: center;
+  }
+
+  .booktime-containerr2 {
+    width: 100%;
+    margin-top: 2rem;
+    text-align: center;
+    height: 50%;
+  }
+
+  .booktime-containerr2 button {
+    height: 3rem;
+    width: 30%;
+    margin-bottom: 2rem;
+    margin-right: 2rem;
+  }
+}
+
+.booktime-parentcard {
+  display: flex;
+  flex-direction: column;
+}
+
+.booktime-containerr {
+  display: flex;
+  justify-content: center;
+}
+
+.booktime-miniContainer {
+  display: flex;
+}
+
+.booktime-dateColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.booktime-dateSelect {
+  font-size: 1rem;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.booktime-time {
+  margin-bottom: 0.5rem;
+}
+
+.booktime-title {
+  color: white;
+  font-size: 2rem;
+}
+
+.booktime-pagination {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.booktime-pagination button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+.booktime-pagination button.active {
+  font-weight: bold;
+}
+
+.noAvailability {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.aboutDiv {
+  display: flex;
+  width: 40%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-left: 1rem;
+}
+
+.aboutDoctor
+
+.designation {
+  color: white;
+  font-size: 2rem;
+  padding: 2%;
+  text-indent: -0.8rem;
+}
+
+.profile-div2 {
+  display: flex;
+  width: 20%;
+  justify-content: center;
+  align-items: center;
+}
+
+.profileDetails {
+  margin-left: 4rem;
+  margin-right: 4rem;
+}
+
+.subDetails {
+  font-size: 2rem;
+}
+
+.profileIcons {
+  height: 3rem;
+  padding: 0.4rem;
+}
+
+.lastUserDetailRow {
+  font-size: 0.8rem;
+}
+
+.container1 {
+  display: flex;
+  background-color: #68b545;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.heading {
+  color: white;
+  font-size: 2rem;
+}
+
+.mode {
+  color: #ffffff;
+  display: flex;
+  background-color: #68b545;
+  width: 25%;
+  height: 7rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-left: 6.6rem;
+}
+
+.modeImage {
+  width: 2.5rem;
+  margin-left: 3rem;
+  margin-top: -0.7rem;
+}
+
+.modeTitle {
+  height: 1rem;
+  margin-left: -3rem;
+}
+
+.modeImg {
+  width: 1rem;
+}
+
+.mode1 {
+  text-align: left;
+}
+
+.modeChoice {
+  margin-top: 1rem;
+  display: flex;
+}
+
+.session-mode {
+  border: 1px solid white;
+  padding: 0.3rem;
+  border-radius: 1rem;
+  margin: 0.4rem;
+  width: 7rem;
+}
+
+.bookNowBtn {
+  margin-top: 22%;
+  background: linear-gradient(90deg, #d67449 10.9%, #5179bd 100%);
+  color: #ffffff;
+  text-align: center;
+  height: 3rem;
+  border: none;
+  width: 10rem;
+  border-radius: 10px;
+  margin-right: -10rem;
+  font-size: 1.2rem;
+}
+
+.mode1 {
+  display: flex;
+  justify-content: center;
+}
+
+
+.mode {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.mode span {
+  margin-right: 0.5rem;
+}
+
+.mode1 {
+  display: flex;
+  align-items: center;
+}
+
+.modeTitle {
+  font-size: 1.125rem;
+  margin-right: 0.5rem;
+}
+
+.modeImg {
+  margin-left: 0.5rem;
+}
+
+.modeChoice {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.session-mode {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-color: #5179BD;
+  color: #fff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+
+@media only screen and (max-width: 768px) {
+  .allOfferings.show {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .allOfferings.show .mode {
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 10px;
+  }
+}
+
+/* Add/Edit Button */
+.editButton {
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Experience Level Form */
+.experienceLevelFormContainer {
+  margin-top: 20px;
+}
+
+/* Expertise Form */
+.expertiseFormContainer {
+  margin-top: 20px;
+}
+
+.expertiseInputContainer {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.expertiseInputItem {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.addExpertiseButton {
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.removeExpertiseButton {
+  padding: 5px;
+  font-size: 12px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+

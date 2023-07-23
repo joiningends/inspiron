@@ -16,15 +16,15 @@ function Therapist({ therapist }) {
           <img src={inspiron} alt="Watermark" className="watermark" />
         </div>
         <div className="therapist-content-container">
-          <span className="therapistName">{therapist.name}</span>
-          <span className="therapist-desig">{therapist.designation}</span>
+          <span className="therapistName">{therapist?.name}</span>
+          <span className="therapist-desig">{therapist?.designation}</span>
           <div className="therapist-expertise">
             <span className="therapist-exp">Expertise:</span>
             <ul className="therapist-ulExp">
               <div className="therapist-elements">
-                {therapist.expertise.map((area, index) => (
+                {therapist?.expertise.map((area, index) => (
                   <li className="therapist-expertList" key={index}>
-                    {area}
+                    {area?.type[0]}
                   </li>
                 ))}
               </div>
@@ -33,24 +33,24 @@ function Therapist({ therapist }) {
           <div className="therapist-languages">
             <span className="therapist-language">Languages:</span>
             <span className="therapist-lang">
-              {therapist.modeOfSession.join(", ")}
+              {therapist?.modeOfSession.join(", ")}
             </span>
           </div>
           <div className="therapist-languages">
             <span className="therapist-language">Languages:</span>
             <span className="therapist-lang">
-              {therapist.languages.join(", ")}
+              {therapist?.languages.join(", ")}
             </span>
           </div>
           <div className="therapist-sessionPrice">
             <span className="therapist-session">Session:</span>
             <span className="therapist-sessionspan">
-              Starts <strong>INR {therapist.sessionPrice}</strong> for 60 mins
+              Starts <strong>INR {therapist?.sessionPrice}</strong> for 60 mins
               session.
             </span>
           </div>
           <span className="therapist-available">
-            Next Available Date and Time: {therapist.nextAvailableDateTime}
+            Next Available Date and Time: {therapist?.nextAvailableDateTime}
           </span>
           <div className="therapist-buttons-container">
             <Link

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Therapist from "./Therapist";
 import "./TherapistsWithFilter.css";
+import axios from "axios";
 
 import { useSelector, useDispatch } from "react-redux";
 import { fetchTherapists } from "../redux/Action";
@@ -16,6 +17,26 @@ export const TherapistsWithFilter = () => {
   const dispatch = useDispatch();
   const therapists = useSelector(state => state.therapists);
   const [filteredTherapists, setFilteredTherapists] = useState([]);
+
+  const [expertises, setExpertises] = useState([]);
+
+  useEffect(() => {
+    // Define the API endpoint
+    const apiUrl = "http://localhost:4000/api/v1/expetises";
+
+    // Make the GET request using Axios
+    axios
+      .get(apiUrl)
+      .then(response => {
+        // Handle the response data here and update the state
+        const data = response.data;
+        setExpertises(data);
+      })
+      .catch(error => {
+        // Handle errors, if any
+        console.error("Error:", error);
+      });
+  }, []);
 
   useEffect(() => {
     dispatch(fetchTherapists());
@@ -114,7 +135,7 @@ export const TherapistsWithFilter = () => {
   const optionsData = [
     {
       label: "Experties",
-      options: ["Depression", "IBS", "Stress"],
+      options: ["Depression", "IBS", "Stress", "Mania"],
     },
     {
       label: "Session Mode",
@@ -139,9 +160,14 @@ export const TherapistsWithFilter = () => {
     const filteredTherapists = therapists.filter(therapist => {
       const expertiseMatched =
         therapyOptions.length === 0 ||
-        therapyOptions.every(expertise =>
-          therapist.expertise.includes(expertise)
-        );
+        therapyOptions.every(therapyOption => {
+          const expertiseType = therapyOption; // Assuming each therapy option has only one expertise type
+          return therapist.expertise.some(expertise =>
+            expertise.type.includes(expertiseType)
+          );
+        });
+
+      console.log(expertiseMatched);
 
       const sessionModeMatched =
         sessionModeOptions.length === 0 ||
@@ -201,31 +227,45 @@ export const TherapistsWithFilter = () => {
     if (storedAssessment && score) {
       const { low, medium, high } = storedAssessment;
       let expertise = [];
+      console.log();
 
-      if (score >= low.type.min && score <= low.type.max) {
-        expertise = low.type.expertise;
-        console.log(expertise);
-      } else if (score >= medium.type.min && score <= medium.type.max) {
-        expertise = medium.type.expertise;
-        console.log(expertise);
-      } else if (score >= high.type.min && score <= high.type.max) {
-        expertise = high.type.expertise;
-        console.log(expertise);
+      if (score >= low?.min && score <= low?.max) {
+        expertise = low.expertise;
+        // console.log(expertise);
+      } else if (score >= medium.min && score <= medium.max) {
+        expertise = medium.expertise;
+        // console.log(expertise);
+      } else if (score >= high.min && score <= high.max) {
+        expertise = high.expertise;
+        // console.log(expertise);
       }
 
+      console.log(expertise);
+
+      const expertisesWithType = expertise
+        .map(id => expertises.find(item => item._id === id))
+        .filter(expertise => expertise !== undefined)
+        .map(expertise => expertise.type[0]);
+
+        console.log(expertisesWithType)
+
       const filteredTherapistsByScore = therapists.filter(therapist => {
-        const matchedExpertise = expertise.some(expertise =>
-          therapist.expertise.includes(expertise)
+        const matchedExpertise = expertisesWithType.some(expertiseType =>
+          therapist.expertise.some(expertiseItem =>
+            expertiseItem.type.includes(expertiseType)
+          )
         );
         return matchedExpertise;
       });
+
+      console.log(filteredTherapistsByScore);
 
       // Update the filteredTherapists state
       setFilteredTherapists(filteredTherapistsByScore);
     } else {
       setFilteredTherapists(therapists);
     }
-  }, [therapists, storedAssessment, score]);
+  }, [storedAssessment, score]);
 
   console.log(filteredTherapists);
 

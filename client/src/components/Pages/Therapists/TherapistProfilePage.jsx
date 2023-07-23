@@ -8,17 +8,15 @@ import {
 import { FaEdit } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa";
 import Modal from "react-modal";
+import jwt_decode from "jwt-decode";
+import "./TimeSlots.css";
+import moment from "moment";
 import "./TherapistProfilePage.css";
-
-const datesPerPage = 8;
 
 function TherapistProfilePage() {
   const dispatch = useDispatch();
-  const therapistId = "648c25acf73426520d1ea2b4";
+  const [therapistId, setTherapistId] = useState(null);
   const therapist = useSelector(state => state.therapist);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [activeDate, setActiveDate] = useState("");
-  const [newTime, setNewTime] = useState("");
   const [showEditForm, setShowEditForm] = useState(false);
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
@@ -33,6 +31,216 @@ function TherapistProfilePage() {
   const [showEducationForm, setShowEducationForm] = useState(false);
   const [collegeName, setCollegeName] = useState("");
   const [educationLevel, setEducationLevel] = useState("");
+
+  const [date, setDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [slots, setSlots] = useState([]);
+  const [reservedSlots, setReservedSlots] = useState(new Set());
+  const [cooldownPeriod, setCooldownPeriod] = useState(15); // Cooldown period in minutes
+  const [currentPage, setCurrentPage] = useState(1); // Current page number
+  const [slotsPerPage] = useState(6); // Number of slots to display per page
+  const [appointmentMode, setAppointmentMode] = useState("online");
+  const [selectedLocation, setSelectedLocation] = useState("");
+
+  const timeSlotDuration = 60; // Time slot duration in minutes
+
+  useEffect(() => {
+    // Assuming you have the JWT token stored in local storage under the key "jwtToken"
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // Decoding the token
+      const decodedToken = jwt_decode(token);
+
+      // Accessing the 'id' from the payload
+      const id = decodedToken.userId;
+
+      // Setting the therapistId state with the extracted ID
+      setTherapistId(id);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchTherapistData = async () => {
+      if (therapistId) {
+        try {
+          // Call the API to fetch therapist data with the therapistId
+          await dispatch(fetchTherapist(therapistId));
+        } catch (error) {
+          // Handle the error here (e.g., show an error message)
+          console.error("Error fetching therapist data:", error);
+        }
+      }
+    };
+
+    fetchTherapistData();
+  }, [therapistId]);
+
+  console.log(therapist);
+
+  const today = moment().format("YYYY-MM-DD");
+  const currentTime = moment().format("HH:mm");
+
+  const handleDateChange = event => {
+    const selectedDate = event.target.value;
+    setDate(selectedDate);
+    setReservedSlots(getReservedSlots(selectedDate, therapist?.sessions)); // Update reserved slots for the selected date
+  };
+
+  const handleStartTimeChange = event => {
+    setStartTime(event.target.value);
+  };
+
+  const handleAddSlotClick = () => {
+    if (startTime) {
+      const endTime = calculateEndTime(startTime);
+      const slot = {
+        startTime,
+        endTime,
+        sessionType: appointmentMode,
+        location: selectedLocation,
+      };
+
+      // Check if the new slot overlaps with any existing slot
+      const overlappingSlots = slots.filter(
+        existingSlot =>
+          moment(existingSlot.startTime, "HH:mm").isSameOrBefore(
+            moment(startTime, "HH:mm")
+          ) &&
+          moment(existingSlot.endTime, "HH:mm").isAfter(
+            moment(startTime, "HH:mm")
+          )
+      );
+
+      if (overlappingSlots.length > 0) {
+        const nextAvailableSlot = getNextAvailableSlot(startTime);
+        alert(
+          `Selected slot overlaps with an existing slot. Please choose a different time. Next available slot: ${formatNextAvailableSlot(
+            nextAvailableSlot
+          )}`
+        );
+        return;
+      }
+
+      // Check if there is a cooldown period before the new slot
+      if (hasCooldownPeriod(startTime)) {
+        const nextAvailableSlot = getNextAvailableSlot(startTime);
+        alert(
+          `There is a cooldown period before the selected start time. Please choose a different time. Next available slot: ${formatNextAvailableSlot(
+            nextAvailableSlot
+          )}`
+        );
+        return;
+      }
+
+      setSlots([...slots, slot]);
+      setStartTime("");
+    }
+  };
+
+  const calculateEndTime = startTime => {
+    const start = moment(startTime, "HH:mm");
+    const end = start.clone().add(timeSlotDuration, "minutes").format("HH:mm");
+    return end;
+  };
+
+  const hasCooldownPeriod = startTime => {
+    if (slots.length === 0) {
+      return false;
+    }
+
+    const lastSlotEndTime = moment(slots[slots.length - 1].endTime, "HH:mm");
+    const newSlotStartTime = moment(startTime, "HH:mm");
+    const duration = moment.duration(newSlotStartTime.diff(lastSlotEndTime));
+    const cooldownMinutes = duration.asMinutes();
+
+    return cooldownMinutes < cooldownPeriod;
+  };
+
+  const getNextAvailableSlot = startTime => {
+    const lastSlotEndTime = moment(slots[slots.length - 1].endTime, "HH:mm");
+    const nextStartTime = lastSlotEndTime
+      .clone()
+      .add(cooldownPeriod, "minutes");
+    const nextEndTime = nextStartTime.clone().add(timeSlotDuration, "minutes");
+    const nextSlot = {
+      startTime: nextStartTime.format("HH:mm"),
+      endTime: nextEndTime.format("HH:mm"),
+    };
+    return nextSlot;
+  };
+
+  const formatNextAvailableSlot = slot => {
+    return `${slot.startTime} to ${slot.endTime}`;
+  };
+
+  const handleSubmitClick = async () => {
+    if (date && slots.length > 0) {
+      const sessions = therapist?.sessions;
+      let updatedSessions;
+
+      // Check if therapist.sessions is an object or an array
+      if (Array.isArray(sessions)) {
+        // therapist.sessions is an array, create an object with dates as keys
+        updatedSessions = sessions.reduce((acc, session) => {
+          acc[moment(session.date).format("YYYY-MM-DD")] = session;
+          return acc;
+        }, {});
+      } else {
+        // therapist.sessions is an object, use it as is
+        updatedSessions = { ...sessions };
+      }
+
+      // Update the session or add a new one if it doesn't exist for the selected date
+      updatedSessions[moment(date).format("YYYY-MM-DD")] = {
+        date,
+        timeSlots: slots,
+      };
+
+      // Convert the updated sessions object back to an array
+      const sortedSessions = Object.values(updatedSessions).sort((a, b) =>
+        moment(a.date).diff(moment(b.date))
+      );
+
+      const updatedTherapist = { sessions: sortedSessions };
+      console.log(updatedTherapist);
+      await dispatch(updateTherapist(therapistId, updatedTherapist));
+
+      setDate("");
+      setSlots([]);
+    }
+  };
+
+  const getReservedSlots = (date, sessions) => {
+    const reservedSlots = new Set();
+    sessions.forEach(session => {
+      if (session.date === date) {
+        session.timeSlots.forEach(slot => {
+          reservedSlots.add(slot.startTime);
+        });
+      }
+    });
+    return reservedSlots;
+  };
+
+  // Pagination logic
+  const indexOfLastSlot = currentPage * slotsPerPage;
+  const indexOfFirstSlot = indexOfLastSlot - slotsPerPage;
+  const therapistSessions = therapist?.sessions || []; // Ensure therapistSessions is an array
+  const currentSlots =
+    therapistSessions.length > 0
+      ? therapistSessions.slice(indexOfFirstSlot, indexOfLastSlot)
+      : [];
+
+  const paginate = pageNumber => setCurrentPage(pageNumber);
+
+  const handleAppointmentModeChange = event => {
+    setAppointmentMode(event.target.value);
+  };
+
+  const handleLocationChange = event => {
+    setSelectedLocation(event.target.value);
+  };
 
   const openEducationForm = () => {
     setShowEducationForm(true);
@@ -115,243 +323,37 @@ function TherapistProfilePage() {
     setShowEditForm(true);
   };
 
-  const timeSlots = [
-    "9:00 AM",
-    "9:05 AM",
-    "9:10 AM",
-    "9:15 AM",
-    "9:20 AM",
-    "9:25 AM",
-    "9:30 AM",
-    "9:35 AM",
-    "9:40 AM",
-    "9:45 AM",
-    "9:50 AM",
-    "9:55 AM",
-    "10:00 AM",
-    "10:05 AM",
-    "10:10 AM",
-    "10:15 AM",
-    "10:20 AM",
-    "10:25 AM",
-    "10:30 AM",
-    "10:35 AM",
-    "10:40 AM",
-    "10:45 AM",
-    "10:50 AM",
-    "10:55 AM",
-    "11:00 AM",
-    "11:05 AM",
-    "11:10 AM",
-    "11:15 AM",
-    "11:20 AM",
-    "11:25 AM",
-    "11:30 AM",
-    "11:35 AM",
-    "11:40 AM",
-    "11:45 AM",
-    "11:50 AM",
-    "11:55 AM",
-    "12:00 PM",
-    "12:05 PM",
-    "12:10 PM",
-    "12:15 PM",
-    "12:20 PM",
-    "12:25 PM",
-    "12:30 PM",
-    "12:35 PM",
-    "12:40 PM",
-    "12:45 PM",
-    "12:50 PM",
-    "12:55 PM",
-    "1:00 PM",
-    "1:05 PM",
-    "1:10 PM",
-    "1:15 PM",
-    "1:20 PM",
-    "1:25 PM",
-    "1:30 PM",
-    "1:35 PM",
-    "1:40 PM",
-    "1:45 PM",
-    "1:50 PM",
-    "1:55 PM",
-    "2:00 PM",
-    "2:05 PM",
-    "2:10 PM",
-    "2:15 PM",
-    "2:20 PM",
-    "2:25 PM",
-    "2:30 PM",
-    "2:35 PM",
-    "2:40 PM",
-    "2:45 PM",
-    "2:50 PM",
-    "2:55 PM",
-    "3:00 PM",
-    "3:05 PM",
-    "3:10 PM",
-    "3:15 PM",
-    "3:20 PM",
-    "3:25 PM",
-    "3:30 PM",
-    "3:35 PM",
-    "3:40 PM",
-    "3:45 PM",
-    "3:50 PM",
-    "3:55 PM",
-    "4:00 PM",
-    "4:05 PM",
-    "4:10 PM",
-    "4:15 PM",
-    "4:20 PM",
-    "4:25 PM",
-    "4:30 PM",
-    "4:35 PM",
-    "4:40 PM",
-    "4:45 PM",
-    "4:50 PM",
-    "4:55 PM",
-    "5:00 PM",
-    "5:05 PM",
-    "5:10 PM",
-    "5:15 PM",
-    "5:20 PM",
-    "5:25 PM",
-    "5:30 PM",
-    "5:35 PM",
-    "5:40 PM",
-    "5:45 PM",
-    "5:50 PM",
-    "5:55 PM",
-    "6:00 PM",
-    "6:05 PM",
-    "6:10 PM",
-    "6:15 PM",
-    "6:20 PM",
-    "6:25 PM",
-    "6:30 PM",
-    "6:35 PM",
-    "6:40 PM",
-    "6:45 PM",
-    "6:50 PM",
-    "6:55 PM",
-    "7:00 PM",
-    "7:05 PM",
-    "7:10 PM",
-    "7:15 PM",
-    "7:20 PM",
-    "7:25 PM",
-    "7:30 PM",
-    "7:35 PM",
-    "7:40 PM",
-    "7:45 PM",
-    "7:50 PM",
-    "7:55 PM",
-    "8:00 PM",
-    "8:05 PM",
-    "8:10 PM",
-    "8:15 PM",
-    "8:20 PM",
-    "8:25 PM",
-    "8:30 PM",
-    "8:35 PM",
-    "8:40 PM",
-    "8:45 PM",
-    "8:50 PM",
-    "8:55 PM",
-    "9:00 PM",
-    "9:05 PM",
-    "9:10 PM",
-    "9:15 PM",
-    "9:20 PM",
-    "9:25 PM",
-    "9:30 PM",
-    "9:35 PM",
-    "9:40 PM",
-    "9:45 PM",
-    "9:50 PM",
-    "9:55 PM",
-    "10:00 PM",
-    "10:05 PM",
-    "10:10 PM",
-    "10:15 PM",
-    "10:20 PM",
-    "10:25 PM",
-    "10:30 PM",
-    "10:35 PM",
-    "10:40 PM",
-    "10:45 PM",
-    "10:50 PM",
-    "10:55 PM",
-    "11:00 PM",
-  ];
-
-  const handleAddTime = (date, selectedTimeSlot) => {
-    // Copy the availability object
-    const updatedAvailability = { ...therapist.availability };
-
-    // Check if the date exists in the availability object
-    if (updatedAvailability?.hasOwnProperty(date)) {
-      // Add the selected time slot to the availability for the specific date
-      updatedAvailability[date].push(selectedTimeSlot);
-
-      // Update the therapist's availability in the Redux store or send a request to update the server
-      dispatch(
-        updateTherapist(therapistId, { availability: updatedAvailability })
-      );
-    }
-
-    // Reset the activeDate state
-    setActiveDate("");
-  };
-
-  const handleRemoveTime = (date, time) => {
-    // Copy the availability object
-    const updatedAvailability = { ...therapist.availability };
-
-    // Check if the date exists in the availability object
-    if (updatedAvailability.hasOwnProperty(date)) {
-      // Filter out the selected time from the availability for the specific date
-      updatedAvailability[date] = updatedAvailability[date].filter(
-        t => t !== time
-      );
-
-      // Update the therapist's availability in the Redux store or send a request to update the server
-      dispatch(
-        updateTherapist(therapistId, { availability: updatedAvailability })
-      );
-    }
-  };
-
   useEffect(() => {
-    dispatch(fetchTherapist(therapistId));
+    // Assuming you have the JWT token stored in local storage under the key "jwtToken"
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // Decoding the token
+      const decodedToken = jwt_decode(token);
+
+      // Accessing the 'id' from the payload
+      const id = decodedToken.userId;
+
+      // Setting the therapistId state with the extracted ID
+      setTherapistId(id);
+    }
   }, []);
 
-  // ...
+  useEffect(() => {
+    const fetchTherapistData = async () => {
+      if (therapistId) {
+        try {
+          // Call the API to fetch therapist data with the therapistId
+          await dispatch(fetchTherapist(therapistId));
+        } catch (error) {
+          // Handle the error here (e.g., show an error message)
+          console.error("Error fetching therapist data:", error);
+        }
+      }
+    };
 
-  const availability = therapist?.availability;
-  let dates;
-  if (availability != null) {
-    dates = Object?.keys(availability);
-  } else {
-    dates = [];
-  }
-
-  // ...
-
-  // Calculate the start and end indexes for the current page
-  const startIndex = (currentPage - 1) * datesPerPage;
-  const endIndex = startIndex + datesPerPage;
-
-  // Get the dates for the current page
-  const datesForCurrentPage = dates.slice(startIndex, endIndex);
-
-  const totalPages = Math.ceil(dates.length / datesPerPage);
-
-  const goToPage = page => {
-    setCurrentPage(page);
-  };
+    fetchTherapistData();
+  }, [therapistId]);
 
   return (
     <>
@@ -664,95 +666,195 @@ function TherapistProfilePage() {
         </div>
       )}
 
-      <div className="availableTimeSlots">
-        <div className="booktime-parentcard">
-          {dates.length === 0 ? (
-            <div className="noAvailability">No availability found.</div>
-          ) : (
-            <div className="booktime-pagination">
-              {Array.from({ length: totalPages }, (_, index) => (
-                <button
-                  key={index + 1}
-                  className={currentPage === index + 1 ? "active" : ""}
-                  onClick={() => goToPage(index + 1)}
-                  style={{ backgroundColor: "#68b545" }}
+      <div className="TimeSlots">
+        <h1>Time Slots</h1>
+        <div className="date-slots-container">
+          {currentSlots?.map((session, index) => (
+            <div key={index}>
+              <h2>Date: {session?.date}</h2>
+              <ul>
+                {session?.timeSlots?.map((slot, slotIndex) => (
+                  <li key={slotIndex}>
+                    {slot.startTime} to {slot.endTime}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="pagination" style={{ marginTop: "20px" }}>
+          {therapist?.sessions.length > slotsPerPage && (
+            <ul
+              style={{
+                listStyleType: "none",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {Array.from(
+                Array(
+                  Math.ceil(therapist?.sessions.length / slotsPerPage)
+                ).keys()
+              ).map(pageNumber => (
+                <li
+                  key={pageNumber}
+                  className={currentPage === pageNumber + 1 ? "active" : ""}
+                  onClick={() => paginate(pageNumber + 1)}
+                  style={{
+                    margin: "0 5px",
+                  }}
                 >
-                  {index + 1}
-                </button>
+                  <a
+                    href="#"
+                    style={{
+                      display: "inline-block",
+                      padding: "8px 12px",
+                      borderRadius: "15px",
+                      background: "rgba(104, 181, 69, 0.25)",
+                      color: "black",
+                      textDecoration: "none",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {pageNumber + 1}
+                  </a>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
-          <div className="booktime-containerr">
-            <div className="booktime-miniContainer">
-              {datesForCurrentPage.map(date => (
-                <div className="booktime-dateColumn" key={date}>
-                  <div className="booktime-dateSelect">{formatDate(date)}</div>
-                  {availability[date].map(time => (
-                    <div className="booktime-time" key={time}>
-                      {time + " "}
-                      <FaTimes
-                        className="remove-icon"
-                        onClick={() => handleRemoveTime(date, time)}
-                      />
-                    </div>
-                  ))}
-                  {activeDate === date && (
-                    <div className="booktime-addTime">
-                      <select
-                        value={newTime}
-                        onChange={event => setNewTime(event.target.value)}
-                      >
-                        <option value="">Select a time slot</option>
-                        {timeSlots.map(timeSlot => (
-                          <option key={timeSlot} value={timeSlot}>
-                            {timeSlot}
-                          </option>
-                        ))}
-                      </select>
-                      <button onClick={() => handleAddTime(date, newTime)}>
-                        Add
-                      </button>
-                    </div>
-                  )}
-                  {!activeDate && (
-                    <div
-                      className="booktime-editButtonContainer"
-                      onClick={() => setActiveDate(date)}
-                    >
-                      <div className="booktime-editButton">Edit</div>
-                    </div>
-                  )}
-                </div>
-              ))}
+        </div>
+
+        <div className="add-slot-container" style={{ marginTop: "4rem" }}>
+          <h2>Add Date and Slots</h2>
+          <form>
+            <div className="input-container">
+              <label>Date:</label>
+              <input
+                type="date"
+                value={date}
+                onChange={handleDateChange}
+                min={today}
+                required
+              />
             </div>
-          </div>
+
+            {date && (
+              <>
+                <div className="input-container">
+                  <label>Start Time:</label>
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={handleStartTimeChange}
+                    required
+                  />
+                </div>
+
+                <div className="input-container">
+                  <label>Mode of Appointment:</label>
+                  <div className="radio-group">
+                    <div>
+                      <input
+                        type="radio"
+                        id="online"
+                        name="appointmentMode"
+                        value="online"
+                        checked={appointmentMode === "online"}
+                        onChange={handleAppointmentModeChange}
+                      />
+                      <label htmlFor="online">Online</label>
+                    </div>
+                    <div>
+                      <input
+                        type="radio"
+                        id="offline"
+                        name="appointmentMode"
+                        value="offline"
+                        checked={appointmentMode === "offline"}
+                        onChange={handleAppointmentModeChange}
+                      />
+                      <label htmlFor="offline">Offline</label>
+                    </div>
+                  </div>
+                </div>
+
+                {appointmentMode === "offline" && (
+                  <div className="input-container">
+                    <label>Location:</label>
+                    <select
+                      value={selectedLocation}
+                      onChange={handleLocationChange}
+                    >
+                      <option value="">Select a location</option>
+                      {therapist?.availability.map(availability => (
+                        <option
+                          key={availability._id}
+                          value={availability.location.centerName}
+                        >
+                          {availability.location.centerName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </>
+            )}
+
+            <div
+              className="button-container"
+              style={{ marginTop: "2rem", marginRight: "1rem" }}
+            >
+              <button
+                type="button"
+                onClick={handleAddSlotClick}
+                disabled={!startTime}
+                style={{ width: "8rem", fontSize: "0.9rem" }}
+              >
+                Add Slot
+              </button>
+            </div>
+
+            <div
+              className="selected-slots"
+              style={{
+                marginLeft: "3rem",
+                marginRight: "3rem",
+                width: "10rem",
+              }}
+            >
+              <h3 style={{ width: "10rem" }}>Selected Slots:</h3>
+              {slots.length > 0 ? (
+                <ul>
+                  {slots.map((slot, index) => (
+                    <li key={index}>
+                      {slot.startTime} to {slot.endTime}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No slots selected</p>
+              )}
+            </div>
+
+            {date && slots.length > 0 && (
+              <div className="button-container">
+                <button
+                  type="button"
+                  onClick={handleSubmitClick}
+                  style={{ width: "10rem", fontSize: "0.9rem" }}
+                >
+                  Submit Slots
+                </button>
+              </div>
+            )}
+          </form>
         </div>
       </div>
     </>
   );
-}
-
-function formatDate(date) {
-  const inputDate = new Date(date);
-  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const monthsOfYear = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const formattedDate = `${daysOfWeek[inputDate.getDay()]}, ${
-    monthsOfYear[inputDate.getMonth()]
-  } ${inputDate.getDate()}`;
-  return formattedDate;
 }
 
 export default TherapistProfilePage;
