@@ -8,6 +8,27 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const getTotalTherapists = async (req, res) => {
+  try {
+    const therapists = await Therapist.find({}).populate('expertise');
+
+    const therapistStatus = therapists.map(therapist => {
+      const { expertise, experienceLevel, meetLink } = therapist;
+      const isApproved = expertise && expertise.length > 0 && experienceLevel !== null && meetLink !== "";
+      return {
+        ...therapist.toObject(),
+        status: isApproved ? 'approved' : 'pending'
+      };
+    });
+
+    const totalTherapists = therapistStatus.length;
+
+    res.json({ totalTherapists, therapists: therapistStatus });
+  } catch (error) {
+    console.error('Error getting total therapists:', error);
+    res.status(500).json({ error: 'An error occurred while getting total therapists' });
+  }
+};
 
 const getTherapistDetails = async (req, res) => {
   const therapistId = req.params.id;
@@ -332,6 +353,10 @@ const updateTherapist = (req, res) => {
 
 
 
+
+
+
+
 const updateTherapists = async (req, res) => {
   const therapistId = req.params.id;
   const { expertise, experienceLevel, meetLink } = req.body;
@@ -359,12 +384,52 @@ const updateTherapists = async (req, res) => {
     // Save the updated therapist
     const updatedTherapist = await therapist.save();
 
+    // Send approval email
+    sendApprovalEmail(updatedTherapist);
+
     res.status(200).json(updatedTherapist);
   } catch (error) {
     console.error('Error updating therapist details:', error);
     res.status(500).json({ error: 'An error occurred while updating therapist details' });
   }
 };
+
+// Function to send approval email
+const sendApprovalEmail = (therapist) => {
+  // Create a nodemailer transporter
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com', // Replace with your SMTP server hostname
+    port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
+    secure: false,
+    requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+    auth: {
+      user: 'inspiron434580@gmail.com', // Replace with your email address
+      pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+    },
+  });
+
+  const mailOptions = {
+    from: 'inspiron434580@gmail.com',
+    to: therapist.email,
+    subject: "Therapist Account approved",
+    html: `
+    
+    <p>Dear ${therapist.name}</p>
+    <p>Congratulations! Your therapist profile has been approved.</p>
+    <p>Add the requried details in your profile </p>`,
+  };
+
+  // Send the email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending email:', error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+};
+
+
 
 
 
@@ -373,19 +438,20 @@ const updateTherapists = async (req, res) => {
 
 const updateTherapistImage = async (req, res) => {
   try {
-    const file = req.file;
+    console.log('Received request body:', req.body);
+  const base64Image = req.body.base64Image;
 
-    if (!file) {
-      return res.status(400).json({ error: 'No image file provided' });
+  console.log('base64Image:', base64Image);
+    if (!base64Image) {
+      return res.status(400).json({ error: 'No image data provided' });
     }
 
-    const fileName = file.filename;
-    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
-    const imagePath = `${basePath}${fileName}`;
+    // Convert the base64 image data to a buffer
+    const imageBuffer = Buffer.from(base64Image, 'base64');
 
     const therapist = await Therapist.findByIdAndUpdate(
       req.params.id,
-      { image: imagePath },
+      { image: imageBuffer },
       { new: true }
     );
 
@@ -396,19 +462,8 @@ const updateTherapistImage = async (req, res) => {
     res.json({ image: therapist.image });
   } catch (error) {
     res.status(500).json({ error: 'Failed to update therapist image' });
-  }};
-
-
-
-
-
- 
-
-
-
-
-
- 
+  }
+};
 
 
 
@@ -681,6 +736,7 @@ const createPatient = async (req, res) => {
 
 
 module.exports = {
+  getTotalTherapists,
   getTherapistDetails,
 getAllTherapists,
   getTherapists,

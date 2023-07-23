@@ -1,8 +1,10 @@
 const { Appointment } = require('../models/appointment');
 const { User } = require('../models/user');
 exports.createAppointment = async (req, res) => {
+  
   const { therapistId, userId, dateTime, sessionMode } = req.body;
 
+  
   try {
     const user = await User.findById(userId).select('name age gender');
 
