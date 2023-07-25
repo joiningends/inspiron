@@ -8,6 +8,7 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const { Session } = require('inspector');
 const getTotalTherapists = async (req, res) => {
   try {
     const therapists = await Therapist.find({}).populate('expertise');
@@ -199,9 +200,6 @@ const getTherapists = async (req, res) => {
 };
 
 
-
-
-// Get a specific therapist by ID
 const getTherapistById = (req, res) => {
   const therapistId = req.params.id;
 
@@ -240,8 +238,6 @@ const getTherapistById = (req, res) => {
       res.status(500).json({ error: 'Failed to retrieve therapist', details: error });
     });
 };
-
-
 
 const createTherapistfull = async (req, res) => {
   try {
@@ -435,23 +431,21 @@ const sendApprovalEmail = (therapist) => {
 
 
 
-
 const updateTherapistImage = async (req, res) => {
   try {
-    console.log('Received request body:', req.body);
-  const base64Image = req.body.base64Image;
+    const file = req.file;
 
-  console.log('base64Image:', base64Image);
-    if (!base64Image) {
-      return res.status(400).json({ error: 'No image data provided' });
+    if (!file) {
+      return res.status(400).json({ error: 'No image file provided' });
     }
 
-    // Convert the base64 image data to a buffer
-    const imageBuffer = Buffer.from(base64Image, 'base64');
+    // Get the image data as a Buffer
+    const imageBuffer = file.buffer;
 
+    // Find the therapist by ID and update the 'image' field with the image buffer and content type
     const therapist = await Therapist.findByIdAndUpdate(
       req.params.id,
-      { image: imageBuffer },
+      { image: { data: imageBuffer, contentType: file.mimetype } },
       { new: true }
     );
 
@@ -464,8 +458,6 @@ const updateTherapistImage = async (req, res) => {
     res.status(500).json({ error: 'Failed to update therapist image' });
   }
 };
-
-
 
 async function updatePrimaryDetails(req, res) {
   const therapistId = req.params.id;

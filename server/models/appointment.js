@@ -15,6 +15,13 @@ const appointmentSchema = new mongoose.Schema({
     type: Date,
     required: false,
   },
+  startTime:{
+    type: String,
+
+  },
+  endTime:{
+    type: String,
+  },
   sessionMode: {
     type: String,
     enum: ['Online', 'Offline', 'Both'],

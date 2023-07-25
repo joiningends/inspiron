@@ -9,9 +9,8 @@ function Therapist({ therapist }) {
       <div className="therapist-card">
         <div className="therapist-image-container">
           <img
-            src={therapist.image}
-            alt="Therapist"
-            className="therapistImage"
+            src={`data:${therapist?.image?.contentType};base64,${therapist?.image?.data}`}
+            alt="Rounded"
           />
           <img src={inspiron} alt="Watermark" className="watermark" />
         </div>

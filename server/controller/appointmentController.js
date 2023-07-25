@@ -1,10 +1,8 @@
 const { Appointment } = require('../models/appointment');
 const { User } = require('../models/user');
 exports.createAppointment = async (req, res) => {
-  
-  const { therapistId, userId, dateTime, sessionMode } = req.body;
+  const { therapistId, userId, dateTime, startTime, endTime, sessionMode } = req.body;
 
-  
   try {
     const user = await User.findById(userId).select('name age gender');
 
@@ -12,10 +10,24 @@ exports.createAppointment = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    // Check if the requested time slot is already booked
+    const existingAppointment = await Appointment.findOne({
+      therapist: therapistId,
+      dateTime,
+      startTime: { $lte: endTime },  // Check if the existing appointment end time is after or at the new appointment's start time
+      endTime: { $gte: startTime },  // Check if the existing appointment start time is before or at the new appointment's end time
+    });
+
+    if (existingAppointment) {
+      return res.status(409).json({ error: 'The requested time slot is already booked' });
+    }
+
     const newAppointment = new Appointment({
       therapist: therapistId,
       user: userId, // Store the user's ObjectId directly in the appointment
       dateTime,
+      startTime,
+      endTime,
       sessionMode,
     });
 
@@ -75,17 +87,19 @@ exports.getAppointmentsByTherapist = async (req, res) => {
   
   
 
-// Get today's appointments by therapist
+
+
+
 exports.getTodayAppointmentsByTherapist = async (req, res) => {
   const therapistId = req.params.therapistId;
 
-  // Get the start and end of today
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
   try {
+    // Get the start and end of today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
     const todayAppointments = await Appointment.find({
       therapist: therapistId,
       dateTime: { $gte: today, $lt: tomorrow },
@@ -100,6 +114,37 @@ exports.getTodayAppointmentsByTherapist = async (req, res) => {
   } catch (error) {
     console.error('Error retrieving today\'s appointments:', error);
     res.status(500).json({ error: 'An error occurred while retrieving today\'s appointments' });
+  }
+};
+
+// Controller to get upcoming appointments for a therapist
+exports.getUpcomingAppointmentsByTherapist = async (req, res) => {
+  const therapistId = req.params.therapistId;
+
+  try {
+    // Get the current date (without the time component)
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Set the time to 00:00:00.000
+
+    // Fetch upcoming appointments (greater than or equal to the current date)
+    const upcomingAppointments = await Appointment.find({
+      therapist: therapistId,
+      dateTime: { $gte: currentDate },
+    }).populate('user', 'name age gender');
+
+    // Fetch past appointments (less than the current date)
+    const pastAppointments = await Appointment.find({
+      therapist: therapistId,
+      dateTime: { $lt: currentDate },
+    }).populate('user', 'name age gender');
+
+    res.status(200).json({
+      upcomingAppointments,
+      pastAppointments,
+    });
+  } catch (error) {
+    console.error('Error retrieving upcoming appointments:', error);
+    res.status(500).json({ error: 'An error occurred while retrieving upcoming appointments' });
   }
 };
 

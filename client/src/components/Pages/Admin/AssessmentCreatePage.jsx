@@ -14,25 +14,23 @@ function AssessmentCreatePage() {
       name: "",
       minScore: "",
       maxScore: "",
-      expertise: "",
-      expertiseList: [],
+      expertiseList: [], // Initialize an empty array to store selected expertise
     },
     {
       name: "",
       minScore: "",
       maxScore: "",
-      expertise: "",
-      expertiseList: [],
+      expertiseList: [], // Initialize an empty array to store selected expertise
     },
     {
       name: "",
       minScore: "",
       maxScore: "",
-      expertise: "",
-      expertiseList: [],
+      expertiseList: [], // Initialize an empty array to store selected expertise
     },
   ]);
   const [expertiseList, setExpertiseList] = useState([]);
+  console.log(expertiseList);
 
   useEffect(() => {
     axios
@@ -101,41 +99,32 @@ function AssessmentCreatePage() {
     });
   };
 
-  const handleExpertiseChange = (event, severityIndex, expertiseValue) => {
+  const handleExpertiseChange = (event, severityIndex, expertiseId) => {
     const { checked } = event.target;
+
     setSeverities(prevSeverities => {
-      const updatedSeverities = [...prevSeverities];
-      if (checked) {
-        updatedSeverities[severityIndex].expertiseList.push(expertiseValue);
-      } else {
-        const index =
-          updatedSeverities[severityIndex].expertiseList.indexOf(
-            expertiseValue
-          );
-        if (index !== -1) {
-          updatedSeverities[severityIndex].expertiseList.splice(index, 1);
+      const updatedSeverities = prevSeverities.map((severity, index) => {
+        if (index === severityIndex) {
+          // If the current severity is being updated
+          if (checked && !severity.expertiseList.includes(expertiseId)) {
+            // If the expertise is not already selected for this level, add it
+            return {
+              ...severity,
+              expertiseList: [...severity.expertiseList, expertiseId],
+            };
+          } else if (!checked) {
+            // If the expertise is already selected for this level, remove it
+            return {
+              ...severity,
+              expertiseList: severity.expertiseList.filter(
+                expertise => expertise !== expertiseId
+              ),
+            };
+          }
         }
-      }
-      return updatedSeverities;
-    });
-  };
+        return severity;
+      });
 
-  const handleExpertiseAdd = severityIndex => {
-    setSeverities(prevSeverities => {
-      const updatedSeverities = [...prevSeverities];
-      const expertise = updatedSeverities[severityIndex].expertise;
-      if (expertise) {
-        updatedSeverities[severityIndex].expertiseList.push(expertise);
-        updatedSeverities[severityIndex].expertise = "";
-      }
-      return updatedSeverities;
-    });
-  };
-
-  const handleExpertiseRemove = (severityIndex, index) => {
-    setSeverities(prevSeverities => {
-      const updatedSeverities = [...prevSeverities];
-      updatedSeverities[severityIndex].expertiseList.splice(index, 1);
       return updatedSeverities;
     });
   };
@@ -156,36 +145,26 @@ function AssessmentCreatePage() {
         assessment_name: assessmentName,
         image: image ? image.name : "",
         questions: questionsData,
-        low: {
-          type: {
-            name: "low",
-            min: parseInt(severities[0].minScore),
-            max: parseInt(severities[0].maxScore),
-            expertise: severities[0].expertiseList,
-          },
-        },
-        medium: {
-          type: {
-            name: "medium",
-            min: parseInt(severities[1].minScore),
-            max: parseInt(severities[1].maxScore),
-            expertise: severities[1].expertiseList,
-          },
-        },
-        high: {
-          type: {
-            name: "high",
+          high: {
             min: parseInt(severities[2].minScore),
             max: parseInt(severities[2].maxScore),
             expertise: severities[2].expertiseList,
-          },
+            serverityname: ["Severe"],
         },
-
-        // Add other fields here as needed
+        low: {
+            min: parseInt(severities[0].minScore),
+            max: parseInt(severities[0].maxScore),
+            expertise: severities[0].expertiseList,
+            serverityname: ["Severe"],
+        },
+        medium: {
+            min: parseInt(severities[1].minScore),
+            max: parseInt(severities[1].maxScore),
+            expertise: severities[1].expertiseList,
+            serverityname: ["Severe"],
+          },
       };
-
       console.log(assessmentData);
-
       // Send assessment data to the backend API
       const response = await axios.post(
         "http://localhost:4000/api/v1/assessments",
@@ -513,23 +492,24 @@ function AssessmentCreatePage() {
                       <input
                         type="checkbox"
                         id={`expertise-option-${expertise._id}-${severityIndex}`}
-                        value={expertise.type[0]}
-                        checked={severity.expertiseList.includes(
-                          expertise.type[0]
-                        )}
-                        onChange={event =>
-                          handleExpertiseChange(
-                            event,
-                            severityIndex,
-                            expertise.type[0]
-                          )
+                        value={expertise._id} // Use _id directly
+                        checked={severity.expertiseList.includes(expertise._id)} // Use _id for comparison
+                        onChange={
+                          event =>
+                            handleExpertiseChange(
+                              event,
+                              severityIndex,
+                              event.target.value
+                            ) // Pass _id directly as the value
                         }
                         style={{ marginRight: "5px" }}
                       />
-                      {expertise.type[0]}
+                      {expertise.type[0]}{" "}
+                      {/* This can be replaced with any other label */}
                     </label>
                   ))}
                 </div>
+
                 {/* <button
                   type="button"
                   className="add-expertise-button"

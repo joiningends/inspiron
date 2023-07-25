@@ -72,6 +72,9 @@ function BookTime() {
     }
   }, []);
 
+  console.log(selectedTimeSlot);
+  console.log(selectedDate);
+
   const handleBookNow = () => {
     if (!selectedTimeSlot) {
       return; // If no time slot is selected, do nothing
@@ -82,8 +85,9 @@ function BookTime() {
     const appointmentData = {
       therapistId: id,
       userId: userId,
-      
       dateTime: selectedDate,
+      startTime: selectedTimeSlot.startTime,
+      endTime: selectedTimeSlot.endTime,
       session: {
         mode: "online",
         duration: 60,
@@ -99,10 +103,12 @@ function BookTime() {
         // Handle the success response here, if needed
         console.log("Appointment booked successfully!");
         handleClosePopup(); // Close the popup after booking
+        window.location.reload();
       })
       .catch(error => {
         // Handle errors here, if needed
         console.error("Error booking appointment:", error);
+        window.location.reload();
       });
   };
 
@@ -135,16 +141,16 @@ function BookTime() {
     return <div>No therapist found.</div>; // Display a message if therapist is empty
   }
 
-  const sessions = therapist.sessions; // Add the sessions data from the therapist object
+  const sessions = therapist?.sessions; // Add the sessions data from the therapist object
 
   return (
     <>
       <div className="booktime-container1">
         <div className="booktime-imgDiv">
           <img
-            src={therapist.image}
+            src={`data:${therapist?.image?.contentType};base64,${therapist?.image?.data}`}
             className="booktime-doctorImg"
-            alt="Therapist"
+            alt="Rounded"
           />
         </div>
         <div className="booktime-aboutDiv">
@@ -213,25 +219,82 @@ function BookTime() {
       </div>
       <div>
         <h2 style={{ fontSize: "24px" }}>Session Slots</h2>
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          {sessions.map(session => (
-            <div key={session.date} style={{ marginRight: "20px" }}>
-              <h3 style={{ fontSize: "18px" }}>Date: {session.date}</h3>
-              {session.timeSlots.map((timeSlot, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleTimeSlotClick(timeSlot, session.date)}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            marginLeft: "3.5rem",
+          }}
+        >
+          {sessions && Array.isArray(sessions) && sessions.length > 0 ? (
+            sessions.map(session => (
+              <div
+                key={session?.date}
+                style={{
+                  flex: "0 0 250px",
+                  marginRight: "20px",
+                  marginBottom: "20px",
+                }}
+              >
+                <h3
                   style={{
-                    cursor: "pointer",
-                    fontSize: "16px",
-                    textDecoration: "underline",
+                    fontSize: "18px",
+                    backgroundColor: "#5179BD",
+                    color: "white",
+                    padding: "10px",
+                    marginBottom: "10px",
+                    borderRadius: "8px",
                   }}
                 >
-                  {timeSlot.startTime} - {timeSlot.endTime}
-                </div>
-              ))}
-            </div>
-          ))}
+                  Date: {session?.date}
+                </h3>
+                {session.timeSlots.map((timeSlot, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleTimeSlotClick(timeSlot, session.date)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: "rgba(104, 181, 69, 0.25)",
+                      color: "white",
+                      cursor: "pointer",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      textDecoration: "none",
+                      padding: "10px",
+                      marginBottom: "10px",
+                      borderRadius: "8px",
+                      transition: "background-color 0.3s, color 0.3s",
+                    }}
+                    onMouseOver={() => {
+                      // Apply hover styles on mouse over
+                      timeSlot.style = {
+                        ...timeSlot.style,
+                        backgroundColor: "#68b545",
+                        color: "black",
+                      };
+                      setSelectedTimeSlot({ ...selectedTimeSlot });
+                    }}
+                    onMouseOut={() => {
+                      // Revert to default styles on mouse out
+                      timeSlot.style = {
+                        ...timeSlot.style,
+                        backgroundColor: "rgba(104, 181, 69, 0.25)",
+                        color: "white",
+                      };
+                      setSelectedTimeSlot({ ...selectedTimeSlot });
+                    }}
+                  >
+                    {timeSlot.startTime} - {timeSlot.endTime}
+                  </div>
+                ))}
+              </div>
+            ))
+          ) : (
+            <div>No session slots available.</div>
+          )}
         </div>
       </div>
       {popupVisible && (
