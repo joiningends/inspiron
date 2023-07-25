@@ -2,7 +2,6 @@
   "name": "inspiron",
   "version": "1.0.0",
   "description": "Inspiron E-Commerce",
-  "main": "app.js",
   "engines": {
     "node":">=16.0.0 <18.16.0",
     "npm": ">=8.0.0 <9.5.1"
