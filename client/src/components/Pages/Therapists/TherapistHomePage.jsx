@@ -82,9 +82,9 @@ const TherapistHomePage = () => {
         >
           <div className="therapistDetailsDiv">
             <img
+              src={`data:${therapist?.image?.contentType};base64,${therapist?.image?.data}`}
+              alt="Rounded"
               className="therapistImage"
-              src={therapist?.image}
-              alt="TherapistImg"
             />
           </div>
           <img
@@ -185,9 +185,9 @@ const TherapistHomePage = () => {
           <tbody>
             {todayAppointments?.appointments?.map(appointment => (
               <tr key={appointment._id} className="table-body-row">
-                <td className="table-body-cell">{appointment.userName}</td>
-                <td className="table-body-cell">{appointment.userGender}</td>
-                <td className="table-body-cell">{appointment.userAge}</td>
+                <td className="table-body-cell">{appointment?.user?.name}</td>
+                <td className="table-body-cell">{appointment?.user?.gender}</td>
+                <td className="table-body-cell">{appointment?.user?.age}</td>
                 <td className="table-body-cell">
                   {new Date(appointment?.dateTime).toLocaleDateString()}
                 </td>

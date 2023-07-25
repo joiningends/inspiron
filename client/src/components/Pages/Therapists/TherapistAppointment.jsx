@@ -77,6 +77,8 @@ function TherapistAppointment() {
     appointmentCount = allAppointments?.appointments?.length;
   }
 
+  console.log(tableData);
+
   const todayAppointmentCount = todayAppointments?.appointments?.length || 0;
   const upcomingAppointmentCount = upcomingAppointments?.length || 0;
   const allAppointmentCount = allAppointments?.appointments?.length || 0;
@@ -198,15 +200,13 @@ function TherapistAppointment() {
           <tbody>
             {tableData.map(appointment => (
               <tr key={appointment?._id} className="table-body-row">
-                <td className="table-body-cell">{appointment?.userName}</td>
-                <td className="table-body-cell">{appointment?.userGender}</td>
-                <td className="table-body-cell">{appointment?.userAge}</td>
+                <td className="table-body-cell">{appointment?.user?.name}</td>
+                <td className="table-body-cell">{appointment?.user?.gender}</td>
+                <td className="table-body-cell">{appointment?.user?.age}</td>
                 <td className="table-body-cell">
                   {new Date(appointment?.dateTime).toLocaleDateString()}
                 </td>
-                <td className="table-body-cell">
-                  {new Date(appointment?.dateTime).toLocaleTimeString()}
-                </td>
+                <td className="table-body-cell">{appointment?.startTime}</td>
                 <td className="table-body-cell">{appointment?.sessionMode}</td>
                 <td
                   className="table-body-cell"

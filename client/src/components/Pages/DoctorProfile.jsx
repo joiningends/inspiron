@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./DoctorProfile.css";
-import MyImg from "./myimg.jpg";
 import Education from "./Education";
 import achiv from "./achiv.png";
 import add from "./add.png";
@@ -19,7 +18,7 @@ const DoctorProfile = () => {
   const { id } = useParams(); // Access the therapist ID from the URL parameter
   const dispatch = useDispatch();
   const therapist = useSelector(state => state.therapist);
-  const therapists = useSelector(state => state.therapists);
+  const [imageUrl, setImageUrl] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,13 +29,15 @@ const DoctorProfile = () => {
     };
 
     fetchTherapistData();
-  }, [dispatch, id]);
+  }, []);
 
   useEffect(() => {
-    dispatch(fetchTherapists());
-  }, [dispatch]);
+    setImageUrl(therapist?.image);
+    console.log(therapist?.image);
+    console.log("hello");
+  }, [therapist]);
 
-  console.log(therapists);
+  console.log(therapist);
 
   const [showOfferings, setShowOfferings] = useState(true);
 
@@ -55,17 +56,25 @@ const DoctorProfile = () => {
   return (
     <>
       <div className="container1">
-        <div className="imgDiv">
-          <img src={therapist.image} className="doctorImg" alt="Doctor"></img>
+        <div
+          className="imgDiv"
+          style={{ width: "10rem", height: "12rem", overflow: "hidden" }}
+        >
+          <img
+            src={`data:${imageUrl?.contentType};base64,${imageUrl?.data}`}
+            className="doctorImg"
+            alt="Rounded"
+          />
         </div>
+
         <div className="aboutDiv">
-          <h5 className="heading">{therapist.name}</h5>
-          <span className="designation">{therapist.designation}</span>
-          <p className="aboutDoctor">{therapist.about}</p>
+          <h5 className="heading">{therapist?.name}</h5>
+          <span className="designation">{therapist?.designation}</span>
+          <p className="aboutDoctor">{therapist?.about}</p>
         </div>
         <div className="profile-div2">
           <Link
-            to={`/bookaslot/${therapist._id}`}
+            to={`/bookaslot/${therapist?._id}`}
             className="therapist-know-more-button"
             style={{
               background: "linear-gradient(90deg, #D67449 10.9%, #5179BD 100%)",
@@ -79,13 +88,13 @@ const DoctorProfile = () => {
         </div>
       </div>
       <div className="container2">
-        <Education className="education" educationData={therapist.education} />
+        <Education className="education" educationData={therapist?.education} />
         <div className="profileDetails">
           <span>
             <img src={favorite} className="profileIcons" alt="Favorite" />
           </span>
           <span className="subDetails">
-            <h3>{therapist.userRating}/5</h3>
+            <h3>{therapist?.userRating}/5</h3>
           </span>
           <span className="lastUserDetailRow">User Rating</span>
         </div>
@@ -94,7 +103,7 @@ const DoctorProfile = () => {
             <img src={thubmsup} className="profileIcons" alt="Thumbs Up" />
           </span>
           <span>
-            <h3 className="subDetails">{therapist.usersRecommended.length}</h3>
+            <h3 className="subDetails">{therapist?.usersRecommended.length}</h3>
           </span>
           <span className="lastUserDetailRow">User Recommended</span>
         </div>
@@ -103,7 +112,7 @@ const DoctorProfile = () => {
             <img src={clock} className="profileIcons" alt="Clock" />
           </span>
           <span>
-            <h3 className="subDetails">{therapist.availableSessions}</h3>
+            <h3 className="subDetails">{therapist?.availableSessions}</h3>
           </span>
           <span className="lastUserDetailRow">Available Sessions</span>
         </div>
@@ -112,13 +121,13 @@ const DoctorProfile = () => {
             <img src={happy} className="profileIcons" alt="Happy" />
           </span>
           <span>
-            <h3 className="subDetails">{therapist.userReviews.length}</h3>
+            <h3 className="subDetails">{therapist?.userReviews.length}</h3>
           </span>
           <span className="lastUserDetailRow">User Reviews</span>
         </div>
       </div>
       <div className="achievement-container">
-        {therapist.achievements.map((achievement, index) => (
+        {therapist?.achievements.map((achievement, index) => (
           <div className="achievement-item" key={index}>
             <div className="achievement-img">
               <img className="img" src={achiv} alt="Achievement" />
@@ -154,7 +163,7 @@ const DoctorProfile = () => {
               </span>
             </div>
             <div className="modeChoice">
-              {therapist.modeOfSession.map((mode, index) => (
+              {therapist?.modeOfSession.map((mode, index) => (
                 <span className="session-mode" key={index}>
                   {mode}
                 </span>

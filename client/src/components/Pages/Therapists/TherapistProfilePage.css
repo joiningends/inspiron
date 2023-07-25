@@ -446,3 +446,38 @@ line-height: normal;
 .educationItem .deleteEducationIcon:hover {
   color: #ff5252;
 }
+
+/* ImageRound.css */
+.rounded-image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.rounded-image {
+  width: 250px; /* Increase the width and height as per your requirement */
+  height: 250px; /* This will make the image circular */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: #f1f1f1; /* Add a background color for the placeholder */
+}
+
+.rounded-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This ensures the image fills the circle without distortion */
+}
+
+.edit-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}

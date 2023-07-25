@@ -19,6 +19,8 @@ function Dashboard() {
     therapists: [],
   });
 
+  console.log(therapistsData);
+
   useEffect(() => {
     // Function to fetch therapist details using Axios
     const fetchTherapistsDetails = async () => {
@@ -158,6 +160,7 @@ function Dashboard() {
               <th>Email</th>
               <th>Mobile No.</th>
               <th>Patients</th>
+              <th>Approval Status</th>
               <th>Total Revenue</th>
               <th></th>
             </tr>
@@ -167,8 +170,8 @@ function Dashboard() {
               <tr key={therapist._id}>
                 <td>
                   <img
-                    src={therapist?.image}
-                    alt="Therapist"
+                    src={`data:${therapist?.image?.contentType};base64,${therapist?.image?.data}`}
+                    alt="Rounded"
                     className="therapist-image"
                   />
                   {therapist?.name}
@@ -177,6 +180,7 @@ function Dashboard() {
                 <td style={{ color: "#D67449" }}>{therapist?.email}</td>
                 <td>{therapist?.mobile}</td>
                 <td>{therapist?.patients?.length}</td>
+                <td>{therapist?.status}</td>
                 <td>{therapist?.totalRevenue}</td>
                 <td>
                   <button

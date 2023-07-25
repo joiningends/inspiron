@@ -11,6 +11,7 @@ import Modal from "react-modal";
 import jwt_decode from "jwt-decode";
 import "./TimeSlots.css";
 import moment from "moment";
+import axios from "axios";
 import "./TherapistProfilePage.css";
 
 function TherapistProfilePage() {
@@ -41,6 +42,33 @@ function TherapistProfilePage() {
   const [slotsPerPage] = useState(6); // Number of slots to display per page
   const [appointmentMode, setAppointmentMode] = useState("online");
   const [selectedLocation, setSelectedLocation] = useState("");
+
+  const [imageUrl, setImageUrl] = useState(therapist?.image);
+
+  console.log(therapist?.image);
+
+  const handleImageChange = async event => {
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const response = await axios.put(
+        `http://localhost:4000/api/v1/therapists/${therapistId}/image`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setImageUrl(response.data.image.data);
+    } catch (error) {
+      console.error("Failed to upload image:", error);
+      // Handle error (e.g., show an error message to the user)
+    }
+  };
 
   const timeSlotDuration = 60; // Time slot duration in minutes
 
@@ -187,9 +215,11 @@ function TherapistProfilePage() {
           return acc;
         }, {});
       } else {
-        // therapist.sessions is an object, use it as is
-        updatedSessions = { ...sessions };
+        // therapist.sessions is an object or undefined, use an empty object
+        updatedSessions = {};
       }
+
+      console.log(updatedSessions);
 
       // Update the session or add a new one if it doesn't exist for the selected date
       updatedSessions[moment(date).format("YYYY-MM-DD")] = {
@@ -201,6 +231,8 @@ function TherapistProfilePage() {
       const sortedSessions = Object.values(updatedSessions).sort((a, b) =>
         moment(a.date).diff(moment(b.date))
       );
+
+      console.log(sortedSessions);
 
       const updatedTherapist = { sessions: sortedSessions };
       console.log(updatedTherapist);
@@ -357,6 +389,24 @@ function TherapistProfilePage() {
 
   return (
     <>
+      <div className="rounded-image-container">
+        <div className="rounded-image">
+          <img
+            src={`data:${therapist?.image?.contentType};base64,${therapist?.image?.data}`}
+            alt="Rounded"
+          />
+        </div>
+        <label htmlFor="upload" className="edit-button">
+          Edit
+          <input
+            type="file"
+            id="upload"
+            accept="image/*"
+            onChange={handleImageChange}
+            style={{ display: "none" }}
+          />
+        </label>
+      </div>
       <div className="personalDetailsDIV">
         <div className="primaryDetailsDiv">
           <div className="primaryDetalsUpperPart">

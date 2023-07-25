@@ -212,39 +212,32 @@ function TherapistDetails() {
 
   const handleButtonClick = () => {
     if (isClickable) {
-      console.log(therapist?.status);
-      const handleButtonClick = () => {
-        if (isClickable) {
-          console.log("Hello");
+      console.log("Hello");
 
-          // Data to be sent in the PUT request
-          const dataToSend = {
-            expertise: therapist.expertise,
-            expriencelevel: therapist.expriencelevel,
-            meetLink: therapist.meetLink,
-            status: "yes",
-          };
-
-          // Hit the API using the fetch API
-          fetch(
-            `http://localhost:4000/api/v1/therapists/${therapistId}/approve`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(dataToSend),
-            }
-          )
-            .then(response => response.json())
-            .then(data => {
-              console.log(data); // Handle the API response data here
-            })
-            .catch(error => {
-              console.error("Error:", error);
-            });
-        }
+      // Data to be sent in the PUT request
+      const dataToSend = {
+        expertise: therapist.expertise,
+        expriencelevel: therapist.expriencelevel,
+        meetLink: therapist.meetLink,
       };
+
+      console.log(dataToSend);
+
+      // Hit the API using the fetch API
+      fetch(`http://localhost:4000/api/v1/therapists/${therapistId}/approve`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data); // Handle the API response data here
+        })
+        .catch(error => {
+          console.error("Error:", error);
+        });
     }
   };
 
