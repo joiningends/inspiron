@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Inspiron E-Commerce",
   "main": "app.js",
+  "engines": {
+    "node":">=16.0.0 <18.16.0",
+    "npm": ">=8.0.0 <9.5.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "preinstall": "cd server && npm install --silent",
