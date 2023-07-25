@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 const therapistSchema = new mongoose.Schema({
   name: {
@@ -7,8 +7,8 @@ const therapistSchema = new mongoose.Schema({
     required: true,
   },
   image: {
-    type: String,
-    default: "",
+    data: Buffer, // Store the image data as a Buffer
+    contentType: String, // Store the content type of the image
   },
   dob: {
     type: Date,
@@ -31,11 +31,10 @@ const therapistSchema = new mongoose.Schema({
     require: true,
     unique: true,
   },
-  
+
   password: {
     type: String,
-    
-},
+  },
 
   mobile: {
     type: String,
@@ -151,9 +150,7 @@ const therapistSchema = new mongoose.Schema({
         location: { type: String },
       },
     ],
-    
   },
 });
-
 
 exports.Therapist = mongoose.model("Therapist", therapistSchema);

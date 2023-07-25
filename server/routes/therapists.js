@@ -1,7 +1,12 @@
 const express = require('express');
 const router = express.Router();
-
+const multer = require('multer');
 const therapistController = require('../controller/therapistController');
+
+  
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
 
     router.get('/total-therapists', therapistController.getTotalTherapists);
 
@@ -27,7 +32,7 @@ router.put('/:id/primaryDetails', therapistController.updatePrimaryDetails);
 router.put('/:id/ContactDetails', therapistController.updateContactDetails);
 router.put('/:id/address', therapistController. updateAddresses);
 router.put('/:id/education/:educationId',therapistController.updateEducation);
-router.put('/:id/image',  therapistController.updateTherapistImage );
+router.put('/:id/image', upload.single('image'), therapistController.updateTherapistImage );
 router.put('/:id/Availability', therapistController.updateAvailability);
 router.delete('/:id', therapistController.deleteTherapist);
 //router.put('/:id/locations', therapistController.updateTherapistLocation);

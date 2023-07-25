@@ -27,9 +27,7 @@ const assessmentSchema = new mongoose.Schema({
       type: String,
       default: ''
   },
-  images: [{
-      type: String
-  }],
+  
  
     assessmentScore: { 
     type: Number,
