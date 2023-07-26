@@ -1,0 +1,135 @@
+.assessments-assessment-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.assessmentintroPage{
+  display: flex;
+  min-height: 11.5rem;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  background-color: aquamarine;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #f0f0f0;
+}
+
+.progress {
+  height: 100%;
+  background-color: #4caf50;
+  width: 0;
+  transition: width 0.3s ease-in-out;
+}
+
+
+.options {
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap within the container */
+  justify-content: center;
+  align-items: stretch; /* Stretch items vertically */
+  margin-bottom: 20px;
+  border: 1px solid #ccc; /* Add border */
+  border-radius: 4px;
+  padding: 10px; /* Add padding for better appearance */
+  width:50%;
+  margin:0 auto;
+}
+
+.assessments-assessment-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.assessments-question-number {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.assessments-question {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.assessments-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.options .assessments-option {
+  background-color: #68B545 !important; /* Set background color to #68B545 */
+}
+
+.options .assessments-option.selected {
+  background-color: #ccc !important; /* Set background color for selected option */
+}
+
+.options .option {
+  background: rgba(104, 181, 69, 0.15);
+}
+
+.assessments-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  height: 120px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  background-color: #68B545;
+
+}
+
+.assessments-option.selected {
+  background: #68B545;
+}
+
+.assessments-navigation-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.assessments-navigation-buttons button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.assessments-total-score {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+
+.assessments-AssessmentCardsAvailable {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+  .assessments-AssessmentCardsAvailable {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .AssessmentCard {
+    width: 90%;
+    max-width: 300px;
+    margin: 1rem;
+  }
+}

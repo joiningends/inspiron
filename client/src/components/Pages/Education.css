@@ -1,0 +1,45 @@
+.education-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-width: 15%;
+  margin-left: 8%;
+}
+
+.education-qualification {
+  font-size: 18px;
+  color: black;
+}
+
+.education-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.education-card {
+  text-align: left;
+  width: 100%;
+  height: 3.5rem;
+}
+
+p.eLevel {
+  font-size: 14px;
+  color: #666;
+  text-align: left;
+}
+
+.collegeName {
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.education-card:not(:last-child) {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #DDD;
+  padding-bottom: 10px;
+}

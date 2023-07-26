@@ -1,0 +1,202 @@
+.TimeSlots {
+  text-align: center;
+}
+
+.date-slots-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.date-slots-container > div {
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: left;
+}
+
+.date-slots-container h2 {
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.date-slots-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.date-slots-container li {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.selected-slots ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.selected-slots li {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.selected-slots p {
+  margin: 0;
+}
+
+button {
+  margin-top: 10px;
+}
+
+.date-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.date-container label {
+  margin-right: 10px;
+}
+
+.date-container input[type="date"] {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.time-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.time-container label {
+  margin-right: 10px;
+}
+
+.time-container input[type="time"] {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.date-slots-container > div h2 {
+  background-color: #5179BD;
+  color: white;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.date-slots-container > div ul li {
+  background-color: rgba(104, 181, 69, 0.25);
+  padding: 5px;
+  border-radius: 5px;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  transition: all 0.3s ease;
+}
+
+.date-slots-container > div ul li:hover {
+  border-radius: 15px;
+  background: #68B545;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.selected-slots ul li {
+  background-color: #68B545;
+  color: black;
+  padding: 5px;
+  border-radius: 5px;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+.add-slot-container form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+}
+
+.add-slot-container label {
+  margin-right: 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.add-slot-container input[type="date"],
+.add-slot-container input[type="time"] {
+  margin-right: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.add-slot-container button {
+  padding: 10px 20px;
+  margin-left: 10px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.add-slot-container button:hover {
+  background-color: #45a049;
+}
+
+.add-slot-container .selected-slots {
+  margin-top: 20px;
+}
+
+.add-slot-container .selected-slots h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.add-slot-container .selected-slots ul {
+  padding-left: 20px;
+}
+
+.add-slot-container .selected-slots li {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.pagination {
+  margin-top: 20px;
+}
+
+.pagination ul {
+  list-style-type: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination li {
+  margin: 0 5px;
+}
+
+.pagination li a {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 15px;
+  background: rgba(104, 181, 69, 0.25);
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.pagination li.active a {
+  background: rgba(104, 181, 69, 0.5);
+  color: white;
+}
