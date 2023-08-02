@@ -28,16 +28,15 @@ const paitentsRoutes = require("./routes/paitents");
 const casessRoutes = require("./routes/casesummerys");
 const headingsRoutes = require("./routes/headings");
 const illnessesRoutes = require("./routes/illnesses");
-const onsetsRoutes = require("./routes/onsets");
+const exprienceRoutes = require("./routes/expriences");
 
 
 const PaymentsRoutes = require("./routes/payments");
 const expertisesRoutes = require("./routes/expertise");
 
 
-
 const api = process.env.API_URL;
-const PORT = process.env.PORT ||8080;
+
 app.use(`${api}/appointments`, appointmentsRoutes);
 app.use(`${api}/users`, usersRoutes);
 app.use(`${api}/therapists`,  therapistsRoutes);
@@ -49,7 +48,7 @@ app.use(`${api}/cases`, casessRoutes);
 
 app.use(`${api}/headings`, headingsRoutes);
 app.use(`${api}/illnesses`, illnessesRoutes);
-app.use(`${api}/onsets`, onsetsRoutes);
+app.use(`${api}/expriences`,exprienceRoutes);
 app.use(`${api}/payments`, PaymentsRoutes);
 app.use(`${api}/expetises`,expertisesRoutes );
 
