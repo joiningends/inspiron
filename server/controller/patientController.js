@@ -1,5 +1,4 @@
 const Heading = require('../models/heading');
-const Onset = require('../models/onset');
 
 const Patient = require('../models/patient');
 const { Therapist } = require('../models/therapist');
