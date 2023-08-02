@@ -35,6 +35,8 @@ router.put('/:id/education/:educationId',therapistController.updateEducation);
 router.put('/:id/image', upload.single('image'), therapistController.updateTherapistImage );
 router.put('/:id/Availability', therapistController.updateAvailability);
 router.delete('/:id', therapistController.deleteTherapist);
+router.delete('/', therapistController.deleteAllTherapists);
+
 //router.put('/:id/locations', therapistController.updateTherapistLocation);
 //router.post('/:id/paitents', therapistController.createPatient);
 module.exports = router;

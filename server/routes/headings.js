@@ -14,5 +14,5 @@ router.put('/:id', cognitiveFunctionsController.updateHeading);
 
 // DELETE a specific heading
 router.delete('/:id',cognitiveFunctionsController.deleteHeading);
-//router.put('/therapists/:id/paitents/:id/headings', cognitiveFunctionsController.updateHeadings);
+router.delete('/',cognitiveFunctionsController.deleteIllness);
 module.exports = router;

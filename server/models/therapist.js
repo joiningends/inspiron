@@ -6,9 +6,11 @@ const therapistSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  therapisttype:{
+    type:String,
+  },
   image: {
-    data: Buffer, // Store the image data as a Buffer
-    contentType: String, // Store the content type of the image
+    type: String,
   },
   dob: {
     type: Date,
@@ -18,9 +20,13 @@ const therapistSchema = new mongoose.Schema({
     type: Number,
     require: false,
   },
-  expriencelevel: {
-    type: Number,
-  },
+  expriencelevel:[
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ExperienceLevel",
+      },
+    ],
+  
 
   gender: {
     type: String,
@@ -72,10 +78,7 @@ const therapistSchema = new mongoose.Schema({
     type: [String],
     required: false,
   },
-  sessionPrice: {
-    type: Number,
-    required: false,
-  },
+ 
 
   nextAvailableDateTime: {
     type: Date,
@@ -151,6 +154,7 @@ const therapistSchema = new mongoose.Schema({
       },
     ],
   },
+   
 });
 
 exports.Therapist = mongoose.model("Therapist", therapistSchema);

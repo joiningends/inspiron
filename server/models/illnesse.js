@@ -2,27 +2,23 @@ const mongoose = require('mongoose');
 
 const illnessSchema = new mongoose.Schema({
  
-  headings: [
+  name: {
+    type: String,
+    required: true,
+  },
+  options: [
     {
-      name: {
+      text: {
         type: String,
-        
+        required: true,
       },
-      options: [
-        {
-          
-            type: String,
-            required: false,
-        
-         
-        },
-      ],
       description: {
-        type:String,
-        required:true,
-      }
+        type: String,
+        required: false,
+      },
     },
   ],
+
 });
 
 module.exports = mongoose.model('Illness', illnessSchema );

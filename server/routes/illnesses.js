@@ -17,4 +17,5 @@ router.put('/:id', illnessController.updateIllnessById);
 // Delete a specific illness by ID
 router.delete('/:id', illnessController.deleteIllnessById);
 
+
 module.exports = router;

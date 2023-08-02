@@ -43,29 +43,44 @@ exports.createHeading = async (req, res) => {
   }
 };
 
-// PUT route controller to update an existing heading
 exports.updateHeading = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, options } = req.body;
+    const { name, options: newOptions,  deleteOptions } = req.body;
 
-    const updatedHeading = await Heading.findByIdAndUpdate(
-      id,
-      { name, options },
-      { new: true }
-    );
+    const existingHeading = await Heading.findById(id);
 
-    if (!updatedHeading) {
+    if (!existingHeading) {
       return res.status(404).json({ error: 'Heading not found' });
     }
+
+    let updatedOptions = existingHeading.options;
+
+    if (newOptions && Array.isArray(newOptions)) {
+      // If newOptions is provided and it's an array, update the options
+      updatedOptions = [...existingHeading.options, ...newOptions];
+    }
+
+    if (deleteOptions && Array.isArray(deleteOptions)) {
+      // If deleteOptions is provided and it's an array, delete the corresponding options
+      updatedOptions = updatedOptions.filter(
+        (option) => !deleteOptions.includes(option.text)
+      );
+    }
+
+
+    // Update the heading with the new name and merged options
+    const updatedHeading = await Heading.findByIdAndUpdate(
+      id,
+      { name, options: updatedOptions },
+      { new: true }
+    );
 
     res.json({ success: true, heading: updatedHeading });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
-
-
 
 
 
@@ -84,3 +99,11 @@ exports.deleteHeading = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete heading' });
   }
 };
+exports.deleteIllness = async (req, res) => {
+  try {
+    await Heading.deleteMany({});
+    console.log('All illness records have been deleted.');
+  } catch (err) {
+    console.error('Error deleting illness records:', err);
+  } 
+}

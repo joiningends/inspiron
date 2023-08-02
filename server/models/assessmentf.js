@@ -24,9 +24,9 @@ const assessmentSchema = new mongoose.Schema({
       default: 0 
     },
     image: {
-      type: String,
-      default: ''
-  },
+      data: Buffer, // Store the image data as a Buffer
+      contentType: String, // Store the content type of the image
+    },
   
  
     assessmentScore: { 
