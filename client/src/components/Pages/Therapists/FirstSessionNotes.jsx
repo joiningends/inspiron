@@ -502,21 +502,32 @@ function ChiefComplaintsForm() {
     setOnset(event.target.value);
   };
 
-  const [formData, setFormData] = useState({
-    question1: { selectedOptions: [], comments: {} },
-    question2: { selectedOptions: [], comments: {} },
-    question3: { selectedOptions: [], comments: {} },
-    question4: { selectedOptions: [], comments: {} },
-    question5: { selectedOptions: [], comments: {} },
-    question6: { selectedOptions: [], comments: {} },
-    question7: { selectedOptions: [], comments: {} },
-    question8: { selectedOptions: [], comments: {} },
-    question9: { selectedOptions: [], comments: {} },
-    question10: { selectedOptions: [], comments: {} },
-    question11: { selectedOptions: [], comments: {} },
-    question12: { selectedOptions: [], comments: {} },
-    question13: { selectedOptions: [], comments: {} },
-  });
+  const initialFormData = [
+    {
+      questionText: "1. Depressive symptoms",
+      options: [
+        { id: "option1", label: "Sadness" },
+        { id: "option2", label: "Tearfulness/ Crying spells" },
+        { id: "option3", label: "Low levels of Energy/Tiredness/exhaustion" },
+        // Add more options as needed
+      ],
+      selectedOptions: [],
+      comments: {},
+    },
+    {
+      questionText: "2. Mania",
+      options: [
+        { id: "option1", label: "Impulsivity" },
+        { id: "option2", label: "Grandiosity" },
+        // Add more options as needed
+      ],
+      selectedOptions: [],
+      comments: {},
+    },
+    // Add more questions as needed
+  ];
+
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleNextStep = () => {
     setStep(prevStep => prevStep + 1);
@@ -526,27 +537,23 @@ function ChiefComplaintsForm() {
     setStep(prevStep => prevStep - 1);
   };
 
-  const handleOptionChange = (question, selectedOptions) => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      [question]: {
-        ...prevFormData[question],
-        selectedOptions,
-      },
-    }));
+  const handleOptionChange = (questionIndex, selectedOptions) => {
+    setFormData(prevFormData => {
+      const updatedFormData = [...prevFormData];
+      updatedFormData[questionIndex].selectedOptions = selectedOptions;
+      return updatedFormData;
+    });
   };
 
-  const handleCommentChange = (question, optionId, comment) => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      [question]: {
-        ...prevFormData[question],
-        comments: {
-          ...prevFormData[question].comments,
-          [optionId]: comment,
-        },
-      },
-    }));
+  const handleCommentChange = (questionIndex, optionId, comment) => {
+    setFormData(prevFormData => {
+      const updatedFormData = [...prevFormData];
+      updatedFormData[questionIndex].comments = {
+        ...updatedFormData[questionIndex].comments,
+        [optionId]: comment,
+      };
+      return updatedFormData;
+    });
   };
 
   const handleSubmit = e => {
@@ -554,246 +561,25 @@ function ChiefComplaintsForm() {
     // Create JSON object from form data
     const json = {
       onset,
-      ...formData,
+      ...formData.reduce((acc, question) => {
+        const selectedOptionsWithText = question.options
+          .filter(option => question.selectedOptions.includes(option.id))
+          .map(option => ({
+            id: option.id,
+            label: option.label,
+            comment: question.comments[option.id] || "",
+          }));
+        acc[question.questionText] = selectedOptionsWithText;
+        return acc;
+      }, {}),
     };
 
-    // Modify the JSON object to include question text for selected options
-    const modifiedJson = Object.entries(json).reduce((acc, [key, value]) => {
-      if (key.startsWith("question")) {
-        const question = questions.find(q => q.id === key);
-        if (Array.isArray(value.selectedOptions)) {
-          const selectedOptionsWithText = value.selectedOptions.map(
-            optionId => {
-              const option = question.options.find(o => o.id === optionId);
-              return {
-                id: option.id,
-                label: option.label,
-                comment: value.comments[option.id],
-              };
-            }
-          );
-          acc[question.questionText] = selectedOptionsWithText;
-        }
-      } else {
-        acc[key] = value;
-      }
-      return acc;
-    }, {});
-
-    console.log("Form JSON:", modifiedJson);
     // Reset the form
     setOnset("");
-    setFormData({
-      question1: { selectedOptions: [], comments: {} },
-      question2: { selectedOptions: [], comments: {} },
-      question3: { selectedOptions: [], comments: {} },
-      question4: { selectedOptions: [], comments: {} },
-      question5: { selectedOptions: [], comments: {} },
-      question6: { selectedOptions: [], comments: {} },
-      question7: { selectedOptions: [], comments: {} },
-      question8: { selectedOptions: [], comments: {} },
-      question9: { selectedOptions: [], comments: {} },
-      question10: { selectedOptions: [], comments: {} },
-      question11: { selectedOptions: [], comments: {} },
-      question12: { selectedOptions: [], comments: {} },
-      question13: { selectedOptions: [], comments: {} },
-    });
-  };
+    setFormData(initialFormData);
 
-  // Define the questions and options
-  const questions = [
-    {
-      id: "question1",
-      questionText: "1. Depressive symptoms",
-      options: [
-        { id: "option1", label: "Sadness" },
-        { id: "option2", label: "Tearfulness/ Crying spells" },
-        { id: "option3", label: "Low levels of Energy/Tiredness/exhaustion" },
-        { id: "option4", label: "Disturbed concentration" },
-        {
-          id: "option5",
-          label:
-            "Sexual Function- low levels of libido/ withdrawal/ lack of interest",
-        },
-        { id: "option6", label: "Guilt" },
-        { id: "option7", label: "Psychomotor agitation/ Restlessness" },
-        { id: "option8", label: "Decreased increased in activities" },
-        { id: "option9", label: "Low motivation" },
-        { id: "option10", label: "Helplessness" },
-        { id: "option11", label: "Hopelessness" },
-        { id: "option12", label: "Poor confidence" },
-        { id: "option13", label: "Poor Self-esteem" },
-        { id: "option14", label: "Irritability" },
-        { id: "option15", label: "Social Withdrawal" },
-      ],
-    },
-    {
-      id: "question2",
-      questionText: "2. Mania",
-      options: [
-        { id: "option1", label: "Impulsivity" },
-        { id: "option2", label: "Grandiosity" },
-        { id: "option3", label: "Recklessness" },
-        { id: "option4", label: "Excessive energy" },
-        { id: "option5", label: "Increased spending beyond means" },
-        { id: "option6", label: "Talkativeness" },
-        { id: "option7", label: "Racing thoughts" },
-        { id: "option8", label: "Hyper-sexuality" },
-        { id: "option9", label: "Wandering behavior" },
-      ],
-    },
-    {
-      id: "question3",
-      questionText: "3. Anxiety",
-      options: [
-        { id: "option1", label: "Racing heartbeat" },
-        { id: "option2", label: "Sweating" },
-        { id: "option3", label: "Shortness of breath" },
-        { id: "option4", label: "Sense of doom" },
-        { id: "option5", label: "Increased startle response" },
-        { id: "option6", label: "GI discomfort" },
-        { id: "option7", label: "Dizziness" },
-        { id: "option8", label: "Numbness" },
-        { id: "option9", label: "Tingling sensations" },
-        {
-          id: "option10",
-          label:
-            "Oversensitivity to topics and events related to death and sickness",
-        },
-      ],
-    },
-    {
-      id: "question4",
-      questionText: "4. OCD symptoms",
-      options: [
-        { id: "option1", label: "Checking" },
-        { id: "option2", label: "Cleaning" },
-        { id: "option3", label: "Organising behavior" },
-        { id: "option4", label: "Slowness in activities" },
-        { id: "option5", label: "Repetitive thinking and actions" },
-      ],
-    },
-    {
-      id: "question5",
-      questionText: "5. Physical symptoms",
-      options: [
-        { id: "option1", label: "Multiple physical complaints" },
-        { id: "option2", label: "Excessive health concerns" },
-        {
-          id: "option3",
-          label: "Multiple consultations with health professionals",
-        },
-        { id: "option4", label: "Multiple investigations" },
-        { id: "option5", label: "Headache" },
-      ],
-    },
-    {
-      id: "question6",
-      questionText: "6. Psychosis symptoms",
-      options: [
-        { id: "option1", label: "Suspiciousness" },
-        { id: "option2", label: "Difficulty in trusting people" },
-        { id: "option3", label: "Fearfulness" },
-        { id: "option4", label: "Angry and assaultive behavior" },
-        { id: "option5", label: "Irritability" },
-        { id: "option6", label: "Talking or laughing to self" },
-        { id: "option7", label: "Hearing voices" },
-        { id: "option8", label: "Seeing things that are not there" },
-        { id: "option9", label: "Asocial behavior" },
-        { id: "option10", label: "Minimal talk" },
-        { id: "option11", label: "Indecisive behavior" },
-      ],
-    },
-    {
-      id: "question7",
-      questionText: "7. Personality traits",
-      options: [
-        { id: "option1", label: "Lying" },
-        { id: "option2", label: "Stealing" },
-        { id: "option3", label: "Addictions" },
-        { id: "option4", label: "Intolerance to criticism" },
-        { id: "option5", label: "Manipulative behavior" },
-        { id: "option6", label: "Threatening behavior" },
-        { id: "option7", label: "Denial" },
-        { id: "option8", label: "Blaming others" },
-        { id: "option9", label: "Victimization/ Self-loathing" },
-        { id: "option10", label: "Self-esteem: Poor/ High" },
-        { id: "option11", label: "Grandiosity" },
-        { id: "option12", label: "Self-harm" },
-        { id: "option13", label: "Dramatic behavior" },
-        { id: "option14", label: "Attention seeking" },
-        { id: "option15", label: "Lack of empathy" },
-        { id: "option16", label: "Impulsive" },
-        { id: "option17", label: "Anger outbursts" },
-        { id: "option18", label: "Unstable emotional response" },
-      ],
-    },
-    {
-      id: "question8",
-      questionText: "8. Deliberate self-harm",
-      options: [
-        { id: "option1", label: "Deliberately harming self" },
-        { id: "option2", label: "Suicidal ideation and attempts" },
-      ],
-    },
-    {
-      id: "question9",
-      questionText: "9. Appetite",
-      options: [
-        { id: "option1", label: "Increased" },
-        { id: "option2", label: "Decreased: Skipping meals/reduced quantity" },
-        { id: "option3", label: "Binge eating" },
-      ],
-    },
-    {
-      id: "question10",
-      questionText: "10. Sleep",
-      options: [
-        { id: "option1", label: "Increased- more than 8 hours" },
-        { id: "option2", label: "Decreased- less than 7 hours" },
-        { id: "option3", label: "Difficulty in falling asleep" },
-        { id: "option4", label: "Nightmares or bad dreams" },
-        { id: "option5", label: "Early morning awakening" },
-      ],
-    },
-    {
-      id: "question11",
-      questionText: "11. Sexual dysfunction",
-      options: [
-        { id: "option1", label: "Discharge" },
-        { id: "option2", label: "Pain" },
-        { id: "option3", label: "Preoccupation/ Obsession" },
-        { id: "option4", label: "Erectile Dysfunction" },
-        { id: "option5", label: "Low levels of libido" },
-      ],
-    },
-    {
-      id: "question12",
-      questionText: "12. Headaches/pains",
-      options: [
-        { id: "option1", label: "Onset: acute or chronic" },
-        { id: "option2", label: "Intolerance to sound and light" },
-        { id: "option3", label: "Associated with vomiting and giddiness" },
-        { id: "option4", label: "Fever" },
-        { id: "option5", label: "Radiating to other parts of the body" },
-        { id: "option6", label: "Episodic or continuous" },
-      ],
-    },
-    {
-      id: "question13",
-      questionText: "13. Cognitive functions",
-      options: [
-        { id: "option1", label: "Poor Concentration" },
-        {
-          id: "option2",
-          label: "Difficulty making decisions or solving problems",
-        },
-        { id: "option3", label: "Forgetfulness" },
-        { id: "option4", label: "Confused" },
-        { id: "option5", label: "Brain fog" },
-      ],
-    },
-  ];
+    console.log("Form JSON:", json);
+  };
 
   return (
     <form
@@ -805,7 +591,7 @@ function ChiefComplaintsForm() {
         alignItems: "center",
       }}
     >
-      {step <= questions.length + 1 && (
+      {step <= formData.length + 1 && (
         <>
           {step === 1 && (
             <>
@@ -832,6 +618,7 @@ function ChiefComplaintsForm() {
                       value="Abrupt (Few hours to few days)"
                       checked={onset === "Abrupt (Few hours to few days)"}
                       onChange={handleOnsetChange}
+                      required
                     />
                     Abrupt (Few hours to few days)
                   </label>
@@ -844,6 +631,7 @@ function ChiefComplaintsForm() {
                       value="Sub-acute (Few days to few weeks)"
                       checked={onset === "Sub-acute (Few days to few weeks)"}
                       onChange={handleOnsetChange}
+                      required
                     />
                     Sub-acute (Few days to few weeks)
                   </label>
@@ -856,10 +644,12 @@ function ChiefComplaintsForm() {
                       value="Insidious (Few weeks to few months)"
                       checked={onset === "Insidious (Few weeks to few months)"}
                       onChange={handleOnsetChange}
+                      required
                     />
                     Insidious (Few weeks to few months)
                   </label>
                 </li>
+                {/* Add more onset options as needed */}
               </ul>
               <div className="button-container">
                 <button type="button" onClick={handleNextStep}>
@@ -870,51 +660,40 @@ function ChiefComplaintsForm() {
           )}
           {step > 1 && (
             <>
-              <h3>{questions[step - 2].questionText}</h3>
+              <h3>{formData[step - 2].questionText}</h3>
               <ul
                 className="options-container"
                 style={{ listStyle: "none", padding: 0 }}
               >
-                {questions[step - 2].options.map(option => (
+                {formData[step - 2].options.map(option => (
                   <li key={option.id} style={{ marginBottom: "1rem" }}>
                     <label style={{ display: "flex", alignItems: "center" }}>
                       <input
                         type="checkbox"
                         value={option.id}
-                        checked={formData[
-                          `question${step - 1}`
-                        ].selectedOptions.includes(option.id)}
+                        checked={formData[step - 2].selectedOptions.includes(
+                          option.id
+                        )}
                         onChange={e => {
                           const selectedOptions = e.target.checked
                             ? [
-                                ...formData[`question${step - 1}`]
-                                  .selectedOptions,
+                                ...formData[step - 2].selectedOptions,
                                 e.target.value,
                               ]
-                            : formData[
-                                `question${step - 1}`
-                              ].selectedOptions.filter(
+                            : formData[step - 2].selectedOptions.filter(
                                 optionId => optionId !== e.target.value
                               );
-                          handleOptionChange(
-                            `question${step - 1}`,
-                            selectedOptions
-                          );
+                          handleOptionChange(step - 2, selectedOptions);
                         }}
                       />
                       {option.label}
                     </label>
-                    {formData[`question${step - 1}`].selectedOptions.includes(
-                      option.id
-                    ) && (
+                    {formData[step - 2].selectedOptions.includes(option.id) && (
                       <textarea
-                        value={
-                          formData[`question${step - 1}`].comments[option.id] ||
-                          ""
-                        }
+                        value={formData[step - 2].comments[option.id] || ""}
                         onChange={e =>
                           handleCommentChange(
-                            `question${step - 1}`,
+                            step - 2,
                             option.id,
                             e.target.value
                           )
@@ -926,12 +705,12 @@ function ChiefComplaintsForm() {
                 ))}
               </ul>
               <div className="button-container">
-                {step > 2 && (
+                {step > 1 && (
                   <button type="button" onClick={handlePrevStep}>
                     Previous
                   </button>
                 )}
-                {step < questions.length + 1 ? (
+                {step < formData.length + 1 ? (
                   <button type="button" onClick={handleNextStep}>
                     Next
                   </button>

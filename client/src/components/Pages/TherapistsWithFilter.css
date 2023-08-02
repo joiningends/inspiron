@@ -147,3 +147,12 @@
     font-size: 12px;
   }
 }
+
+/* CSS for mobile screens (up to 767px width) */
+@media (max-width: 767px) {
+  .filter-container {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+

@@ -178,9 +178,10 @@ function TherapistDetails() {
       updateTherapist(therapistId, {
         email: email,
         mobile: mobile,
-        emergencycontact: emergencyContact,
+        emergencymobile: emergencyContact,
       })
     );
+
     setShowContactForm(false);
   };
 
@@ -209,6 +210,17 @@ function TherapistDetails() {
   useEffect(() => {
     dispatch(fetchTherapist(therapistId));
   }, []);
+
+  function formatDate(dateString) {
+    if (!dateString) return ""; // Return empty string if dateString is undefined or null
+
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, "0"); // Pad day with leading zero if necessary
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based, so add 1 to get the correct month
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  }
 
   const handleButtonClick = () => {
     if (isClickable) {
@@ -244,10 +256,13 @@ function TherapistDetails() {
   return (
     <>
       <div className="personalDetailsDIV">
-        <div className="primaryDetailsDiv">
+        <div
+          className="primaryDetailsDiv"
+          style={{ width: "36%", marginRight: "-1rem" }}
+        >
           <div className="primaryDetalsUpperPart">
             <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
-              Primary Details
+              PRIMARY DETAILS
             </span>
             <span
               className="editIcon"
@@ -270,7 +285,7 @@ function TherapistDetails() {
                 Date Of Birth
               </h1>
               <h1 className="itemsOfPrimaryDetails">
-                {therapist?.DateOfBirth}
+                {formatDate(therapist?.dob)}
               </h1>
             </div>
             <div className="primaryDetailsLowerPart1div2">
@@ -279,10 +294,10 @@ function TherapistDetails() {
             </div>
           </div>
         </div>
-        <div className="primaryDetailsDiv">
+        <div className="primaryDetailsDiv" style={{ width: "36%" }}>
           <div className="primaryDetalsUpperPart">
             <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
-              Contact Details
+              CONTACT DETAILS
             </span>
             <span
               className="editIcon"
@@ -309,7 +324,7 @@ function TherapistDetails() {
             <div className="primaryDetailsLowerPart1div2">
               <h1 className="fullnameH1">emergency contact</h1>
               <h1 className="itemsOfPrimaryDetails">
-                {therapist?.emergencycontact}
+                {therapist?.emergencymobile}
               </h1>
             </div>
           </div>
@@ -319,7 +334,7 @@ function TherapistDetails() {
       <div className="addressesDetailsDiv">
         <div className="primaryDetalsUpperPart">
           <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
-            Addresses
+            ADDRESS
           </span>
           <span
             className="editIcon"
@@ -405,7 +420,7 @@ function TherapistDetails() {
                 value={collegeName}
                 onChange={e => setCollegeName(e.target.value)}
               />
-              <label>Education Level</label>
+              <label>Field of study</label>
               <input
                 type="text"
                 value={educationLevel}
@@ -489,21 +504,31 @@ function TherapistDetails() {
         <div className="editFormContainer">
           <div className="editForm">
             <h2>Edit Address</h2>
-            <label>Current Address:</label>
+            <label style={{ fontSize: "1rem" }}>Current Address:</label>
             <input
               type="text"
               value={currentAddress}
               onChange={e => setCurrentAddress(e.target.value)}
             />
-            <label>Permanent Address:</label>
+            <label style={{ fontSize: "1rem" }}>Permanent Address:</label>
             <input
               type="text"
               value={permanentAddress}
               onChange={e => setPermanentAddress(e.target.value)}
             />
             <div className="buttons">
-              <button onClick={handleAddressSaveClick}>Save</button>
-              <button onClick={handleAddressCancelClick}>Cancel</button>
+              <button
+                onClick={handleAddressSaveClick}
+                style={{ backgroundColor: "#D67449" }}
+              >
+                Save
+              </button>
+              <button
+                onClick={handleAddressCancelClick}
+                style={{ backgroundColor: "#68B545" }}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
@@ -513,7 +538,9 @@ function TherapistDetails() {
         <div className="modalContainer">
           <div className="modal">
             <h2>Edit Contact Details</h2>
-            <label htmlFor="email">Email:</label>
+            <label htmlFor="email" style={{ fontSize: "1rem" }}>
+              Email:
+            </label>
             <input
               type="email"
               id="email"
@@ -521,7 +548,9 @@ function TherapistDetails() {
               onChange={e => setEmail(e.target.value)}
             />
 
-            <label htmlFor="mobile">Mobile:</label>
+            <label htmlFor="mobile" style={{ fontSize: "1rem" }}>
+              Mobile:
+            </label>
             <input
               type="text"
               id="mobile"
@@ -529,7 +558,9 @@ function TherapistDetails() {
               onChange={e => setMobile(e.target.value)}
             />
 
-            <label htmlFor="emergencyContact">Emergency Contact:</label>
+            <label htmlFor="emergencyContact" style={{ fontSize: "1rem" }}>
+              Emergency Contact:
+            </label>
             <input
               type="text"
               id="emergencyContact"
@@ -551,6 +582,71 @@ function TherapistDetails() {
           </div>
         </div>
       )}
+      <div className="educationHeader" style={{marginLeft:"8rem"}}>
+          <h2>Expertise</h2>
+        </div>
+      <div
+        style={{
+          fontFamily: "Arial",
+          maxWidth: "80.5%",
+          margin: "auto",
+          padding: "20px",
+          marginTop: "1rem",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+          borderRadius: "5px",
+          background: "#f9f9f9",
+          display: "flex",
+          marginRight: "11%",
+          flexDirection: "column",
+          alignItems: "center", // Center the elements horizontally
+          marginBottom: "3rem",
+        }}
+      >
+        
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap", // Enable wrapping if the container exceeds maxWidth
+            justifyContent: "center", // Center the checkboxes horizontally
+          }}
+        >
+          {expertiseData.map(expertise => (
+            <label
+              key={expertise._id}
+              style={{
+                display: "flex",
+                alignItems: "center", // Align checkbox and label vertically
+                marginBottom: "10px",
+                marginRight: "10px", // Add marginRight to create space between checkboxes
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={selectedExpertise.includes(expertise._id)}
+                onChange={() => handleExpertiseSelection(expertise._id)}
+                style={{ marginRight: "8px", verticalAlign: "middle" }} // Adjust vertical alignment of checkbox
+              />
+              <span style={{ fontSize: "16px" }}>{expertise.type[0]}</span>
+            </label>
+          ))}
+        </div>
+        <button
+          onClick={handleExpertiseSubmit}
+          style={{
+            display: "block",
+            width: "10%",
+            padding: "10px",
+            background: "#4CAF50",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Submit
+        </button>
+      </div>
+
       <div style={{ marginBottom: "1rem" }}>
         <h1 style={{ fontSize: "18px", fontWeight: "bold" }}>
           Google Meet Link:
@@ -686,52 +782,14 @@ function TherapistDetails() {
           </div>
         )}
       </div>
-      <div
-        style={{
-          fontFamily: "Arial",
-          maxWidth: "400px",
-          margin: "auto",
-          padding: "20px",
-          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-          borderRadius: "5px",
-          background: "#f9f9f9",
-        }}
-      >
-        <h2 style={{ textAlign: "center" }}>Choose Expertise:</h2>
-        {expertiseData.map(expertise => (
-          <div key={expertise._id} style={{ marginBottom: "10px" }}>
-            <input
-              type="checkbox"
-              checked={selectedExpertise.includes(expertise._id)}
-              onChange={() => handleExpertiseSelection(expertise._id)}
-              style={{ marginRight: "8px" }}
-            />
-            <label style={{ fontSize: "16px" }}>{expertise.type[0]}</label>
-          </div>
-        ))}
-        <button
-          onClick={handleExpertiseSubmit}
-          style={{
-            display: "block",
-            width: "100%",
-            padding: "10px",
-            background: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Submit
-        </button>
-        {/* Optionally, you can add an edit button that allows the user to re-edit their selection */}
-      </div>
+
       <div>
         <button
           style={{
             padding: "10px 20px",
             fontSize: "16px",
             borderRadius: "5px",
+
             backgroundColor: isClickable ? "#4CAF50" : "#ccc",
             color: "#fff",
             cursor: isClickable ? "pointer" : "not-allowed",

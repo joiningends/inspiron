@@ -1,0 +1,96 @@
+/* Questions.css */
+
+.questions-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.questions-list {
+  display: grid;
+  gap: 20px;
+}
+
+.question {
+  background-color: #f8f8f8;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.question:hover {
+  /* transform: scale(1.05) rotateX(5deg) rotateY(5deg); */
+}
+
+.question h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.question ul {
+  list-style: none;
+  padding: 0;
+}
+
+.option {
+  font-size: 16px;
+  margin-bottom: 5px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 3px;
+}
+
+.option:hover {
+  background-color: #f0f0f0;
+}
+
+/* Edit icon and Remove (cross) button */
+.question-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.question-icons {
+  display: flex;
+  align-items: center;
+}
+
+.edit-button,
+.remove-option-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 10px;
+}
+
+.remove-option-button {
+  color: #ff0000;
+}
+
+.remove-option-button:hover {
+  text-decoration: underline;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .questions-container {
+    padding: 10px;
+  }
+
+  .question {
+    padding: 15px;
+  }
+
+  .question h2 {
+    font-size: 16px;
+  }
+
+  .option {
+    font-size: 14px;
+  }
+}

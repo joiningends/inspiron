@@ -4,11 +4,14 @@ import "./AssessmentCreatePage.css";
 import { AiOutlineArrowLeft, AiOutlinePlus } from "react-icons/ai";
 import { createAssessment } from "../../redux/Action";
 import { margin } from "@mui/system";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function AssessmentCreatePage() {
   const [assessmentName, setAssessmentName] = useState("");
   const [image, setImage] = useState(null);
   const [questions, setQuestions] = useState([]);
+
   const [severities, setSeverities] = useState([
     {
       name: "",
@@ -145,24 +148,24 @@ function AssessmentCreatePage() {
         assessment_name: assessmentName,
         image: image ? image.name : "",
         questions: questionsData,
-          high: {
-            min: parseInt(severities[2].minScore),
-            max: parseInt(severities[2].maxScore),
-            expertise: severities[2].expertiseList,
-            serverityname: ["Severe"],
+        high: {
+          min: parseInt(severities[2].minScore),
+          max: parseInt(severities[2].maxScore),
+          expertise: severities[2].expertiseList,
+          serverityname: ["Severe"],
         },
         low: {
-            min: parseInt(severities[0].minScore),
-            max: parseInt(severities[0].maxScore),
-            expertise: severities[0].expertiseList,
-            serverityname: ["Severe"],
+          min: parseInt(severities[0].minScore),
+          max: parseInt(severities[0].maxScore),
+          expertise: severities[0].expertiseList,
+          serverityname: ["Severe"],
         },
         medium: {
-            min: parseInt(severities[1].minScore),
-            max: parseInt(severities[1].maxScore),
-            expertise: severities[1].expertiseList,
-            serverityname: ["Severe"],
-          },
+          min: parseInt(severities[1].minScore),
+          max: parseInt(severities[1].maxScore),
+          expertise: severities[1].expertiseList,
+          serverityname: ["Severe"],
+        },
       };
       console.log(assessmentData);
       // Send assessment data to the backend API
@@ -171,12 +174,45 @@ function AssessmentCreatePage() {
         assessmentData
       );
 
-      console.log("Assessment created:", response.data);
+      // const formData = new FormData();
+      // formData.append("image", image);
+      // const updateResponse = await axios.put(
+      //   `http://localhost:4000/api/v1/assessments/${response.data.assessment._id}`,
+      //   formData,
+      //   {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   }
+      // );
+
+      console.log(image);
+      // console.log(updateResponse)
+
+      console.log("Assessment created:", response.data.assessment._id);
+
+      toast.success("Assessment Added Successfully", {
+        style: {
+          fontSize: "14px", // Adjust the font size here
+        },
+      });
+
+      setTimeout(() => {
+        window.location.href = "/admin-Create-Assessment";
+      }, 3000);
 
       // Optionally, you can navigate to another page upon successful assessment creation
       // window.location.href = "path-to-assessment-list-page";
     } catch (error) {
       console.error("Error creating assessment:", error);
+      toast.error("Failed to Add Assessment", {
+        style: {
+          fontSize: "14px", // Adjust the font size here
+        },
+      });
+      setTimeout(() => {
+        window.location.href = "/admin-Create-Assessment";
+      }, 3000);
     }
   };
 
@@ -184,6 +220,7 @@ function AssessmentCreatePage() {
 
   return (
     <div style={{ width: "600px", margin: "0 auto" }}>
+      <ToastContainer />
       <button
         className="back-button"
         onClick={handleGoBack}

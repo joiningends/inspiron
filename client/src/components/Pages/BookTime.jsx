@@ -55,25 +55,15 @@ function BookTime() {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState();
   const [userId, setUserId] = useState();
+  const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
-    // Assuming you have the JWT token stored in local storage under the key "jwtToken"
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      // Decoding the token
-      const decodedToken = jwt_decode(token);
-
-      // Accessing the 'id' from the payload
-      const id = decodedToken.userId;
-
-      // Setting the therapistId state with the extracted ID
-      setUserId(id);
-    }
-  }, []);
-
-  console.log(selectedTimeSlot);
-  console.log(selectedDate);
+  const hideMessage = () => {
+    setShowMessage(false);
+    setMessage("");
+    setError(false);
+  };
 
   const handleBookNow = () => {
     if (!selectedTimeSlot) {
@@ -102,15 +92,44 @@ function BookTime() {
       .then(response => {
         // Handle the success response here, if needed
         console.log("Appointment booked successfully!");
+        setMessage("Thank you for booking!");
+        setShowMessage(true);
         handleClosePopup(); // Close the popup after booking
-        window.location.reload();
+        setTimeout(() => {
+          hideMessage();
+          window.location.reload();
+        }, 2000); // Hide the message after 2 seconds and reload the page
       })
       .catch(error => {
         // Handle errors here, if needed
         console.error("Error booking appointment:", error);
-        window.location.reload();
+        setMessage("Booking failed. Please try again later.");
+        setError(true);
+        setShowMessage(true);
+        setTimeout(() => {
+          hideMessage();
+          window.location.reload();
+        }, 2000); // Hide the message after 2 seconds without reloading the page
       });
   };
+  useEffect(() => {
+    // Assuming you have the JWT token stored in local storage under the key "jwtToken"
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // Decoding the token
+      const decodedToken = jwt_decode(token);
+
+      // Accessing the 'id' from the payload
+      const id = decodedToken.userId;
+
+      // Setting the therapistId state with the extracted ID
+      setUserId(id);
+    }
+  }, []);
+
+  console.log(selectedTimeSlot);
+  console.log(selectedDate);
 
   const handleTimeSlotClick = (timeSlot, date) => {
     setSelectedTimeSlot(timeSlot);
@@ -257,7 +276,7 @@ function BookTime() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      backgroundColor: "rgba(104, 181, 69, 0.25)",
+                      backgroundColor: "#68B545",
                       color: "white",
                       cursor: "pointer",
                       fontSize: "16px",
@@ -281,7 +300,7 @@ function BookTime() {
                       // Revert to default styles on mouse out
                       timeSlot.style = {
                         ...timeSlot.style,
-                        backgroundColor: "rgba(104, 181, 69, 0.25)",
+                        backgroundColor: "#68B545",
                         color: "white",
                       };
                       setSelectedTimeSlot({ ...selectedTimeSlot });
@@ -304,6 +323,34 @@ function BookTime() {
           onClose={handleClosePopup}
           onBookNow={handleBookNow}
         />
+      )}
+      {popupVisible && (
+        <Popup
+          selectedTimeSlot={selectedTimeSlot}
+          selectedDate={selectedDate}
+          onClose={handleClosePopup}
+          onBookNow={handleBookNow}
+        />
+      )}
+      {showMessage && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          <div style={{ backgroundColor: "#fff", padding: "20px" }}>
+            {error ? <h3>Error: {message}</h3> : <h3>{message}</h3>}
+          </div>
+        </div>
       )}
     </>
   );

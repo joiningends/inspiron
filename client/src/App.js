@@ -23,6 +23,8 @@ import AssessmentCreatePage from "./components/Pages/Admin/AssessmentCreatePage"
 import TherapistDetails from "./components/Pages/Admin/TherapistDetails";
 import PatientPage from "./components/Pages/Admin/PatientPage";
 import TimeSlots from "./components/Pages/Therapists/TimeSlots";
+import SessionHistoryOfPatients from "./components/Pages/Admin/SessionHistoryOfPatients";
+import CreateFirstSessionQuestions from "./components/Pages/Admin/CreateFirstSessionQuestions";
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -92,6 +94,14 @@ function App() {
                 <Route
                   path="/admin-patient-details"
                   element={<PatientPage />}
+                />
+                <Route
+                  path="/session-history-patients/:id"
+                  element={<SessionHistoryOfPatients />}
+                />
+                <Route
+                  path="/edit_add-questions"
+                  element={<CreateFirstSessionQuestions />}
                 />
               </>
             )}

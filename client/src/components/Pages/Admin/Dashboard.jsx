@@ -170,7 +170,7 @@ function Dashboard() {
               <tr key={therapist._id}>
                 <td>
                   <img
-                    src={`data:${therapist?.image?.contentType};base64,${therapist?.image?.data}`}
+                    src={therapist?.image}
                     alt="Rounded"
                     className="therapist-image"
                   />

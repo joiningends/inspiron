@@ -11,21 +11,21 @@ function PatientDetails() {
 
   useEffect(() => {
     fetch(`http://localhost:4000/api/v1/appointments/${id}`)
-      .then((response) => response.json())
-      .then((data) => {
+      .then(response => response.json())
+      .then(data => {
         setAppointmentDetails(data);
 
         // Retrieve therapist details
         fetch(`http://localhost:4000/api/v1/therapists/${data.therapist}`)
-          .then((response) => response.json())
-          .then((therapistData) => {
+          .then(response => response.json())
+          .then(therapistData => {
             setTherapistDetails(therapistData);
           })
-          .catch((error) =>
+          .catch(error =>
             console.error("Error retrieving therapist details:", error)
           );
       })
-      .catch((error) =>
+      .catch(error =>
         console.error("Error retrieving appointment details:", error)
       );
   }, [id]);
@@ -45,7 +45,8 @@ function PatientDetails() {
     // Open the first session notes page in a new tab with the current id
     window.open(`/patient-details-first-session-notes/${id}`, "_blank");
   };
-  
+
+  console.log(appointmentDetails);
 
   return (
     <div className="profile-container">
@@ -53,15 +54,17 @@ function PatientDetails() {
       <div className="profile-details">
         <div className="detail-item">
           <span className="detail-label">Name:</span>
-          <span className="detail-value">{appointmentDetails.userName}</span>
+          <span className="detail-value">{appointmentDetails?.user?.name}</span>
         </div>
         <div className="detail-item">
           <span className="detail-label">Age:</span>
-          <span className="detail-value">{appointmentDetails.userAge}</span>
+          <span className="detail-value">{appointmentDetails?.user?.age}</span>
         </div>
         <div className="detail-item">
           <span className="detail-label">Gender:</span>
-          <span className="detail-value">{appointmentDetails.userGender}</span>
+          <span className="detail-value">
+            {appointmentDetails.user?.gender}
+          </span>
         </div>
         <div className="detail-item">
           <span className="detail-label">Date:</span>
