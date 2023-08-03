@@ -1,0 +1,163 @@
+.container {
+  /* Existing styles, you can keep them as they are */
+}
+
+h1 {
+  /* Existing styles, you can keep them as they are */
+}
+
+p {
+  /* Existing styles, you can keep them as they are */
+}
+
+button {
+  /* Existing styles, you can keep them as they are */
+}
+
+.view-button {
+  /* Styles for the "View First Session Notes" button */
+  display: block;
+  margin-bottom: 20px;
+  font-size: 18px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 10px 20px;
+}
+
+.view-button:hover {
+  background-color: #0056b3;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.session-table {
+  width: 100%;
+  border-collapse: collapse;
+  /* Add spacing between table cells and the table border */
+  margin-top: 10px;
+}
+
+.session-table th,
+.session-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  /* Center the content inside table cells */
+  text-align: center;
+}
+
+.session-table th {
+  background-color: #68B545; /* Updated background color */
+  color: #fff; /* Updated text color */
+  font-weight: bold;
+  padding: 15px; /* Increased padding */
+}
+
+/* Fix for "SNo" header cell */
+.session-table th:first-child {
+  border-left: none;
+}
+
+/* Center the content in "SNo" td */
+.session-table td:first-child {
+  text-align: center;
+}
+
+.view-session-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.view-session-button:hover {
+  background-color: #0056b3;
+}
+
+/* Remove inner td borders */
+.session-table td {
+  border-left: none;
+  border-right: none;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 600px) {
+  /* Mobile styles */
+  .container {
+    padding: 10px;
+  }
+
+  .view-button {
+    font-size: 16px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  .session-table th,
+  .session-table td {
+    display: block;
+    width: 100%;
+    text-align: left;
+    box-sizing: border-box; /* To include padding in width calculation */
+  }
+
+  .session-table th {
+    background-color: #68B545; /* Updated background color */
+    color: #fff; /* Updated text color */
+    font-weight: bold;
+    padding: 15px; /* Increased padding */
+  }
+
+  /* Fix for "SNo" header cell */
+  .session-table th:first-child {
+    border-left: none;
+  }
+
+  .session-table td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+    text-align: left; /* Align text to the left for mobile view */
+  }
+
+  .session-table td:before {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    content: attr(data-label);
+    font-weight: bold;
+  }
+
+  /* Center the content in "SNo" td for mobile view */
+  .session-table td:first-child {
+    text-align: center;
+  }
+
+  .view-button,
+  .view-session-button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+/* Remove unwanted borders */
+.session-table {
+  border: none;
+}
+
+.session-table th,
+.session-table td {
+  border: none;
+}

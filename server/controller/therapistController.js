@@ -9,6 +9,8 @@ const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const { Session } = require('inspector');
+const ExperienceLevel = require('../models/exprience');
+const { error } = require('console');
 const getTotalTherapists = async (req, res) => {
   try {
     const therapists = await Therapist.find({}).populate('expertise');
@@ -30,6 +32,7 @@ const getTotalTherapists = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while getting total therapists' });
   }
 };
+
 
 const getTherapistDetails = async (req, res) => {
   const therapistId = req.params.id;
@@ -69,11 +72,9 @@ const getTherapistDetails = async (req, res) => {
   }
 };
 
-
 const getAllTherapists = async (req, res) => {
   try {
-    const therapists = await Therapist.find({}).populate('expertise');
-
+    const therapists = await Therapist.find({}).populate('expertise expriencelevel').exec();
     const populatedTherapists = await Promise.all(
       therapists.map(async therapist => {
         const populatedAvailability = await Promise.all(
@@ -107,24 +108,21 @@ const getAllTherapists = async (req, res) => {
       })
     );
 
-    // Filter therapists with complete profiles
-    const completeProfiles = populatedTherapists.filter(
-      therapist =>
-        therapist.expertise && therapist.expertise.length !== 0 &&
-        therapist.expriencelevel !== null &&
-        therapist.meetLink !== "" &&
-        therapist.availability.length > 0  // Ensure at least one valid availability is present
-    );
+    // Filter therapists with approved profiles
+   // Filter therapists with all three fields present (expertise, experience level, meet link) and status is "approved"
+const approvedTherapists = populatedTherapists.filter(
+  therapist => therapist.expertise.length > 0 &&
+    therapist.expriencelevel.length > 0 &&
+    therapist.meetLink !== ""
+);
 
-    if (completeProfiles.length === 0) {
-      return res.status(404).json({ error: 'No therapist profiles are complete or available yet.' });
-    } else {
-      return res.json(completeProfiles);
-    }
+
+    return res.json({ totalTherapists: approvedTherapists.length, therapists: approvedTherapists });
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve therapists', details: error.message });
   }
 };
+
 
 
 const getTherapists = async (req, res) => {
@@ -267,7 +265,7 @@ const createRandomPassword = () => {
 const createTherapist = async (req, res) => {
   try {
     // Extract the required data from the request body
-    const { name, email, mobile, availability } = req.body;
+    const { name, email, mobile, availability, therapisttype } = req.body;
     if (!name) {
       return res.status(400).json({ message: "Name is required" });
     }
@@ -291,12 +289,12 @@ const createTherapist = async (req, res) => {
     if (!mobileRegex.test(mobile)) {
       return res.status(400).json({ message: "Invalid mobile number format" });
     }
-
+    
     // Generate a random password
     const randomPassword = createRandomPassword();
 
     // Create therapist object with populated availability and passwordHash
-    const therapist = new Therapist({ name, email, mobile, availability, password: randomPassword });
+    const therapist = new Therapist({ name, email, mobile, availability,therapisttype, password: randomPassword });
     await therapist.save();
    
     // Create the transporter and mail options
@@ -355,7 +353,7 @@ const updateTherapist = (req, res) => {
 
 const updateTherapists = async (req, res) => {
   const therapistId = req.params.id;
-  const { expertise, experienceLevel, meetLink } = req.body;
+  const { expertise, expriencelevel, meetLink } = req.body;
 
   try {
     const therapist = await Therapist.findById(therapistId);
@@ -369,8 +367,8 @@ const updateTherapists = async (req, res) => {
       therapist.expertise = expertise;
     }
 
-    if (experienceLevel) {
-      therapist.experienceLevel = experienceLevel;
+    if (expriencelevel) {
+      therapist.expriencelevel = expriencelevel;
     }
 
     if (meetLink) {
@@ -727,6 +725,19 @@ const createPatient = async (req, res) => {
 };
 
 
+const deleteAllTherapists = async (req, res) => {
+  try {
+    // Delete all therapists from the database
+    await Therapist.deleteMany({});
+
+    res.status(200).json({ message: 'All therapists deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting therapists:', error);
+    res.status(500).json({ error: 'An error occurred while deleting therapists' });
+  }
+};
+
+
 module.exports = {
   getTotalTherapists,
   getTherapistDetails,
@@ -751,4 +762,5 @@ getAllTherapists,
   getTherapistmeetlink,
   //updateTherapistLocation,
   createPatient,
+  deleteAllTherapists,
 };

@@ -145,6 +145,28 @@ function NavBar() {
                     AdminD
                   </NavLink>
                 </li>
+                <li className="nav-item">
+                  <NavLink
+                    exact
+                    to="/admin-patient-details"
+                    activeClassName="active"
+                    className="nav-links"
+                    onClick={handleClick}
+                  >
+                    PatientPage
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink
+                    exact
+                    to="/edit_add-questions"
+                    activeClassName="active"
+                    className="nav-links"
+                    onClick={handleClick}
+                  >
+                    First Session Note
+                  </NavLink>
+                </li>
               </>
             )}
 

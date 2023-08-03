@@ -9,7 +9,7 @@ function Therapist({ therapist }) {
       <div className="therapist-card">
         <div className="therapist-image-container">
           <img
-            src={`data:${therapist?.image?.contentType};base64,${therapist?.image?.data}`}
+            src={therapist?.image}
             alt="Rounded"
           />
           <img src={inspiron} alt="Watermark" className="watermark" />
@@ -30,7 +30,7 @@ function Therapist({ therapist }) {
             </ul>
           </div>
           <div className="therapist-languages">
-            <span className="therapist-language">Languages:</span>
+            <span className="therapist-language">Mode Of Session:</span>
             <span className="therapist-lang">
               {therapist?.modeOfSession.join(", ")}
             </span>

@@ -13,12 +13,21 @@ export const TherapistsWithFilter = () => {
   const [experienceLevelOptions, setExperienceLevelOptions] = useState([]);
   const [sexOptions, setSexOptions] = useState([]);
   const [ageOptions, setAgeOptions] = useState([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [activeFilter, setActiveFilter] = useState(null);
 
   const dispatch = useDispatch();
   const therapists = useSelector(state => state.therapists);
   const [filteredTherapists, setFilteredTherapists] = useState([]);
 
   const [expertises, setExpertises] = useState([]);
+  const handleToggleFilters = () => {
+    setShowFilters(prevState => !prevState);
+  };
+
+  const handleFilterLabelClick = label => {
+    setActiveFilter(activeFilter === label ? null : label);
+  };
 
   useEffect(() => {
     // Define the API endpoint
@@ -135,7 +144,7 @@ export const TherapistsWithFilter = () => {
   const optionsData = [
     {
       label: "Experties",
-      options: ["Depression", "IBS", "Stress", "Mania"],
+      options: ["Depression", "Breakup", "Anxiety", "Sadness"],
     },
     {
       label: "Session Mode",
@@ -247,7 +256,7 @@ export const TherapistsWithFilter = () => {
         .filter(expertise => expertise !== undefined)
         .map(expertise => expertise.type[0]);
 
-        console.log(expertisesWithType)
+      console.log(expertisesWithType);
 
       const filteredTherapistsByScore = therapists.filter(therapist => {
         const matchedExpertise = expertisesWithType.some(expertiseType =>
@@ -271,20 +280,94 @@ export const TherapistsWithFilter = () => {
 
   return (
     <>
-      <div className="filter-container">
-        <div className="filter-label">Apply Filters:</div>
-        <div className="filter-options">
-          {optionsData.map(data => (
-            <div className="filter-field" key={data.label}>
-              <div className="field-label">{data.label}:</div>
-              {renderOptions(data.label, data.options)}
+      {/* Button to toggle the visibility of filters */}
+      <button
+        className="toggle-filters-btn"
+        style={{
+          position: "fixed",
+          top: "15%",
+          left: "10px",
+          transform: "translateY(-50%)",
+          zIndex: "9999",
+          padding: "10px",
+          backgroundColor: "#ffffff",
+          border: "1px solid #ccc",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+        onClick={handleToggleFilters}
+      >
+        {showFilters ? "Hide Filters" : "Show Filters"}
+      </button>
+
+      {/* Filter container */}
+      <div
+        className="filter-container"
+        style={{
+          backgroundColor: "#5179BD",
+          position: "fixed",
+          top: "0",
+          left: showFilters ? "0" : "-100%",
+          minWidth: "25%",
+          height: "100%",
+          zIndex: "9998",
+          marginTop: "4.3rem",
+          padding: "20px",
+          marginTop: "4.4rem",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          transition: "left 0.3s",
+          overflowY: "auto", // Add scroll effect if content exceeds container size
+        }}
+      >
+        {optionsData.map(data => (
+          <div
+            className="filter-field"
+            key={data.label}
+            style={{
+              marginTop: "4.4rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              className="field-label"
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                fontSize: "1rem",
+                marginTop: "rem",
+              }}
+              onClick={() => handleFilterLabelClick(data.label)}
+            >
+              {data.label}:
+              {activeFilter === data.label ? (
+                <span style={{ marginLeft: "5px", fontSize: "10px" }}>▼</span>
+              ) : (
+                <span style={{ marginLeft: "5px", fontSize: "10px" }}>▶</span>
+              )}
             </div>
-          ))}
-        </div>
-        <button className="apply-btn" onClick={handleApplyFilters}>
+            {activeFilter === data.label && (
+              <div
+                className="filter-options"
+                style={{ margin: "0.2rem , 0.2rem , 0.2rem , 0" }}
+              >
+                {renderOptions(data.label, data.options)}
+              </div>
+            )}
+          </div>
+        ))}
+        <button
+          className="apply-btn"
+          onClick={handleApplyFilters}
+          style={{ backgroundColor: "#68B545", color: "white" }}
+        >
           Apply
         </button>
       </div>
+
+      {/* Therapists list */}
       <div className="therapist-grandParent">
         <div className="therapist-containerr">
           {filteredTherapists.map(therapist => (

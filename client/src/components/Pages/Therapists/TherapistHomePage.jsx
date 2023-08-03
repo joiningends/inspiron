@@ -62,6 +62,7 @@ const TherapistHomePage = () => {
   const handleDetails = appointmentId => {
     // Handle details button click for the given appointmentId
     console.log("Details button clicked for appointment:", appointmentId);
+    window.open(`/patient-details/${appointmentId}`, "_blank");
   };
 
   return (

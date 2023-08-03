@@ -2,6 +2,8 @@ const { User } = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Therapist } = require('../models/therapist');
+const Heading = require('../models/heading');
+
 // Get all users
 const getUsers = async (req, res) => {
   try {
@@ -69,44 +71,30 @@ res
   .json({ success: false, error: 'An error occurred while creating the user' });
 }
 };
-// Update a user
-const updateUser = async (req, res) => {
-  try {
-    const userExist = await User.findById(req.params.id);
-    let newPassword;
-    if (req.body.password) {
-      newPassword = bcrypt.hashSync(req.body.password, 10);
-    } else {
-      newPassword = userExist.passwordHash;
-    }
 
+const updateUser = async (req, res) => {
+  const userId = req.params.id;
+  const updateData = req.body;
+
+  try {
+    // Find the user by their ID
     const user = await User.findByIdAndUpdate(
-      req.params.id,
-      {
-        firstname: req.body.firstname,
-        middlename: req.body.middlename,
-        lastname: req.body.lastname,
-        mobile: req.body.mobile,
-        email: req.body.email,
-        passwordHash: bcrypt.hashSync(req.body.password, 10),
-        host: req.body.host,
-        intro: req.body.intro,
-        profile: req.body.profile,
-        isAdmin: req.body.isAdmin,
-        assessmentScore: req.body.assessmentScore,
-      },
-      { new: true }
+      userId,
+      updateData,
+      { new: true, upsert: true }
     );
 
     if (!user) {
-      return res.status(400).send('the user cannot be created!');
+      return res.status(400).send('The user could not be updated!');
     }
 
     res.send(user);
   } catch (error) {
-    res.status(500).json({ success: false });
+    console.error('Failed to update user:', error);
+    res.status(500).json({ success: false, error: 'An error occurred while updating the user' });
   }
 };
+
 
 
 
@@ -253,6 +241,98 @@ const getUserCount = async (req, res) => {
     res.status(500).json({ success: false });
   }
 };
+const updateUserByTherapist = async (req, res) => {
+  const userId = req.params.id;
+  const therapistInput = req.body; // The data filled by the therapist
+
+  try {
+    // Find the user by their ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update the user's name, age, and gender if provided
+    user.name = therapistInput.name || user.name;
+    user.age = therapistInput.age || user.age;
+    user.gender = therapistInput.gender || user.gender;
+
+    // Update 'chief', 'illness', 'socioeconomic', and 'casesummery' fields filled by the therapist
+    user.chief = therapistInput.chief || user.chief;
+    user.illness = therapistInput.illness || user.illness;
+    user.socioeconomic = therapistInput.socioeconomic || user.socioeconomic;
+    user.casesummery = therapistInput.casesummery || user.casesummery;
+
+    // Save the updated user
+    await user.save();
+
+    // Create a new user object containing the relevant fields for the response
+    const updatedUser = {
+      _id: user._id,
+      name: user.name,
+      age: user.age,
+      gender: user.gender,
+      socioeconomic: user.socioeconomic,
+      chief: user.chief,
+      illness: user.illness,
+      casesummery: user.casesummery,
+    };
+
+    return res.json({ message: 'User information updated successfully', user: updatedUser });
+  } catch (err) {
+    console.error('Error updating user information:', err);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
+
+
+
+const updateUserSessionNotes = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { sessionnotes } = req.body;
+
+    // Find the user by ID
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update the sessionnotes if provided in the request body
+    if (sessionnotes && Array.isArray(sessionnotes.option)) {
+      user.sessionnotes.option = sessionnotes.option;
+    }
+
+    // Save the updated user
+    const updatedUser = await user.save();
+
+    // Extract the required fields for the result
+    const { _id, name, Sessionnumber, date, time } = updatedUser;
+
+    // Prepare the result JSON
+    const result = {
+      userid: _id,
+      name,
+      Sessionnumber,
+      date,
+      time,
+      sessionnotes
+    };
+
+    res.json(result);
+  } catch (error) {
+    console.error('Error updating user session notes:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
 
 module.exports = {
   getUsers,
@@ -263,4 +343,6 @@ module.exports = {
   registerUser,
   deleteUser,
   getUserCount,
+  updateUserByTherapist,
+  updateUserSessionNotes
 };

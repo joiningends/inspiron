@@ -1,23 +1,24 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
+ 
     name: {
         type: String,
-        required: true,
+        
     },
     
     age:{
 type:Number,
-required:true,
+
     },
     mobile: {
         type: Number,
-        required: true,
+       
 
     },
     gender: {
         type: String,
-        required: false,
+        
       },
     email: {
         type: String,
@@ -27,12 +28,12 @@ required:true,
     
     passwordHash: {
         type: String,
-        required: true,
+        
     },
     
     host: {
         type: Number,
-        required: true,
+        
       },
     
     registeredAt: {
@@ -45,20 +46,179 @@ required:true,
     },
     intro: {
         type: String,
-        require: true
+        
     },
     profile :{
         type: String,
-        required: true,
+        
     },
     assessmentScore: {
     
         type: Number,
-        required: true,
+
      
     },
+    therapist: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Therapist'
+        
+      },
+      socioeconomic:{
+        pronouns: {
+        type: String,
+        enum: ['He/Him', 'She/Her', 'They/Them', 'No pronouns'],
+        required: false
+      },
+      height: {
+        type: Number
+      },
+      weight: {
+        type: Number
+      },
+      fullAddress: {
+        type: String
+      },
+      contactDetails: {
+        type: String
+      },
+      emergencyContactName: {
+        type: String
+      },
+      emergencyContactNumber: {
+        type: String
+      },
+      education: {
+        comments: {
+          type: String
+        },
+        tenth: {
+          type: String
+        },
+        twelfth: {
+          type: String
+        },
+        graduation: {
+          type: String
+        },
+        postGraduation: {
+          type: String
+        }
+      },
+      occupation: {
+        type: String
+      },
+      socioeconomicStatus: {
+        type: String,
+        
+      },
+      informant: {
+        name: {
+          type: String
+        },
+        relationshipWithPatient: {
+          type: String,
+          
+        },
+        durationOfStayWithPatient: {
+          type: String
+        }
+      },
+      information: {
+        type: String,
+        
+      },
+      religionEthnicity: {
+        type: String
+      },
+      dateOfBirth: {
+        type: Date
+      },
+      languagesKnown: {
+        type: [String],
+         
+        default: []
+      },
+      otherLanguage: {
+        type: String
+      },
+      foreignLanguage: {
+        type: String
+      },
+      maritalStatus: {
+        type: String,
+        enum: ['Married', 'Unmarried', 'Single', 'In a relationship']
+      },
+      courtshipDuration: {
+        type: Number
+      },
+      reference: {
+        type: String,
+        
+      },
+    },
+      chief: [
+        {
+          onset: String,
+          SelectedOptions: [
+            {
+              QuestionName: String,
+              option: String,
+              comment: String
+            }
+          ]
+        }
+      ],
+      illness: [
+        {
+          onset: String,
+          SelectedOptions: [
+            {
+              QuestionName: String,
+              option: String,
+              comment: String
+            }
+          ]
+        }
+      ],
+      casesummery:{
+        type:String
+      },
+      
+      Sessionnumber:{
+        type: Number, 
+      },
+      
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+        time: {
+          type: String,
+         
+          default: () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+        sessionnotes:{
+          Summary :{
+            type: String,
+          },
+          Growthcurvepoints:{
+            type: String,
+          },
+TherapeuticTechniquesused:{
+  type: String,
+},
+Homeworkgiven:{
+  type: String,
+},
+Nextsessionplan:{
+  type: String,
+},
+             option:[{
+                type:String
+             }]
+        },
     
-    coins: {
+      coins: {
         type: Number,
         default: 0,
         required:false,

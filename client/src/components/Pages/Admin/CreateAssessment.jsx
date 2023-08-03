@@ -79,6 +79,7 @@ function CreateAssessment() {
       <button
         className="create-assessment-button"
         onClick={handleCreateAssessment}
+        style={{ marginLeft: "5rem" }}
       >
         Create Assessment
         <RiAddLine className="create-assessment-icon" />

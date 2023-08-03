@@ -13,6 +13,8 @@ import "./TimeSlots.css";
 import moment from "moment";
 import axios from "axios";
 import "./TherapistProfilePage.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 function TherapistProfilePage() {
   const dispatch = useDispatch();
@@ -42,15 +44,39 @@ function TherapistProfilePage() {
   const [slotsPerPage] = useState(6); // Number of slots to display per page
   const [appointmentMode, setAppointmentMode] = useState("online");
   const [selectedLocation, setSelectedLocation] = useState("");
-
   const [imageUrl, setImageUrl] = useState(therapist?.image);
+  const [availability, setAvailability] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:4000/api/v1/categories`)
+      .then(response => {
+        const fetchedData = response.data;
+        setAvailability(fetchedData);
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
 
   console.log(therapist?.image);
+  function formatDate(dateString) {
+    if (!dateString) return ""; // Return empty string if dateString is undefined or null
 
-  const handleImageChange = async event => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, "0"); // Pad day with leading zero if necessary
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based, so add 1 to get the correct month
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  }
+
+  const handleImageChange = async (event) => {
     const file = event.target.files[0];
     const formData = new FormData();
     formData.append("image", file);
+
+    console.log(file);
 
     try {
       const response = await axios.put(
@@ -63,7 +89,7 @@ function TherapistProfilePage() {
         }
       );
 
-      setImageUrl(response.data.image.data);
+      // Assuming the response.data.image contains the URL of the uploaded image.
     } catch (error) {
       console.error("Failed to upload image:", error);
       // Handle error (e.g., show an error message to the user)
@@ -86,7 +112,7 @@ function TherapistProfilePage() {
       // Setting the therapistId state with the extracted ID
       setTherapistId(id);
     }
-  }, []);
+  });
 
   useEffect(() => {
     const fetchTherapistData = async () => {
@@ -327,7 +353,7 @@ function TherapistProfilePage() {
       updateTherapist(therapistId, {
         email: email,
         mobile: mobile,
-        emergencycontact: emergencyContact,
+        emergencymobile: emergencyContact,
       })
     );
     setShowContactForm(false);
@@ -389,29 +415,50 @@ function TherapistProfilePage() {
 
   return (
     <>
-      <div className="rounded-image-container">
+      <div className="rounded-image-container" style={{ position: "relative" }}>
         <div className="rounded-image">
-          <img
-            src={`data:${therapist?.image?.contentType};base64,${therapist?.image?.data}`}
-            alt="Rounded"
-          />
+          <img src={therapist?.image} alt="Rounded" />
+          <div
+            className="edit-button"
+            style={{
+              position: "absolute",
+              top: "calc(100% - 40px)", // Adjust the distance from the top here
+              right: "10px",
+              background: "white",
+              padding: "5px",
+              borderRadius: "50%",
+              cursor: "pointer",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <FontAwesomeIcon icon={faEdit} style={{ fontSize: "16px" }} />
+            <input
+              type="file"
+              id="upload"
+              accept="image/*"
+              onChange={handleImageChange}
+              style={{
+                position: "absolute",
+                width: "100%", // Make the input element cover the whole container
+                height: "100%", // Make the input element cover the whole container
+                opacity: "0", // Visually hide the input element
+                cursor: "pointer",
+              }}
+            />
+          </div>
         </div>
-        <label htmlFor="upload" className="edit-button">
-          Edit
-          <input
-            type="file"
-            id="upload"
-            accept="image/*"
-            onChange={handleImageChange}
-            style={{ display: "none" }}
-          />
-        </label>
       </div>
       <div className="personalDetailsDIV">
-        <div className="primaryDetailsDiv">
+        <div
+          className="primaryDetailsDiv"
+          style={{ width: "36%", marginRight: "-1rem" }}
+        >
           <div className="primaryDetalsUpperPart">
             <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
-              Primary Details
+              PRIMARY DETAILS
             </span>
             <span
               className="editIcon"
@@ -434,7 +481,7 @@ function TherapistProfilePage() {
                 Date Of Birth
               </h1>
               <h1 className="itemsOfPrimaryDetails">
-                {therapist?.DateOfBirth}
+                {formatDate(therapist?.dob)}
               </h1>
             </div>
             <div className="primaryDetailsLowerPart1div2">
@@ -443,10 +490,10 @@ function TherapistProfilePage() {
             </div>
           </div>
         </div>
-        <div className="primaryDetailsDiv">
+        <div className="primaryDetailsDiv" style={{ width: "36%" }}>
           <div className="primaryDetalsUpperPart">
             <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
-              Contact Details
+              CONTACT DETAILS
             </span>
             <span
               className="editIcon"
@@ -473,7 +520,7 @@ function TherapistProfilePage() {
             <div className="primaryDetailsLowerPart1div2">
               <h1 className="fullnameH1">emergency contact</h1>
               <h1 className="itemsOfPrimaryDetails">
-                {therapist?.emergencycontact}
+                {therapist?.emergencymobile}
               </h1>
             </div>
           </div>
@@ -483,7 +530,7 @@ function TherapistProfilePage() {
       <div className="addressesDetailsDiv">
         <div className="primaryDetalsUpperPart">
           <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
-            Addresses
+            ADDRESS
           </span>
           <span
             className="editIcon"
@@ -569,7 +616,7 @@ function TherapistProfilePage() {
                 value={collegeName}
                 onChange={e => setCollegeName(e.target.value)}
               />
-              <label>Education Level</label>
+              <label>Field of study</label>
               <input
                 type="text"
                 value={educationLevel}
@@ -653,21 +700,31 @@ function TherapistProfilePage() {
         <div className="editFormContainer">
           <div className="editForm">
             <h2>Edit Address</h2>
-            <label>Current Address:</label>
+            <label style={{ fontSize: "1rem" }}>Current Address:</label>
             <input
               type="text"
               value={currentAddress}
               onChange={e => setCurrentAddress(e.target.value)}
             />
-            <label>Permanent Address:</label>
+            <label style={{ fontSize: "1rem" }}>Permanent Address:</label>
             <input
               type="text"
               value={permanentAddress}
               onChange={e => setPermanentAddress(e.target.value)}
             />
             <div className="buttons">
-              <button onClick={handleAddressSaveClick}>Save</button>
-              <button onClick={handleAddressCancelClick}>Cancel</button>
+              <button
+                onClick={handleAddressSaveClick}
+                style={{ backgroundColor: "#D67449" }}
+              >
+                Save
+              </button>
+              <button
+                onClick={handleAddressCancelClick}
+                style={{ backgroundColor: "#68B545" }}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
@@ -677,7 +734,9 @@ function TherapistProfilePage() {
         <div className="modalContainer">
           <div className="modal">
             <h2>Edit Contact Details</h2>
-            <label htmlFor="email">Email:</label>
+            <label htmlFor="email" style={{ fontSize: "1rem" }}>
+              Email:
+            </label>
             <input
               type="email"
               id="email"
@@ -685,7 +744,9 @@ function TherapistProfilePage() {
               onChange={e => setEmail(e.target.value)}
             />
 
-            <label htmlFor="mobile">Mobile:</label>
+            <label htmlFor="mobile" style={{ fontSize: "1rem" }}>
+              Mobile:
+            </label>
             <input
               type="text"
               id="mobile"
@@ -693,7 +754,9 @@ function TherapistProfilePage() {
               onChange={e => setMobile(e.target.value)}
             />
 
-            <label htmlFor="emergencyContact">Emergency Contact:</label>
+            <label htmlFor="emergencyContact" style={{ fontSize: "1rem" }}>
+              Emergency Contact:
+            </label>
             <input
               type="text"
               id="emergencyContact"
@@ -803,10 +866,18 @@ function TherapistProfilePage() {
                   />
                 </div>
 
-                <div className="input-container">
-                  <label>Mode of Appointment:</label>
-                  <div className="radio-group">
-                    <div>
+                <div
+                  className="input-container"
+                  style={{ display: "flex", flexDirection: "column" }}
+                >
+                  <label style={{ marginBottom: "2.2rem" }}>
+                    Mode of Appointment:
+                  </label>
+                  <div
+                    className="radio-group"
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center" }}>
                       <input
                         type="radio"
                         id="online"
@@ -815,36 +886,38 @@ function TherapistProfilePage() {
                         checked={appointmentMode === "online"}
                         onChange={handleAppointmentModeChange}
                       />
-                      <label htmlFor="online">Online</label>
+                      <label htmlFor="online" style={{ marginLeft: "5px" }}>
+                        Online
+                      </label>
                     </div>
-                    <div>
+                    <div style={{ display: "flex", alignItems: "center" }}>
                       <input
                         type="radio"
                         id="offline"
                         name="appointmentMode"
-                        value="offline"
-                        checked={appointmentMode === "offline"}
+                        value="online/offline"
+                        checked={appointmentMode === "online/offline"}
                         onChange={handleAppointmentModeChange}
                       />
-                      <label htmlFor="offline">Offline</label>
+                      <label htmlFor="offline" style={{ marginLeft: "5px" }}>
+                        Online/Offline
+                      </label>
                     </div>
                   </div>
                 </div>
 
-                {appointmentMode === "offline" && (
+                {appointmentMode === "online/offline" && (
                   <div className="input-container">
                     <label>Location:</label>
                     <select
                       value={selectedLocation}
                       onChange={handleLocationChange}
+                      style={{ width: "9rem", padding: "8px" }} // Adjust the width and padding as needed
                     >
                       <option value="">Select a location</option>
-                      {therapist?.availability.map(availability => (
-                        <option
-                          key={availability._id}
-                          value={availability.location.centerName}
-                        >
-                          {availability.location.centerName}
+                      {availability?.map(item => (
+                        <option key={item._id} value={item?.centerName}>
+                          {item?.centerAddress} {item?.centerName}
                         </option>
                       ))}
                     </select>
@@ -861,7 +934,7 @@ function TherapistProfilePage() {
                 type="button"
                 onClick={handleAddSlotClick}
                 disabled={!startTime}
-                style={{ width: "8rem", fontSize: "0.9rem" }}
+                style={{ width: "5rem", fontSize: "0.9rem" }}
               >
                 Add Slot
               </button>
@@ -870,7 +943,7 @@ function TherapistProfilePage() {
             <div
               className="selected-slots"
               style={{
-                marginLeft: "3rem",
+                marginLeft: "1rem",
                 marginRight: "3rem",
                 width: "10rem",
               }}
@@ -878,7 +951,7 @@ function TherapistProfilePage() {
               <h3 style={{ width: "10rem" }}>Selected Slots:</h3>
               {slots.length > 0 ? (
                 <ul>
-                  {slots.map((slot, index) => (
+                  {slots?.map((slot, index) => (
                     <li key={index}>
                       {slot.startTime} to {slot.endTime}
                     </li>
@@ -894,7 +967,11 @@ function TherapistProfilePage() {
                 <button
                   type="button"
                   onClick={handleSubmitClick}
-                  style={{ width: "10rem", fontSize: "0.9rem" }}
+                  style={{
+                    marginTop: "3rem",
+                    width: "8.4rem",
+                    fontSize: "0.75rem",
+                  }}
                 >
                   Submit Slots
                 </button>

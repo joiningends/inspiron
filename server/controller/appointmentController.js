@@ -1,5 +1,15 @@
 const { Appointment } = require('../models/appointment');
 const { User } = require('../models/user');
+
+// Function to update the Sessionnumber for the user
+const updateSessionNumber = async (userId, therapistId) => {
+  const numberOfSessions = await Appointment.countDocuments({
+    therapist: therapistId,
+    user: userId,
+  });
+  await User.findByIdAndUpdate(userId, { Sessionnumber: numberOfSessions + 1 });
+};
+
 exports.createAppointment = async (req, res) => {
   const { therapistId, userId, dateTime, startTime, endTime, sessionMode } = req.body;
 
@@ -14,8 +24,8 @@ exports.createAppointment = async (req, res) => {
     const existingAppointment = await Appointment.findOne({
       therapist: therapistId,
       dateTime,
-      startTime: { $lte: endTime },  // Check if the existing appointment end time is after or at the new appointment's start time
-      endTime: { $gte: startTime },  // Check if the existing appointment start time is before or at the new appointment's end time
+      startTime: { $lte: endTime },
+      endTime: { $gte: startTime },
     });
 
     if (existingAppointment) {
@@ -24,7 +34,7 @@ exports.createAppointment = async (req, res) => {
 
     const newAppointment = new Appointment({
       therapist: therapistId,
-      user: userId, // Store the user's ObjectId directly in the appointment
+      user: userId,
       dateTime,
       startTime,
       endTime,
@@ -33,6 +43,9 @@ exports.createAppointment = async (req, res) => {
 
     // Save the appointment
     const savedAppointment = await newAppointment.save();
+
+    // Update the user's Sessionnumber after saving the appointment
+    await updateSessionNumber(userId, therapistId);
 
     // Now, fetch the populated user details and update the appointment object
     const populatedAppointment = await Appointment.findById(savedAppointment._id)
@@ -45,6 +58,7 @@ exports.createAppointment = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while creating the appointment' });
   }
 };
+
 
 
 
