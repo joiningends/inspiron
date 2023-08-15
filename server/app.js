@@ -33,8 +33,9 @@ const exprienceRoutes = require("./routes/expriences");
 
 const PaymentsRoutes = require("./routes/payments");
 const expertisesRoutes = require("./routes/expertise");
-
-
+const clientsRoutes = require("./routes/clients");
+const pricesRoutes = require("./routes/price");
+const coinsRoutes = require("./routes/coins");
 const api = process.env.API_URL;
 
 app.use(`${api}/appointments`, appointmentsRoutes);
@@ -51,7 +52,9 @@ app.use(`${api}/illnesses`, illnessesRoutes);
 app.use(`${api}/expriences`,exprienceRoutes);
 app.use(`${api}/payments`, PaymentsRoutes);
 app.use(`${api}/expetises`,expertisesRoutes );
-
+app.use(`${api}/clients`,clientsRoutes);
+app.use(`${api}/prices`,pricesRoutes);
+app.use(`${api}/coins`,coinsRoutes);
 
 
 //Database
@@ -67,6 +70,6 @@ mongoose.connect(process.env.CONNECTION_STRING,{
     console.log(err);
   });
 //Server
-app.listen(PORT, () => {
-  console.log("server is running http://localhost:"+PORT);
+app.listen(4000, () => {
+  console.log("server is running http://localhost:4000");
 });
