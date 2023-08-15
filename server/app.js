@@ -52,7 +52,9 @@ app.use(`${api}/illnesses`, illnessesRoutes);
 app.use(`${api}/expriences`,exprienceRoutes);
 app.use(`${api}/payments`, PaymentsRoutes);
 app.use(`${api}/expetises`,expertisesRoutes );
-
+app.use(`${api}/clients`,clientsRoutes);
+app.use(`${api}/prices`,pricesRoutes);
+app.use(`${api}/coins`,coinsRoutes);
 
 
 //Database
@@ -69,5 +71,5 @@ mongoose.connect(process.env.CONNECTION_STRING,{
   });
 //Server
 app.listen(4000, () => {
-  console.log("server is running http://localhost:4000");
+  console.log("server is running http://localhost:3000");
 });
