@@ -23,6 +23,8 @@ function NavBar() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("role");
+    localStorage.removeItem("groupid");
+    console.log(localStorage.getItem("groupid"));
 
     // Redirect to login page
     navigate("/login");
@@ -165,6 +167,17 @@ function NavBar() {
                     onClick={handleClick}
                   >
                     First Session Note
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink
+                    exact
+                    to="/Group"
+                    activeClassName="active"
+                    className="nav-links"
+                    onClick={handleClick}
+                  >
+                    Group
                   </NavLink>
                 </li>
               </>

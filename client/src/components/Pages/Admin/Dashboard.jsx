@@ -8,35 +8,29 @@ import rightSideArrow from "./right-arrow.png";
 
 function Dashboard() {
   const dispatch = useDispatch();
-  const [showForm, setShowForm] = useState(false); // State to control the visibility of the form
+  const [profession, setProfession] = useState("");
+  const [showForm, setShowForm] = useState(false);
   const [address, setAddress] = useState("");
   const [mobile, setPhoneNumebr] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-
   const [therapistsData, setTherapistsDetails] = useState({
     totalTherapists: 0,
     therapists: [],
   });
 
-  console.log(therapistsData);
-
   useEffect(() => {
-    // Function to fetch therapist details using Axios
     const fetchTherapistsDetails = async () => {
       try {
         const response = await axios.get(
           "http://localhost:4000/api/v1/therapists/total-therapists"
         );
-        // Assuming the response data is an object with 'totalTherapists' and 'therapists' properties
-        console.log(response.data);
         setTherapistsDetails(response.data);
       } catch (error) {
         console.error("Error fetching therapist details:", error);
       }
     };
 
-    // Call the function to fetch therapist details
     fetchTherapistsDetails();
   }, []);
 
@@ -48,38 +42,21 @@ function Dashboard() {
     });
   }, []);
 
-  console.log(availableAddress);
-
   const handleDetails = therapistId => {
-    // Open a new window with the therapist details
     const url = `/therapists-Details/${therapistId}`;
     window.open(url, "_blank");
   };
 
   const handleCreateTherapist = () => {
-    // Show the form when the "Create new therapist" button is clicked
     setShowForm(true);
   };
 
   const handleFormCancel = () => {
-    // Hide the form when the cancel button is clicked
     setShowForm(false);
   };
 
   const handleFormSubmit = e => {
     e.preventDefault();
-    console.log({
-      mobile,
-      name,
-      email,
-      availability: [
-        {
-          location: address,
-          day: [], // Add the desired day value(s) here
-          timeSlots: [], // Add the desired time slot value(s) here
-        },
-      ],
-    });
     axios
       .post("http://localhost:4000/api/v1/therapists", {
         mobile,
@@ -88,14 +65,13 @@ function Dashboard() {
         availability: [
           {
             location: address,
-            day: [], // Add the desired day value(s) here
-            timeSlots: [], // Add the desired time slot value(s) here
+            day: [],
+            timeSlots: [],
           },
         ],
       })
       .then(function (response) {
         console.log(response);
-        // Close the form and refresh the page
         setShowForm(false);
         window.location.reload();
       })
@@ -105,7 +81,6 @@ function Dashboard() {
     console.log("Form submitted");
   };
 
-  console.log("Available Addresses:", availableAddress);
   let optionItems = availableAddress?.map(item => (
     <option key={item?._id} value={item?._id}>
       {`${item?.centerName}, ${item?.centerAddress}`}
@@ -114,11 +89,34 @@ function Dashboard() {
 
   return (
     <>
-      <div className="therapistsDetailsAvailability">
-        <div className="therapistQuantintity">
-          {/* <div>1</div>
-          <div>2</div>
-          <div>3</div> */}
+      <div
+        className="therapistsDetailsAvailability"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          marginBottom: "1rem",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "0.9rem",
+            fontWeight: "bold",
+            marginRight: "1rem",
+            display: "flex",
+            alignItems: "center",
+            alignContent: "center",
+            color: "white",
+            backgroundColor: "#D67449",
+            padding: "5px 8px",
+            borderRadius: "4px",
+            width: "13rem",
+            height: "5rem",
+            marginTop: "1rem",
+          }}
+        >
+          Total Therapist Count: {therapistsData.totalTherapists}
         </div>
         <div
           className="therapistCreateButton"
@@ -128,87 +126,135 @@ function Dashboard() {
             backgroundColor: "#D67449",
             padding: "5px 8px",
             borderRadius: "4px",
-            width: "12rem",
+            width: "13rem",
+            marginRight: "6%",
+            height: "5rem",
             cursor: "pointer",
+            marginTop: "1rem",
           }}
           onClick={handleCreateTherapist}
         >
           <img
             src={createTherapistimg}
             alt="Create Therapist"
-            style={{ marginRight: "5px", width: "20px", height: "20px" }}
+            style={{ marginRight: "0.5rem", width: "2rem", height: "2rem" }}
           />
           <span
-            style={{ color: "white", fontWeight: "bold", fontSize: "14px" }}
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              fontSize: "0.9rem",
+              whiteSpace: "nowrap",
+            }}
           >
             Create new therapist
           </span>
           <img
             src={rightSideArrow}
             alt="Right Arrow"
-            style={{ marginLeft: "5px", width: "20px", height: "20px" }}
+            style={{ marginLeft: "0.5rem", width: "20px", height: "20px" }}
           />
         </div>
       </div>
-      <div className="adminDashboardContainer">
-        <h2>Therapists</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Therapist</th>
-              <th>Gender</th>
-              <th>Email</th>
-              <th>Mobile No.</th>
-              <th>Patients</th>
-              <th>Approval Status</th>
-              <th>Total Revenue</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {therapistsData.therapists.map(therapist => (
-              <tr key={therapist._id}>
-                <td>
-                  <img
-                    src={therapist?.image}
-                    alt="Rounded"
-                    className="therapist-image"
-                  />
-                  {therapist?.name}
-                </td>
-                <td>{therapist?.gender}</td>
-                <td style={{ color: "#D67449" }}>{therapist?.email}</td>
-                <td>{therapist?.mobile}</td>
-                <td>{therapist?.patients?.length}</td>
-                <td>{therapist?.status}</td>
-                <td>{therapist?.totalRevenue}</td>
-                <td>
-                  <button
-                    onClick={() => handleDetails(therapist?._id)}
-                    style={{ border: "1px solid " }}
-                  >
-                    Details
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {/* Render the form component conditionally based on the showForm state */}
-      {showForm && (
-        <div className="createTherapistForm">
-          <h2
+
+      <div
+        className="adminDashboardContainer"
+        style={{ padding: "1rem", width: "100%" }}
+      >
+        <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>Therapists</h2>
+        <div style={{ overflowX: "auto" }}>
+          <table
             style={{
-              backgroundColor: "#D67449",
-              color: "white",
-              padding: "10px",
-              textAlign: "center",
+              width: "100%",
+              borderCollapse: "collapse",
+              fontSize: "0.85rem",
             }}
           >
-            Create New Therapist
-          </h2>
+            <thead>
+              <tr>
+                <th style={{ padding: "0.3rem", textAlign: "left" }}>
+                  Therapist
+                </th>
+                <th style={{ padding: "0.3rem", textAlign: "left" }}>Gender</th>
+                <th style={{ padding: "0.3rem", textAlign: "left" }}>Email</th>
+                <th style={{ padding: "0.3rem", textAlign: "left" }}>
+                  Mobile No.
+                </th>
+                <th style={{ padding: "0.3rem", textAlign: "left" }}>
+                  Patients
+                </th>
+                <th style={{ padding: "0.3rem", textAlign: "left" }}>Status</th>
+                <th style={{ padding: "0.3rem", textAlign: "left" }}>
+                  Revenue
+                </th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {therapistsData.therapists.map(therapist => (
+                <tr key={therapist._id}>
+                  <td
+                    style={{
+                      padding: "0.3rem",
+                      textAlign: "left",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <img
+                      src={therapist?.image}
+                      alt="Rounded"
+                      className="therapist-image"
+                      style={{
+                        marginRight: "0.3rem",
+                        width: "30px",
+                        height: "30px",
+                        borderRadius: "50%",
+                      }}
+                    />
+                    {therapist?.name}
+                  </td>
+                  <td style={{ padding: "0.3rem", textAlign: "left" }}>
+                    {therapist?.gender}
+                  </td>
+                  <td
+                    style={{ padding: "0.3rem", textAlign: "left" }}
+                    className="emailColumn"
+                  >
+                    {therapist?.email}
+                  </td>
+                  <td style={{ padding: "0.3rem", textAlign: "left" }}>
+                    {therapist?.mobile}
+                  </td>
+                  <td style={{ padding: "0.3rem", textAlign: "left" }}>
+                    {therapist?.patients?.length}
+                  </td>
+                  <td style={{ padding: "0.3rem", textAlign: "left" }}>
+                    {therapist?.status}
+                  </td>
+                  <td style={{ padding: "0.3rem", textAlign: "left" }}>
+                    {therapist?.totalRevenue}
+                  </td>
+                  <td style={{ padding: "0.3rem", textAlign: "left" }}>
+                    <button
+                      onClick={() => handleDetails(therapist?._id)}
+                      className="detailsButton"
+                      style={{ padding: "0.2rem 0.5rem", fontSize: "0.75rem" }}
+                    >
+                      Details
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {showForm && (
+        <div className="createTherapistForm">
           <form onSubmit={handleFormSubmit}>
+            <label style={{ fontSize: "2rem" }}>Create New Therapist</label>
             <label>
               Name:
               <input
@@ -237,8 +283,28 @@ function Dashboard() {
               />
             </label>
             <label>
+              Profession:
+              <label style={{ display: "inline-block", marginLeft: "10px" }}>
+                <input
+                  type="radio"
+                  value="therapist"
+                  checked={profession === "therapist"}
+                  onChange={() => setProfession("therapist")}
+                />
+                Therapist
+              </label>
+              <label style={{ display: "inline-block", marginLeft: "10px" }}>
+                <input
+                  type="radio"
+                  value="psychiatrist"
+                  checked={profession === "psychiatrist"}
+                  onChange={() => setProfession("psychiatrist")}
+                />
+                Psychiatrist
+              </label>
+            </label>
+            <label>
               Location:
-              {/* <input type="text" style={{ width: "100%" }} required /> */}
               <select
                 style={{ width: "100%", borderRadius: "1rem" }}
                 onChange={e => setAddress(e.target.value)}

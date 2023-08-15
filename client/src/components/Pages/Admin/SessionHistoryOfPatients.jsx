@@ -23,10 +23,8 @@ const SessionHistoryOfPatients = () => {
 
   return (
     <div>
-      <div className="totalAvailablePatients">
-        Total Patient: {sessionData.length}
-      </div>
-      <button
+      <h1>Session History of Patients</h1>
+      {/* <button
         className="view-button"
         style={{
           backgroundColor: "#D67449",
@@ -35,7 +33,10 @@ const SessionHistoryOfPatients = () => {
         }}
       >
         View First Session Notes
-      </button>
+      </button> */}
+      <p className="totalAvailablePatients">
+        Total Patient: {sessionData.length}
+      </p>
       <h2>Session History</h2>
       <table className="session-table">
         <thead>
@@ -55,11 +56,7 @@ const SessionHistoryOfPatients = () => {
               <td>
                 <button
                   className="view-session-button"
-                  style={{
-                    border: " 1.5px solid #D67449",
-                    backgroundColor: "white",
-                    color: "#D67449",
-                  }}
+                  style={{ backgroundColor: "#D67449", color: "white" }}
                 >
                   View Session Note
                 </button>

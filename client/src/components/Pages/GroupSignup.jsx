@@ -8,20 +8,22 @@ import {
   faEye,
   faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
-import { createUser } from "../redux/Action";
-import { useDispatch } from "react-redux";
+import { faAddressCard } from "@fortawesome/free-solid-svg-icons";
+import { useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Signup.css";
+import axios from "axios";
 
-const Signup = () => {
-  const dispatch = useDispatch();
+const GroupSignUp = () => {
+  const { groupId, company } = useParams();
   const [formData, setFormData] = useState({
     name: "",
     mobile: "",
     email: "",
     password: "",
     confirmPassword: "",
+    empid: "", // Add the new field
   });
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
@@ -29,6 +31,12 @@ const Signup = () => {
 
   const handleChange = e => {
     const { name, value } = e.target;
+
+    // Only update the state if the value is a digit
+    if (name === "mobile" && isNaN(value)) {
+      return; // Ignore non-digit input
+    }
+
     setFormData(prevData => {
       const updatedData = {
         ...prevData,
@@ -56,7 +64,7 @@ const Signup = () => {
     setShowPassword(false);
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     // Check if all fields are completely filled
@@ -65,7 +73,8 @@ const Signup = () => {
       !formData.mobile ||
       !formData.email ||
       !formData.password ||
-      !formData.confirmPassword
+      !formData.confirmPassword ||
+      !formData.empid
     ) {
       toast.error("Please fill in all required fields.", {
         position: "top-right",
@@ -132,36 +141,67 @@ const Signup = () => {
       return;
     }
 
-    // Dispatch the createUser action with the form data
-    dispatch(createUser(formData));
+    try {
+      // Send the registration data to the server
+      const response = await axios.post(
+        `http://localhost:4000/api/v1/users/register/${groupId}`,
+        {
+          name: formData.name,
+          mobile: formData.mobile,
+          email: formData.email,
+          password: formData.password,
+          empid: formData.empid,
+        }
+      );
 
-    // Clear the form data
-    setFormData({
-      name: "",
-      mobile: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
+      // Clear the form data
+      setFormData({
+        name: "",
+        mobile: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        empid: "",
+      });
 
-    // Show success message using toast
-    toast.success("Successfully signed up!", {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      style: {
-        background: "#68b545",
-        color: "#fff",
-        fontSize: "14px",
-        borderRadius: "4px",
-        padding: "12px",
-        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-      },
-    });
+      // Show success message using toast
+      toast.success("Successfully signed up!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          background: "#68b545",
+          color: "#fff",
+          fontSize: "14px",
+          borderRadius: "4px",
+          padding: "12px",
+          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+        },
+      });
+    } catch (error) {
+      console.error("Error registering user:", error);
+      toast.error("An error occurred while signing up. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          background: "#f44336",
+          color: "#fff",
+          fontSize: "14px",
+          borderRadius: "4px",
+          padding: "12px",
+          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+        },
+      });
+    }
   };
 
   const isValidPhoneNumber = phone => {
@@ -316,10 +356,24 @@ const Signup = () => {
             }}
             required
           />
-          {!passwordMatch && (
-            <p className="error">Passwords do not match</p>
-          )}
+          {!passwordMatch && <p className="error">Passwords do not match</p>}
         </div>
+        <div className="form-group">
+          <FontAwesomeIcon
+            icon={faAddressCard}
+            className={`icon ${formData.empid ? "active" : ""}`}
+          />
+          <input
+            type="text"
+            id="empid"
+            name="empid"
+            placeholder="Employee ID" // Change the placeholder to "Employee ID"
+            value={formData.empid}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
         <button type="submit" onClick={handleSubmit}>
           Sign Up
         </button>
@@ -332,4 +386,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default GroupSignUp;

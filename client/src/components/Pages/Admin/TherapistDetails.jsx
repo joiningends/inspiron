@@ -16,6 +16,13 @@ function TherapistDetails() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const therapistId = id;
+  const experienceLevels = [
+    "Beginner",
+    "Intermediate",
+    "Advanced",
+    "Expert",
+    "Not specified",
+  ];
   const therapist = useSelector(state => state.therapist);
   const [showEditForm, setShowEditForm] = useState(false);
   const [name, setName] = useState("");
@@ -255,74 +262,183 @@ function TherapistDetails() {
 
   return (
     <>
-      <div className="personalDetailsDIV">
+      <div
+        className="personalDetailsDIV"
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+          gap: "1rem",
+          padding: "2rem",
+          marginRight: "2rem", // Reduced marginRight for smaller screens
+          marginLeft: "-2rem",
+        }}
+      >
         <div
           className="primaryDetailsDiv"
-          style={{ width: "36%", marginRight: "-1rem" }}
+          style={{
+            flex: "1 1 100%",
+            borderRadius: "10px",
+            boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
+            padding: "1.5rem",
+            backgroundColor: "#fff",
+            minWidth:"22rem",
+          }}
         >
-          <div className="primaryDetalsUpperPart">
-            <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
+          <div
+            className="primaryDetalsUpperPart"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1.5rem",
+            }}
+          >
+            <span
+              className="primaryDetailsTitle"
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                color: "#D67449",
+              }}
+            >
               PRIMARY DETAILS
             </span>
             <span
               className="editIcon"
-              style={{
-                padding: "0.1rem",
-                margin: "0.2rem",
-                borderRadius: "30%",
-              }}
               onClick={openEditForm}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                borderRadius: "50%",
+                padding: "0.5rem 1rem",
+                background: "#D67449",
+              }}
             >
-              <FaEdit style={{ width: "1.3rem" }} />
-              <span className="editText">EDIT</span>
+              <FaEdit style={{ width: "1.3rem", color: "#fff" }} />
+              <span
+                className="editText"
+                style={{
+                  marginLeft: "0.5rem",
+                  fontSize: "1rem",
+                  color: "#fff",
+                }}
+              >
+                EDIT
+              </span>
             </span>
           </div>
-          <div className="primaryDetailsLowerPart1">
+          <div
+            className="primaryDetailsLowerPart1"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+              gridGap: "1rem",
+            }}
+          >
             <div className="primaryDetailsLowerPart1div1">
               <h1 className="fullnameH1">Full Name</h1>
               <h1 className="itemsOfPrimaryDetails">{therapist?.name}</h1>
-              <h1 className="fullnameH1" style={{ paddingTop: "1rem" }}>
-                Date Of Birth
-              </h1>
+              <h1 className="fullnameH1">Date Of Birth</h1>
               <h1 className="itemsOfPrimaryDetails">
                 {formatDate(therapist?.dob)}
               </h1>
             </div>
-            <div className="primaryDetailsLowerPart1div2">
+            <div
+              className="primaryDetailsLowerPart1div2"
+              style={{
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
               <h1 className="fullnameH1">Gender</h1>
               <h1 className="itemsOfPrimaryDetails">{therapist?.gender}</h1>
             </div>
           </div>
         </div>
-        <div className="primaryDetailsDiv" style={{ width: "36%" }}>
-          <div className="primaryDetalsUpperPart">
-            <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
+
+        <div
+          className="primaryDetailsDiv"
+          style={{
+            flex: "1 1 100%",
+            maxWidth: "100%", // Allow the second div to take the full width on smaller screens
+            borderRadius: "10px",
+            boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
+            padding: "1.5rem",
+            backgroundColor: "#fff",
+            marginTop: "2rem", // Add margin to separate the sections on small screens
+            minWidth:"22rem",
+          }}
+        >
+          <div
+            className="primaryDetalsUpperPart"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1.5rem",
+            }}
+          >
+            <span
+              className="primaryDetailsTitle"
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                color: "#D67449",
+              }}
+            >
               CONTACT DETAILS
             </span>
             <span
               className="editIcon"
-              style={{
-                padding: "0.1rem",
-                margin: "0.2rem",
-                borderRadius: "30%",
-              }}
               onClick={openContactForm}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                borderRadius: "50%",
+                padding: "0.5rem 1rem",
+                background: "#D67449",
+              }}
             >
-              <FaEdit style={{ width: "1.3rem" }} />
-              <span className="editText">EDIT</span>
+              <FaEdit style={{ width: "1.3rem", color: "#fff" }} />
+              <span
+                className="editText"
+                style={{
+                  marginLeft: "0.5rem",
+                  fontSize: "1rem",
+                  color: "#fff",
+                }}
+              >
+                EDIT
+              </span>
             </span>
           </div>
-          <div className="primaryDetailsLowerPart1">
+          <div
+            className="primaryDetailsLowerPart1"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+              gridGap: "1rem",
+            }}
+          >
             <div className="primaryDetailsLowerPart1div1">
               <h1 className="fullnameH1">EMAIL</h1>
               <h1 className="itemsOfPrimaryDetails">{therapist?.email}</h1>
-              <h1 className="fullnameH1" style={{ paddingTop: "1rem" }}>
-                Mobile
-              </h1>
+              <h1 className="fullnameH1">Mobile</h1>
               <h1 className="itemsOfPrimaryDetails">{therapist?.mobile}</h1>
             </div>
-            <div className="primaryDetailsLowerPart1div2">
-              <h1 className="fullnameH1">emergency contact</h1>
+            <div
+              className="primaryDetailsLowerPart1div2"
+              style={{
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              <h1 className="fullnameH1">Emergency Contact</h1>
               <h1 className="itemsOfPrimaryDetails">
                 {therapist?.emergencymobile}
               </h1>
@@ -331,32 +447,89 @@ function TherapistDetails() {
         </div>
       </div>
 
-      <div className="addressesDetailsDiv">
-        <div className="primaryDetalsUpperPart">
-          <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
+      <div
+        className="addressesDetailsDiv"
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+          gap: "1rem",
+          padding: "2rem",
+          maxWidth: "82%",
+        }}
+      >
+        <div
+          className="primaryDetalsUpperPart"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <span
+            className="primaryDetailsTitle"
+            style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#D67449" }}
+          >
             ADDRESS
           </span>
           <span
             className="editIcon"
-            style={{
-              padding: "0.1rem",
-              margin: "0.2rem",
-              borderRadius: "30%",
-            }}
             onClick={openAddressForm}
+            style={{
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              padding: "0.2rem 0.5rem",
+              marginBottom: "0.5rem",
+              borderRadius: "10%",
+              marginLeft: "40%",
+              background: "#D67449",
+            }}
           >
-            <FaEdit style={{ width: "1.3rem" }} />
-            <span className="editText">EDIT</span>
+            <FaEdit style={{ width: "1.3rem", color: "#fff" }} />
+            <span
+              className="editText"
+              style={{ marginLeft: "0.5rem", fontSize: "1rem", color: "#fff" }}
+            >
+              EDIT
+            </span>
           </span>
         </div>
-        <div className="addressesDetailBottomsDiv">
-          <div>
+        <div
+          className="addressesDetailBottomsDiv"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <div
+            style={{
+              flex: "0 0 100%",
+              maxWidth: "100%",
+              borderRadius: "10px",
+              boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
+              padding: "1.5rem",
+              backgroundColor: "#fff",
+            }}
+          >
             <h1 className="fullnameH1">CURRENT ADDRESS</h1>
             <h1 className="itemsOfPrimaryDetails">
               {therapist?.currentaddress}
             </h1>
           </div>
-          <div>
+          <div
+            style={{
+              flex: "0 0 100%",
+              maxWidth: "100%",
+              borderRadius: "10px",
+              boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
+              padding: "1.5rem",
+              backgroundColor: "#fff",
+            }}
+          >
             <h1 className="fullnameH1">PERMANENT ADDRESS</h1>
             <h1 className="itemsOfPrimaryDetails">
               {therapist?.permanentaddress}
@@ -366,46 +539,36 @@ function TherapistDetails() {
       </div>
 
       <div
-        className="educationDetailsDiv"
-        style={{ width: "80%", marginLeft: "8rem" }}
-      >
-        <div className="educationHeader">
-          <h2>Education Details</h2>
-          <div className="editEducationIcon" onClick={openEducationForm}>
-            <FaEdit />
+      className="educationDetailsDiv"
+      style={{
+        width: "100%", // Set full width for mobile view
+        maxWidth:"85%",
+        margin: "0 6%", // Center the container
+        paddingLeft: "2rem", // Add padding for better mobile view
+        paddingRight: "2rem", // Add padding for better mobile view
+      }}
+    >
+      <div className="educationHeader" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+        <h2>Education Details</h2>
+        <div className="editEducationIcon" onClick={openEducationForm}>
+          <FaEdit />
+        </div>
+      </div>
+      {therapist?.education.map((item, index) => (
+        <div className="educationItem" key={index} style={{ marginBottom: "1rem" }}>
+          <div style={{ fontSize: "1rem" }}>
+            <span style={{ marginRight: "1rem" }}>University / college</span>
+            <span className="collegeNameText" style={{ marginRight: "1rem" }}>
+              {item?.collegeName}
+            </span>
+            <span style={{ marginRight: "1rem" }}>Field of study</span>
+            <span className="educationLevelText" style={{ marginRight: "1rem" }}>
+              {item?.educationLevel}
+            </span>
           </div>
         </div>
-        {therapist?.education.map((item, index) => (
-          <div className="educationItem" key={index}>
-            <div>
-              <span style={{ marginRight: "1rem", fontSize: "1rem" }}>
-                University / college
-              </span>
-              <span
-                className="collegeNameText"
-                style={{ marginRight: "1rem", fontSize: "1rem" }}
-              >
-                {item?.collegeName}
-              </span>
-              <span
-                style={{
-                  marginRight: "1rem",
-                  fontSize: "1rem",
-                }}
-              >
-                Field of study
-              </span>
-              <span
-                className="educationLevelText"
-                style={{ marginRight: "1rem", fontSize: "1rem" }}
-              >
-                {item?.educationLevel}
-              </span>
-            </div>
-          </div>
-        ))}
+      ))}
       </div>
-
       {showEducationForm && (
         <Modal
           isOpen={showEducationForm}
@@ -582,9 +745,9 @@ function TherapistDetails() {
           </div>
         </div>
       )}
-      <div className="educationHeader" style={{marginLeft:"8rem"}}>
-          <h2>Expertise</h2>
-        </div>
+      <div className="educationHeader" style={{ marginLeft: "8rem" }}>
+        <h2>Expertise</h2>
+      </div>
       <div
         style={{
           fontFamily: "Arial",
@@ -602,7 +765,6 @@ function TherapistDetails() {
           marginBottom: "3rem",
         }}
       >
-        
         <div
           style={{
             display: "flex",
@@ -720,8 +882,7 @@ function TherapistDetails() {
         </h1>
         {isEditing ? (
           <div>
-            <input
-              type="text"
+            <select
               value={experienceLevel}
               onChange={handleExperienceLevelChange}
               style={{
@@ -731,7 +892,13 @@ function TherapistDetails() {
                 borderRadius: "4px",
                 border: "1px solid #ccc",
               }}
-            />
+            >
+              {experienceLevels.map(level => (
+                <option key={level} value={level}>
+                  {level}
+                </option>
+              ))}
+            </select>
             <button
               style={{
                 padding: "0.5rem 1rem",

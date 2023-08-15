@@ -25,6 +25,11 @@ import PatientPage from "./components/Pages/Admin/PatientPage";
 import TimeSlots from "./components/Pages/Therapists/TimeSlots";
 import SessionHistoryOfPatients from "./components/Pages/Admin/SessionHistoryOfPatients";
 import CreateFirstSessionQuestions from "./components/Pages/Admin/CreateFirstSessionQuestions";
+import CreateSecondPart from "./components/Pages/Admin/CreateSecondPart";
+import Group from "./components/Pages/Admin/Group";
+import GroupSignUp from "./components/Pages/GroupSignup";
+import CorporateUser from "./components/Pages/Admin/CorporateUser";
+import SettingPage from "./components/Pages/Therapists/SettingPage";
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -103,10 +108,21 @@ function App() {
                   path="/edit_add-questions"
                   element={<CreateFirstSessionQuestions />}
                 />
+                <Route
+                  path="/edit_add-question01"
+                  element={<CreateSecondPart />}
+                />
+                <Route path="/group" element={<Group />} />
+                <Route
+                  path="/corporate-user/:groupid"
+                  element={<CorporateUser />}
+                />
+                <Route path="/admin-setting" element={<SettingPage />} />
               </>
             )}
             <Route path="/login" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
+            <Route path="/login/:company/:groupId" element={<GroupSignUp />} />
           </Routes>
         </div>
       </Router>

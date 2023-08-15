@@ -17,8 +17,8 @@ export const TherapistsWithFilter = () => {
   const [activeFilter, setActiveFilter] = useState(null);
 
   const dispatch = useDispatch();
-  const therapists = useSelector(state => state.therapists);
-  const [filteredTherapists, setFilteredTherapists] = useState([]);
+  let therapists = useSelector(state => state.therapists);
+  const [filteredTherapists, setFilteredTherapists] = useState(null);
 
   const [expertises, setExpertises] = useState([]);
   const handleToggleFilters = () => {
@@ -48,7 +48,31 @@ export const TherapistsWithFilter = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchTherapists());
+    const groupId = localStorage.getItem("groupid"); // Make sure you have 'groupid' stored in localStorage
+    console.log("hi");
+
+    const cleanGroupId = groupId.replace(/"/g, "");
+    console.log(groupId);
+    console.log(cleanGroupId);
+    if (groupId !== "null") {
+      // Construct the URL
+      const url = `http://localhost:4000/api/v1/therapists/group/${cleanGroupId}`;
+
+      // Make the GET request using Axios
+      axios
+        .get(url)
+        .then(response => {
+          // Handle the response data here
+          therapists = response.data;
+        })
+        .catch(error => {
+          // Handle errors here
+          console.error("Error:", error);
+        });
+    } else {
+      // If groupid doesn't exist, dispatch the fetchTherapists action
+      dispatch(fetchTherapists());
+    }
   }, []);
 
   useEffect(() => {
@@ -370,7 +394,7 @@ export const TherapistsWithFilter = () => {
       {/* Therapists list */}
       <div className="therapist-grandParent">
         <div className="therapist-containerr">
-          {filteredTherapists.map(therapist => (
+          {filteredTherapists?.therapists?.map(therapist => (
             <Therapist
               key={therapist.id}
               therapist={therapist}

@@ -1,0 +1,116 @@
+/* PatientPage.css */
+
+/* General styles */
+.patient-page {
+  padding: 1rem;
+}
+
+.patient-page h1 {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Table styles */
+.patient-table-container {
+  max-width: 100%;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.patient-table {
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+  table-layout: fixed; /* Ensure table height can be adjusted */
+}
+
+.patient-table th,
+.patient-table td {
+  font-size: 1rem;
+  padding: 0.5rem; /* Add padding to cells for better spacing */
+  white-space: nowrap; /* Prevent cell content from wrapping */
+  overflow: hidden; /* Hide any overflow content */
+  text-overflow: ellipsis; /* Show ellipsis (...) for overflow content */
+}
+
+/* Buttons styles */
+.patient-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.patient-buttons button {
+  margin: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid;
+  font-size: 1rem;
+}
+
+.patient-buttons button.active {
+  background-color: blue;
+  color: white;
+}
+
+/* Patient summary styles */
+.patient-summary {
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+/* Responsive styles for mobile and tablet */
+@media screen and (max-width: 768px) {
+  .patient-table th,
+  .patient-table td {
+    font-size: 0.9rem;
+    padding: 0.3rem; /* Reduce padding for smaller screens */
+  }
+
+  .patient-buttons button {
+    font-size: 0.9rem;
+  }
+
+  /* Reduce font size and margin for patient summary in mobile view */
+  .patient-summary {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+
+  /* Flex-direction column to stack buttons vertically on mobile */
+  .patient-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Add margin between buttons on mobile */
+  .patient-buttons button {
+    margin: 0.25rem 0;
+  }
+
+  /* Make table cells wrap and have ellipsis on mobile */
+  .patient-table th,
+  .patient-table td {
+    white-space: initial;
+    overflow-wrap: break-word;
+  }
+}
+
+/* Responsive styles for mobile */
+@media screen and (max-width: 480px) {
+  .patient-table th,
+  .patient-table td {
+    font-size: 0.8rem;
+    padding: 0.5rem; /* Further reduce padding for smaller screens */
+  }
+
+  .patient-buttons button {
+    font-size: 0.8rem;
+  }
+
+  /* Further reduce font size and margin for patient summary in smaller mobile view */
+  .patient-summary {
+    font-size: 0.7rem;
+    margin-top: 0.3rem;
+  }
+}

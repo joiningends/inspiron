@@ -400,174 +400,160 @@ function AssessmentCreatePage() {
         {severities.map((severity, severityIndex) => (
           <div
             key={severityIndex}
-            style={{ marginBottom: "20px", paddingBottom: "20px" }}
+            style={{
+              marginBottom: "20px",
+              paddingBottom: "20px",
+              borderBottom: "1px solid #EAEAEA",
+            }}
           >
-            <h4 style={{ marginBottom: "10px", fontSize: "1.5rem" }}>
+            <h4 style={{ marginBottom: "1rem", fontSize: "1.5rem" }}>
               Level of Severity {severityIndex + 1}:
             </h4>
             <div
               className="severity-container"
-              style={{ marginBottom: "1rem", paddingBottom: "20px" }}
+              style={{
+                marginBottom: "1rem",
+                paddingBottom: "20px",
+                display: "flex",
+                flexDirection: "column",
+              }}
             >
-              <div style={{ display: "flex" }}>
-                <label
-                  htmlFor={`severityName-${severityIndex}`}
-                  style={{
-                    marginRight: "10px",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                    color: "#555555",
-                  }}
-                >
-                  Name:
-                </label>
-                <input
-                  type="text"
-                  id={`severityName-${severityIndex}`}
-                  name="name"
-                  value={severity.name}
-                  onChange={event =>
-                    handleSeverityChange(event, severityIndex, "name")
-                  }
-                  required
-                  style={{
-                    flex: 1,
-                    padding: "10px",
-                    borderRadius: "5px",
-                    border: "1px solid #D67449",
-                    fontSize: "14px",
-                    color: "#555555",
-                    transition: "all 0.3s ease-out",
-                    width: "10rem",
-                  }}
-                />
-              </div>
               <div style={{ display: "flex", marginBottom: "15px" }}>
-                <label
-                  htmlFor={`minScore-${severityIndex}`}
-                  style={{
-                    marginRight: "10px",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                    color: "#555555",
-                  }}
-                >
-                  Min Score:
-                </label>
-                <input
-                  type="number"
-                  id={`minScore-${severityIndex}`}
-                  name="minScore"
-                  value={severity.minScore}
-                  onChange={event =>
-                    handleSeverityChange(event, severityIndex, "minScore")
-                  }
-                  required
-                  style={{
-                    flex: 1,
-                    padding: "10px",
-                    borderRadius: "5px",
-                    border: "1px solid #D67449",
-                    fontSize: "14px",
-                    color: "#555555",
-                    transition: "all 0.3s ease-out",
-                    width: "3rem",
-                  }}
-                />
-              </div>
-              <div style={{ display: "flex", marginBottom: "15px" }}>
-                <label
-                  htmlFor={`maxScore-${severityIndex}`}
-                  style={{
-                    marginRight: "10px",
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                    color: "#555555",
-                  }}
-                >
-                  Max Score:
-                </label>
-                <input
-                  type="number"
-                  id={`maxScore-${severityIndex}`}
-                  name="maxScore"
-                  value={severity.maxScore}
-                  onChange={event =>
-                    handleSeverityChange(event, severityIndex, "maxScore")
-                  }
-                  required
-                  style={{
-                    flex: 1,
-                    padding: "10px",
-                    borderRadius: "5px",
-                    border: "1px solid #D67449",
-                    fontSize: "14px",
-                    color: "#555555",
-                    transition: "all 0.3s ease-out",
-                    width: "3rem",
-                  }}
-                />
-              </div>
-              <div style={{ marginBottom: "20px" }}>
-                <label
-                  htmlFor={`expertise-${severityIndex}`}
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                    color: "#555555",
-                  }}
-                >
-                  Expertise:
-                </label>
-                <div style={{ display: "flex", marginBottom: "10px" }}>
-                  {expertiseList.map(expertise => (
-                    <label
-                      key={expertise._id}
-                      htmlFor={`expertise-option-${expertise._id}-${severityIndex}`}
-                      style={{ fontSize: "1rem", margin: "1rem" }}
-                    >
-                      <input
-                        type="checkbox"
-                        id={`expertise-option-${expertise._id}-${severityIndex}`}
-                        value={expertise._id} // Use _id directly
-                        checked={severity.expertiseList.includes(expertise._id)} // Use _id for comparison
-                        onChange={
-                          event =>
-                            handleExpertiseChange(
-                              event,
-                              severityIndex,
-                              event.target.value
-                            ) // Pass _id directly as the value
-                        }
-                        style={{ marginRight: "5px" }}
-                      />
-                      {expertise.type[0]}{" "}
-                      {/* This can be replaced with any other label */}
-                    </label>
-                  ))}
+                <div style={{ flex: 1, marginRight: "10px" }}>
+                  <label
+                    htmlFor={`severityName-${severityIndex}`}
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "14px",
+                      color: "#555555",
+                    }}
+                  >
+                    Name:
+                  </label>
+                  <input
+                    type="text"
+                    id={`severityName-${severityIndex}`}
+                    name="name"
+                    value={severity.name}
+                    onChange={event =>
+                      handleSeverityChange(event, severityIndex, "name")
+                    }
+                    required
+                    style={{
+                      padding: "10px",
+                      borderRadius: "5px",
+                      border: "1px solid #D67449",
+                      fontSize: "14px",
+                      color: "#555555",
+                      transition: "all 0.3s ease-out",
+                      width:"15rem"
+                    }}
+                  />
                 </div>
-
-                {/* <button
-                  type="button"
-                  className="add-expertise-button"
-                  onClick={() => handleExpertiseAdd(severityIndex)}
-                  style={{
-                    backgroundColor: "#D67449",
-                    color: "white",
-                    border: "none",
-                    padding: "10px",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    fontSize: "14px",
-                    transition: "background-color 0.3s ease-out",
-                  }}
-                >
-                  Add Expertise
-                </button> */}
+                <div style={{ flex: 1, marginRight: "10px" }}>
+                  <label
+                    htmlFor={`minScore-${severityIndex}`}
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "14px",
+                      color: "#555555",
+                    }}
+                  >
+                    Min Score:
+                  </label>
+                  <input
+                    type="number"
+                    id={`minScore-${severityIndex}`}
+                    name="minScore"
+                    value={severity.minScore}
+                    onChange={event =>
+                      handleSeverityChange(event, severityIndex, "minScore")
+                    }
+                    required
+                    style={{
+                      padding: "10px",
+                      borderRadius: "5px",
+                      border: "1px solid #D67449",
+                      fontSize: "14px",
+                      color: "#555555",
+                      transition: "all 0.3s ease-out",
+                      width:"9rem"
+                    }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label
+                    htmlFor={`maxScore-${severityIndex}`}
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: "14px",
+                      color: "#555555",
+                    }}
+                  >
+                    Max Score:
+                  </label>
+                  <input
+                    type="number"
+                    id={`maxScore-${severityIndex}`}
+                    name="maxScore"
+                    value={severity.maxScore}
+                    onChange={event =>
+                      handleSeverityChange(event, severityIndex, "maxScore")
+                    }
+                    required
+                    style={{
+                      padding: "10px",
+                      borderRadius: "5px",
+                      border: "1px solid #D67449",
+                      fontSize: "14px",
+                      color: "#555555",
+                      transition: "all 0.3s ease-out",
+                      width:"9rem"
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+              <label
+                htmlFor={`expertise-${severityIndex}`}
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                  color: "#555555",
+                }}
+              >
+                Expertise:
+              </label>
+              <div style={{ display: "flex", flexWrap: "wrap" }}>
+                {expertiseList.map(expertise => (
+                  <label
+                    key={expertise._id}
+                    htmlFor={`expertise-option-${expertise._id}-${severityIndex}`}
+                    style={{ fontSize: "1rem", margin: "0.5rem" }}
+                  >
+                    <input
+                      type="checkbox"
+                      id={`expertise-option-${expertise._id}-${severityIndex}`}
+                      value={expertise._id}
+                      checked={severity.expertiseList.includes(expertise._id)}
+                      onChange={event =>
+                        handleExpertiseChange(
+                          event,
+                          severityIndex,
+                          event.target.value
+                        )
+                      }
+                      style={{ marginRight: "5px" }}
+                    />
+                    {expertise.type[0]}
+                  </label>
+                ))}
               </div>
             </div>
           </div>
         ))}
+
         <button
           type="submit"
           style={{

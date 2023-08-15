@@ -243,3 +243,95 @@ td:first-child {
     transform: translateY(0);
   }
 }
+
+
+/* Dashboard.css */
+
+/* Styling for therapistsDetailsAvailability */
+.therapistsDetailsAvailability {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.therapistQuantintity {
+  /* Add your styling for therapistQuantintity */
+}
+
+.therapistCreateButton {
+  display: flex;
+  align-items: center;
+  background-color: #d67449;
+  padding: 5px 8px;
+  border-radius: 4px;
+  width: 12rem;
+  cursor: pointer;
+}
+
+/* Styling for adminDashboardContainer */
+.adminDashboardContainer {
+  /* Add your styling for adminDashboardContainer */
+}
+
+.adminDashboardContainer h2 {
+  /* Add your styling for the h2 element inside adminDashboardContainer */
+}
+
+.adminDashboardContainer table {
+  /* Add your styling for the table inside adminDashboardContainer */
+}
+
+.adminDashboardContainer th, .adminDashboardContainer td {
+  /* Add your styling for th and td elements inside adminDashboardContainer table */
+}
+
+/* Styling for therapist image */
+.therapist-image {
+  /* Add your styling for therapist-image */
+}
+
+/* Styling for createTherapistForm */
+.createTherapistForm {
+  /* Add your styling for createTherapistForm */
+}
+
+.createTherapistForm h2 {
+  background-color: #d67449;
+  color: white;
+  padding: 10px;
+  text-align: center;
+}
+
+.createTherapistForm label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.createTherapistForm input[type="text"],
+.createTherapistForm input[type="email"],
+.createTherapistForm input[type="radio"],
+.createTherapistForm select {
+  width: 100%;
+  /* Add your styling for input fields and select element */
+}
+
+.createTherapistForm button {
+  width: 48%;
+  border-radius: 1rem;
+  margin-bottom: 10px;
+  /* Add your styling for buttons */
+}
+
+.createTherapistForm button[type="submit"] {
+  background-color: #d67449;
+  color: white;
+}
+
+.createTherapistForm button[type="button"] {
+  background-color: white;
+  color: #d67449;
+  border: 1px solid #d67449;
+}
+
+/* Additional styling for other elements if needed */

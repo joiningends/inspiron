@@ -1,6 +1,8 @@
+// PatientPage.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Route, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import "./PatientPage.css";
 
 function PatientPage() {
   const [patients, setPatientData] = useState([]);
@@ -18,15 +20,13 @@ function PatientPage() {
       const response = await axios.get("http://localhost:4000/api/v1/users");
       setPatientData(response.data);
     } catch (error) {
-      console.error("Error fetching therapists data:", error);
+      console.error("Error fetching patients data:", error);
     }
   };
-  // Call the fetchTherapistsData function when the component mounts
+  // Call the fetchPatientData function when the component mounts
   useEffect(() => {
     fetchPatientData();
   }, []);
-
-  console.log(patients);
 
   const patientsPerPage = 10; // Number of patients to display per page
   const totalPages = Math.ceil(patients?.length / patientsPerPage); // Calculate total pages
@@ -46,58 +46,51 @@ function PatientPage() {
   const displayedPatients = patients?.slice(startIndex, endIndex);
 
   return (
-    <div>
+    <div className="patient-page">
       <h1>Patient Page</h1>
-      <table style={{ textAlign: "center" }}>
-        <thead>
-          <tr>
-            <th>Patient name</th>
-            <th>Last session date</th>
-            <th>Next session date</th>
-            <th>Total session</th>
-            <th>Patient summary</th>
-          </tr>
-        </thead>
-        <tbody>
-          {displayedPatients?.map(patient => (
-            <tr key={patient?.id}>
-              <td>{patient?.name}</td>
-              <td>{patient?.lastSessionDate}</td>
-              <td>{patient?.nextSessionDate}</td>
-              <td>{patient?.totalSessions}</td>
-              <td>
-                <div>
-                  <button style={{ border: "1px solid" }}>View/Download</button>
-                  <button
-                    style={{ border: "1px solid", marginLeft: "1rem" }}
-                    onClick={() => handleDetailsClick(patient?._id)}
-                  >
-                    Details
-                  </button>
-                </div>
-              </td>
+      <div className="patient-table-container">
+        <table className="patient-table">
+          <thead>
+            <tr>
+              <th>Patient name</th>
+              <th>Last session date</th>
+              <th>Next session date</th>
+              <th>Total session</th>
+              <th>Patient summary</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {displayedPatients?.map(patient => (
+              <tr key={patient?.id}>
+                <td>{patient?.name}</td>
+                <td>{patient?.lastSessionDate}</td>
+                <td>{patient?.nextSessionDate}</td>
+                <td>{patient?.totalSessions}</td>
+                <td>
+                  <div className="patient-buttons">
+                    <button
+                      onClick={() => handleDetailsClick(patient?._id)}
+                      className={currentPage === patient?._id ? "active" : ""}
+                    >
+                      Details
+                    </button>
+                    <button>View/Download</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination */}
-      <div
-        style={{ marginTop: "1rem", display: "flex", justifyContent: "center" }}
-      >
+      <div className="patient-buttons">
         {Array?.from({ length: totalPages }, (_, index) => index + 1).map(
           pageNumber => (
             <button
               key={pageNumber}
-              style={{
-                margin: "0.25rem",
-                padding: "0.5rem 1rem",
-                border: "1px solid",
-                backgroundColor:
-                  pageNumber === currentPage ? "blue" : "transparent",
-                color: pageNumber === currentPage ? "white" : "black",
-              }}
               onClick={() => handlePageChange(pageNumber)}
+              className={currentPage === pageNumber ? "active" : ""}
             >
               {pageNumber}
             </button>

@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/Action";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./Signin.css";
 
 const Signin = () => {
@@ -36,6 +38,28 @@ const Signin = () => {
   const handleSubmit = async e => {
     e.preventDefault();
 
+    // Check if any required fields are missing
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all required fields.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          background: "#ff7f50", // Change the background color
+          color: "#fff", // Change the text color
+          fontSize: "14px",
+          borderRadius: "4px",
+          padding: "12px",
+          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+        },
+      });
+      return; // Stop form submission if any required field is missing
+    }
+
     try {
       // Send login request to the backend
       const response = await fetch("http://localhost:4000/api/v1/users/login", {
@@ -46,14 +70,22 @@ const Signin = () => {
         body: JSON.stringify(formData),
       });
 
+      console.log("hello");
+      console.log(response);
+
       if (response.ok) {
         // Login successful, extract and store user information and token
         const data = await response.json();
-        const { user, token, role } = data;
+        console.log(data);
+        console.log("hello");
+        const { user, token, role ,empid,groupid} = data;
 
         // Store the user information and token in localStorage or other secure storage mechanisms
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("role", JSON.stringify(role));
+        localStorage.setItem("empid", JSON.stringify(empid));
+        localStorage.setItem("groupid", JSON.stringify(groupid));
+        console.log(groupid)
         localStorage.setItem("token", token);
         // Clear the form data
         setFormData({
@@ -69,6 +101,34 @@ const Signin = () => {
       }
     } catch (error) {
       console.error("Error during login:", error);
+    }
+  };
+
+  const isValidEmail = email => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  };
+
+  const handleEmailBlur = () => {
+    const validEmail = isValidEmail(formData.email);
+    if (!validEmail) {
+      toast.error("Please enter a valid email address.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          background: "#ff7f50", // Change the background color
+          color: "#fff", // Change the text color
+          fontSize: "14px",
+          borderRadius: "4px",
+          padding: "12px",
+          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+        },
+      });
     }
   };
 
@@ -88,6 +148,7 @@ const Signin = () => {
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
+            onBlur={handleEmailBlur}
             required
           />
         </div>
@@ -122,6 +183,7 @@ const Signin = () => {
           Don't have an account? <a href="/login">Sign Up</a>
         </p>
       </div>
+      <ToastContainer />
     </div>
   );
 };
