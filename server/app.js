@@ -52,9 +52,7 @@ app.use(`${api}/illnesses`, illnessesRoutes);
 app.use(`${api}/expriences`,exprienceRoutes);
 app.use(`${api}/payments`, PaymentsRoutes);
 app.use(`${api}/expetises`,expertisesRoutes );
-app.use(`${api}/clients`,clientsRoutes);
-app.use(`${api}/prices`,pricesRoutes);
-app.use(`${api}/coins`,coinsRoutes);
+
 
 
 //Database
