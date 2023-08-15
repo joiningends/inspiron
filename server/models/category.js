@@ -20,6 +20,10 @@ const categorySchema = new mongoose.Schema({
     type: Number,
     
   },
+  extendsession:{
+    type: Number,
+  }
+ 
 });
 
 const Category = mongoose.model('Category', categorySchema);

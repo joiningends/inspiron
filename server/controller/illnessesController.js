@@ -41,44 +41,44 @@ exports.getIllnessById = async (req, res) => {
   }
 };
 exports.updateIllnessById = async (req, res) => {
-  const illnessId = req.params.id;
-  const { name, options: newOptions, deleteOptions } = req.body;
-
   try {
-    // Find the existing illness in the database
-    const existingIllness = await Illness.findById(illnessId);
+    const { id } = req.params;
+    const { name, options: newOptions,  deleteOptions } = req.body;
+
+    const existingIllness = await Illness.findById(id);
 
     if (!existingIllness) {
-      return res.status(404).json({ error: 'Illness not found' });
+      return res.status(404).json({ error: 'illness not found' });
     }
 
-    // Update the name if it's provided in the request body
-    if (name) {
-      existingIllness.name = name;
+    let updatedOptions = existingIllness.options;
+
+    if (newOptions && Array.isArray(newOptions)) {
+      // If newOptions is provided and it's an array, update the options
+      updatedOptions = [...existingIllness.options, ...newOptions];
     }
 
-    // Merge the existing options with the new options
-    const mergedOptions = newOptions ? [...existingIllness.options, ...newOptions] : existingIllness.options;
-
-    // If deleteOptions is provided and it's an array, delete the corresponding options
     if (deleteOptions && Array.isArray(deleteOptions)) {
-      existingIllness.options = existingIllness.options.filter(
+      // If deleteOptions is provided and it's an array, delete the corresponding options
+      updatedOptions = updatedOptions.filter(
         (option) => !deleteOptions.includes(option.text)
       );
     }
 
-    // Update the illness with the new data (including the updated name and merged options)
-    existingIllness.options = mergedOptions;
 
-    // Save the updated illness
-    const updatedIllness = await existingIllness.save();
+    // Update the heading with the new name and merged options
+    const updatedIllness= await Illness.findByIdAndUpdate(
+      id,
+      { name, options: updatedOptions },
+      { new: true }
+    );
 
-    res.json(updatedIllness);
+    res.json({ success: true, illness: updatedIllness });
   } catch (error) {
-    console.error('Error updating illness by ID:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ success: false, error: error.message });
   }
 };
+
 
 
 // Delete a specific illness by ID

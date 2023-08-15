@@ -6,10 +6,7 @@ const experienceLevelSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  price: {
-    type: Number,
-    required: true,
-  },
+ 
 });
 
 const ExperienceLevel = mongoose.model('ExperienceLevel', experienceLevelSchema);

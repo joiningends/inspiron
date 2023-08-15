@@ -1,5 +1,5 @@
 const Category = require('../models/category');
-
+const { Therapist } = require('../models/therapist');
 
 
 const createCategory = async (req, res) => {
@@ -91,11 +91,43 @@ const deleteCategory = async (req, res) => {
   }
 };
 
+// Update extendsession of a category by ID
+ const updateExtendsession = async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId;
+    const { extendsession } = req.body;
+
+    // Find the existing category
+    const existingCategory = await Category.findById(categoryId);
+
+    if (!existingCategory) {
+      return res.status(404).json({ message: 'Category not found' });
+    }
+
+    // Check if extendsession is equal to timeBetweenSessions
+    if (extendsession >= existingCategory.timeBetweenSessions) {
+      return res.status(400).json({ message: 'sorry not extended' });
+    }
+
+    // Update the extendsession field
+    existingCategory.extendsession = extendsession;
+
+    // Save the updated category
+    const updatedCategory = await existingCategory.save();
+
+    
+    res.json(updatedCategory);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 module.exports = {
   createCategory,
   getAllCategories,
   getCategoryById,
   updateCategory,
-  deleteCategory
+  deleteCategory,
+  updateExtendsession
 };

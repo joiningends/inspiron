@@ -9,15 +9,18 @@ const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const { Session } = require('inspector');
-const ExperienceLevel = require('../models/exprience');
+const Price = require('../models/prices');
 const { error } = require('console');
+const Client = require('../models/client');
+
+
 const getTotalTherapists = async (req, res) => {
   try {
-    const therapists = await Therapist.find({}).populate('expertise');
+    const therapists = await Therapist.find({}).populate('expertise group');
 
     const therapistStatus = therapists.map(therapist => {
-      const { expertise, experienceLevel, meetLink } = therapist;
-      const isApproved = expertise && expertise.length > 0 && experienceLevel !== null && meetLink !== "";
+      const { expertise,  expriencelevel, meetLink } = therapist;
+      const isApproved = expertise && expertise.length > 0 &&  expriencelevel &&  expriencelevel.length > 0  && meetLink !== "";
       return {
         ...therapist.toObject(),
         status: isApproved ? 'approved' : 'pending'
@@ -113,6 +116,7 @@ const getAllTherapists = async (req, res) => {
 const approvedTherapists = populatedTherapists.filter(
   therapist => therapist.expertise.length > 0 &&
     therapist.expriencelevel.length > 0 &&
+    therapist.group.length > 0 &&
     therapist.meetLink !== ""
 );
 
@@ -123,6 +127,78 @@ const approvedTherapists = populatedTherapists.filter(
   }
 };
 
+
+const getAllTherapistscorporate = async (req, res) => {
+  try {
+    const { groupid } = req.params;
+
+    const therapists = await Therapist.find({})
+      .populate('expertise expriencelevel')
+      .exec();
+
+    const populatedTherapists = await Promise.all(
+      therapists.map(async therapist => {
+        const populatedAvailability = await Promise.all(
+          therapist.availability.map(async availability => {
+            const category = await Category.findById(availability.location);
+            if (!category) {
+              return null;
+            }
+            const locationDetails = {
+              centerName: category.centerName,
+              centerAddress: category.centerAddress,
+              contactNo: category.contactNo
+            };
+            return {
+              location: locationDetails,
+              day: availability.day,
+              timeSlot: availability.timeSlot,
+              _id: availability._id
+            };
+          })
+        );
+
+        const filteredAvailability = populatedAvailability.filter(availability => availability !== null);
+
+        const therapistsGroupIds = therapist.group.map(clientId => clientId.toString()); // Convert ObjectId to string
+        return {
+          ...therapist.toObject(),
+          availability: filteredAvailability,
+          group: therapistsGroupIds // Now the group array contains extracted group ids
+        };
+      })
+    );
+
+    const approvedTherapists = populatedTherapists.filter(
+      therapist => therapist.expertise.length > 0 &&
+        therapist.expriencelevel.length > 0 &&
+        therapist.group.length > 0 &&
+        therapist.meetLink !== ""
+    );
+
+    if (groupid) {
+      const therapistsInGroup = approvedTherapists.filter(
+        therapist => therapist.groupDetails.some(groupDetails => groupDetails.groupid === groupid)
+      );
+      return res.json({ totalTherapists: therapistsInGroup.length, therapists: therapistsInGroup });
+    }
+
+    return res.json({ totalTherapists: approvedTherapists.length, therapists: approvedTherapists });
+
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve therapists', details: error.message });
+  }
+};
+
+
+
+
+
+
+
+
+  
+  
 
 
 const getTherapists = async (req, res) => {
@@ -197,45 +273,134 @@ const getTherapists = async (req, res) => {
   }
 };
 
-
-const getTherapistById = (req, res) => {
-  const therapistId = req.params.id;
-
-  Therapist.findById(therapistId)
-  .populate('expertise')
-    .then(async (therapist) => {
-      if (!therapist) {
-        return res.status(404).json({ message: 'Therapist not found' });
+const getTherapistscorporate = async (req, res) => {
+ 
+    try {
+      const assessmentScore = req.body.assessmentScore;
+      const groupid = req.query.groupid; // Assuming the groupid is passed as a query parameter
+  
+      // Find assessments where the assessmentScore falls within the 'low', 'medium', or 'high' range
+      const assessments = await Assessment.find({
+        $or: [
+          { 'low.min': { $lte: assessmentScore }, 'low.max': { $gte: assessmentScore } },
+          { 'medium.min': { $lte: assessmentScore }, 'medium.max': { $gte: assessmentScore } },
+          { 'high.min': { $lte: assessmentScore }, 'high.max': { $gte: assessmentScore } }
+        ]
+      });
+  
+      // Get the expertise IDs for all matching assessments
+      const expertiseIds = assessments.reduce((acc, cur) => {
+        const field = assessmentScore >= cur.low.min && assessmentScore <= cur.low.max ? 'low' :
+          assessmentScore >= cur.medium.min && assessmentScore <= cur.medium.max ? 'medium' :
+          assessmentScore >= cur.high.min && assessmentScore <= cur.high.max ? 'high' : null;
+  
+        if (field) {
+          const expertiseIds = cur[field].expertise.map(expertise => expertise.toString());
+          return acc.concat(expertiseIds);
+        }
+        return acc;
+      }, []);
+  
+      // Build the query object with the expertise filter
+      const query = {
+        expertise: { $in: expertiseIds },
+      };
+  
+      // Fetch the therapists based on the determined query
+      const therapists = await Therapist.find(query, {
+        assessmentScoreRange: 0, // Exclude the assessmentScoreRange field
+      }).populate('expertise'); // Include expertise details
+  
+      // Filter therapists by groupid if provided
+      if (groupid) {
+        const therapistsInGroup = therapists.filter(
+          therapist => therapist.groupDetails.some(groupDetails => groupDetails.groupid === groupid)
+        );
+        return res.json({ totalTherapists: therapistsInGroup.length, therapists: therapistsInGroup });
       }
-
-      // Filter availability data based on the provided therapist ID
-      const populatedAvailability = await Promise.all(
-        therapist.availability.map(async (availability) => {
-          const category = await Category.findById(availability.location);
-          if (!category) {
-            throw new Error('Invalid category ID');
-          }
-          const locationDetails = {
-            centerName: category.centerName,
-            centerAddress: category.centerAddress,
-            contactNo: category.contactNo
-          };
+  
+      // Populate the therapists' availability with location details
+      const populatedTherapists = await Promise.all(
+        therapists.map(async therapist => {
+          const populatedAvailability = await Promise.all(
+            therapist.availability.map(async availability => {
+              const category = await Category.findById(availability.location);
+              if (!category) {
+                throw new Error('Invalid category ID');
+              }
+              const locationDetails = {
+                centerName: category.centerName,
+                centerAddress: category.centerAddress,
+                contactNo: category.contactNo
+              };
+              return {
+                location: locationDetails,
+                day: availability.day,
+                timeSlot: availability.timeSlot,
+                _id: availability._id
+              };
+            })
+          );
           return {
-            location: locationDetails,
-            day: availability.day,
-            timeSlot: availability.timeSlot,
-            _id: availability._id
+            ...therapist.toObject(),
+            availability: populatedAvailability
           };
         })
       );
+  
+      res.json(populatedTherapists);
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Failed to retrieve therapists' });
+    }
+  };
+  
+  
+  
 
-      // Return the therapist data with filtered availability
-      res.status(200).json({ ...therapist.toObject(), availability: populatedAvailability });
-    })
-    .catch((error) => {
-      res.status(500).json({ error: 'Failed to retrieve therapist', details: error });
-    });
+
+
+
+const getTherapistById = async (req, res) => {
+  const therapistId = req.params.id;
+
+  try {
+    const therapist = await Therapist.findById(therapistId).populate('expertise expriencelevel');
+
+    if (!therapist) {
+      return res.status(404).json({ message: 'Therapist not found' });
+    }
+
+    // Filter availability data based on the provided therapist ID
+    const populatedAvailability = await Promise.all(
+      therapist.availability.map(async (availability) => {
+        const category = await Category.findById(availability.location);
+        if (!category) {
+          throw new Error('Invalid category ID');
+        }
+        const locationDetails = {
+          centerName: category.centerName,
+          centerAddress: category.centerAddress,
+          contactNo: category.contactNo
+        };
+        return {
+          location: locationDetails,
+          day: availability.day,
+          timeSlot: availability.timeSlot,
+          _id: availability._id
+        };
+      })
+    );
+
+    // Return the therapist data with filtered availability
+    res.status(200).json({ ...therapist.toObject(), availability: populatedAvailability });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve therapist', details: error.message });
+  }
 };
+
+
+
 
 const createTherapistfull = async (req, res) => {
   try {
@@ -353,7 +518,7 @@ const updateTherapist = (req, res) => {
 
 const updateTherapists = async (req, res) => {
   const therapistId = req.params.id;
-  const { expertise, expriencelevel, meetLink } = req.body;
+  const { expertise, expriencelevel, meetLink,group } = req.body;
 
   try {
     const therapist = await Therapist.findById(therapistId);
@@ -374,7 +539,20 @@ const updateTherapists = async (req, res) => {
     if (meetLink) {
       therapist.meetLink = meetLink;
     }
+    if (group) {
+      therapist.group = group; // Assign the group array with ObjectId references
 
+      // Extract and store group IDs as strings
+      therapist.groupid = group.map(objId => objId.toString());
+
+      // Fetch and store group details from the "Client" model
+      const groupDetailsPromises = group.map(async group => {
+        const client = await Client.findById(group);
+        return client ? { _id: group, groupid: client.groupid } : null;
+      });
+
+      therapist.groupDetails = await Promise.all(groupDetailsPromises);
+    }
     // Save the updated therapist
     const updatedTherapist = await therapist.save();
 
@@ -424,11 +602,6 @@ const sendApprovalEmail = (therapist) => {
 };
 
 
-
-
-
-
-
 const updateTherapistImage = async (req, res) => {
   try {
     const file = req.file;
@@ -437,13 +610,13 @@ const updateTherapistImage = async (req, res) => {
       return res.status(400).json({ error: 'No image file provided' });
     }
 
-    // Get the image data as a Buffer
-    const imageBuffer = file.buffer;
+    const fileName = file.filename;
+    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+    const imagePath = `${basePath}${fileName}`;
 
-    // Find the therapist by ID and update the 'image' field with the image buffer and content type
     const therapist = await Therapist.findByIdAndUpdate(
       req.params.id,
-      { image: { data: imageBuffer, contentType: file.mimetype } },
+      { image: imagePath },
       { new: true }
     );
 
@@ -454,8 +627,13 @@ const updateTherapistImage = async (req, res) => {
     res.json({ image: therapist.image });
   } catch (error) {
     res.status(500).json({ error: 'Failed to update therapist image' });
-  }
-};
+  }};
+
+
+
+
+
+
 
 async function updatePrimaryDetails(req, res) {
   const therapistId = req.params.id;
@@ -737,12 +915,49 @@ const deleteAllTherapists = async (req, res) => {
   }
 };
 
+// Controller to check and extend sessions
+async function extendSessionsWithMatchingExtensionTime(therapistId) {
+  try {
+    // Find the therapist by ID
+    const therapist = await Therapist.findById(therapistId);
+
+    if (!therapist) {
+      throw new Error('Therapist not found');
+    }
+
+    // Iterate through timeSlots to check for matching extension time
+    const { timeSlots } = therapist.sessions;
+    for (let i = 0; i < timeSlots.length - 1; i++) {
+      const firstSessionEndTime = new Date(timeSlots[i].endTime);
+      const secondSessionStartTime = new Date(timeSlots[i + 1].startTime);
+      
+      // Calculate the gap between the sessions in minutes
+      const gapMinutes = Math.round((secondSessionStartTime - firstSessionEndTime) / (1000 * 60));
+      
+      if (gapMinutes === therapist.extensiontime) {
+        // Extend the second session's start time by the extension time
+        const newSecondSessionStartTime = new Date(secondSessionStartTime.getTime() + therapist.extensiontime * 60 * 1000);
+        therapist.sessions.timeSlots[i + 1].startTime = newSecondSessionStartTime.toISOString();
+
+        // Save the updated therapist data
+        await therapist.save();
+      }
+    }
+  } catch (error) {
+    console.error('Error extending sessions:', error.message);
+  }
+}
+
+
+
 
 module.exports = {
   getTotalTherapists,
   getTherapistDetails,
 getAllTherapists,
+getAllTherapistscorporate,
   getTherapists,
+  getTherapistscorporate,
   getTherapistById,
   createTherapistfull,
   createTherapist,
@@ -763,4 +978,5 @@ getAllTherapists,
   //updateTherapistLocation,
   createPatient,
   deleteAllTherapists,
+  extendSessionsWithMatchingExtensionTime
 };

@@ -23,7 +23,7 @@ const therapistSchema = new mongoose.Schema({
   expriencelevel:[
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "ExperienceLevel",
+        ref: "Price",
       },
     ],
   
@@ -154,7 +154,29 @@ const therapistSchema = new mongoose.Schema({
       },
     ],
   },
+  group: [
+    {
+      
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Client' // Reference to the "Client" model
+      },
+      
    
+      
+  ],
+  groupDetails: [
+    {
+      _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Client'
+      },
+      groupid: String, // Store the name of the group
+    }
+  ],
+  extensiontime:{
+    type: Number
+  }
 });
+
 
 exports.Therapist = mongoose.model("Therapist", therapistSchema);

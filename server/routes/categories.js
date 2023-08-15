@@ -16,5 +16,5 @@ router.put('/:id', categoryController.updateCategory);
 
 // Delete a category by ID
 router.delete('/:id', categoryController.deleteCategory);
-
+router.put('/:categoryId/extendsession', categoryController.updateExtendsession);
 module.exports = router;

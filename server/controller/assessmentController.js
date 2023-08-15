@@ -30,6 +30,15 @@ async function getAssessmentById(req, res) {
 // Create a new assessment with an image
 const createAssessment = async (req, res) => {
   try {
+    const file = req.file;
+    if (!file) {
+      return res.status(400).send('No image in the request');
+    }
+
+    const fileName = file.filename;
+    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+    const imagePath = `${basePath}${fileName}`;
+
     const {
       hostId,
       assessment_name,
@@ -89,8 +98,18 @@ const createAssessment = async (req, res) => {
 
 const updateAssessment = async (req, res) => {
   try {
-    const assessmentId = req.params.id; // Assuming the assessment ID is provided in the request URL
+    const assessmentId = req.params.id;
+    const file = req.file;
+    let imagePath;
 
+    if (file) {
+      const fileName = file.filename;
+      const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+      imagePath = `${basePath}${fileName}`;
+    } else {
+      imagePath = req.body.image;
+    }
+ 
     // Find the existing assessment by ID
     const existingAssessment = await Assessment.findById(assessmentId);
 

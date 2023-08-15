@@ -217,14 +217,33 @@ Nextsessionplan:{
                 type:String
              }]
         },
+        status:{
+
+          type: String,
+        
+        },
+       
     
       coins: {
         type: Number,
-        default: 0,
+        default: 1,
         required:false,
+      },
+      groupid: {
+        type:String,
+        
+      },
+      empid:{
+        type:String,
+        
+      },
+      types:{
+        type:String
       }
 
+
 });
+
 
 
 

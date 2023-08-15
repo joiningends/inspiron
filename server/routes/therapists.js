@@ -2,10 +2,28 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const therapistController = require('../controller/therapistController');
-
-  
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const FILE_TYPE_MAP = {
+    'image/png': 'png',
+    'image/jpeg': 'jpeg',
+    'image/jpg': 'jpg'
+  };
+  const storage = multer.diskStorage({
+      destination: function destination(req, file, cb) {
+        const isValid = FILE_TYPE_MAP[file.mimetype];
+        let uploadError = new Error('Invalid image type');
+    
+        if (isValid) {
+          uploadError = null;
+        }
+        cb(uploadError, 'public/uploads');
+      },
+      filename: function (req, file, cb) {
+        const fileName = file.originalname.split(' ').join('-');
+        const extension = FILE_TYPE_MAP[file.mimetype];
+        cb(null, `${fileName}-${Date.now()}.${extension}`);
+      }
+    });
+    const upload = multer({ storage });
 
 
     router.get('/total-therapists', therapistController.getTotalTherapists);
@@ -15,7 +33,10 @@ const upload = multer({ storage });
 
 
 router.get('/all', therapistController.getAllTherapists);
+router.get('/group/:groupid', therapistController.getAllTherapistscorporate);
+
 router.get('/score', therapistController.getTherapists);
+router.get('/score/:groupid', therapistController.getTherapistscorporate);
 router.get('/:id', therapistController.getTherapistById);
 
 router.post('/', therapistController.createTherapist);

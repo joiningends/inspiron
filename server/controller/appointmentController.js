@@ -1,5 +1,6 @@
 const { Appointment } = require('../models/appointment');
 const { User } = require('../models/user');
+const Client = require('../models/client');
 
 // Function to update the Sessionnumber for the user
 const updateSessionNumber = async (userId, therapistId) => {
@@ -14,50 +15,96 @@ exports.createAppointment = async (req, res) => {
   const { therapistId, userId, dateTime, startTime, endTime, sessionMode } = req.body;
 
   try {
-    const user = await User.findById(userId).select('name age gender');
+    const user = await User.findById(userId).select('name age gender coins groupid');
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Check if the requested time slot is already booked
-    const existingAppointment = await Appointment.findOne({
-      therapist: therapistId,
-      dateTime,
-      startTime: { $lte: endTime },
-      endTime: { $gte: startTime },
-    });
+    // If the user has a groupid, check if the companypayment is true
+    if (user.groupid) {
+      const client = await Client.findOne({ groupid: user.groupid }).select('companypayment');
 
-    if (existingAppointment) {
-      return res.status(409).json({ error: 'The requested time slot is already booked' });
+      if (client && client.companypayment) {
+        // Company payment authorized, proceed to book
+        const existingAppointment = await Appointment.findOne({
+          therapist: therapistId,
+          dateTime,
+          startTime: { $lte: endTime },
+          endTime: { $gte: startTime },
+        });
+
+        if (existingAppointment) {
+          return res.status(409).json({ error: 'The requested time slot is already booked' });
+        }
+
+        const newAppointment = new Appointment({
+          therapist: therapistId,
+          user: userId,
+          dateTime,
+          startTime,
+          endTime,
+          sessionMode,
+        });
+
+        const savedAppointment = await newAppointment.save();
+        await updateSessionNumber(userId, therapistId);
+
+        // Fetch the populated user details and update the appointment object
+        const populatedAppointment = await Appointment.findById(savedAppointment._id)
+          .populate('user', 'name age gender')
+          .exec();
+
+        return res.status(201).json(populatedAppointment);
+      }
     }
 
-    const newAppointment = new Appointment({
-      therapist: therapistId,
-      user: userId,
-      dateTime,
-      startTime,
-      endTime,
-      sessionMode,
-    });
+    // Check if the user has enough coins to book a session
+    if (user.coins > -0.5) {
+      const existingAppointment = await Appointment.findOne({
+        therapist: therapistId,
+        dateTime,
+        startTime: { $lte: endTime },
+        endTime: { $gte: startTime },
+      });
 
-    // Save the appointment
-    const savedAppointment = await newAppointment.save();
+      if (existingAppointment) {
+        return res.status(409).json({ error: 'The requested time slot is already booked' });
+      }
 
-    // Update the user's Sessionnumber after saving the appointment
-    await updateSessionNumber(userId, therapistId);
+      const newAppointment = new Appointment({
+        therapist: therapistId,
+        user: userId,
+        dateTime,
+        startTime,
+        endTime,
+        sessionMode,
+      });
 
-    // Now, fetch the populated user details and update the appointment object
-    const populatedAppointment = await Appointment.findById(savedAppointment._id)
-      .populate('user', 'name age gender')
-      .exec();
+      const savedAppointment = await newAppointment.save();
+      await updateSessionNumber(userId, therapistId);
 
-    res.status(201).json(populatedAppointment);
+      // Deduct a coin from the user's balance
+      user.coins = user.coins - 1; // Deduct one coin
+      await user.save();
+
+      // Fetch the populated user details and update the appointment object
+      const populatedAppointment = await Appointment.findById(savedAppointment._id)
+        .populate('user', 'name age gender')
+        .exec();
+
+      return res.status(201).json(populatedAppointment);
+    } else {
+      // User does not have enough coins
+      return res.status(400).json({ error: 'Do the remaining payment to book a session' });
+    }
   } catch (error) {
     console.error('Error creating appointment:', error);
     res.status(500).json({ error: 'An error occurred while creating the appointment' });
   }
 };
+
+
 
 
 
