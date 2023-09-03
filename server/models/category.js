@@ -10,8 +10,12 @@ const categorySchema = new mongoose.Schema({
   contactNo: {
     type: String,
   },
-
-  
+city:{
+  type: String,
+},
+  pin:{
+    type:Number
+  },
   sessionDuration: {
     type: Number,
     
@@ -22,6 +26,7 @@ const categorySchema = new mongoose.Schema({
   },
   extendsession:{
     type: Number,
+    default:30
   }
  
 });

@@ -1,34 +1,9 @@
 const Coin = require('../models/coin');
 
 const { User } = require('../models/user');
+const { Therapist } = require('../models/therapist');
 
 
-
-
-exports.createCoin = async (req, res) => {
-  try {
-    const { userId } = req.body;
-
-    // Retrieve the user's coinBalance from the User table
-    const user = await User.findById(userId).select('coins expriencelevel groupid');
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const newCoin = new Coin({
-      user: userId,
-      expriencelevel: user.expriencelevel,
-      coinBalance: user.coins,
-      groupid: user.groupid,
-    });
-
-    const savedCoin = await newCoin.save();
-    res.status(201).json(savedCoin);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
 
 
@@ -37,29 +12,35 @@ exports.getCoinByUserId = async (req, res) => {
   try {
     const userId = req.params.userId;
 
-    const coin = await Coin.findOne({ user: userId })
-      .populate('expriencelevel')
-      .populate('user');
+    const coins = await Coin.find({ user: userId })
+      .populate('user', 'name groupid');
 
-    if (!coin) {
-      return res.status(404).json({ message: 'Coin not found' });
+    if (!coins || coins.length === 0) {
+      return res.status(404).json({ message: 'No coins found for the user' });
     }
 
-    res.json(coin);
+    res.json(coins);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Update coin balance by user ID
+
+
 exports.updateCoinBalance = async (req, res) => {
   try {
-    const userId = req.params.userId;
-    const { coinBalance } = req.body;
+    const coinId = req.params.id;
+    const { coinBalance, average } = req.body;
 
-    const updatedCoin = await Coin.findOneAndUpdate(
-      { user: userId },
-      { coinBalance },
+    let message = '';
+
+    if (coinBalance > 0) {
+      message ='';
+    }
+
+    const updatedCoin = await Coin.findByIdAndUpdate(
+      coinId,
+      { coinBalance, average, message }, // Update the message field as well
       { new: true }
     );
 

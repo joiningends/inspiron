@@ -4,7 +4,7 @@ const categoryController = require('../controller/categoryController');
 
 // Create a new category
 router.post('/', categoryController.createCategory);
-
+router.post('/session', categoryController.createsession);
 // Get all categories
 router.get('/', categoryController.getAllCategories);
 
@@ -16,5 +16,8 @@ router.put('/:id', categoryController.updateCategory);
 
 // Delete a category by ID
 router.delete('/:id', categoryController.deleteCategory);
-router.put('/:categoryId/extendsession', categoryController.updateExtendsession);
+router.get('/center/info', categoryController.getCategoriesWithCenterName);
+router.get('/session/info', categoryController.getCategoriesWithSessionDuration);
+
+
 module.exports = router;

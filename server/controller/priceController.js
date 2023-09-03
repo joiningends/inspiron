@@ -16,6 +16,7 @@ exports.createPrice = async (req, res) => {
     }
 
     const newPrice = new Price({
+      expriencelevel:experienceLevelDoc.id,
       level: experienceLevelDoc.level,
       session,
       sessionPrice,
@@ -31,34 +32,39 @@ exports.createPrice = async (req, res) => {
 
 // Get all price entries
 exports.getAllPrices = async (req, res) => {
-  try {
-    const prices = await Price.find()
-      .populate('expriencelevel'); // Populate the experiencelevel reference
-
-    res.json(prices);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+  
+    try {
+      const sessionNumber = 1;
+  
+      const prices = await Price.find({ session: sessionNumber })
+        .populate('expriencelevel');
+  
+      res.json(prices);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  
 
 // Get price information by experience level
-exports.getPriceByExperienceLevel = async (req, res) => {
+exports.getPriceByExperienceLevel= async (req, res) => {
+  const { experienceLevelId } = req.params;
+
   try {
-    const experienceLevelId = req.params.experienceLevelId;
+    const prices = await Price.find({ expriencelevel: experienceLevelId });
 
-    const price = await Price.findOne({ expriencelevel: experienceLevelId })
-      .populate('expriencelevel');
-
-    if (!price) {
-      return res.status(404).json({ message: 'Price not found' });
+    if (!prices || prices.length === 0) {
+      return res.status(404).json({ error: 'Prices not found for this experience level' });
     }
 
-    res.json(price);
+    return res.status(200).json(prices);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error fetching prices:', error);
+    return res.status(500).json({ error: 'An error occurred while fetching the prices' });
   }
 };
-// Update a price entry by ID
+
+
 exports.updatePrice = async (req, res) => {
     try {
       const priceId = req.params.priceId; // Assuming you're passing the price ID in the URL

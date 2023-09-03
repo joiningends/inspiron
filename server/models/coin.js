@@ -10,17 +10,20 @@ const coinSchema = new mongoose.Schema({
           type:String
         },
       ], 
-  coinBalance:[ {
+      
+  coinBalance: {
     type: Number,
     default: 0,
-  }],
+  },
   groupid: {
     type: String,
-    required: true,
   },
  avarage:{
     type: Number,
- }
+ },
+ message: {
+  type: String,
+},
 
 });
 

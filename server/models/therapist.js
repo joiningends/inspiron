@@ -26,7 +26,12 @@ const therapistSchema = new mongoose.Schema({
         ref: "Price",
       },
     ],
-  
+  level:{
+type:String
+  },
+  sessionPrice:{
+    type:Number
+  },
 
   gender: {
     type: String,
@@ -142,17 +147,7 @@ const therapistSchema = new mongoose.Schema({
     type: String,
   },
   sessions: {
-    date: { type: Date },
-    timeSlots: [
-      {
-        startTime: { type: String },
-        endTime: { type: String },
-        sessionType: {
-          type: String,
-        },
-        location: { type: String },
-      },
-    ],
+    type: mongoose.Schema.Types.Mixed
   },
   group: [
     {
@@ -173,9 +168,11 @@ const therapistSchema = new mongoose.Schema({
       groupid: String, // Store the name of the group
     }
   ],
-  extensiontime:{
-    type: Number
+  status:{
+    type:String,
+    default: 'Pending'
   }
+  
 });
 
 

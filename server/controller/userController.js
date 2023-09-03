@@ -5,11 +5,11 @@ const { Therapist } = require('../models/therapist');
 const Heading = require('../models/heading');
 const Client = require('../models/client');
 const nodemailer = require('nodemailer'); 
-
+const { Appointment } = require('../models/appointment');
 const getUsers = async (req, res) => {
   try {
     const userListWithoutGroupId = await User.find({ groupid: { $exists: false } }).select('-passwordHash');
-    const approvedUserListWithGroupId = await User.find({ types: 'approve', groupid: { $exists: true } }).select('-passwordHash');
+    const approvedUserListWithGroupId = await User.find({ types: 'approved', groupid: { $exists: true } }).select('-passwordHash');
     
     const allUsers = [...userListWithoutGroupId, ...approvedUserListWithGroupId];
     
@@ -57,45 +57,76 @@ const getUsersByGroup = async (req, res) => {
 
 
 
+
+
+
 const registernormalUser = async (req, res) => {
   try {
-    const {
+    const { name, mobile, email, password } = req.body;
+
+    const passwordHash = await bcrypt.hash(password, 10); // Use await here
+
+    const user = new User({
       name,
-     
       mobile,
-     
       email,
-      password,
-     
-    } = req.body;
+      passwordHash,
+    });
 
-    const passwordHash = bcrypt.hashSync(password, 10);
-const user = new User({
-  name,
-  
-  mobile,
- 
-  email,
-  passwordHash,
-  
-  
-  
-});
+    const savedUser = await user.save();
 
-const savedUser = await user.save();
+    if (!savedUser) {
+      return res.status(400).send('The user could not be created!');
+    }
 
-if (!savedUser) {
-  return res.status(400).send('The user could not be created!');
-}
+    // Send the welcome email
+    sendWelcomeEmail(savedUser.email, savedUser.name);
 
-res.send(savedUser);
-} catch (error) {
-console.error('Failed to create user:', error);
-res
-  .status(500)
-  .json({ success: false, error: 'An error occurred while creating the user' });
-}
+    res.send(savedUser);
+  } catch (error) {
+    console.error('Failed to create user:', error);
+    res
+      .status(500)
+      .json({ success: false, error: 'An error occurred while creating the user' });
+  }
 };
+
+// Function to send a welcome email
+const sendWelcomeEmail = (email, name) => {
+  // Create a nodemailer transporter
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com', // Replace with your SMTP server hostname
+    port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
+    secure: false,
+    requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+    auth: {
+      user: 'inspiron434580@gmail.com', // Replace with your email address
+      pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+    },
+  });
+
+  const mailOptions = {
+    from: 'inspiron434580@gmail.com',
+    to: email, // Use the 'email' parameter
+    subject: 'Welcome To Inspiron',
+    html: `
+      <p>Hi ${name},</p>
+      <p>Thank you for creating your profile in Inspiron. Please log in to take a free assessment and book a therapist session.</p>
+      <p>Thanks,<br>Team Inspiron</p>`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending welcome email:', error);
+    } else {
+      console.log('Welcome email sent:', info.response);
+    }
+  });
+};
+
+
+
+
 
 const updateUser = async (req, res) => {
   const userId = req.params.id;
@@ -173,7 +204,7 @@ const loginUser = async (req, res) => {
       let empid = null;
 
       if (user.groupid) {
-        if (user.types === 'approve') {
+        if (user.types === 'approved' || user.types === 'enable') {
           role = 'user'; // Use the groupid as role if user has one and is approved
           groupid = user.groupid;
         } else {
@@ -256,19 +287,56 @@ const registerUser = async (req, res) => {
         console.log('New User:', newUser); // Debugging
     
         // Save the user in the database
-        const savedUser = await newUser.save();
-    
-        if (!savedUser) {
-          return res.status(400).send('Failed to register the user');
-        }
-    
-        // Send the registered user data in the response
-        res.status(201).json(savedUser);
-      } catch (error) {
-        res.status(500).json({ error: 'Failed to register the user' });
-      }
-    };
-    
+        
+    const savedUser = await newUser.save();
+
+    if (!savedUser) {
+      return res.status(400).send('Failed to register the user');
+    }
+
+    // Send the registered user data in the response
+    res.status(201).json(savedUser);
+
+    // Send the "thank you" email
+    sendThankYouEmail(savedUser.email, savedUser.name);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to register the user' });
+  }
+};
+
+// Function to send a "thank you" email
+const sendThankYouEmail = (email, name) => {
+  // Create a nodemailer transporter
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com', // Replace with your SMTP server hostname
+    port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
+    secure: false,
+    requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+    auth: {
+      user: 'inspiron434580@gmail.com', // Replace with your email address
+      pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+    },
+  });
+
+  const mailOptions = {
+    from: 'inspiron434580@gmail.com',
+    to: email, // Use the 'email' parameter
+    subject: 'Welcome To Inspiron',
+    html: `
+      <p>Hi ${name},</p>
+      <p>Thank you for creating your profile in Inspiron. Please wait while your profile is being reviewed by the HR. You will receive an email once your profile is approved.</p>
+      <p>Thanks,<br>Team Inspiron</p>`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending "thank you" email:', error);
+    } else {
+      console.log('"Thank you" email sent:', info.response);
+    }
+  });
+};
+
     
     
     
@@ -345,76 +413,71 @@ const updateUserByTherapist = async (req, res) => {
 
 
 
-const updateUserSessionNotes = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { sessionnotes } = req.body;
-
-    // Find the user by ID
-    const user = await User.findById(id);
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Update the sessionnotes if provided in the request body
-    if (sessionnotes && Array.isArray(sessionnotes.option)) {
-      user.sessionnotes.option = sessionnotes.option;
-    }
-
-    // Save the updated user
-    const updatedUser = await user.save();
-
-    // Extract the required fields for the result
-    const { _id, name, Sessionnumber, date, time } = updatedUser;
-
-    // Prepare the result JSON
-    const result = {
-      userid: _id,
-      name,
-      Sessionnumber,
-      date,
-      time,
-      sessionnotes
-    };
-
-    res.json(result);
-  } catch (error) {
-    console.error('Error updating user session notes:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
 
 
 
 const updateStatusBasedOnData = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const user = await User.findById(userId);
+    const appointmentId = req.params.appointmentId;
+    const foundAppointment = await Appointment.findById(appointmentId);
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    if (!foundAppointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
     }
 
-    const { chief, illness } = user;
-    const isEnded =  chief && chief.length > 0 && illness && illness.length > 0;
-    user.status = isEnded ? 'ended' : 'started'; // Fix the status assignment here
-    await user.save();
+    // Update the appointment status
+    foundAppointment.status = 'started';
+    await foundAppointment.save();
 
-    const updatedUser = user.toObject();
+    const updatedAppointment = foundAppointment.toObject();
 
-    res.json({ user: updatedUser });
+    res.json({ appointment: updatedAppointment });
   } catch (error) {
-    console.error('Error updating user status:', error);
+    console.error('Error updating appointment status:', error);
     res.status(500).json({ error: 'An error occurred while updating status' });
   }
 };
 
 
 
+const updateStatusBasedOnDataendthesession = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+    const appointmentId = req.params.appointmentId;
+    const foundAppointment = await Appointment.findById(appointmentId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    if (!foundAppointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    const { chief, illness } = user;
+    const isEnded = chief && chief.length > 0 && illness && illness.length > 0;
+
+    if (isEnded) {
+      foundAppointment.status = 'ended';
+      foundAppointment.firstsession = 'completed';
+    } else {
+      
+      foundAppointment.firstsession = 'pending';
+      return res.status(400).json({ message: 'Please fill in the first session note before ending the session' });
+    }
+
+    await foundAppointment.save();
+
+    const updatedAppointment = foundAppointment.toObject();
+    res.json({ appointment: updatedAppointment });
+  } catch (error) {
+    console.error('Error updating appointment status:', error);
+    res.status(500).json({ error: 'An error occurred while updating status' });
+  }
+};
 
 
- const updateUserTypes = async (req, res) => {
+const updateUserTypes = async (req, res) => {
   try {
     const userId = req.params.id;
     const { types } = req.body;
@@ -430,8 +493,8 @@ const updateStatusBasedOnData = async (req, res) => {
     user.types = types;
 
     // Determine if the type is approved or disapproved
-    const isApproved = types === 'approve';
-    const isDisapproved = types === 'disapprove';
+    const isApproved = types === 'approved';
+    const isDisapproved = types === 'disapproved';
 
     // Save the updated user in the database
     const updatedUser = await user.save();
@@ -500,16 +563,133 @@ const updateStatusBasedOnData = async (req, res) => {
         }
       });
     }
-
+    if (isDisapproved) {
+      // Delete the user
+      await User.findByIdAndDelete(userId); // This line deletes the user from the database
+    }
     res.status(200).json({ message: `User types ${isApproved ? 'approved' : 'disapproved'} successfully`, user: updatedUser });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+// ... (existing code)
 
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
 
+    // Check if the user exists with the provided email
+    const user = await User.findOne({ email });
 
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate a random token and save it in the user's database record
+    const resetToken = jwt.sign({ userId: user._id }, process.env.secret, {
+      expiresIn: '1h', // Token expires in 1 hour
+    });
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour in milliseconds
+    await user.save();
+
+    // Create a nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com', // Replace with your SMTP server hostname
+      port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
+      secure: false,
+      requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+      auth: {
+        user: 'inspiron434580@gmail.com', // Replace with your email address
+        pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+      },
+    });
+
+    const mailOptions = {
+      from: 'inspiron434580@gmail.com',
+      to: user.email,
+      subject: 'Password Reset Request',
+      html: `
+        <p>Hi ${user.name},</p>
+        <p>You are receiving this email because you (or someone else) have requested a password reset for your account.</p>
+        <p>Please click the following link to reset your password:</p>
+        <a href="${process.env.CLIENT_URL}/reset/${resetToken}">Reset Password</a>
+        <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+        <p>Thanks,<br>Team Inspiron</p>`,
+    };
+
+    // Send the password reset email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+        res.status(500).json({ error: 'Failed to send password reset email' });
+      } else {
+        console.log('Password reset email sent:', info.response);
+        res.status(200).json({ message: 'Password reset email sent successfully' });
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to initiate password reset' });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { resetToken, newPassword } = req.body;
+
+    // Find the user by the reset token
+    const user = await User.findOne({
+      resetPasswordToken: resetToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    // Update the user's password and reset token fields
+    user.passwordHash = bcrypt.hashSync(newPassword, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    // Create a nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com', // Replace with your SMTP server hostname
+      port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
+      secure: false,
+      requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+      auth: {
+        user: 'inspiron434580@gmail.com', // Replace with your email address
+        pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+      },
+    });
+
+    const mailOptions = {
+      from: 'inspiron434580@gmail.com',
+      to: user.email,
+      subject: 'Password Reset Confirmation',
+      html: `
+        <p>Hi ${user.name},</p>
+        <p>Your password has been successfully reset. If you did not initiate this request, please contact support.</p>
+        <p>Thanks,<br>Team Inspiron</p>`,
+    };
+
+    // Send the password reset confirmation email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+      } else {
+        console.log('Password reset confirmation email sent:', info.response);
+      }
+    });
+
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+};
 module.exports = {
   getUsers,
   getUserById,
@@ -522,8 +702,11 @@ module.exports = {
   deleteUser,
   getUserCount,
   updateUserByTherapist,
-  updateUserSessionNotes,
+  
   updateStatusBasedOnData,
-  updateUserTypes
+  updateStatusBasedOnDataendthesession,
+  updateUserTypes,
+  forgotPassword, 
+  resetPassword,
 
 };

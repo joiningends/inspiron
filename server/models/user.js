@@ -64,120 +64,17 @@ type:Number,
         
       },
       socioeconomic:{
-        pronouns: {
-        type: String,
-        enum: ['He/Him', 'She/Her', 'They/Them', 'No pronouns'],
-        required: false
-      },
-      height: {
-        type: Number
-      },
-      weight: {
-        type: Number
-      },
-      fullAddress: {
-        type: String
-      },
-      contactDetails: {
-        type: String
-      },
-      emergencyContactName: {
-        type: String
-      },
-      emergencyContactNumber: {
-        type: String
-      },
-      education: {
-        comments: {
-          type: String
-        },
-        tenth: {
-          type: String
-        },
-        twelfth: {
-          type: String
-        },
-        graduation: {
-          type: String
-        },
-        postGraduation: {
-          type: String
-        }
-      },
-      occupation: {
-        type: String
-      },
-      socioeconomicStatus: {
-        type: String,
-        
-      },
-      informant: {
-        name: {
-          type: String
-        },
-        relationshipWithPatient: {
-          type: String,
-          
-        },
-        durationOfStayWithPatient: {
-          type: String
-        }
-      },
-      information: {
-        type: String,
-        
-      },
-      religionEthnicity: {
-        type: String
-      },
-      dateOfBirth: {
-        type: Date
-      },
-      languagesKnown: {
-        type: [String],
-         
-        default: []
-      },
-      otherLanguage: {
-        type: String
-      },
-      foreignLanguage: {
-        type: String
-      },
-      maritalStatus: {
-        type: String,
-        enum: ['Married', 'Unmarried', 'Single', 'In a relationship']
-      },
-      courtshipDuration: {
-        type: Number
-      },
-      reference: {
-        type: String,
-        
-      },
+        type: mongoose.Schema.Types.Mixed
     },
-      chief: [
-        {
-          onset: String,
-          SelectedOptions: [
-            {
-              QuestionName: String,
-              option: String,
-              comment: String
-            }
-          ]
-        }
-      ],
+    chief: [
+      {
+        type: mongoose.Schema.Types.Mixed
+      }
+    ],
+      
       illness: [
         {
-          onset: String,
-          SelectedOptions: [
-            {
-              QuestionName: String,
-              option: String,
-              comment: String
-            }
-          ]
+          type: mongoose.Schema.Types.Mixed
         }
       ],
       casesummery:{
@@ -197,38 +94,14 @@ type:Number,
          
           default: () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
-        sessionnotes:{
-          Summary :{
-            type: String,
-          },
-          Growthcurvepoints:{
-            type: String,
-          },
-TherapeuticTechniquesused:{
-  type: String,
-},
-Homeworkgiven:{
-  type: String,
-},
-Nextsessionplan:{
-  type: String,
-},
-             option:[{
-                type:String
-             }]
-        },
-        status:{
-
-          type: String,
-        
-        },
        
+        
     
-      coins: {
+     credits: {
         type: Number,
-        default: 1,
-        required:false,
-      },
+        default: 0
+     },
+
       groupid: {
         type:String,
         
@@ -239,9 +112,17 @@ Nextsessionplan:{
       },
       types:{
         type:String
+      },
+      resetPasswordToken :{
+        type:String
+      },
+      resetPasswordExpires:{
+        type: Date,
+      },
+      firstsession:{
+        type:String
       }
-
-
+      
 });
 
 

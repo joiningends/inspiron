@@ -15,8 +15,12 @@ router.post('/register/:generatedGroupId', userController.registerUser);
 router.delete('/:id', userController.deleteUser);
 router.get('/get/count', userController.getUserCount);
 router.put('/:id/sess', userController.updateUserByTherapist);
-router.put('/:id/sessionotes', userController.updateUserSessionNotes);
-router.get('/:id/status', userController.updateStatusBasedOnData);
+
+router.get('/status/:appointmentId', userController.updateStatusBasedOnData);
+router.get('/:id/ended/:appointmentId', userController.updateStatusBasedOnDataendthesession);
 router.put('/:id/types', userController.updateUserTypes);
+router.post('/forgot-password',userController.forgotPassword);
+
+router.post('/reset-password', userController.resetPassword);
 
 module.exports = router;

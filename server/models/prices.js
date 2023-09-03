@@ -10,7 +10,7 @@ const priceSchema = new mongoose.Schema({
             type: String,  
         },
   session: {
-    type: String,
+    type: Number,
     required: true,
   },
   sessionPrice: {

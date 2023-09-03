@@ -1,7 +1,7 @@
 const { Therapist } = require('../models/therapist');
 const { Appointment } = require('../models/appointment');
 const Category = require('../models/category');
-const Patient = require('../models/patient');
+
 const Assessment = require('../models/assessmentf');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -18,23 +18,15 @@ const getTotalTherapists = async (req, res) => {
   try {
     const therapists = await Therapist.find({}).populate('expertise group');
 
-    const therapistStatus = therapists.map(therapist => {
-      const { expertise,  expriencelevel, meetLink } = therapist;
-      const isApproved = expertise && expertise.length > 0 &&  expriencelevel &&  expriencelevel.length > 0  && meetLink !== "";
-      return {
-        ...therapist.toObject(),
-        status: isApproved ? 'approved' : 'pending'
-      };
-    });
+    const totalTherapists = therapists.length;
 
-    const totalTherapists = therapistStatus.length;
-
-    res.json({ totalTherapists, therapists: therapistStatus });
+    res.json({ totalTherapists,therapists });
   } catch (error) {
     console.error('Error getting total therapists:', error);
     res.status(500).json({ error: 'An error occurred while getting total therapists' });
   }
 };
+
 
 
 const getTherapistDetails = async (req, res) => {
@@ -113,12 +105,9 @@ const getAllTherapists = async (req, res) => {
 
     // Filter therapists with approved profiles
    // Filter therapists with all three fields present (expertise, experience level, meet link) and status is "approved"
-const approvedTherapists = populatedTherapists.filter(
-  therapist => therapist.expertise.length > 0 &&
-    therapist.expriencelevel.length > 0 &&
-    therapist.group.length > 0 &&
-    therapist.meetLink !== ""
-);
+   const approvedTherapists = populatedTherapists.filter(
+    therapist => therapist.status === 'Approved'
+  );
 
 
     return res.json({ totalTherapists: approvedTherapists.length, therapists: approvedTherapists });
@@ -170,10 +159,7 @@ const getAllTherapistscorporate = async (req, res) => {
     );
 
     const approvedTherapists = populatedTherapists.filter(
-      therapist => therapist.expertise.length > 0 &&
-        therapist.expriencelevel.length > 0 &&
-        therapist.group.length > 0 &&
-        therapist.meetLink !== ""
+      therapist => therapist.status === 'Approved'
     );
 
     if (groupid) {
@@ -203,33 +189,33 @@ const getAllTherapistscorporate = async (req, res) => {
 
 const getTherapists = async (req, res) => {
   try {
-    const assessmentScore = req.body.assessmentScore;
+    const assessmentId = req.params.assessmentId;
 
-    // Find assessments where the assessmentScore falls within the 'low', 'medium', or 'high' range
-    const assessments = await Assessment.find({
-      $or: [
-        { 'low.min': { $lte: assessmentScore }, 'low.max': { $gte: assessmentScore } },
-        { 'medium.min': { $lte: assessmentScore }, 'medium.max': { $gte: assessmentScore } },
-        { 'high.min': { $lte: assessmentScore }, 'high.max': { $gte: assessmentScore } }
-      ]
-    });
+    // Find the assessment using the provided assessment ID
+    const assessment = await Assessment.findById(assessmentId);
+    if (!assessment) {
+      return res.status(404).json({ error: 'Assessment not found' });
+    }
 
-    // Get the expertise IDs for all matching assessments
-    const expertiseIds = assessments.reduce((acc, cur) => {
-      const field = assessmentScore >= cur.low.min && assessmentScore <= cur.low.max ? 'low' :
-        assessmentScore >= cur.medium.min && assessmentScore <= cur.medium.max ? 'medium' :
-        assessmentScore >= cur.high.min && assessmentScore <= cur.high.max ? 'high' : null;
+    const assessmentScore = parseInt(req.params.assessmentScore);
+    console.log('Assessment Score:', assessmentScore);
+    const { low, medium, high } = assessment;
 
-      if (field) {
-        const expertiseIds = cur[field].expertise.map(expertise => expertise.toString());
-        return acc.concat(expertiseIds);
-      }
-      return acc;
-    }, []);
+    let matchingAssessments = [];
+
+    // Check if the assessmentScore falls within the low, medium, or high range
+    if (assessmentScore >= low.min && assessmentScore <= low.max) {
+      matchingAssessments = low.expertise;
+    } else if (assessmentScore >= medium.min && assessmentScore <= medium.max) {
+      matchingAssessments = medium.expertise;
+    } else if (assessmentScore >= high.min && assessmentScore <= high.max) {
+      matchingAssessments = high.expertise;
+    }
 
     // Build the query object with the expertise filter
     const query = {
-      expertise: { $in: expertiseIds },
+      expertise: { $in: matchingAssessments },
+      status: 'Approved'
     };
 
     // Fetch the therapists based on the determined query
@@ -268,92 +254,98 @@ const getTherapists = async (req, res) => {
 
     res.json(populatedTherapists);
   } catch (error) {
-    console.error('Error:', error); // Add this line for additional error details during debugging
+    console.error('Error:', error);
     res.status(500).json({ error: 'Failed to retrieve therapists' });
   }
 };
 
+
+
+
 const getTherapistscorporate = async (req, res) => {
- 
-    try {
-      const assessmentScore = req.body.assessmentScore;
-      const groupid = req.query.groupid; // Assuming the groupid is passed as a query parameter
-  
-      // Find assessments where the assessmentScore falls within the 'low', 'medium', or 'high' range
-      const assessments = await Assessment.find({
-        $or: [
-          { 'low.min': { $lte: assessmentScore }, 'low.max': { $gte: assessmentScore } },
-          { 'medium.min': { $lte: assessmentScore }, 'medium.max': { $gte: assessmentScore } },
-          { 'high.min': { $lte: assessmentScore }, 'high.max': { $gte: assessmentScore } }
-        ]
-      });
-  
-      // Get the expertise IDs for all matching assessments
-      const expertiseIds = assessments.reduce((acc, cur) => {
-        const field = assessmentScore >= cur.low.min && assessmentScore <= cur.low.max ? 'low' :
-          assessmentScore >= cur.medium.min && assessmentScore <= cur.medium.max ? 'medium' :
-          assessmentScore >= cur.high.min && assessmentScore <= cur.high.max ? 'high' : null;
-  
-        if (field) {
-          const expertiseIds = cur[field].expertise.map(expertise => expertise.toString());
-          return acc.concat(expertiseIds);
-        }
-        return acc;
-      }, []);
-  
-      // Build the query object with the expertise filter
-      const query = {
-        expertise: { $in: expertiseIds },
-      };
-  
-      // Fetch the therapists based on the determined query
-      const therapists = await Therapist.find(query, {
-        assessmentScoreRange: 0, // Exclude the assessmentScoreRange field
-      }).populate('expertise'); // Include expertise details
-  
-      // Filter therapists by groupid if provided
-      if (groupid) {
-        const therapistsInGroup = therapists.filter(
-          therapist => therapist.groupDetails.some(groupDetails => groupDetails.groupid === groupid)
-        );
-        return res.json({ totalTherapists: therapistsInGroup.length, therapists: therapistsInGroup });
-      }
-  
-      // Populate the therapists' availability with location details
-      const populatedTherapists = await Promise.all(
-        therapists.map(async therapist => {
-          const populatedAvailability = await Promise.all(
-            therapist.availability.map(async availability => {
-              const category = await Category.findById(availability.location);
-              if (!category) {
-                throw new Error('Invalid category ID');
-              }
-              const locationDetails = {
-                centerName: category.centerName,
-                centerAddress: category.centerAddress,
-                contactNo: category.contactNo
-              };
-              return {
-                location: locationDetails,
-                day: availability.day,
-                timeSlot: availability.timeSlot,
-                _id: availability._id
-              };
-            })
-          );
-          return {
-            ...therapist.toObject(),
-            availability: populatedAvailability
-          };
-        })
-      );
-  
-      res.json(populatedTherapists);
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({ error: 'Failed to retrieve therapists' });
+  try {
+    const assessmentScore = parseInt(req.params.assessmentScore); // Assuming the score is an integer
+    console.log('Assessment Score:', assessmentScore);// Add this line to log the assessment score
+
+    const groupid = req.params.groupid; // Assuming the groupid is passed as a query parameter
+    const assessmentId = req.params.assessmentId;
+
+    console.log('Group ID from URL:', groupid);
+
+    const existingAssessment = await Assessment.findById(assessmentId);
+    if (!existingAssessment) {
+      return res.status(404).json({ error: 'Assessment not found' });
     }
-  };
+
+    // Extract 'high', 'medium', and 'low' values from the assessment
+    const { high, medium, low } = existingAssessment;
+
+    let matchingExpertiseIds = [];
+
+    // Check if the assessmentScore falls within the 'high', 'medium', or 'low' range
+    if (assessmentScore >= low.min && assessmentScore <= low.max) {
+      matchingExpertiseIds = low.expertise.map(expertise => expertise.toString());
+    } else if (assessmentScore >= medium.min && assessmentScore <= medium.max) {
+      matchingExpertiseIds = medium.expertise.map(expertise => expertise.toString());
+    } else if (assessmentScore >= high.min && assessmentScore <= high.max) {
+      matchingExpertiseIds = high.expertise.map(expertise => expertise.toString());
+    }
+
+    // Build the query object with the expertise filter
+    const query = {
+      expertise: { $in: matchingExpertiseIds },
+      status: 'Approved'
+    };
+
+    // Fetch the therapists based on the determined query
+    const therapists = await Therapist.find(query, {
+      assessmentScoreRange: 0, // Exclude the assessmentScoreRange field
+    }).populate('expertise'); // Include expertise details
+
+    // Filter therapists by groupid if provided
+    if (groupid) {
+      const therapistsInGroup = therapists.filter(
+        therapist => therapist.groupDetails.some(groupDetails => groupDetails.groupid === groupid)
+      );
+      return res.json({ totalTherapists: therapistsInGroup.length, therapists: therapistsInGroup });
+    }
+
+    // Populate the therapists' availability with location details
+    const populatedTherapists = await Promise.all(
+      therapists.map(async therapist => {
+        const populatedAvailability = await Promise.all(
+          therapist.availability.map(async availability => {
+            const category = await Category.findById(availability.location);
+            if (!category) {
+              throw new Error('Invalid category ID');
+            }
+            const locationDetails = {
+              centerName: category.centerName,
+              centerAddress: category.centerAddress,
+              contactNo: category.contactNo
+            };
+            return {
+              location: locationDetails,
+              day: availability.day,
+              timeSlot: availability.timeSlot,
+              _id: availability._id
+            };
+          })
+        );
+        return {
+          ...therapist.toObject(),
+          availability: populatedAvailability
+        };
+      })
+    );
+
+    res.json(populatedTherapists);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Failed to retrieve therapists' });
+  }
+};
+
   
   
   
@@ -518,88 +510,57 @@ const updateTherapist = (req, res) => {
 
 const updateTherapists = async (req, res) => {
   const therapistId = req.params.id;
-  const { expertise, expriencelevel, meetLink,group } = req.body;
-
-  try {
-    const therapist = await Therapist.findById(therapistId);
-
-    if (!therapist) {
-      return res.status(404).json({ error: 'Therapist not found' });
+    const { expriencelevel, group } = req.body;
+  
+    try {
+      const therapist = await Therapist.findById(therapistId);
+  
+      if (!therapist) {
+        return res.status(404).json({ error: 'Therapist not found' });
+      }
+  
+      // Update expriencelevel and related fields
+      if (expriencelevel) {
+        therapist.expriencelevel = expriencelevel;
+  
+        const priceEntry = await Price.findById(expriencelevel);
+  
+        if (priceEntry) {
+          therapist.level = priceEntry.level;
+          therapist.sessionPrice = priceEntry.sessionPrice;
+        }
+      }
+  
+      // Update group and related fields
+      if (group && Array.isArray(group)) {
+        therapist.group = group; // Assign the group array with ObjectId references
+  
+        therapist.groupid = group.map(objId => objId.toString());
+  
+        const groupDetailsPromises = group.map(async groupId => {
+          const client = await Client.findById(groupId);
+          return client ? { _id: groupId, groupid: client.groupid } : null;
+        });
+  
+        therapist.groupDetails = await Promise.all(groupDetailsPromises);
+      }
+  
+      // Save the updated therapist
+      const updatedTherapist = await therapist.save();
+  
+      res.status(200).json(updatedTherapist);
+    } catch (error) {
+      console.error('Error updating therapist details:', error);
+      res.status(500).json({ error: 'An error occurred while updating therapist details' });
     }
-
-    // Update the fields
-    if (expertise) {
-      therapist.expertise = expertise;
-    }
-
-    if (expriencelevel) {
-      therapist.expriencelevel = expriencelevel;
-    }
-
-    if (meetLink) {
-      therapist.meetLink = meetLink;
-    }
-    if (group) {
-      therapist.group = group; // Assign the group array with ObjectId references
-
-      // Extract and store group IDs as strings
-      therapist.groupid = group.map(objId => objId.toString());
-
-      // Fetch and store group details from the "Client" model
-      const groupDetailsPromises = group.map(async group => {
-        const client = await Client.findById(group);
-        return client ? { _id: group, groupid: client.groupid } : null;
-      });
-
-      therapist.groupDetails = await Promise.all(groupDetailsPromises);
-    }
-    // Save the updated therapist
-    const updatedTherapist = await therapist.save();
-
-    // Send approval email
-    sendApprovalEmail(updatedTherapist);
-
-    res.status(200).json(updatedTherapist);
-  } catch (error) {
-    console.error('Error updating therapist details:', error);
-    res.status(500).json({ error: 'An error occurred while updating therapist details' });
-  }
-};
-
-// Function to send approval email
-const sendApprovalEmail = (therapist) => {
-  // Create a nodemailer transporter
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', // Replace with your SMTP server hostname
-    port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-    secure: false,
-    requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
-    auth: {
-      user: 'inspiron434580@gmail.com', // Replace with your email address
-      pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
-    },
-  });
-
-  const mailOptions = {
-    from: 'inspiron434580@gmail.com',
-    to: therapist.email,
-    subject: "Therapist Account approved",
-    html: `
-    
-    <p>Dear ${therapist.name}</p>
-    <p>Congratulations! Your therapist profile has been approved.</p>
-    <p>Add the requried details in your profile </p>`,
   };
+  
 
-  // Send the email
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error('Error sending email:', error);
-    } else {
-      console.log('Email sent: ' + info.response);
-    }
-  });
-};
+
+
+
+
+
 
 
 const updateTherapistImage = async (req, res) => {
@@ -635,26 +596,33 @@ const updateTherapistImage = async (req, res) => {
 
 
 
-async function updatePrimaryDetails(req, res) {
-  const therapistId = req.params.id;
-  const { name, dateOfBirth, gender } = req.body;
-
-  try {
-    const therapist = await Therapist.findByIdAndUpdate(
-      therapistId,
-      { name, dateOfBirth, gender },
-      { new: true }
-    );
-
-    if (!therapist) {
-      return res.status(404).json({ success: false, message: 'Therapist not found' });
+  async function updatePrimaryDetails(req, res) {
+    const therapistId = req.params.id;
+    const { name, dateOfBirth, gender } = req.body;
+  
+    try {
+      // Calculate age from the date of birth
+      const dob = new Date(dateOfBirth);
+      const currentYear = new Date().getFullYear();
+      const birthYear = dob.getFullYear();
+      const age = currentYear - birthYear;
+  
+      const therapist = await Therapist.findByIdAndUpdate(
+        therapistId,
+        { name, dateOfBirth, gender, age }, // Update age field
+        { new: true }
+      );
+  
+      if (!therapist) {
+        return res.status(404).json({ success: false, message: 'Therapist not found' });
+      }
+  
+      res.json({ success: true, therapist });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
     }
-
-    res.json({ success: true, therapist });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
   }
-}
+  
 async function updateContactDetails(req, res) {
   const therapistId = req.params.id;
   const { email, mobile, emergencymobile } = req.body;
@@ -812,95 +780,7 @@ const getTherapistmeetlink = async (req, res) => {
   }
 };
 
-const createPatient = async (req, res) => {
-  try {
-    const {
-      fullName,
-      age,
-      sex,
-      pronouns,
-      height,
-      weight,
-      fullAddress,
-      contactDetails,
-      emergencyContactName,
-      emergencyContactNumber,
-      education,
-      occupation,
-      socioeconomicStatus,
-      informant,
-      relationshipWithPatient,
-      durationOfStayWithPatient,
-      information,
-      religionEthnicity,
-      dateOfBirth,
-      languagesKnown,
-      foreignLanguage,
-      maritalStatus,
-      reference,
-      depressiveSymptoms,
-      maniaSymptoms,
-      anxietySymptoms,
-      ocdSymptoms,
-      physicalSymptoms,
-      psychosisSymptoms,
-      personalityTraits,
-      deliberateSelfHarm,
-      appetite,
-      sleep,
-      sexualDysfunction,
-      headachesPains,
-      
-    } = req.body;
 
-    const newPatient = new Patient({
-      fullName,
-      age,
-      sex,
-      pronouns,
-      height,
-      weight,
-      fullAddress,
-      contactDetails,
-      emergencyContactName,
-      emergencyContactNumber,
-      education,
-      occupation,
-      socioeconomicStatus,
-      informant,
-      relationshipWithPatient,
-      durationOfStayWithPatient,
-      information,
-      religionEthnicity,
-      dateOfBirth,
-      languagesKnown,
-      foreignLanguage,
-      maritalStatus,
-      reference,
-      depressiveSymptoms,
-      maniaSymptoms,
-      anxietySymptoms,
-      ocdSymptoms,
-      physicalSymptoms,
-      psychosisSymptoms,
-      personalityTraits,
-      deliberateSelfHarm,
-      appetite,
-      sleep,
-      sexualDysfunction,
-      headachesPains,
-     
-    });
-
-   
-    const savedPatient = await newPatient.save();
-    const populatedPatient = await savedPatient.populate('cognitiveFunctions').execPopulate();
-
-    res.status(201).json({ success: true, patient: populatedPatient });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
 
 
 const deleteAllTherapists = async (req, res) => {
@@ -916,37 +796,108 @@ const deleteAllTherapists = async (req, res) => {
 };
 
 // Controller to check and extend sessions
-async function extendSessionsWithMatchingExtensionTime(therapistId) {
+
+
+const approveTherapist = async (req, res) => {
   try {
-    // Find the therapist by ID
+    const therapistId = req.params.id;
     const therapist = await Therapist.findById(therapistId);
 
     if (!therapist) {
-      throw new Error('Therapist not found');
+      return res.status(404).json({ message: 'Therapist not found' });
     }
 
-    // Iterate through timeSlots to check for matching extension time
-    const { timeSlots } = therapist.sessions;
-    for (let i = 0; i < timeSlots.length - 1; i++) {
-      const firstSessionEndTime = new Date(timeSlots[i].endTime);
-      const secondSessionStartTime = new Date(timeSlots[i + 1].startTime);
-      
-      // Calculate the gap between the sessions in minutes
-      const gapMinutes = Math.round((secondSessionStartTime - firstSessionEndTime) / (1000 * 60));
-      
-      if (gapMinutes === therapist.extensiontime) {
-        // Extend the second session's start time by the extension time
-        const newSecondSessionStartTime = new Date(secondSessionStartTime.getTime() + therapist.extensiontime * 60 * 1000);
-        therapist.sessions.timeSlots[i + 1].startTime = newSecondSessionStartTime.toISOString();
+    // Check if the therapist meets the approval conditions
+    const isApproved = therapist.expertise.length > 0 &&
+      therapist.expriencelevel.length > 0 &&
+      therapist.group.length > 0 &&
+      therapist.meetLink !== "";
 
-        // Save the updated therapist data
-        await therapist.save();
-      }
+    if (isApproved) {
+      therapist.status = 'Approved';
+      sendApprovalEmail(therapist);
+    } else {
+      therapist.status = 'Pending';
+      sendDisapprovalEmail(therapist);
     }
+
+    // Save the therapist to the database
+    await therapist.save();
+
+    // Assuming you want to return the updated therapist as the response
+    const updatedTherapist = therapist.toObject();
+    res.status(200).json(updatedTherapist);
   } catch (error) {
-    console.error('Error extending sessions:', error.message);
+    console.error('Error approving therapist:', error);
+    res.status(500).json({ error: 'An error occurred while approving therapist' });
   }
-}
+};
+
+const sendApprovalEmail = (therapist) => {
+  // Create a nodemailer transporter
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com', // Replace with your SMTP server hostname
+    port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
+    secure: false,
+    requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+    auth: {
+      user: 'inspiron434580@gmail.com', // Replace with your email address
+      pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+    },
+  });
+
+  const mailOptions = {
+    from: 'inspiron434580@gmail.com',
+    to: therapist.email,
+    subject: "Therapist Account approved",
+    html: `
+      <p>Dear ${therapist.name}</p>
+      <p>Congratulations! Your therapist profile has been approved.</p>
+      <p>Add the required details in your profile</p>`,
+  };
+
+  // Send the email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending approval email:', error);
+    } else {
+      console.log('Approval Email sent: ' + info.response);
+    }
+  });
+};
+
+const sendDisapprovalEmail = (therapist) => {
+  // Create a nodemailer transporter
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com', // Replace with your SMTP server hostname
+    port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
+    secure: false,
+    requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+    auth: {
+      user: 'inspiron434580@gmail.com', // Replace with your email address
+      pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+    },
+  });
+
+  const mailOptions = {
+    from: 'inspiron434580@gmail.com',
+    to: therapist.email,
+    subject: "Therapist Account Disapproved",
+    html: `
+      <p>Dear ${therapist.name}</p>
+      <p>We regret to inform you that your therapist profile has been disapproved.</p>
+      <p>Please review and update your profile to meet the approval criteria.</p>`,
+  };
+
+  // Send the email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending disapproval email:', error);
+    } else {
+      console.log('Disapproval Email sent: ' + info.response);
+    }
+  });
+};
 
 
 
@@ -976,7 +927,8 @@ getAllTherapistscorporate,
   deleteTherapist,
   getTherapistmeetlink,
   //updateTherapistLocation,
-  createPatient,
+ 
   deleteAllTherapists,
-  extendSessionsWithMatchingExtensionTime
+  
+  approveTherapist,
 };

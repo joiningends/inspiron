@@ -3,10 +3,10 @@ const ExperienceLevel = require('../models/exprience');
 
 const createExperienceLevel = async (req, res) => {
   try {
-    const { level, price } = req.body;
+    const { level} = req.body;
     const newExperienceLevel = new ExperienceLevel({
       level,
-      price,
+      
     });
     await newExperienceLevel.save();
     res.status(201).json(newExperienceLevel);
@@ -25,10 +25,10 @@ const getExperienceLevels = async (req, res) => {
 
 const updateExperienceLevel = async (req, res) => {
   try {
-    const { level, price } = req.body;
+    const { level } = req.body;
     const updatedExperienceLevel = await ExperienceLevel.findByIdAndUpdate(
       req.params.id,
-      { level, price },
+      { level },
       { new: true }
     );
     if (!updatedExperienceLevel) {

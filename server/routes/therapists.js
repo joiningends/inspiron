@@ -35,8 +35,8 @@ const FILE_TYPE_MAP = {
 router.get('/all', therapistController.getAllTherapists);
 router.get('/group/:groupid', therapistController.getAllTherapistscorporate);
 
-router.get('/score', therapistController.getTherapists);
-router.get('/score/:groupid', therapistController.getTherapistscorporate);
+router.get('/score/:assessmentId/:assessmentScore', therapistController.getTherapists);
+router.get('/score/:assessmentId/:groupid/:assessmentScore', therapistController.getTherapistscorporate);
 router.get('/:id', therapistController.getTherapistById);
 
 router.post('/', therapistController.createTherapist);
@@ -60,4 +60,5 @@ router.delete('/', therapistController.deleteAllTherapists);
 
 //router.put('/:id/locations', therapistController.updateTherapistLocation);
 //router.post('/:id/paitents', therapistController.createPatient);
-module.exports = router;
+router.get('/:id/status', therapistController.approveTherapist);
+module.exports = router;  

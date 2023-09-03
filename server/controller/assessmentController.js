@@ -1,5 +1,5 @@
 const Assessment = require('../models/assessmentf');
-
+const puppeteer = require('puppeteer');
 
 
 // GET all assessments
@@ -24,20 +24,9 @@ async function getAssessmentById(req, res) {
     res.status(500).json({ error: 'Failed to retrieve assessment' });
   }
 }
-
-
-
-// Create a new assessment with an image
 const createAssessment = async (req, res) => {
   try {
-    const file = req.file;
-    if (!file) {
-      return res.status(400).send('No image in the request');
-    }
-
-    const fileName = file.filename;
-    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
-    const imagePath = `${basePath}${fileName}`;
+    
 
     const {
       hostId,
@@ -45,6 +34,7 @@ const createAssessment = async (req, res) => {
       summary,
       slug,
       type,
+      image,
       assessmentScore,
       published,
       startsAt,
@@ -57,11 +47,7 @@ const createAssessment = async (req, res) => {
       /* other fields */
     } = req.body;
 
-    // Check if an image was uploaded
-    let imageBuffer = null;
-    if (req.file) {
-      imageBuffer = req.file.buffer;
-    }
+    
 
     const newAssessment = new Assessment({
       hostId,
@@ -69,7 +55,7 @@ const createAssessment = async (req, res) => {
       summary,
       slug,
       type,
-      image: { data: imageBuffer, contentType: req.file.mimetype }, // Save the image buffer and content type
+      image,
       assessmentScore,
       published,
       startsAt,
@@ -92,9 +78,6 @@ const createAssessment = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while creating the assessment' });
   }
 };
-
-
-
 
 const updateAssessment = async (req, res) => {
   try {
@@ -141,8 +124,7 @@ const updateAssessment = async (req, res) => {
 
     // Check if an image was uploaded
     if (req.file) {
-      existingAssessment.image.data = req.file.buffer;
-      existingAssessment.image.contentType = req.file.mimetype;
+     existingAssessment.image = imagePath;
     }
 
     if (req.body.assessmentScore) {
@@ -207,35 +189,93 @@ async function deleteAssessment(req, res) {
   }
 }
 
-// POST /generate-report
-async function generateReport(req, res) {
+
+async function getSeverityInfoByRouteScore(req, res) {
   try {
-    let assessmentScore;
+    const assessmentId = req.params.assessmentId;
+    const userId = req.params.userId;
+    const routeScore = parseInt(req.params.routeScore);
 
-    if (req.user) {
-      // User is logged in, retrieve the score from the database
-      const userId = req.user.id; // Assuming you have implemented authentication and have access to the user ID
-      const user = await User.findById(userId);
+    // Find assessments that match the route score and have severity names
+    const assessments = await Assessment.find({
+      $or: [
+        {
+          'low.min': { $lte: routeScore },
+          'low.max': { $gte: routeScore },
+        },
+        {
+          'medium.min': { $lte: routeScore },
+          'medium.max': { $gte: routeScore },
+        },
+        {
+          'high.min': { $lte: routeScore },
+          'high.max': { $gte: routeScore },
+        },
+      ],
+    });
 
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+    const severityInfo = assessments.reduce((acc, assessment) => {
+      if (assessment.low.min <= routeScore && routeScore <= assessment.low.max) {
+        acc.push({ severityName: assessment.low.serverityname, score: routeScore });
       }
+      if (assessment.medium.min <= routeScore && routeScore <= assessment.medium.max) {
+        acc.push({ severityName: assessment.medium.serverityname, score: routeScore });
+      }
+      if (assessment.high.min <= routeScore && routeScore <= assessment.high.max) {
+        acc.push({ severityName: assessment.high.serverityname, score: routeScore });
+      }
+      return acc;
+    }, []);
 
-      assessmentScore = user.assessmentScore;
-    } else {
-      // User is not logged in, retrieve the score from the request body or query parameters
-      assessmentScore = req.body.assessmentScore || req.query.assessmentScore;
-    }
-
-    // Generate the report based on the assessment score
-    const report = generateReportText(assessmentScore);
-
-    res.status(200).json({ report });
+    res.json({
+      success: true,
+      severityInfo,
+      assessmentId: assessmentId,
+      userId: userId,
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to generate report' });
+    console.error('Error fetching severity information:', error);
+    res.status(500).json({ success: false, message: 'Error fetching severity information' });
   }
 }
 
+
+
+
+async function generatePDF(req, res) {
+  
+  try {
+    const { assessmentName } = req.params; // Assuming you pass the assessment name in the route
+    const browser = await puppeteer.launch({ headless: 'new' });
+
+    const page = await browser.newPage();
+    await page.goto('', {
+      waitUntil: 'networkidle2'
+    });
+    await page.setViewport({ width: 1680, height: 1050 });
+    const todayDate = new Date();
+    const pdfFilename = `${assessmentName}-${todayDate.getTime()}.pdf`; // Set the PDF filename
+
+    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+
+    await browser.close();
+
+    // Set response headers to indicate that the response will be a PDF file attachment
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=${pdfFilename}`);
+
+    // Send the PDF buffer as a download
+    res.end(pdfBuffer);
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    res.status(500).send('Error generating PDF');
+  }
+}
+
+
+
+
+ 
 
 
 module.exports = {
@@ -246,7 +286,7 @@ module.exports = {
   updateAssessment,
 
   
-  deleteAssessment,
-  //generateReport,
-  //getAssessmentReport
+    deleteAssessment,
+    getSeverityInfoByRouteScore,
+    generatePDF 
 };
