@@ -6,20 +6,40 @@ const Heading = require('../models/heading');
 const Client = require('../models/client');
 const nodemailer = require('nodemailer'); 
 const { Appointment } = require('../models/appointment');
+const fetch = require('node-fetch');
+
 const getUsers = async (req, res) => {
   try {
+    // Find users without a groupid
     const userListWithoutGroupId = await User.find({ groupid: { $exists: false } }).select('-passwordHash');
-    const approvedUserListWithGroupId = await User.find({ types: 'approved', groupid: { $exists: true } }).select('-passwordHash');
     
-    const allUsers = [...userListWithoutGroupId, ...approvedUserListWithGroupId];
+    // Find approved users with a groupid
+    const approvedUsersWithGroupId = await User.find({ types: 'approved', groupid: { $exists: true } }).select('-passwordHash');
+
+    // Assuming you have a 'Client' model with a 'groupid' and 'name' field
+    const clientMap = new Map(); // Create a map to store groupid to client name mappings
     
+    // Populate the clientMap with groupid to name mappings
+    const clients = await Client.find();
+    clients.forEach(client => {
+      clientMap.set(client.groupid, client.name);
+    });
+
+    // Create an array to store users with groupid and client name
+    const usersWithGroupIdAndName = approvedUsersWithGroupId.map(user => ({
+      ...user.toObject(),
+      clientName: clientMap.get(user.groupid) || null, // Use the client name if found, otherwise null
+    }));
+    
+    const allUsers = [...userListWithoutGroupId, ...usersWithGroupIdAndName];
+   
+    allUsers.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
     res.send(allUsers);
   } catch (error) {
     res.status(500).json({ success: false });
   }
 };
-
-
 
 const getUserById = async (req, res) => {
  
@@ -52,7 +72,18 @@ const getUsersByGroup = async (req, res) => {
   }
 };
 
-
+const generateRandomToken = () => {
+  const tokenLength = 16; // You can adjust the length of the token as needed
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let token = '';
+  
+  for (let i = 0; i < tokenLength; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    token += characters.charAt(randomIndex);
+  }
+  
+  return token;
+};
 
 
 
@@ -64,13 +95,18 @@ const registernormalUser = async (req, res) => {
   try {
     const { name, mobile, email, password } = req.body;
 
-    const passwordHash = await bcrypt.hash(password, 10); // Use await here
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Generate a random verification token (you can use a library like crypto to create a secure token)
+    const verificationToken = generateRandomToken();
 
     const user = new User({
       name,
       mobile,
       email,
       passwordHash,
+      verificationToken, // Save the token in the user object
+      isVerified: false, // Set the initial verification status to false
     });
 
     const savedUser = await user.save();
@@ -79,10 +115,16 @@ const registernormalUser = async (req, res) => {
       return res.status(400).send('The user could not be created!');
     }
 
-    // Send the welcome email
-    sendWelcomeEmail(savedUser.email, savedUser.name);
+     sendWhatsAppMessage(savedUser.mobile, `
+Hi ${savedUser.name},
+Your account has been created.Please check your email for verification.
+Thanks,
+Team Inspiron
+`);
 
-    res.send(savedUser);
+    sendVerificationEmail(savedUser.email, verificationToken, savedUser.name);
+
+    res.send('Please check your email to verify your account.');
   } catch (error) {
     console.error('Failed to create user:', error);
     res
@@ -91,9 +133,10 @@ const registernormalUser = async (req, res) => {
   }
 };
 
-// Function to send a welcome email
-const sendWelcomeEmail = (email, name) => {
-  // Create a nodemailer transporter
+// Function to send a verification email
+const sendVerificationEmail = (email, token, name) => {
+  const verificationLink = `https://www.inspirononline.com/book-appointment_manual_psychiatric-consultation/verify?token=${token}`;
+
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com', // Replace with your SMTP server hostname
     port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
@@ -107,22 +150,82 @@ const sendWelcomeEmail = (email, name) => {
 
   const mailOptions = {
     from: 'inspiron434580@gmail.com',
-    to: email, // Use the 'email' parameter
-    subject: 'Welcome To Inspiron',
+    to: email,
+    subject: 'Verify Your Email Address',
     html: `
       <p>Hi ${name},</p>
-      <p>Thank you for creating your profile in Inspiron. Please log in to take a free assessment and book a therapist session.</p>
+      <p>Thank you for registering with Inspiron. Please click the following link to verify your email address:</p>
+      <a href="${verificationLink}">Verify Email</a>
       <p>Thanks,<br>Team Inspiron</p>`,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.error('Error sending welcome email:', error);
+      console.error('Error sending verification email:', error);
     } else {
-      console.log('Welcome email sent:', info.response);
+      console.log('Verification email sent:', info.response);
     }
   });
 };
+
+const sendWhatsAppMessage = (recipientNumber, message) => {
+  // Define your Hisocial WhatsApp integration credentials
+  const hisocialInstanceID = '64FC162FAA398';
+  const hisocialAccessToken = '64da53e6c44e5';
+
+  // Replace this with the actual endpoint and request format for Hisocial WhatsApp integration
+  const hisocialWhatsAppEndpoint = 'https://hisocial.in/api/send';
+
+  // Construct the request payload
+  const payload = {
+    number: recipientNumber, // Use the recipient's phone number
+    type: 'text',
+    message: message,
+    instance_id: hisocialInstanceID, // Use the Hisocial instance ID
+    access_token: hisocialAccessToken, // Use the Hisocial access token
+  };
+
+  // Send the request to the Hisocial WhatsApp integration endpoint
+  fetch(hisocialWhatsAppEndpoint, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        console.error('Error sending WhatsApp message:', response.statusText);
+      } else {
+        console.log('WhatsApp message sent successfully');
+      }
+    })
+    .catch((error) => {
+      console.error('Error sending WhatsApp message:', error);
+    });
+};
+
+
+// Route for handling email verification
+const verify = async (req, res) => {
+  const { token } = req.query;
+
+  // Find the user by the verification token
+  const user = await User.findOne({ verificationToken: token });
+
+  if (!user) {
+    return res.status(404).send('Invalid or expired token');
+  }
+
+  // Mark the user as verified and remove the verification token
+  user.isVerified = true;
+  user.verificationToken = undefined;
+  await user.save();
+
+  // Send the welcome email after verification
+  sendWelcomeEmail(user.email, user.name);
+
+  res.send('Email verified successfully. You can now log in.');
+};
+
 
 
 
@@ -197,6 +300,13 @@ const loginUser = async (req, res) => {
    
     // Check if the user is a regular user
     const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).send('Invalid email or password!');
+    }
+
+    if (user.isVerified  === 'false') {
+      return res.status(400).send('Email not verified. Please check your email for verification instructions.');
+    }
     
     if (user && bcrypt.compareSync(password, user.passwordHash)) {
       let role = 'user'; // Default role is user
@@ -228,7 +338,7 @@ const loginUser = async (req, res) => {
         { expiresIn: '30d' }
       );
 
-      return res.status(200).send({ user: user.email, role: role, token: token, groupid: groupid, empid: empid });
+      return res.status(200).send({ userId: user.id, user: user.email, role: role, token: token, groupid: groupid, empid: empid });
     }
 
     // If the user is not found or the password is wrong, return an error
@@ -690,12 +800,54 @@ const resetPassword = async (req, res) => {
     res.status(500).json({ error: 'Failed to reset password' });
   }
 };
+// controllers/userController.js
+
+
+const updateUserProfile = async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    // Find the user by their ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update the user's profile fields
+    if (req.body.name) {
+      user.name = req.body.name;
+    }
+    if (req.body.mobile) {
+      user.mobile = req.body.mobile;
+    }
+    if (req.body.age) {
+      user.age = req.body.age;
+    }
+    if (req.body.diseases) {
+      user.diseases = req.body.diseases;
+    }
+    if (req.body.mediceneyoutake) {
+      user.mediceneyoutake = req.body.mediceneyoutake;
+    }
+
+    // Save the updated user
+    await user.save();
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getUsers,
   getUserById,
   getUsersByGroup,
 
   registernormalUser,
+  verify,
   updateUser,
   loginUser,
   registerUser,
@@ -708,5 +860,6 @@ module.exports = {
   updateUserTypes,
   forgotPassword, 
   resetPassword,
+  updateUserProfile
 
 };

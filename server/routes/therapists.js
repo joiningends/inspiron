@@ -61,4 +61,6 @@ router.delete('/', therapistController.deleteAllTherapists);
 //router.put('/:id/locations', therapistController.updateTherapistLocation);
 //router.post('/:id/paitents', therapistController.createPatient);
 router.get('/:id/status', therapistController.approveTherapist);
+router.put('/:therapistId/:userId/update-rating', therapistController.userRating);
+
 module.exports = router;  

@@ -34,6 +34,6 @@ const FILE_TYPE_MAP = {
 router.post('/', upload.single('image'), clientController.generateURL);
 router.put('/:id', upload.single('image'), clientController.updateClient);
 router.delete('/:id', clientController.deleteClientById);
-
+router.put('/:clientId/subtract-credits', clientController.subtractCredits);
 // Export the router
 module.exports = router;

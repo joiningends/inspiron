@@ -29,4 +29,14 @@ router.put('/:id/sessionotes', appointmentController.updateUserSessionNotes);
 
 router.get('/users/:userId',  appointmentController.getAppointmentsByUser);
 router.get('/users/:userId/therapists/:therapistId/latest-appointment',  appointmentController.getAllPreviousAppointmentsForUser);
+router.get('/therapists/:therapistId/name', appointmentController.getUniqueUserNamesForTherapist);
+router.get('/users/:userId/upcoming-appointments', appointmentController.getUpcomingAppointmentsByTherapistForUser);
+router.put('/:id/update-session-notes', appointmentController.updateUserSessionNotesemail);
+router.get('/users/:userId/payment',  appointmentController.payment);
+router.get('/users/:userId/paymentpending',  appointmentController.paymentpending);
+router.get('/:id/payment', appointmentController.getAppointmentByIdoffline);
+router.put('/:appointmentId/paymentrecived', appointmentController.updatePaymentStatus);
+router.get('/:id/sucess', appointmentController.setPaymentStatusToSuccess);
+router.get('/:appointmentId/updatepaymentstatus', appointmentController.updatePaymentStatusextend);
+
 module.exports = router;

@@ -31,6 +31,8 @@ const appointmentSchema = new mongoose.Schema({
   },
   paymentMethod:{
     type: String,
+    enum: ['Online', 'Offline'],
+    default: 'Online',
   },
   price:{
       type: mongoose.Schema.Types.ObjectId,
@@ -47,10 +49,10 @@ const appointmentSchema = new mongoose.Schema({
     discountPrice: {
       type: Number,
     },
+    level:{
+      type:String,
+    },
     
-    priceHistory: [
-      
-    ],
     status:{
       type:String,
       default: 'pending'},
@@ -88,12 +90,45 @@ default:false
       sessionstatus:{
         type:String,
         default: 'Pending'
-      }
+      },
+      meetlink:{
+        type: String,
+      },
+      paymentstatus:{
+        type:String,
+        default: 'Pending'
+      },
+      message:{
+        type: String, 
+      },
+      
+      paymentrecived:{
+        type:Boolean,
+default:false
+      },
+      extensionprice: {
+        type: Number,
+        default: 0
+        
+      },
+      firstsession:{
+        type:String,
+        default: 'Pending' 
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+      reminded: {
+        type: Boolean,
+        default: false,
+      },
 
     });
     
   
- 
+    
+    
 
 
 exports.Appointment = mongoose.model('Appointment', appointmentSchema);

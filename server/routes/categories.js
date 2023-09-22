@@ -19,5 +19,6 @@ router.delete('/:id', categoryController.deleteCategory);
 router.get('/center/info', categoryController.getCategoriesWithCenterName);
 router.get('/session/info', categoryController.getCategoriesWithSessionDuration);
 
+router.put('/update-session/:categoryId', categoryController.updateSessionFields);
 
 module.exports = router;

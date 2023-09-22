@@ -249,7 +249,8 @@ async function generatePDF(req, res) {
     const browser = await puppeteer.launch({ headless: 'new' });
 
     const page = await browser.newPage();
-    await page.goto('', {
+
+    await page.goto('https://www.youtube.com', {
       waitUntil: 'networkidle2'
     });
     await page.setViewport({ width: 1680, height: 1050 });

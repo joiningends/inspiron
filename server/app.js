@@ -7,6 +7,9 @@ const cors = require("cors");
 require("dotenv/config");
 const authJwt = require("./helpers/jwt");
 const errorHandler = require("./helpers/error-handler");
+const { Appointment } = require('./models/appointment'); 
+const { removeOldPendingAppointments } =  require('./controller/appointmentController');
+
 
 app.use(cors());
 app.options("*", cors());
@@ -36,6 +39,11 @@ const expertisesRoutes = require("./routes/expertise");
 const clientsRoutes = require("./routes/clients");
 const pricesRoutes = require("./routes/price");
 const coinsRoutes = require("./routes/coins");
+const medicenesRoutes = require("./routes/medicens");
+const doseRoutes = require("./routes/doeses");
+const labtestRoutes = require("./routes/labtests");
+const ePrescriptionRoutes = require("./routes/eprescriptions");
+const whatsappRoutes = require("./routes/whatsapp");
 const api = process.env.API_URL;
 
 app.use(`${api}/appointments`, appointmentsRoutes);
@@ -55,6 +63,16 @@ app.use(`${api}/expetises`,expertisesRoutes );
 app.use(`${api}/clients`,clientsRoutes);
 app.use(`${api}/prices`,pricesRoutes);
 app.use(`${api}/coins`,coinsRoutes);
+app.use(`${api}/medicence`, medicenesRoutes);
+app.use(`${api}/doses`, doseRoutes);
+app.use(`${api}/labtests`, labtestRoutes);
+app.use(`${api}/eprescriptions`,ePrescriptionRoutes);
+app.use(`${api}/whatsapp`,whatsappRoutes);
+
+
+
+// Start the scheduler
+
 
 
 //Database
@@ -63,13 +81,17 @@ mongoose.connect(process.env.CONNECTION_STRING,{
   useUnifiedTopology: true,
   dbName:'Inspiron'
   
-  }).then(() => {
-    console.log("Database Connection is ready...");
+  })  .then(() => {
+    console.log('Database Connection is ready...');
+
+    
+    setInterval(removeOldPendingAppointments, 1 * 60 * 1000); 
   })
   .catch((err) => {
     console.log(err);
   });
+
 //Server
-app.listen(4000, () => {
+app.listen(3000, () => {
   console.log("server is running http://localhost:3000");
 });

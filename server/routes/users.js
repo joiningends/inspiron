@@ -6,7 +6,10 @@ router.get('/', userController.getUsers);
 router.get('/:id', userController.getUserById);
 router.get('/group/:groupid', userController.getUsersByGroup);
 
-router.post('/register', userController. registernormalUser,);
+
+router.post('/register', userController. registernormalUser);
+router.get('/verify', userController.verify);
+
 router.put('/:id', userController.updateUser);
 router.post('/login', userController.loginUser);
 
@@ -22,5 +25,5 @@ router.put('/:id/types', userController.updateUserTypes);
 router.post('/forgot-password',userController.forgotPassword);
 
 router.post('/reset-password', userController.resetPassword);
-
+router.put('/:userId/profile', userController.updateUserProfile);
 module.exports = router;

@@ -384,13 +384,52 @@ const getTherapistById = async (req, res) => {
       })
     );
 
-    // Return the therapist data with filtered availability
-    res.status(200).json({ ...therapist.toObject(), availability: populatedAvailability });
+    // Count online and offline sessions
+    let onlineSessionCount = 0;
+    let offlineSessionCount = 0;
+
+    const therapistSessions = therapist.sessions || [];
+    console.log(therapistSessions);
+    const currentDate = new Date(); // Get the current date and time
+
+    therapistSessions.forEach((session) => {
+      const sessionDate = new Date(session.date);
+
+      // Check if the session's date is today or in the future
+      if  (sessionDate.toDateString() === currentDate.toDateString() || sessionDate > currentDate) {
+        if (Array.isArray(session.timeSlots)) {
+          session.timeSlots.forEach((timeSlot) => {
+            const sessionStartTime = new Date(`${session.date}T${timeSlot.startTime}`);
+            
+            // Check if the session's start time is in the future
+            if (sessionStartTime >= currentDate) {
+              // Check the session type (Online or Offline)
+              if (timeSlot.sessionType === 'online') {
+                onlineSessionCount++;
+              } else if (
+                timeSlot.sessionType === 'offline' ||
+                timeSlot.sessionType === 'online/offline'
+              ) {
+                offlineSessionCount++;
+              }
+            }
+          });
+        }
+      }
+    });
+
+    // Return the therapist data with filtered availability and session counts
+    res.status(200).json({
+      ...therapist.toObject(),
+      availability: populatedAvailability,
+      onlineSessionCount,
+      offlineSessionCount
+    });
+
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve therapist', details: error.message });
   }
 };
-
 
 
 
@@ -899,8 +938,51 @@ const sendDisapprovalEmail = (therapist) => {
   });
 };
 
+const userRating = async (req, res) => {
+  try {
+    const therapistId = req.params.therapistId;
+    const userId = req.params.userId; // User ID provided in the request
+    const newRating = req.body.rating; // Rating provided by the user
+    const usersRecommended = req.body.recommendation; // Recommendation provided by the user
 
+    // Find the therapist by ID
+    const therapist = await Therapist.findById(therapistId);
 
+    if (!therapist) {
+      return res.status(404).json({ message: 'Therapist not found' });
+    }
+
+    // Calculate the new average rating
+    const existingRatings = therapist.ratings || [];
+    existingRatings.push({ user: userId, rating: newRating }); // Add the new rating
+
+    const totalRatings = existingRatings.length;
+    const totalRatingSum = existingRatings.reduce((sum, rating) => sum + rating.rating, 0);
+    const newAverageRating = totalRatingSum / totalRatings;
+
+    // Count the total number of unique users who have rated the therapist
+    const uniqueUserIds = Array.from(new Set(existingRatings.map((rating) => rating.user)));
+    const totalUserReviews = uniqueUserIds.length;
+
+    // Update the therapist's ratings array, user rating, and total user reviews
+    therapist.ratings = existingRatings;
+    therapist.userRating = newAverageRating;
+    therapist.userReviews = totalUserReviews;
+
+    // Check if a recommendation was provided and update it
+    if (usersRecommended) {
+      therapist.usersRecommended = usersRecommended;
+    }
+
+    // Save the updated therapist document
+    await therapist.save();
+
+    return res.status(200).json({ message: 'User rating and recommendation updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
 
 module.exports = {
   getTotalTherapists,
@@ -931,4 +1013,5 @@ getAllTherapistscorporate,
   deleteAllTherapists,
   
   approveTherapist,
+  userRating
 };

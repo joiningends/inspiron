@@ -47,7 +47,7 @@ exports.getAllPrices = async (req, res) => {
   
 
 // Get price information by experience level
-exports.getPriceByExperienceLevel= async (req, res) => {
+exports.getPriceByExperienceLevel = async (req, res) => {
   const { experienceLevelId } = req.params;
 
   try {
@@ -57,12 +57,16 @@ exports.getPriceByExperienceLevel= async (req, res) => {
       return res.status(404).json({ error: 'Prices not found for this experience level' });
     }
 
+    // Sort the prices array by the session property in ascending order
+    prices.sort((a, b) => a.session - b.session);
+
     return res.status(200).json(prices);
   } catch (error) {
     console.error('Error fetching prices:', error);
     return res.status(500).json({ error: 'An error occurred while fetching the prices' });
   }
 };
+
 
 
 exports.updatePrice = async (req, res) => {

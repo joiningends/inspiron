@@ -152,6 +152,39 @@ const getCategoriesWithSessionDuration = async (req, res) => {
 };
 
 
+// Controller function to update session fields
+const updateSessionFields = async (req, res) => {
+  const { categoryId } = req.params; // Get the categoryId from the URL params
+  const { sessionDuration, timeBetweenSessions} = req.body; // Get the updated session fields from the request body
+
+  try {
+    // Find the Category document by its ID
+    const category = await Category.findById(categoryId);
+
+    if (!category) {
+      return res.status(404).send('Category not found');
+    }
+
+    // Update the session fields if new values are provided
+    if (sessionDuration !== undefined) {
+      category.sessionDuration = sessionDuration;
+    }
+    if (timeBetweenSessions !== undefined) {
+      category.timeBetweenSessions = timeBetweenSessions;
+    }
+   
+
+    // Save the updated document
+    await category.save();
+
+    res.status(200).send('Category updated successfully');
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Internal server error.');
+  }
+};
+
+
 
 
 module.exports = {
@@ -162,6 +195,7 @@ module.exports = {
   updateCategory,
   deleteCategory,
   getCategoriesWithCenterName,
-  getCategoriesWithSessionDuration
+  getCategoriesWithSessionDuration,
+  updateSessionFields
   
 };

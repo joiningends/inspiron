@@ -96,6 +96,7 @@ type:String
   usersRecommended: {
     type: [String],
   },
+  
   lastBooked: {
     type: Date,
     default: Date.now,
@@ -114,12 +115,11 @@ type:String
       description: String,
     },
   ],
-  userReviews: [
+  userReviews: 
     {
-      title: String,
-      body: String,
+     type: Number,
     },
-  ],
+ 
   availability: [
     {
       location: {
@@ -171,8 +171,20 @@ type:String
   status:{
     type:String,
     default: 'Pending'
-  }
-  
+  },
+  ratings: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User", // Reference to the "User" model
+        required: true,
+      },
+      rating: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
 });
 
 

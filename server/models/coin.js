@@ -21,9 +21,7 @@ const coinSchema = new mongoose.Schema({
  avarage:{
     type: Number,
  },
- message: {
-  type: String,
-},
+ 
 
 });
 

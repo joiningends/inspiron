@@ -1,19 +1,41 @@
 const mongoose = require('mongoose');
 
+// Define the Payment schema
 const paymentSchema = new mongoose.Schema({
-  razorpay_order_id: {
+  
+  appointmentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Appointment', // Reference to the Appointment model
+  },
+  paymentStatus: {
     type: String,
     required: true,
   },
-  razorpay_payment_id: {
+  razorpayOrderId: {
     type: String,
     required: true,
   },
-  razorpay_signature: {
+  razorpayPaymentId: {
     type: String,
     required: true,
   },
-})
-  const Payment = mongoose.model('Payment', paymentSchema);
+  amount: {
+    type: Number,
+    
+  },
+  currency: {
+    type: String,
+    
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+
+// Create a Mongoose model for Payment
+const Payment = mongoose.model('Payment', paymentSchema);
 
 module.exports = Payment;

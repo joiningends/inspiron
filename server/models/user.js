@@ -121,8 +121,19 @@ type:Number,
       },
       firstsession:{
         type:String
-      }
+      },
+      desises:{
+        type:String
+      },
+      mediceneyoutake:{
+        type:String
+      },
+      priceHistory: [
       
+      ],
+      isVerified:{
+        type:String
+      }
 });
 
 
