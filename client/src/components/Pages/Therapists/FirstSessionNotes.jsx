@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./FirstSessionNotes.css";
 import axios from "axios";
-import Checkbox from "@material-ui/core/Checkbox";
+import Checkbox from "@mui/material/Checkbox";
+
 import { useParams } from "react-router-dom";
 import {
   Container,
@@ -17,7 +18,7 @@ import {
   CardContent,
   RadioGroup,
   FormControl,
-} from "@material-ui/core";
+} from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -742,9 +743,9 @@ function ChiefComplaintsForm() {
                   color="primary"
                   onClick={() => setShowOnsetPopup(false)}
                   style={{
-                backgroundColor: "#D67449",
-                color: "white",
-              }}
+                    backgroundColor: "#D67449",
+                    color: "white",
+                  }}
                 >
                   Next
                 </Button>
@@ -1011,10 +1012,14 @@ const HistoryOfPresentingIllnessForm = () => {
               />
             </RadioGroup>
           </FormControl>
-          <Button disabled={onsetSelection === null} onClick={handlePopupClose} style={{
-                backgroundColor: "#D67449",
-                color: "white",
-              }}>
+          <Button
+            disabled={onsetSelection === null}
+            onClick={handlePopupClose}
+            style={{
+              backgroundColor: "#D67449",
+              color: "white",
+            }}
+          >
             Continue
           </Button>
         </CardContent>

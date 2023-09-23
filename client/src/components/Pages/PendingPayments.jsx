@@ -18,8 +18,9 @@ import {
   DialogContent,
   DialogActions,
   Button,
-} from "@material-ui/core";
-import PaymentIcon from "@material-ui/icons/Payment";
+} from "@mui/material";
+import PaymentIcon from "@mui/icons-material/Payment";
+
 import moment from "moment";
 
 const styles = theme => ({});
