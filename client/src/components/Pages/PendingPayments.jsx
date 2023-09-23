@@ -10,7 +10,6 @@ import {
   Paper,
   TableContainer,
   Typography,
-  withStyles,
   TablePagination,
   TableSortLabel,
   Dialog,
@@ -206,4 +205,4 @@ function PendingPayments(props) {
   );
 }
 
-export default withStyles(styles)(PendingPayments);
+export default PendingPayments;
