@@ -24,11 +24,18 @@ function NavBar() {
     localStorage.removeItem("user");
     localStorage.removeItem("role");
     localStorage.removeItem("groupid");
+    localStorage.removeItem("assessment");
     console.log(localStorage.getItem("groupid"));
+    localStorage.removeItem("therapists");
+    localStorage.removeItem("therapistsData");
 
     // Redirect to login page
     navigate("/login");
   };
+  const empid = JSON.parse(localStorage.getItem("empid"));
+
+  // Check if empid is null or has a value
+  const shouldShowComponent = empid === null;
 
   return (
     <>
@@ -48,40 +55,79 @@ function NavBar() {
 
           <ul className={click ? "nav-menu active" : "nav-menu"}>
             {/* Common routes visible to all users */}
-            <li className="nav-item">
-              <NavLink
-                exact
-                to="/"
-                activeClassName="active"
-                className="nav-links"
-                onClick={handleClick}
-              >
-                Home
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink
-                exact
-                to="/assessment"
-                activeClassName="active"
-                className="nav-links"
-                onClick={handleClick}
-              >
-                Assessment
-              </NavLink>
-            </li>
-            <li className="nav-item">
-              <NavLink
-                exact
-                to="/FindTherapist"
-                activeClassName="active"
-                className="nav-links"
-                onClick={handleClick}
-              >
-                Find Your Therapist
-                <FaSearch className="search-icon" />
-              </NavLink>
-            </li>
+            {isLoggedIn && userRole === "user" && (
+              <>
+                <li className="nav-item">
+                  <NavLink
+                    exact
+                    to="/"
+                    activeClassName="active"
+                    className="nav-links"
+                    onClick={handleClick}
+                  >
+                    Home
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink
+                    exact
+                    to="/assessment"
+                    activeClassName="active"
+                    className="nav-links"
+                    onClick={handleClick}
+                  >
+                    Assessment
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink
+                    exact
+                    to="/FindTherapist"
+                    activeClassName="active"
+                    className="nav-links"
+                    onClick={handleClick}
+                  >
+                    Find Your Therapist
+                    <FaSearch className="search-icon" />
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink
+                    exact
+                    to="/Profile"
+                    activeClassName="active"
+                    className="nav-links"
+                    onClick={handleClick}
+                  >
+                    Profile
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink
+                    exact
+                    to="/Appointments"
+                    activeClassName="active"
+                    className="nav-links"
+                    onClick={handleClick}
+                  >
+                    Appointments
+                  </NavLink>
+                </li>
+                {shouldShowComponent && (
+                  <li className="nav-item">
+                    <NavLink
+                      exact
+                      to="/PendingPayments"
+                      activeClassName="active"
+                      className="nav-links"
+                      onClick={handleClick}
+                    >
+                      Pending Payment
+                    </NavLink>
+                  </li>
+                )}
+              </>
+            )}
 
             {/* Routes visible to "therapist" user role */}
             {isLoggedIn && userRole === "therapist" && (
@@ -116,7 +162,18 @@ function NavBar() {
                     className="nav-links"
                     onClick={handleClick}
                   >
-                    Therapist
+                    Dashboard
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink
+                    exact
+                    to="/patientPage"
+                    activeClassName="active"
+                    className="nav-links"
+                    onClick={handleClick}
+                  >
+                    Patient Page
                   </NavLink>
                 </li>
               </>
@@ -133,7 +190,7 @@ function NavBar() {
                     className="nav-links"
                     onClick={handleClick}
                   >
-                    CA
+                    Create Assessment
                   </NavLink>
                 </li>
                 <li className="nav-item">
@@ -144,7 +201,7 @@ function NavBar() {
                     className="nav-links"
                     onClick={handleClick}
                   >
-                    AdminD
+                    Admin Dashboard
                   </NavLink>
                 </li>
                 <li className="nav-item">
@@ -155,7 +212,7 @@ function NavBar() {
                     className="nav-links"
                     onClick={handleClick}
                   >
-                    PatientPage
+                    Patient Page
                   </NavLink>
                 </li>
                 <li className="nav-item">
@@ -178,6 +235,17 @@ function NavBar() {
                     onClick={handleClick}
                   >
                     Group
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink
+                    exact
+                    to="/admin-setting"
+                    activeClassName="active"
+                    className="nav-links"
+                    onClick={handleClick}
+                  >
+                    Setting
                   </NavLink>
                 </li>
               </>

@@ -11,19 +11,26 @@ import Modal from "react-modal";
 import { Link, useParams } from "react-router-dom";
 import "../Therapists/TherapistProfilePage.css";
 import axios from "axios";
+import {
+  Checkbox,
+  FormControlLabel,
+  Box,
+  Typography,
+  Container,
+  Grid,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 
 function TherapistDetails() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const therapistId = id;
-  const experienceLevels = [
-    "Beginner",
-    "Intermediate",
-    "Advanced",
-    "Expert",
-    "Not specified",
-  ];
   const therapist = useSelector(state => state.therapist);
+  console.log(therapist);
   const [showEditForm, setShowEditForm] = useState(false);
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
@@ -40,16 +47,293 @@ function TherapistDetails() {
   const [educationLevel, setEducationLevel] = useState("");
   const [meetLink, setMeetLink] = useState(therapist?.meetLink || "");
   const [isMeetLinkEditing, setIsMeetLinkEditing] = useState(false);
-  const [expertiseData, setExpertisesData] = useState([]);
-  const [selectedExpertise, setSelectedExpertise] = useState([]);
-  const [isClickable, setIsClickable] = useState(false);
 
-  const handleExpertiseSelection = expertiseId => {
-    setSelectedExpertise(prevSelected =>
-      prevSelected.includes(expertiseId)
-        ? prevSelected.filter(id => id !== expertiseId)
-        : [...prevSelected, expertiseId]
+  const [expertisesData, setExpertisesData] = useState([]);
+  const [selectedExpertises, setSelectedExpertises] = useState([]);
+
+  useEffect(() => {
+    const fetchExpertises = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:4000/api/v1/expertises"
+        );
+        setExpertisesData(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching expertises:", error);
+      }
+    };
+
+    fetchExpertises();
+  }, []);
+
+  useEffect(() => {
+    // Check expertise IDs from therapist?.expertise and pre-select checkboxes
+    const therapistExpertises = therapist?.expertise.map(exp => {
+      const matchingExpertise = expertisesData?.find(e => e._id === exp._id);
+      return matchingExpertise ? matchingExpertise : null;
+    });
+
+    setSelectedExpertises(therapistExpertises?.filter(exp => exp !== null));
+  }, [therapist?.expertise, expertisesData]);
+
+  const handleSubmit = () => {
+    // Dispatch the updateTherapist action with the selected expertise
+    dispatch(updateTherapist(therapistId, { expertise: selectedExpertises }));
+
+    window.location.reload();
+  };
+
+  console.log(selectedExpertises);
+
+  const handleExpertiseChange = event => {
+    const { value } = event?.target;
+    if (selectedExpertises?.some(exp => exp._id === value)) {
+      // If the value is already selected, remove it
+      setSelectedExpertises(
+        selectedExpertises?.filter(exp => exp._id !== value)
+      );
+    } else {
+      // If the value is not selected, add it
+      const selectedExpertise = expertisesData?.find(exp => exp._id === value);
+      if (selectedExpertise) {
+        setSelectedExpertises([...selectedExpertises, selectedExpertise]);
+      }
+    }
+  };
+  const [isClickable, setIsClickable] = useState(false);
+  const [clients, setClients] = useState([]);
+  const [selectedClients, setSelectedClients] = useState([]);
+  const [selectedGroupIds, setSelectedGroupIds] = useState([]);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  const [priceLevels, setPriceLevels] = useState([]);
+  console.log(priceLevels);
+  const [selectedLevelId, setSelectedLevelId] = useState("");
+  const [selectedPriceData, setSelectedPriceData] = useState(null);
+  const [showHint, setShowHint] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [slotsPerPage] = useState(6);
+
+  const [selectedLanguages, setSelectedLanguages] = useState(
+    therapist?.languages || []
+  );
+  const [online, setOnline] = useState(
+    therapist?.modeOfSession?.includes("Online")
+  );
+  const [offline, setOffline] = useState(
+    therapist?.modeOfSession?.includes("Offline")
+  );
+
+  const handleOnlineChange = event => {
+    setOnline(event.target.checked);
+  };
+
+  const handleOfflineChange = event => {
+    setOffline(event.target.checked);
+  };
+
+  const handleSessionTypeSaveClick = () => {
+    // Handle saving the selected session modes (online and offline) here
+    const selectedModes = [];
+
+    if (online) {
+      selectedModes.push("Online");
+    }
+
+    if (offline) {
+      selectedModes.push("Offline");
+    }
+
+    // Dispatch the action with the selected modes
+    dispatch(updateTherapist(therapistId, { modeOfSession: selectedModes }));
+  };
+
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [checkboxValues, setCheckboxValues] = useState({
+    Online: false,
+    Offline: false,
+  });
+
+  const handleSessionModeCheckboxChange = option => {
+    const newCheckboxValues = {
+      ...checkboxValues,
+      [option]: !checkboxValues[option],
+    };
+
+    // Update selectedOptions based on checkbox values
+    const newSelectedOptions = Object.keys(newCheckboxValues).filter(
+      key => newCheckboxValues[key]
     );
+
+    setCheckboxValues(newCheckboxValues);
+    setSelectedOptions(newSelectedOptions);
+  };
+
+  const handleSessionModeSaveClick = () => {
+    // You can send the selectedOptions array to your API for saving if needed
+    console.log(selectedOptions);
+    dispatch(updateTherapist(therapistId, { modeOfSession: selectedOptions }));
+  };
+  const indexOfLastSlot = currentPage * slotsPerPage;
+  const indexOfFirstSlot = indexOfLastSlot - slotsPerPage;
+  const therapistSessions = therapist?.sessions || []; // Ensure therapistSessions is an array
+  const currentSlots =
+    therapistSessions.length > 0
+      ? therapistSessions.slice(indexOfFirstSlot, indexOfLastSlot)
+      : [];
+  const [isOutsideCountry, setIsOutsideCountry] = useState(false);
+  const handleLanguageChange = event => {
+    setSelectedLanguages(event.target.value);
+  };
+
+  const handleLanguageCheckboxChange = event => {
+    setIsOutsideCountry(event.target.checked);
+  };
+
+  useEffect(() => {
+    setSelectedLanguages(therapist?.languages || []);
+    const newCheckboxValues = { Online: false, Offline: false };
+    therapist?.modeOfSession.forEach(option => {
+      if (option === "Online") {
+        newCheckboxValues.Online = true;
+      } else if (option === "Offline") {
+        newCheckboxValues.Offline = true;
+      }
+    });
+    setCheckboxValues(newCheckboxValues);
+  }, [therapist]);
+
+  const handleLanguageSaveClick = () => {
+    // Dispatch an action to update the therapist with selected languages
+    dispatch(
+      updateTherapist(therapistId, {
+        languages: selectedLanguages,
+      })
+    );
+  };
+
+  const paginate = pageNumber => setCurrentPage(pageNumber);
+
+  useEffect(() => {
+    const apiUrl = "http://localhost:4000/api/v1/prices";
+
+    axios
+      .get(apiUrl)
+      .then(response => {
+        setPriceLevels(response.data);
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (selectedLevelId) {
+      const selectedPrice = priceLevels.find(
+        price => price.expriencelevel._id === selectedLevelId
+      );
+      setSelectedPriceData(selectedPrice);
+    }
+  }, [selectedLevelId, priceLevels]);
+
+  const handleLevelChange = event => {
+    setSelectedLevelId(event.target.value);
+  };
+
+  const handleSaveClickCustomName = () => {
+    if (selectedPriceData) {
+      console.log(`"expriencelevel":["${selectedPriceData._id}"]`);
+
+      const url = `http://localhost:4000/api/v1/therapists/${therapistId}/approve`;
+
+      // Data you are passing to the dispatch method
+      const requestData = {
+        expriencelevel: [selectedPriceData._id],
+        // Add other properties if needed
+      };
+
+      axios
+        .put(url, requestData)
+        .then(response => {
+          // Handle the response if needed
+          console.log("API response:", response.data);
+        })
+        .catch(error => {
+          // Handle errors if the API request fails
+          console.error("API error:", error);
+        });
+    }
+  };
+
+  const handleCancelClickk = () => {
+    setSelectedLevelId("");
+    setSelectedPriceData(null);
+  };
+
+  useEffect(() => {
+    async function fetchClients() {
+      try {
+        const response = await axios.get(
+          "http://localhost:4000/api/v1/clients"
+        );
+        setClients(response.data.clients);
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+      }
+    }
+    fetchClients();
+  }, []);
+
+  useEffect(() => {
+    // Automatically select checkboxes for clients in therapist's group
+    setSelectedClients(
+      clients.filter(client => therapist?.group?.includes(client._id))
+    );
+  }, [clients, therapist]);
+
+  const handleCheckboxChange = event => {
+    const clientId = event.target.name;
+    const selectedClient = clients.find(client => client._id === clientId);
+
+    if (event.target.checked) {
+      setSelectedClients(prevSelectedClients => [
+        ...prevSelectedClients,
+        selectedClient,
+      ]);
+    } else {
+      setSelectedClients(prevSelectedClients =>
+        prevSelectedClients.filter(client => client._id !== clientId)
+      );
+    }
+
+    setHasChanges(true);
+  };
+
+  const handleSave = () => {
+    const selectedIds = selectedClients.map(client => client._id);
+    setSelectedGroupIds(selectedIds);
+    setHasChanges(false);
+    console.log("Selected Group IDs:", selectedIds);
+
+    const url = `http://localhost:4000/api/v1/therapists/${therapistId}/approve`;
+
+    // Data you are passing to the dispatch method
+    const requestData = {
+      group: selectedIds,
+      // Add other properties if needed
+    };
+
+    axios
+      .put(url, requestData)
+      .then(response => {
+        // Handle the response if needed
+        console.log("API response:", response.data);
+      })
+      .catch(error => {
+        // Handle errors if the API request fails
+        console.error("API error:", error);
+      });
   };
 
   const checkFields = () => {
@@ -68,11 +352,6 @@ function TherapistDetails() {
     setIsClickable(checkFields());
   }, [therapist]);
 
-  const handleExpertiseSubmit = () => {
-    // Here, you can use the selectedExpertise array as needed (e.g., submit it to a backend, etc.)
-    dispatch(updateTherapist(therapistId, { expertise: selectedExpertise }));
-  };
-
   useEffect(() => {
     // Function to fetch expertises data using Axios
     const fetchExpertises = async () => {
@@ -82,6 +361,7 @@ function TherapistDetails() {
         );
         // Assuming the response data is an array of expertises
         setExpertisesData(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching expertises:", error);
       }
@@ -90,30 +370,6 @@ function TherapistDetails() {
     // Call the function to fetch expertises
     fetchExpertises();
   }, []);
-
-  console.log(therapist);
-  const [isEditing, setIsEditing] = useState(false);
-  const [experienceLevel, setExperienceLevel] = useState(
-    therapist?.expriencelevel || ""
-  );
-
-  const handleExperienceLevelChange = event => {
-    setExperienceLevel(event.target.value);
-  };
-
-  const handleExperienceLevelSave = () => {
-    dispatch(updateTherapist(therapistId, { expriencelevel: experienceLevel }));
-    setIsEditing(false);
-  };
-
-  const handleExperienceLevelCancel = () => {
-    setExperienceLevel(therapist?.expriencelevel || "");
-    setIsEditing(false);
-  };
-
-  const handleExperienceLevelEdit = () => {
-    setIsEditing(true);
-  };
 
   const handleMeetLinkChange = event => {
     setMeetLink(event.target.value);
@@ -229,216 +485,99 @@ function TherapistDetails() {
     return `${day}-${month}-${year}`;
   }
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     if (isClickable) {
-      console.log("Hello");
-
-      // Data to be sent in the PUT request
-      const dataToSend = {
-        expertise: therapist.expertise,
-        expriencelevel: therapist.expriencelevel,
-        meetLink: therapist.meetLink,
-      };
-
-      console.log(dataToSend);
-
-      // Hit the API using the fetch API
-      fetch(`http://localhost:4000/api/v1/therapists/${therapistId}/approve`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend),
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log(data); // Handle the API response data here
-        })
-        .catch(error => {
-          console.error("Error:", error);
-        });
+      try {
+        setIsClickable(false); // Disable the button while the request is being made
+        const response = await axios.get(
+          `http://localhost:4000/api/v1/therapists/${therapistId}/status`
+        );
+        // Handle the response if needed
+      } catch (error) {
+        // Handle errors here
+      } finally {
+        setIsClickable(true); // Re-enable the button after the request is completed
+      }
     }
   };
 
   return (
     <>
-      <div
-        className="personalDetailsDIV"
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-          gap: "1rem",
-          padding: "2rem",
-          marginRight: "2rem", // Reduced marginRight for smaller screens
-          marginLeft: "-2rem",
-        }}
-      >
+      <div className="rounded-image-container" style={{ position: "relative" }}>
+        <div className="rounded-image">
+          <img src={therapist?.image} alt="Rounded" />
+        </div>
+      </div>
+      <div className="personalDetailsDIV">
         <div
           className="primaryDetailsDiv"
-          style={{
-            flex: "1 1 100%",
-            borderRadius: "10px",
-            boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
-            padding: "1.5rem",
-            backgroundColor: "#fff",
-            minWidth:"22rem",
-          }}
+          style={{ width: "36%", marginRight: "-1rem" }}
         >
-          <div
-            className="primaryDetalsUpperPart"
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "1.5rem",
-            }}
-          >
-            <span
-              className="primaryDetailsTitle"
-              style={{
-                fontSize: "1.5rem",
-                fontWeight: "bold",
-                color: "#D67449",
-              }}
-            >
+          <div className="primaryDetalsUpperPart">
+            <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
               PRIMARY DETAILS
             </span>
             <span
               className="editIcon"
-              onClick={openEditForm}
               style={{
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                borderRadius: "50%",
-                padding: "0.5rem 1rem",
-                background: "#D67449",
+                padding: "0.1rem",
+                margin: "0.2rem",
+                borderRadius: "30%",
+                width: "4.5rem",
               }}
+              onClick={openEditForm}
             >
-              <FaEdit style={{ width: "1.3rem", color: "#fff" }} />
-              <span
-                className="editText"
-                style={{
-                  marginLeft: "0.5rem",
-                  fontSize: "1rem",
-                  color: "#fff",
-                }}
-              >
-                EDIT
-              </span>
+              <FaEdit style={{ width: "1.3rem" }} />
+              <span className="editText">EDIT</span>
             </span>
           </div>
-          <div
-            className="primaryDetailsLowerPart1"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-              gridGap: "1rem",
-            }}
-          >
+          <div className="primaryDetailsLowerPart1">
             <div className="primaryDetailsLowerPart1div1">
               <h1 className="fullnameH1">Full Name</h1>
               <h1 className="itemsOfPrimaryDetails">{therapist?.name}</h1>
-              <h1 className="fullnameH1">Date Of Birth</h1>
+              <h1 className="fullnameH1" style={{ paddingTop: "1rem" }}>
+                Date Of Birth
+              </h1>
               <h1 className="itemsOfPrimaryDetails">
                 {formatDate(therapist?.dob)}
               </h1>
             </div>
-            <div
-              className="primaryDetailsLowerPart1div2"
-              style={{
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
+            <div className="primaryDetailsLowerPart1div2">
               <h1 className="fullnameH1">Gender</h1>
               <h1 className="itemsOfPrimaryDetails">{therapist?.gender}</h1>
             </div>
           </div>
         </div>
-
-        <div
-          className="primaryDetailsDiv"
-          style={{
-            flex: "1 1 100%",
-            maxWidth: "100%", // Allow the second div to take the full width on smaller screens
-            borderRadius: "10px",
-            boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
-            padding: "1.5rem",
-            backgroundColor: "#fff",
-            marginTop: "2rem", // Add margin to separate the sections on small screens
-            minWidth:"22rem",
-          }}
-        >
-          <div
-            className="primaryDetalsUpperPart"
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "1.5rem",
-            }}
-          >
-            <span
-              className="primaryDetailsTitle"
-              style={{
-                fontSize: "1.5rem",
-                fontWeight: "bold",
-                color: "#D67449",
-              }}
-            >
+        <div className="primaryDetailsDiv" style={{ width: "36%" }}>
+          <div className="primaryDetalsUpperPart">
+            <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
               CONTACT DETAILS
             </span>
             <span
               className="editIcon"
-              onClick={openContactForm}
               style={{
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                borderRadius: "50%",
-                padding: "0.5rem 1rem",
-                background: "#D67449",
+                padding: "0.1rem",
+                margin: "0.2rem",
+                borderRadius: "30%",
+                width: "4.5rem",
               }}
+              onClick={openContactForm}
             >
-              <FaEdit style={{ width: "1.3rem", color: "#fff" }} />
-              <span
-                className="editText"
-                style={{
-                  marginLeft: "0.5rem",
-                  fontSize: "1rem",
-                  color: "#fff",
-                }}
-              >
-                EDIT
-              </span>
+              <FaEdit style={{ width: "1.3rem" }} />
+              <span className="editText">EDIT</span>
             </span>
           </div>
-          <div
-            className="primaryDetailsLowerPart1"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-              gridGap: "1rem",
-            }}
-          >
+          <div className="primaryDetailsLowerPart1">
             <div className="primaryDetailsLowerPart1div1">
               <h1 className="fullnameH1">EMAIL</h1>
               <h1 className="itemsOfPrimaryDetails">{therapist?.email}</h1>
-              <h1 className="fullnameH1">Mobile</h1>
+              <h1 className="fullnameH1" style={{ paddingTop: "1rem" }}>
+                Mobile
+              </h1>
               <h1 className="itemsOfPrimaryDetails">{therapist?.mobile}</h1>
             </div>
-            <div
-              className="primaryDetailsLowerPart1div2"
-              style={{
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              <h1 className="fullnameH1">Emergency Contact</h1>
+            <div className="primaryDetailsLowerPart1div2">
+              <h1 className="fullnameH1">emergency contact</h1>
               <h1 className="itemsOfPrimaryDetails">
                 {therapist?.emergencymobile}
               </h1>
@@ -447,89 +586,33 @@ function TherapistDetails() {
         </div>
       </div>
 
-      <div
-        className="addressesDetailsDiv"
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-          gap: "1rem",
-          padding: "2rem",
-          maxWidth: "82%",
-        }}
-      >
-        <div
-          className="primaryDetalsUpperPart"
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "1.5rem",
-          }}
-        >
-          <span
-            className="primaryDetailsTitle"
-            style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#D67449" }}
-          >
+      <div className="addressesDetailsDiv" style={{ marginTop: "4rem" }}>
+        <div className="primaryDetalsUpperPart">
+          <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
             ADDRESS
           </span>
           <span
             className="editIcon"
-            onClick={openAddressForm}
             style={{
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              padding: "0.2rem 0.5rem",
-              marginBottom: "0.5rem",
-              borderRadius: "10%",
-              marginLeft: "40%",
-              background: "#D67449",
+              padding: "0.1rem",
+              margin: "0.2rem",
+              borderRadius: "30%",
+              width: "4.5rem",
             }}
+            onClick={openAddressForm}
           >
-            <FaEdit style={{ width: "1.3rem", color: "#fff" }} />
-            <span
-              className="editText"
-              style={{ marginLeft: "0.5rem", fontSize: "1rem", color: "#fff" }}
-            >
-              EDIT
-            </span>
+            <FaEdit style={{ width: "1.3rem" }} />
+            <span className="editText">EDIT</span>
           </span>
         </div>
-        <div
-          className="addressesDetailBottomsDiv"
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <div
-            style={{
-              flex: "0 0 100%",
-              maxWidth: "100%",
-              borderRadius: "10px",
-              boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
-              padding: "1.5rem",
-              backgroundColor: "#fff",
-            }}
-          >
+        <div className="addressesDetailBottomsDiv">
+          <div>
             <h1 className="fullnameH1">CURRENT ADDRESS</h1>
             <h1 className="itemsOfPrimaryDetails">
               {therapist?.currentaddress}
             </h1>
           </div>
-          <div
-            style={{
-              flex: "0 0 100%",
-              maxWidth: "100%",
-              borderRadius: "10px",
-              boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
-              padding: "1.5rem",
-              backgroundColor: "#fff",
-            }}
-          >
+          <div>
             <h1 className="fullnameH1">PERMANENT ADDRESS</h1>
             <h1 className="itemsOfPrimaryDetails">
               {therapist?.permanentaddress}
@@ -537,37 +620,92 @@ function TherapistDetails() {
           </div>
         </div>
       </div>
-
       <div
-      className="educationDetailsDiv"
-      style={{
-        width: "100%", // Set full width for mobile view
-        maxWidth:"85%",
-        margin: "0 6%", // Center the container
-        paddingLeft: "2rem", // Add padding for better mobile view
-        paddingRight: "2rem", // Add padding for better mobile view
-      }}
-    >
-      <div className="educationHeader" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-        <h2>Education Details</h2>
-        <div className="editEducationIcon" onClick={openEducationForm}>
-          <FaEdit />
-        </div>
-      </div>
-      {therapist?.education.map((item, index) => (
-        <div className="educationItem" key={index} style={{ marginBottom: "1rem" }}>
-          <div style={{ fontSize: "1rem" }}>
-            <span style={{ marginRight: "1rem" }}>University / college</span>
-            <span className="collegeNameText" style={{ marginRight: "1rem" }}>
-              {item?.collegeName}
-            </span>
-            <span style={{ marginRight: "1rem" }}>Field of study</span>
-            <span className="educationLevelText" style={{ marginRight: "1rem" }}>
-              {item?.educationLevel}
+        className="educationDetailsDiv"
+        style={{ width: "80%", marginLeft: "8rem", paddingTop: "2rem" }}
+      >
+        <div
+          className="educationHeader"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "1rem",
+          }}
+        >
+          <h2 style={{ flex: "1", fontSize: "1.5rem", color: "black" }}>
+            EDUCATION DETAILS
+          </h2>
+          <div
+            className="editEducationIcon"
+            style={{ cursor: "pointer", fontSize: "1rem", color: "#007BFF" }}
+            onClick={openEducationForm}
+          >
+            <span
+              className="editIcon"
+              style={{
+                padding: "0.6rem",
+                margin: "0.2rem",
+                borderRadius: "30%",
+              }}
+              onClick={openEducationForm}
+            >
+              <FaEdit style={{ width: "1.5rem", height: "1.7rem" }} />
+              <span className="editText">EDIT</span>
             </span>
           </div>
         </div>
-      ))}
+        {therapist?.education.map((item, index) => (
+          <div
+            className="educationItem"
+            key={index}
+            style={{ marginBottom: "1rem" }}
+          >
+            <div>
+              <span
+                style={{
+                  fontWeight: "bold",
+                  marginLeft: "0.5rem",
+                  fontSize: "1rem",
+                  color: "#555",
+                }}
+              >
+                UNIVERSITY / COLLEGE:{" "}
+              </span>
+              <span
+                className="educationLevelText"
+                style={{
+                  marginLeft: "0.5rem",
+                  fontSize: "1rem",
+                  color: "#555",
+                }}
+              >
+                {item?.collegeName}
+              </span>
+            </div>
+            <div>
+              <span
+                style={{
+                  fontWeight: "bold",
+                  marginLeft: "0.5rem",
+                  fontSize: "1rem",
+                  color: "#555",
+                }}
+              >
+                Field of Study:{" "}
+              </span>
+              <span
+                className="educationLevelText"
+                style={{
+                  marginLeft: "0.5rem",
+                  fontSize: "1rem",
+                  color: "#555",
+                }}
+              >
+                {item?.educationLevel}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
       {showEducationForm && (
         <Modal
@@ -604,10 +742,23 @@ function TherapistDetails() {
         className="editFormModal"
         overlayClassName="editFormOverlay"
       >
-        <div className="editForm">
+        <div
+          className="editForm"
+          style={{
+            textAlign: "left",
+            padding: "20px",
+            backgroundColor: "#fff",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          }}
+        >
           <div className="editFormHeader">
             <h2>Edit Therapist Details</h2>
-            <span className="closeIcon" onClick={handleCancelClick}>
+            <span
+              className="closeIcon"
+              onClick={handleCancelClick}
+              style={{ cursor: "pointer", color: "#D67449" }}
+            >
               <FaTimes />
             </span>
           </div>
@@ -618,30 +769,44 @@ function TherapistDetails() {
               id="name"
               value={name}
               onChange={e => setName(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                marginBottom: "16px",
+              }}
             />
 
             <label htmlFor="gender">Gender:</label>
-            <div>
-              <input
-                type="radio"
-                id="gender-male"
-                name="gender"
-                value="male"
-                checked={gender === "male"}
-                onChange={e => setGender(e.target.value)}
-              />
-              <label htmlFor="gender-male">Male</label>
-            </div>
-            <div>
-              <input
-                type="radio"
-                id="gender-female"
-                name="gender"
-                value="female"
-                checked={gender === "female"}
-                onChange={e => setGender(e.target.value)}
-              />
-              <label htmlFor="gender-female">Female</label>
+            <div
+              className="genderOptions"
+              style={{ display: "flex", alignItems: "center", gap: "20px" }}
+            >
+              <div>
+                <input
+                  type="radio"
+                  id="gender-male"
+                  name="gender"
+                  value="Male"
+                  checked={gender === "Male"}
+                  onChange={e => setGender(e.target.value)}
+                  style={{ marginRight: "8px" }}
+                />
+                <label htmlFor="gender-male">Male</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  id="gender-female"
+                  name="gender"
+                  value="Female"
+                  checked={gender === "Female"}
+                  onChange={e => setGender(e.target.value)}
+                  style={{ marginRight: "8px" }}
+                />
+                <label htmlFor="gender-female">Female</label>
+              </div>
             </div>
 
             <label htmlFor="dob">Date of Birth:</label>
@@ -650,13 +815,41 @@ function TherapistDetails() {
               id="dob"
               value={dob}
               onChange={e => setDob(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+              }}
             />
           </div>
           <div className="editFormFooter">
-            <button className="saveButton" onClick={handleSaveClick}>
+            <button
+              className="saveButton"
+              onClick={handleSaveClick}
+              style={{
+                backgroundColor: "#D67449",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                padding: "10px 20px",
+                cursor: "pointer",
+              }}
+            >
               Save
             </button>
-            <button className="cancelButton" onClick={handleCancelClick}>
+            <button
+              className="cancelButton"
+              onClick={handleCancelClick}
+              style={{
+                backgroundColor: "white",
+                color: "#D67449",
+                border: "1px solid #D67449",
+                borderRadius: "4px",
+                padding: "10px 20px",
+                cursor: "pointer",
+              }}
+            >
               Cancel
             </button>
           </div>
@@ -664,31 +857,91 @@ function TherapistDetails() {
       </Modal>
 
       {showAddressForm && (
-        <div className="editFormContainer">
-          <div className="editForm">
+        <div className="editFormContainer" style={{ textAlign: "left" }}>
+          <div
+            className="editForm"
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: "8px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              padding: "20px",
+            }}
+          >
             <h2>Edit Address</h2>
-            <label style={{ fontSize: "1rem" }}>Current Address:</label>
+            <label
+              htmlFor="currentAddress"
+              style={{
+                fontSize: "1rem",
+                marginBottom: "8px",
+                display: "block",
+              }}
+            >
+              Current Address:
+            </label>
             <input
               type="text"
+              id="currentAddress"
               value={currentAddress}
               onChange={e => setCurrentAddress(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                marginBottom: "16px",
+              }}
             />
-            <label style={{ fontSize: "1rem" }}>Permanent Address:</label>
+            <label
+              htmlFor="permanentAddress"
+              style={{
+                fontSize: "1rem",
+                marginBottom: "8px",
+                display: "block",
+              }}
+            >
+              Permanent Address:
+            </label>
             <input
               type="text"
+              id="permanentAddress"
               value={permanentAddress}
               onChange={e => setPermanentAddress(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                marginBottom: "20px",
+              }}
             />
-            <div className="buttons">
+            <div
+              className="buttons"
+              style={{ display: "flex", justifyContent: "center" }}
+            >
               <button
                 onClick={handleAddressSaveClick}
-                style={{ backgroundColor: "#D67449" }}
+                style={{
+                  backgroundColor: "#D67449",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  padding: "10px 20px",
+                  cursor: "pointer",
+                  marginRight: "16px",
+                }}
               >
                 Save
               </button>
               <button
                 onClick={handleAddressCancelClick}
-                style={{ backgroundColor: "#68B545" }}
+                style={{
+                  backgroundColor: "white",
+                  color: "#D67449",
+                  border: "1px solid #D67449",
+                  borderRadius: "4px",
+                  padding: "10px 20px",
+                  cursor: "pointer",
+                }}
               >
                 Cancel
               </button>
@@ -698,10 +951,25 @@ function TherapistDetails() {
       )}
 
       {showContactForm && (
-        <div className="modalContainer">
-          <div className="modal">
+        <div className="modalContainer" style={{ textAlign: "center" }}>
+          <div
+            className="modal"
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: "8px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              padding: "20px",
+            }}
+          >
             <h2>Edit Contact Details</h2>
-            <label htmlFor="email" style={{ fontSize: "1rem" }}>
+            <label
+              htmlFor="email"
+              style={{
+                fontSize: "1rem",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
               Email:
             </label>
             <input
@@ -709,9 +977,23 @@ function TherapistDetails() {
               id="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                marginBottom: "16px",
+              }}
             />
 
-            <label htmlFor="mobile" style={{ fontSize: "1rem" }}>
+            <label
+              htmlFor="mobile"
+              style={{
+                fontSize: "1rem",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
               Mobile:
             </label>
             <input
@@ -719,9 +1001,23 @@ function TherapistDetails() {
               id="mobile"
               value={mobile}
               onChange={e => setMobile(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                marginBottom: "16px",
+              }}
             />
 
-            <label htmlFor="emergencyContact" style={{ fontSize: "1rem" }}>
+            <label
+              htmlFor="emergencyContact"
+              style={{
+                fontSize: "1rem",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
               Emergency Contact:
             </label>
             <input
@@ -729,15 +1025,45 @@ function TherapistDetails() {
               id="emergencyContact"
               value={emergencyContact}
               onChange={e => setEmergencyContact(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                marginBottom: "20px",
+              }}
             />
 
-            <div className="buttonContainer">
-              <button className="saveButton" onClick={handleContactSaveClick}>
+            <div
+              className="buttonContainer"
+              style={{ display: "flex", justifyContent: "center" }}
+            >
+              <button
+                className="saveButton"
+                onClick={handleContactSaveClick}
+                style={{
+                  backgroundColor: "#D67449",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  padding: "10px 20px",
+                  cursor: "pointer",
+                  marginRight: "16px",
+                }}
+              >
                 Save
               </button>
               <button
                 className="cancelButton"
                 onClick={() => setShowContactForm(false)}
+                style={{
+                  backgroundColor: "white",
+                  color: "#D67449",
+                  border: "1px solid #D67449",
+                  borderRadius: "4px",
+                  padding: "10px 20px",
+                  cursor: "pointer",
+                }}
               >
                 Cancel
               </button>
@@ -745,86 +1071,142 @@ function TherapistDetails() {
           </div>
         </div>
       )}
-      <div className="educationHeader" style={{ marginLeft: "8rem" }}>
-        <h2>Expertise</h2>
-      </div>
-      <div
-        style={{
-          fontFamily: "Arial",
-          maxWidth: "80.5%",
-          margin: "auto",
-          padding: "20px",
-          marginTop: "1rem",
-          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-          borderRadius: "5px",
-          background: "#f9f9f9",
-          display: "flex",
-          marginRight: "11%",
-          flexDirection: "column",
-          alignItems: "center", // Center the elements horizontally
-          marginBottom: "3rem",
-        }}
-      >
+
+      <div className="your-component-container" style={{ textAlign: "center" }}>
+        <h2 style={{ fontSize: "1.2rem" }}>Select Expertise:</h2>
         <div
           style={{
             display: "flex",
-            flexWrap: "wrap", // Enable wrapping if the container exceeds maxWidth
-            justifyContent: "center", // Center the checkboxes horizontally
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: "10px", // Adjust the spacing between checkboxes
           }}
         >
-          {expertiseData.map(expertise => (
+          {expertisesData?.map(expertise => (
             <label
-              key={expertise._id}
+              key={expertise?._id}
               style={{
                 display: "flex",
-                alignItems: "center", // Align checkbox and label vertically
+                alignItems: "center",
                 marginBottom: "10px",
-                marginRight: "10px", // Add marginRight to create space between checkboxes
+                border: "1px solid #ccc",
+                boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)", // Add shadow
+                padding: "10px", // Increase padding for a better appearance
+                borderRadius: "4px",
+                fontSize: "0.9rem",
+                width: "200px", // Adjust the width as needed
               }}
             >
               <input
                 type="checkbox"
-                checked={selectedExpertise.includes(expertise._id)}
-                onChange={() => handleExpertiseSelection(expertise._id)}
-                style={{ marginRight: "8px", verticalAlign: "middle" }} // Adjust vertical alignment of checkbox
+                value={expertise?._id}
+                checked={selectedExpertises?.some(
+                  exp => exp?._id === expertise?._id
+                )}
+                onChange={handleExpertiseChange}
+                style={{ marginRight: "5px" }}
               />
-              <span style={{ fontSize: "16px" }}>{expertise.type[0]}</span>
+              {expertise?.type[0]}
             </label>
           ))}
         </div>
         <button
-          onClick={handleExpertiseSubmit}
+          className="submit-button"
+          onClick={handleSubmit}
           style={{
-            display: "block",
-            width: "10%",
-            padding: "10px",
-            background: "#4CAF50",
+            marginTop: "1rem",
+            backgroundColor: "#68B545",
             color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
+            fontSize: "1rem",
           }}
         >
           Submit
         </button>
       </div>
 
-      <div style={{ marginBottom: "1rem" }}>
-        <h1 style={{ fontSize: "18px", fontWeight: "bold" }}>
-          Google Meet Link:
-        </h1>
+      <div
+        style={{
+          maxWidth: "38rem",
+          margin: "3rem auto",
+          padding: "20px",
+          border: "1px solid #007BFF",
+          borderRadius: "5px",
+          boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+        }}
+      >
+        <h2
+          style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
+        >
+          Language Selection Form
+        </h2>
+        <FormControl style={{ width: "100%", marginBottom: "1rem" }}>
+          <InputLabel
+            htmlFor="language"
+            style={{ fontSize: "1rem", color: "#333" }}
+          >
+            Select Language
+          </InputLabel>
+          <Select
+            id="language"
+            multiple
+            value={selectedLanguages}
+            onChange={handleLanguageChange}
+            label="Select Language"
+            // style={{ backgroundColor: "rgba(104, 181, 69, 0.25)" }} // Dropdown background color
+          >
+            <MenuItem value="english">English</MenuItem>
+            <MenuItem value="hindi">Hindi</MenuItem>
+            <MenuItem value="telugu">Telugu</MenuItem>
+            {/* Add more language options */}
+          </Select>
+        </FormControl>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleLanguageSaveClick}
+          style={{
+            marginTop: "1rem",
+            backgroundColor: "#68B545",
+            color: "#fff",
+            fontSize: "1rem",
+          }}
+        >
+          Save
+        </Button>
+      </div>
+
+      <div
+        style={{
+          maxWidth: "38rem",
+          margin: "0 auto",
+          padding: "20px",
+          border: "1px solid #ccc",
+          borderRadius: "5px",
+          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#fff",
+        }}
+      >
+        <h2
+          style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
+        >
+          Google Meet Link
+        </h2>
         {therapist?.meetLink && !isMeetLinkEditing ? (
           <>
-            <span style={{ fontSize: "1rem" }}>{therapist.meetLink}</span>
+            <p
+              style={{ fontSize: "1rem", color: "#333", marginBottom: "1rem" }}
+            >
+              {therapist.meetLink}
+            </p>
             <button
               style={{
-                marginLeft: "1rem",
                 padding: "0.5rem 1rem",
-                backgroundColor: "#68b545",
+                backgroundColor: "#68B545",
                 color: "#fff",
                 border: "none",
                 borderRadius: "4px",
                 cursor: "pointer",
+                fontSize: "1rem",
               }}
               onClick={handleMeetLinkEdit}
             >
@@ -839,20 +1221,22 @@ function TherapistDetails() {
               onChange={handleMeetLinkChange}
               style={{
                 padding: "0.5rem",
-                width: "300px",
-                marginRight: "1rem",
+                width: "100%",
+                marginBottom: "1rem",
                 borderRadius: "4px",
                 border: "1px solid #ccc",
+                fontSize: "1rem",
               }}
             />
             <button
               style={{
                 padding: "0.5rem 1rem",
-                backgroundColor: "#68b545",
+                backgroundColor: "#68B545",
                 color: "#fff",
                 border: "none",
                 borderRadius: "4px",
                 cursor: "pointer",
+                fontSize: "1rem",
               }}
               onClick={handleMeetLinkSave}
             >
@@ -867,6 +1251,7 @@ function TherapistDetails() {
                 borderRadius: "4px",
                 cursor: "pointer",
                 marginLeft: "1rem",
+                fontSize: "1rem",
               }}
               onClick={handleMeetLinkCancel}
             >
@@ -876,78 +1261,255 @@ function TherapistDetails() {
         )}
       </div>
 
-      <div>
-        <h1 style={{ fontSize: "18px", fontWeight: "bold", margin: "1rem 0" }}>
-          Experience Level:
-        </h1>
-        {isEditing ? (
+      <Container
+        maxWidth="sm"
+        style={{
+          marginTop: "50px",
+          padding: "20px",
+          border: "1px solid #ccc",
+          borderRadius: "5px",
+          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#fff",
+        }}
+      >
+        <h2
+          style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
+        >
+          Select Experience Level
+        </h2>
+
+        <div style={{ marginBottom: "20px" }}>
+          <Typography
+            color="textSecondary"
+            style={{
+              display: showHint ? "block" : "none",
+              fontSize: "1.2rem",
+              color: "#333",
+            }}
+          >
+            Selected Experience Level {"->"} {therapist?.level}
+          </Typography>
+          <Select
+            value={selectedLevelId}
+            onChange={handleLevelChange}
+            fullWidth
+            style={{ fontSize: "1rem" }}
+          >
+            <MenuItem value="" disabled>
+              Select a level
+            </MenuItem>
+            {priceLevels.map(price => (
+              <MenuItem key={price._id} value={price.expriencelevel._id}>
+                {price.expriencelevel.level}
+              </MenuItem>
+            ))}
+          </Select>
+        </div>
+
+        {selectedPriceData && (
           <div>
-            <select
-              value={experienceLevel}
-              onChange={handleExperienceLevelChange}
-              style={{
-                padding: "0.5rem",
-                width: "200px",
-                marginRight: "1rem",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-              }}
-            >
-              {experienceLevels.map(level => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
-            </select>
-            <button
-              style={{
-                padding: "0.5rem 1rem",
-                backgroundColor: "#68b545",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                marginLeft: "1rem",
-              }}
-              onClick={handleExperienceLevelSave}
+            <Typography variant="h5" gutterBottom>
+              Selected Level: {selectedPriceData.expriencelevel.level}
+            </Typography>
+            <Typography gutterBottom>
+              Session: {selectedPriceData.session}
+            </Typography>
+            <Typography gutterBottom>
+              Session Price: {selectedPriceData.sessionPrice}
+            </Typography>
+            <Typography gutterBottom>
+              Discount Price: {selectedPriceData.discountPrice}
+            </Typography>
+            <Button
+              onClick={handleSaveClickCustomName}
+              variant="contained"
+              color="primary"
+              style={{ marginRight: "10px", fontSize: "1rem" }}
             >
               Save
-            </button>
-            <button
-              style={{
-                padding: "0.5rem 1rem",
-                backgroundColor: "#ccc",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                marginLeft: "1rem",
-              }}
-              onClick={handleExperienceLevelCancel}
+            </Button>
+            <Button
+              onClick={handleCancelClick}
+              variant="contained"
+              color="secondary"
+              style={{ fontSize: "1rem" }}
             >
               Cancel
-            </button>
-          </div>
-        ) : (
-          <div>
-            <span style={{ marginRight: "1rem", fontSize: "1.6rem" }}>
-              {therapist?.expriencelevel || "Not specified"}
-            </span>
-            <button
-              style={{
-                padding: "0.5rem 1rem",
-                backgroundColor: "#68b545",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-              onClick={handleExperienceLevelEdit}
-            >
-              Edit
-            </button>
+            </Button>
           </div>
         )}
+      </Container>
+
+      <div
+        style={{
+          margin: "0 auto",
+          padding: "20px",
+          border: "1px solid #007BFF",
+          borderRadius: "5px",
+          boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+          marginTop: "3rem",
+          maxWidth: "38rem",
+        }}
+      >
+        <h2
+          style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
+        >
+          Session Mode
+        </h2>
+        <div style={{ marginBottom: "20px" }}>
+          <label style={{ display: "block", fontSize: "1rem", color: "#333" }}>
+            <input
+              type="checkbox"
+              value="Online"
+              checked={checkboxValues.Online}
+              onChange={() => handleSessionModeCheckboxChange("Online")}
+              style={{ marginRight: "8px" }}
+            />
+            Online
+          </label>
+        </div>
+        <div style={{ marginBottom: "20px" }}>
+          <label style={{ display: "block", fontSize: "1rem", color: "#333" }}>
+            <input
+              type="checkbox"
+              value="Offline"
+              checked={checkboxValues.Offline}
+              onChange={() => handleSessionModeCheckboxChange("Offline")}
+              style={{ marginRight: "8px" }}
+            />
+            Offline
+          </label>
+        </div>
+        <button
+          onClick={handleSessionModeSaveClick}
+          style={{
+            padding: "0.5rem 1rem",
+            backgroundColor: "#007BFF",
+            color: "#fff",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "1rem",
+            backgroundColor: "#68B545",
+          }}
+        >
+          Save
+        </button>
+      </div>
+
+      <Container
+        style={{
+          maxWidth: "50rem",
+          margin: "3rem auto",
+          padding: "20px",
+          border: "1px solid #ccc",
+          borderRadius: "5px",
+          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#fff",
+        }}
+      >
+        <h2
+          style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
+        >
+          SELECT GROUP
+        </h2>
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
+          {clients.map(client => (
+            <div
+              key={client._id}
+              style={{ flexBasis: "25%", marginBottom: "20px" }}
+            >
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={selectedClients.some(
+                      selected => selected._id === client._id
+                    )}
+                    onChange={handleCheckboxChange}
+                    name={client._id}
+                    color="primary"
+                  />
+                }
+                label={client.name}
+                style={{ fontSize: "1rem", marginLeft: "8px" }}
+              />
+            </div>
+          ))}
+        </div>
+
+        <Box mt={2} textAlign="center">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSave}
+            disabled={!hasChanges}
+            style={{ fontSize: "1rem", backgroundColor: "#68B545" }}
+          >
+            Save
+          </Button>
+        </Box>
+      </Container>
+
+      <div className="TimeSlots">
+        <h1>Time Slots</h1>
+        <div className="date-slots-container">
+          {currentSlots?.map((session, index) => (
+            <div key={index}>
+              <h2>Date: {session?.date}</h2>
+              <ul>
+                {session?.timeSlots?.map((slot, slotIndex) => (
+                  <li key={slotIndex}>
+                    {slot.startTime} to {slot.endTime}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="pagination" style={{ marginTop: "20px" }}>
+          {therapist?.sessions?.length > slotsPerPage && (
+            <ul
+              style={{
+                listStyleType: "none",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {Array.from(
+                Array(
+                  Math.ceil(therapist?.sessions.length / slotsPerPage)
+                ).keys()
+              ).map(pageNumber => (
+                <li
+                  key={pageNumber}
+                  className={currentPage === pageNumber + 1 ? "active" : ""}
+                  onClick={() => paginate(pageNumber + 1)}
+                  style={{
+                    margin: "0 5px",
+                  }}
+                >
+                  <a
+                    href="#"
+                    style={{
+                      display: "inline-block",
+                      padding: "8px 12px",
+                      borderRadius: "15px",
+                      background: "rgba(104, 181, 69, 0.25)",
+                      color: "black",
+                      textDecoration: "none",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {pageNumber + 1}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
 
       <div>
@@ -956,12 +1518,9 @@ function TherapistDetails() {
             padding: "10px 20px",
             fontSize: "16px",
             borderRadius: "5px",
-
-            backgroundColor: isClickable ? "#4CAF50" : "#ccc",
+            backgroundColor: "#4CAF50",
             color: "#fff",
-            cursor: isClickable ? "pointer" : "not-allowed",
           }}
-          disabled={!isClickable}
           onClick={handleButtonClick}
         >
           Approve

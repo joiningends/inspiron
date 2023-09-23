@@ -174,20 +174,20 @@ function AssessmentCreatePage() {
         assessmentData
       );
 
-      // const formData = new FormData();
-      // formData.append("image", image);
-      // const updateResponse = await axios.put(
-      //   `http://localhost:4000/api/v1/assessments/${response.data.assessment._id}`,
-      //   formData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   }
-      // );
+      const formData = new FormData();
+      formData.append("image", image);
+      const updateResponse = await axios.put(
+        `http://localhost:4000/api/v1/assessments/${response.data.assessment._id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       console.log(image);
-      // console.log(updateResponse)
+      console.log(updateResponse)
 
       console.log("Assessment created:", response.data.assessment._id);
 
@@ -202,7 +202,7 @@ function AssessmentCreatePage() {
       }, 3000);
 
       // Optionally, you can navigate to another page upon successful assessment creation
-      // window.location.href = "path-to-assessment-list-page";
+      window.location.href = "path-to-assessment-list-page";
     } catch (error) {
       console.error("Error creating assessment:", error);
       toast.error("Failed to Add Assessment", {
@@ -291,6 +291,7 @@ function AssessmentCreatePage() {
             }}
           />
         </div>
+
         <div style={{ marginBottom: "20px" }}>
           <label
             style={{
@@ -446,7 +447,7 @@ function AssessmentCreatePage() {
                       fontSize: "14px",
                       color: "#555555",
                       transition: "all 0.3s ease-out",
-                      width:"15rem"
+                      width: "15rem",
                     }}
                   />
                 </div>
@@ -477,7 +478,7 @@ function AssessmentCreatePage() {
                       fontSize: "14px",
                       color: "#555555",
                       transition: "all 0.3s ease-out",
-                      width:"9rem"
+                      width: "9rem",
                     }}
                   />
                 </div>
@@ -508,7 +509,7 @@ function AssessmentCreatePage() {
                       fontSize: "14px",
                       color: "#555555",
                       transition: "all 0.3s ease-out",
-                      width:"9rem"
+                      width: "9rem",
                     }}
                   />
                 </div>

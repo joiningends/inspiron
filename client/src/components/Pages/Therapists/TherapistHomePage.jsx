@@ -9,6 +9,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import inspironWheel from "../inspironwhitewheel.png";
 import jwt_decode from "jwt-decode";
+import axios from "axios";
 
 const TherapistHomePage = () => {
   const dispatch = useDispatch();
@@ -16,7 +17,10 @@ const TherapistHomePage = () => {
   const todayAppointments = useSelector(state => state.todayAppointments);
   const allAppointments = useSelector(state => state.appointmentByTherapist);
   const therapist = useSelector(state => state.therapist);
-  const upcomingAppointments = useSelector(state => state.totalPatients);
+  const [upcomingAppointments, setUpcomingAppointment] = useState([]);
+
+
+
   const [therapistId, setTherapistId] = useState(null);
 
   useEffect(() => {
@@ -40,6 +44,17 @@ const TherapistHomePage = () => {
       if (therapistId) {
         try {
           // Call the API to fetch therapist data with the therapistId
+          const apiUrlUpcoming = `http://localhost:4000/api/v1/appointments/therapists/${therapistId}/upcoming`;
+  
+          axios
+            .get(apiUrlUpcoming)
+            .then(response => {
+              setUpcomingAppointment(response.data);
+            })
+            .catch(error => {
+              console.error("Error fetching upcoming appointments:", error);
+            });
+  
           await dispatch(fetchTherapist(therapistId));
           await dispatch(fetchTodayAppointments(therapistId));
           await dispatch(getAppointmentsByTherapist(therapistId));
@@ -50,9 +65,10 @@ const TherapistHomePage = () => {
         }
       }
     };
-
+  
     fetchTherapistData();
   }, [therapistId]);
+  
 
   console.log(therapist);
   console.log(todayAppointments);
@@ -83,7 +99,7 @@ const TherapistHomePage = () => {
         >
           <div className="therapistDetailsDiv">
             <img
-              src={`data:${therapist?.image?.contentType};base64,${therapist?.image?.data}`}
+              src={therapist?.image}
               alt="Rounded"
               className="therapistImage"
             />
@@ -140,7 +156,7 @@ const TherapistHomePage = () => {
             <div
               style={{ fontSize: "2rem", color: "white", fontWeight: "bold" }}
             >
-              {upcomingAppointments}
+              {upcomingAppointments?.totalUpcomingPatients}
             </div>
             <div style={{ fontSize: "1rem", color: "white" }}>
               Upcoming appointments
@@ -160,7 +176,7 @@ const TherapistHomePage = () => {
             <div
               style={{ fontSize: "2rem", color: "white", fontWeight: "bold" }}
             >
-              350
+              {allAppointments?.totalPatients}
             </div>
             <div style={{ fontSize: "1rem", color: "white" }}>
               Total appointments

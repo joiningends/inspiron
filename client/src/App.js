@@ -22,6 +22,7 @@ import CreateAssessment from "./components/Pages/Admin/CreateAssessment";
 import AssessmentCreatePage from "./components/Pages/Admin/AssessmentCreatePage";
 import TherapistDetails from "./components/Pages/Admin/TherapistDetails";
 import PatientPage from "./components/Pages/Admin/PatientPage";
+import PatientPagee from "./components/Pages/Therapists/PatientPage";
 import TimeSlots from "./components/Pages/Therapists/TimeSlots";
 import SessionHistoryOfPatients from "./components/Pages/Admin/SessionHistoryOfPatients";
 import CreateFirstSessionQuestions from "./components/Pages/Admin/CreateFirstSessionQuestions";
@@ -30,6 +31,20 @@ import Group from "./components/Pages/Admin/Group";
 import GroupSignUp from "./components/Pages/GroupSignup";
 import CorporateUser from "./components/Pages/Admin/CorporateUser";
 import SettingPage from "./components/Pages/Therapists/SettingPage";
+import PatientCoins from "./components/Pages/Admin/PatientCoins";
+import BookSlotByTherapist from "./components/Pages/Therapists/BookSlotByTherapist";
+import Forgotpassword from "./components/Pages/Forgotpassword";
+import ResetPassword from "./components/Pages/ResetPassword";
+import OnePatientDetails from "./components/Pages/Therapists/OnePatientDetails";
+import OpenFirstSessionNotes from "./components/Pages/Therapists/OpenFirstSessionNotes";
+import BookingPage from "./components/Pages/BookingPage";
+import PaymentSuccessPage from "./components/Pages/PaymentSuccessPage";
+import Profile from "./components/Pages/Profile";
+import Appointments from "./components/Pages/Appointments";
+import CustomerPayment from "./components/Pages/Admin/CustomerPayment";
+import PendingPayments from "./components/Pages/PendingPayments";
+import PaymentSuccessPageCorp from "./components/Pages/PaymentSuccessPageCorp";
+import { Navigate } from "react-router-dom";
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -37,6 +52,8 @@ function App() {
   const isAdmin = parsedUserRole === "admin";
   const isTherapist = parsedUserRole === "therapist";
   const isUser = parsedUserRole === "user";
+  const empid = JSON.parse(localStorage.getItem("empid"));
+  const isEmpidNull = empid === null;
 
   return (
     <>
@@ -59,6 +76,30 @@ function App() {
 
                 <Route path="/result" element={<Result />} />
                 <Route path="/therapist" element={<Therapistfilter />} />
+                <Route
+                  path="bookaslot/bookYourSession/:therapistId/:appointmentId"
+                  element={<BookingPage />}
+                />
+                <Route
+                  path="/sessionIsBooked/:appointmentId"
+                  element={<PaymentSuccessPage />}
+                />
+                <Route
+                  path="/sessionIsBookedCorp/:appointmentId"
+                  element={<PaymentSuccessPageCorp />}
+                />
+                <Route path="/Profile" element={<Profile />} />
+                <Route path="/Appointments" element={<Appointments />} />
+                <Route
+                  path="/PendingPayments"
+                  element={
+                    isEmpidNull ? (
+                      <PendingPayments />
+                    ) : (
+                      <Navigate to="/other-route" replace />
+                    )
+                  }
+                />
               </>
             )}
 
@@ -77,6 +118,19 @@ function App() {
                 />
                 <Route path="/therapists" element={<TherapistHomePage />} />
                 <Route path="/timeSlots" element={<TimeSlots />} />
+                <Route
+                  path="/bookSlot/:userid/:therapistid"
+                  element={<BookSlotByTherapist />}
+                />
+                <Route path="/patientPage" element={<PatientPagee />} />
+                <Route
+                  path="/appointments/users/:userId/therapists/:therapistId/latest-appointment"
+                  element={<OnePatientDetails />}
+                />
+                <Route
+                  path="/openFirstSessionNotes/:userId"
+                  element={<OpenFirstSessionNotes />}
+                />
               </>
             )}
 
@@ -118,10 +172,31 @@ function App() {
                   element={<CorporateUser />}
                 />
                 <Route path="/admin-setting" element={<SettingPage />} />
+                <Route
+                  path="/user-coin/:patientId"
+                  element={<PatientCoins />}
+                />
+                <Route
+                  path="/userPayment/:userId"
+                  element={<CustomerPayment />}
+                />
+                <Route
+                  path="/patient-details-first-session-notes/:id"
+                  element={<FirstSessionNotes />}
+                />
+                <Route
+                  path="/openFirstSessionNotes/:userId"
+                  element={<OpenFirstSessionNotes />}
+                />
               </>
             )}
             <Route path="/login" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
+            <Route path="/forgotpassword" element={<Forgotpassword />} />
+            <Route
+              path="/resetpassword/reset/:resetId"
+              element={<ResetPassword />}
+            />
             <Route path="/login/:company/:groupId" element={<GroupSignUp />} />
           </Routes>
         </div>

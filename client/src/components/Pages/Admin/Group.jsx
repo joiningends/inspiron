@@ -7,12 +7,12 @@ function Groups() {
   const [data, setData] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [allowCompanyPayment, setAllowCompanyPayment] = useState(true);
 
   const fetchData = async () => {
     try {
       const response = await axios.get("http://localhost:4000/api/v1/clients");
       setData(response.data.clients);
-      console.log(response.data.clients)
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -30,6 +30,10 @@ function Groups() {
     setSelectedImage(event.target.files[0]);
   };
 
+  const handleAllowCompanyPaymentChange = event => {
+    setAllowCompanyPayment(event.target.value === "yes");
+  };
+
   const handleFormSubmit = async event => {
     event.preventDefault();
 
@@ -37,7 +41,7 @@ function Groups() {
     formData.append("name", event.target.name.value);
     formData.append("image", selectedImage);
     formData.append("address", event.target.address.value);
-    formData.append("credit", event.target.credit.value);
+    formData.append("companypayment", allowCompanyPayment);
 
     try {
       const response = await axios.post(
@@ -46,11 +50,20 @@ function Groups() {
       );
       console.log("Form submitted successfully", response);
       setShowForm(false);
-      fetchData(); // Refresh data
+      fetchData();
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   };
+
+  function copyToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
+  }
 
   return (
     <div className="table-container">
@@ -73,8 +86,29 @@ function Groups() {
               <label>Address</label>
               <input type="text" name="address" required />
 
-              <label>Credit</label>
-              <input type="text" name="credit" required />
+              <label>Allow Company Payment</label>
+              <div>
+                <label>
+                  <input
+                    type="radio"
+                    name="allowCompanyPayment"
+                    value="yes"
+                    checked={allowCompanyPayment === true}
+                    onChange={handleAllowCompanyPaymentChange}
+                  />
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="allowCompanyPayment"
+                    value="no"
+                    checked={allowCompanyPayment === false}
+                    onChange={handleAllowCompanyPaymentChange}
+                  />
+                  No
+                </label>
+              </div>
 
               <button type="submit">Submit</button>
             </form>
@@ -95,8 +129,6 @@ function Groups() {
             <th>Group Name</th>
             <th>Address</th>
             <th>Group Id</th>
-            <th>Image</th>
-            <th>Credit</th>
             <th>URL</th>
             <th>Details</th>
           </tr>
@@ -111,30 +143,30 @@ function Groups() {
                 {group.name === "Retail" ? (
                   <span>N/A</span>
                 ) : (
-                  <img
-                    src={group.image}
-                    alt={`Image of ${group.name}`}
-                    className="group-image"
-                  />
-                )}
-              </td>
-              <td>{group.credit}</td>
-              <td>
-                {group.name === "Retail" ? (
-                  <span>N/A</span>
-                ) : (
-                  <a href={group.url} target="_blank" rel="noopener noreferrer">
-                    Link
-                  </a>
+                  <>
+                    <a
+                      href={group.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Link
+                    </a>
+                    <button onClick={() => copyToClipboard(group.url)}>
+                      Copy
+                    </button>
+                  </>
                 )}
               </td>
               <td>
                 {group.name === "Retail" ? (
                   <span>N/A</span>
                 ) : (
-                  <Link to={`/corporate-user/${group.groupid}`} className="details-link">
-      Details
-    </Link>
+                  <Link
+                    to={`/corporate-user/${group.groupid}`}
+                    className="details-link"
+                  >
+                    Details
+                  </Link>
                 )}
               </td>
             </tr>

@@ -1,103 +1,188 @@
-// PatientPage.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  Typography,
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+  TextField,
+  InputAdornment,
+  Button,
+  Pagination,
+  Tooltip,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import DescriptionIcon from "@mui/icons-material/Description";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import PaymentIcon from "@mui/icons-material/Payment";
 import "./PatientPage.css";
 
-function PatientPage() {
-  const [patients, setPatientData] = useState([]);
-  const navigate = useNavigate();
+function formatDate(isoDate) {
+  if (!isoDate) return "";
+  const date = new Date(isoDate);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
 
-  // Function to handle navigation to the details page
-  const handleDetailsClick = patientId => {
-    // Navigate to the details page with the patient's ID as a parameter
+function PatientPage() {
+  const [patients, setPatients] = useState([]);
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handleDetailsClick = (patientId, personId) => {
     navigate(`/session-history-patients/${patientId}`);
   };
 
-  // Function to fetch the data from the API
-  const fetchPatientData = async () => {
-    try {
-      const response = await axios.get("http://localhost:4000/api/v1/users");
-      setPatientData(response.data);
-    } catch (error) {
-      console.error("Error fetching patients data:", error);
-    }
+  const handleCoinsClick = patientId => {
+    navigate(`/user-coin/${patientId}`);
   };
-  // Call the fetchPatientData function when the component mounts
+
+  const handlePaymentClick = patientId => {
+    const paymentUrl = `/userPayment/${patientId}`;
+    window.open(paymentUrl, "_blank");
+  };
+
   useEffect(() => {
+    const fetchPatientData = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/api/v1/users");
+        setPatients(response.data);
+      } catch (error) {
+        console.error("Error fetching patients data:", error);
+      }
+    };
+
     fetchPatientData();
   }, []);
 
-  const patientsPerPage = 10; // Number of patients to display per page
-  const totalPages = Math.ceil(patients?.length / patientsPerPage); // Calculate total pages
+  const patientsPerPage = 10;
+  const totalPages = Math.ceil(patients.length / patientsPerPage);
 
-  const [currentPage, setCurrentPage] = useState(1); // Current page state
-
-  // Function to handle page navigation
-  const handlePageChange = pageNumber => {
-    setCurrentPage(pageNumber);
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
-  // Calculate start and end index of patients to display based on the current page
+  const filterPatients = () => {
+    return patients.filter(patient =>
+      patient.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
   const startIndex = (currentPage - 1) * patientsPerPage;
   const endIndex = startIndex + patientsPerPage;
 
-  // Get the patients to display on the current page
-  const displayedPatients = patients?.slice(startIndex, endIndex);
-
   return (
-    <div className="patient-page">
-      <h1>Patient Page</h1>
-      <div className="patient-table-container">
-        <table className="patient-table">
-          <thead>
-            <tr>
-              <th>Patient name</th>
-              <th>Last session date</th>
-              <th>Next session date</th>
-              <th>Total session</th>
-              <th>Patient summary</th>
-            </tr>
-          </thead>
-          <tbody>
-            {displayedPatients?.map(patient => (
-              <tr key={patient?.id}>
-                <td>{patient?.name}</td>
-                <td>{patient?.lastSessionDate}</td>
-                <td>{patient?.nextSessionDate}</td>
-                <td>{patient?.totalSessions}</td>
-                <td>
-                  <div className="patient-buttons">
-                    <button
-                      onClick={() => handleDetailsClick(patient?._id)}
-                      className={currentPage === patient?._id ? "active" : ""}
+    <Container>
+      <Typography variant="h4" gutterBottom>
+        Patient Page
+      </Typography>
+      <TextField
+        className="search-input"
+        variant="outlined"
+        label="Search by name"
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon />
+            </InputAdornment>
+          ),
+        }}
+        fullWidth
+        margin="normal"
+      />
+      <TableContainer
+        component={Paper}
+        className="table-container"
+        sx={{ overflowX: "auto" }}
+      >
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Patient Name</TableCell>
+              <TableCell>Last Session Date</TableCell>
+              <TableCell>Total Sessions</TableCell>
+              <TableCell>Corporate Name</TableCell>
+              <TableCell>Coin Balance</TableCell>
+              <TableCell>Patient Summary</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filterPatients()
+              .slice(startIndex, endIndex)
+              .map(patient => (
+                <TableRow key={patient._id}>
+                  <TableCell className="patient-name-cell">
+                    {patient.name}
+                  </TableCell>
+                  <TableCell>{formatDate(patient.date)}</TableCell>
+                  <TableCell>{patient.Sessionnumber}</TableCell>
+                  <TableCell>{patient.clientName}</TableCell>
+                  <TableCell>
+                    {patient.coinBalance}
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => handleCoinsClick(patient._id)}
                     >
-                      Details
-                    </button>
-                    <button>View/Download</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination */}
-      <div className="patient-buttons">
-        {Array?.from({ length: totalPages }, (_, index) => index + 1).map(
-          pageNumber => (
-            <button
-              key={pageNumber}
-              onClick={() => handlePageChange(pageNumber)}
-              className={currentPage === pageNumber ? "active" : ""}
-            >
-              {pageNumber}
-            </button>
-          )
-        )}
-      </div>
-    </div>
+                      Coins
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip title="Details" arrow>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() =>
+                          handleDetailsClick(patient._id, patient.user)
+                        }
+                      >
+                        <VisibilityIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="View/Download" arrow>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        className="view-download-button"
+                      >
+                        <DescriptionIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Payment" arrow>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handlePaymentClick(patient._id)}
+                      >
+                        <PaymentIcon />
+                      </Button>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Pagination
+        count={totalPages}
+        page={currentPage}
+        onChange={handlePageChange}
+        shape="rounded"
+        size="large"
+        className="pagination"
+      />
+    </Container>
   );
 }
 

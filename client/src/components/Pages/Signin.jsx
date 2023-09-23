@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../redux/Action";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Link } from "react-router-dom";
 import "./Signin.css";
 
 const Signin = () => {
@@ -78,14 +79,17 @@ const Signin = () => {
         const data = await response.json();
         console.log(data);
         console.log("hello");
-        const { user, token, role ,empid,groupid} = data;
+        const { user, token, role, empid, groupid, userId } = data;
 
         // Store the user information and token in localStorage or other secure storage mechanisms
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("role", JSON.stringify(role));
         localStorage.setItem("empid", JSON.stringify(empid));
         localStorage.setItem("groupid", JSON.stringify(groupid));
-        console.log(groupid)
+        localStorage.setItem("userId", JSON.stringify(userId));
+        console.log(userId);
+        console.log(groupid);
+        console.log(user);
         localStorage.setItem("token", token);
         // Clear the form data
         setFormData({
@@ -94,7 +98,15 @@ const Signin = () => {
         });
 
         // Redirect to the "/FindTherapist" page
-        window.location.href = "/FindTherapist";
+        const savedGroupid = JSON.parse(localStorage.getItem("groupid"));
+
+        if (savedGroupid === null) {
+          window.location.href = "/";
+        } else {
+          window.location.href = "/";
+        }
+
+        //
       } else {
         // Login failed
         console.log("Login failed");
@@ -181,6 +193,9 @@ const Signin = () => {
         </button>
         <p>
           Don't have an account? <a href="/login">Sign Up</a>
+        </p>
+        <p>
+          <Link to="/forgotpassword">Forgot Password?</Link>{" "}
         </p>
       </div>
       <ToastContainer />

@@ -70,6 +70,7 @@ const AssessmentPage = () => {
         (assessment && assessment.questions && assessment.questions.length - 1)
       ) {
         // Last question, save the assessment name and total points in localStorage
+        localStorage.setItem("assessment", assessment);
         localStorage.setItem("assessmentName", assessment.assessment_name);
         localStorage.setItem("totalPoints", totalScore.toString());
         localStorage.setItem("assessment", JSON.stringify(assessment));

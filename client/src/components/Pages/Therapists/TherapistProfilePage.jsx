@@ -15,6 +15,19 @@ import axios from "axios";
 import "./TherapistProfilePage.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  FormControlLabel,
+  Button,
+  Box,
+  Typography,
+  Container,
+  Grid,
+} from "@mui/material";
 
 function TherapistProfilePage() {
   const dispatch = useDispatch();
@@ -47,12 +60,79 @@ function TherapistProfilePage() {
   const [imageUrl, setImageUrl] = useState(therapist?.image);
   const [availability, setAvailability] = useState([]);
 
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [checkboxValues, setCheckboxValues] = useState({
+    Online: false,
+    Offline: false,
+  });
+
+  const handleSessionModeCheckboxChange = option => {
+    const newCheckboxValues = {
+      ...checkboxValues,
+      [option]: !checkboxValues[option],
+    };
+
+    // Update selectedOptions based on checkbox values
+    const newSelectedOptions = Object.keys(newCheckboxValues).filter(
+      key => newCheckboxValues[key]
+    );
+
+    setCheckboxValues(newCheckboxValues);
+    setSelectedOptions(newSelectedOptions);
+  };
+
+  const handleSessionModeSaveClick = () => {
+    // You can send the selectedOptions array to your API for saving if needed
+    console.log(selectedOptions);
+    dispatch(updateTherapist(therapistId, { modeOfSession: selectedOptions }));
+  };
+
+  const handleSessionModeSave = () => {
+    // Replace this with your actual database storage logic
+    // For now, we'll just log the selected options
+    dispatch(updateTherapist(therapistId, { modeOfSession: selectedOptions }));
+  };
+
+  const [selectedLanguages, setSelectedLanguages] = useState(
+    therapist?.languages || []
+  );
+  const [isOutsideCountry, setIsOutsideCountry] = useState(false);
+
+  useEffect(() => {
+    setSelectedLanguages(therapist?.languages || []);
+    const newCheckboxValues = { Online: false, Offline: false };
+    therapist?.modeOfSession?.forEach(option => {
+      if (option === "Online") {
+        newCheckboxValues.Online = true;
+      } else if (option === "Offline") {
+        newCheckboxValues.Offline = true;
+      }
+    });
+    setCheckboxValues(newCheckboxValues);
+  }, [therapist]);
+
+  const handleLanguageChange = event => {
+    setSelectedLanguages(event.target.value);
+  };
+
+  const handleCheckboxChange = event => {
+    setIsOutsideCountry(event.target.checked);
+  };
+
+  const handleLanguageSaveClick = () => {
+    dispatch(
+      updateTherapist(therapistId, {
+        languages: selectedLanguages,
+      })
+    );
+  };
+
   useEffect(() => {
     axios
-      .get(`http://localhost:4000/api/v1/categories`)
+      .get(`http://localhost:4000/api/v1/categories/center/info`)
       .then(response => {
         const fetchedData = response.data;
-        setAvailability(fetchedData);
+        setAvailability(fetchedData.categories);
       })
       .catch(error => {
         console.error("Error fetching data:", error);
@@ -71,7 +151,7 @@ function TherapistProfilePage() {
     return `${day}-${month}-${year}`;
   }
 
-  const handleImageChange = async (event) => {
+  const handleImageChange = async event => {
     const file = event.target.files[0];
     const formData = new FormData();
     formData.append("image", file);
@@ -271,9 +351,9 @@ function TherapistProfilePage() {
 
   const getReservedSlots = (date, sessions) => {
     const reservedSlots = new Set();
-    sessions.forEach(session => {
+    sessions?.forEach(session => {
       if (session.date === date) {
-        session.timeSlots.forEach(slot => {
+        session?.timeSlots?.forEach(slot => {
           reservedSlots.add(slot.startTime);
         });
       }
@@ -466,6 +546,7 @@ function TherapistProfilePage() {
                 padding: "0.1rem",
                 margin: "0.2rem",
                 borderRadius: "30%",
+                width: "4.5rem",
               }}
               onClick={openEditForm}
             >
@@ -501,6 +582,7 @@ function TherapistProfilePage() {
                 padding: "0.1rem",
                 margin: "0.2rem",
                 borderRadius: "30%",
+                width: "4.5rem",
               }}
               onClick={openContactForm}
             >
@@ -527,7 +609,7 @@ function TherapistProfilePage() {
         </div>
       </div>
 
-      <div className="addressesDetailsDiv">
+      <div className="addressesDetailsDiv" style={{ marginTop: "4rem" }}>
         <div className="primaryDetalsUpperPart">
           <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
             ADDRESS
@@ -538,6 +620,7 @@ function TherapistProfilePage() {
               padding: "0.1rem",
               margin: "0.2rem",
               borderRadius: "30%",
+              width: "4.5rem",
             }}
             onClick={openAddressForm}
           >
@@ -563,37 +646,84 @@ function TherapistProfilePage() {
 
       <div
         className="educationDetailsDiv"
-        style={{ width: "80%", marginLeft: "8rem" }}
+        style={{ width: "80%", marginLeft: "8rem", paddingTop: "2rem" }}
       >
-        <div className="educationHeader">
-          <h2>Education Details</h2>
-          <div className="editEducationIcon" onClick={openEducationForm}>
-            <FaEdit />
+        <div
+          className="educationHeader"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "1rem",
+          }}
+        >
+          <h2 style={{ flex: "1", fontSize: "1.5rem", color: "black" }}>
+            EDUCATION DETAILS
+          </h2>
+          <div
+            className="editEducationIcon"
+            style={{ cursor: "pointer", fontSize: "1rem", color: "#007BFF" }}
+            onClick={openEducationForm}
+          >
+            <span
+              className="editIcon"
+              style={{
+                padding: "0.6rem",
+                margin: "0.2rem",
+                borderRadius: "30%",
+              }}
+              onClick={openEducationForm}
+            >
+              <FaEdit style={{ width: "1.5rem", height: "1.7rem" }} />
+              <span className="editText">EDIT</span>
+            </span>
           </div>
         </div>
         {therapist?.education.map((item, index) => (
-          <div className="educationItem" key={index}>
+          <div
+            className="educationItem"
+            key={index}
+            style={{ marginBottom: "1rem" }}
+          >
             <div>
-              <span style={{ marginRight: "1rem", fontSize: "1rem" }}>
-                University / college
-              </span>
-              <span
-                className="collegeNameText"
-                style={{ marginRight: "1rem", fontSize: "1rem" }}
-              >
-                {item?.collegeName}
-              </span>
               <span
                 style={{
-                  marginRight: "1rem",
+                  fontWeight: "bold",
+                  marginLeft: "0.5rem",
                   fontSize: "1rem",
+                  color: "#555",
                 }}
               >
-                Field of study
+                UNIVERSITY / COLLEGE:{" "}
               </span>
               <span
                 className="educationLevelText"
-                style={{ marginRight: "1rem", fontSize: "1rem" }}
+                style={{
+                  marginLeft: "0.5rem",
+                  fontSize: "1rem",
+                  color: "#555",
+                }}
+              >
+                {item?.collegeName}
+              </span>
+            </div>
+            <div>
+              <span
+                style={{
+                  fontWeight: "bold",
+                  marginLeft: "0.5rem",
+                  fontSize: "1rem",
+                  color: "#555",
+                }}
+              >
+                Field of Study:{" "}
+              </span>
+              <span
+                className="educationLevelText"
+                style={{
+                  marginLeft: "0.5rem",
+                  fontSize: "1rem",
+                  color: "#555",
+                }}
               >
                 {item?.educationLevel}
               </span>
@@ -637,10 +767,23 @@ function TherapistProfilePage() {
         className="editFormModal"
         overlayClassName="editFormOverlay"
       >
-        <div className="editForm">
+        <div
+          className="editForm"
+          style={{
+            textAlign: "left",
+            padding: "20px",
+            backgroundColor: "#fff",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          }}
+        >
           <div className="editFormHeader">
             <h2>Edit Therapist Details</h2>
-            <span className="closeIcon" onClick={handleCancelClick}>
+            <span
+              className="closeIcon"
+              onClick={handleCancelClick}
+              style={{ cursor: "pointer", color: "#D67449" }}
+            >
               <FaTimes />
             </span>
           </div>
@@ -651,30 +794,44 @@ function TherapistProfilePage() {
               id="name"
               value={name}
               onChange={e => setName(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                marginBottom: "16px",
+              }}
             />
 
             <label htmlFor="gender">Gender:</label>
-            <div>
-              <input
-                type="radio"
-                id="gender-male"
-                name="gender"
-                value="male"
-                checked={gender === "male"}
-                onChange={e => setGender(e.target.value)}
-              />
-              <label htmlFor="gender-male">Male</label>
-            </div>
-            <div>
-              <input
-                type="radio"
-                id="gender-female"
-                name="gender"
-                value="female"
-                checked={gender === "female"}
-                onChange={e => setGender(e.target.value)}
-              />
-              <label htmlFor="gender-female">Female</label>
+            <div
+              className="genderOptions"
+              style={{ display: "flex", alignItems: "center", gap: "20px" }}
+            >
+              <div>
+                <input
+                  type="radio"
+                  id="gender-male"
+                  name="gender"
+                  value="Male"
+                  checked={gender === "Male"}
+                  onChange={e => setGender(e.target.value)}
+                  style={{ marginRight: "8px" }}
+                />
+                <label htmlFor="gender-male">Male</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  id="gender-female"
+                  name="gender"
+                  value="Female"
+                  checked={gender === "Female"}
+                  onChange={e => setGender(e.target.value)}
+                  style={{ marginRight: "8px" }}
+                />
+                <label htmlFor="gender-female">Female</label>
+              </div>
             </div>
 
             <label htmlFor="dob">Date of Birth:</label>
@@ -683,58 +840,259 @@ function TherapistProfilePage() {
               id="dob"
               value={dob}
               onChange={e => setDob(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+              }}
             />
           </div>
           <div className="editFormFooter">
-            <button className="saveButton" onClick={handleSaveClick}>
+            <button
+              className="saveButton"
+              onClick={handleSaveClick}
+              style={{
+                backgroundColor: "#D67449",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                padding: "10px 20px",
+                cursor: "pointer",
+              }}
+            >
               Save
             </button>
-            <button className="cancelButton" onClick={handleCancelClick}>
+            <button
+              className="cancelButton"
+              onClick={handleCancelClick}
+              style={{
+                backgroundColor: "white",
+                color: "#D67449",
+                border: "1px solid #D67449",
+                borderRadius: "4px",
+                padding: "10px 20px",
+                cursor: "pointer",
+              }}
+            >
               Cancel
             </button>
           </div>
         </div>
       </Modal>
 
-      {showAddressForm && (
-        <div className="editFormContainer">
-          <div className="editForm">
-            <h2>Edit Address</h2>
-            <label style={{ fontSize: "1rem" }}>Current Address:</label>
-            <input
-              type="text"
-              value={currentAddress}
-              onChange={e => setCurrentAddress(e.target.value)}
-            />
-            <label style={{ fontSize: "1rem" }}>Permanent Address:</label>
-            <input
-              type="text"
-              value={permanentAddress}
-              onChange={e => setPermanentAddress(e.target.value)}
-            />
-            <div className="buttons">
+      {showEducationForm && (
+        <Modal
+          isOpen={showEducationForm}
+          onRequestClose={handleCancelEducationClick}
+          className="educationFormModal"
+          overlayClassName="educationFormOverlay"
+        >
+          <div
+            className="educationForm"
+            style={{
+              textAlign: "center",
+              backgroundColor: "#fff",
+              borderRadius: "8px",
+              padding: "20px",
+            }}
+          >
+            <h2>Add Education</h2>
+            <div>
+              <label>College Name</label>
+              <input
+                type="text"
+                value={collegeName}
+                onChange={e => setCollegeName(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  marginBottom: "16px",
+                }}
+              />
+              <label>Field of study</label>
+              <input
+                type="text"
+                value={educationLevel}
+                onChange={e => setEducationLevel(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                }}
+              />
+            </div>
+            <div
+              className="educationFormButtons"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "20px",
+              }}
+            >
               <button
-                onClick={handleAddressSaveClick}
-                style={{ backgroundColor: "#D67449" }}
+                onClick={handleAddEducation}
+                style={{
+                  backgroundColor: "#D67449",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  padding: "10px 20px",
+                  cursor: "pointer",
+                  marginRight: "16px",
+                }}
               >
-                Save
+                Add
               </button>
               <button
-                onClick={handleAddressCancelClick}
-                style={{ backgroundColor: "#68B545" }}
+                onClick={handleCancelEducationClick}
+                style={{
+                  backgroundColor: "white",
+                  color: "#D67449",
+                  border: "1px solid #D67449",
+                  borderRadius: "4px",
+                  padding: "10px 20px",
+                  cursor: "pointer",
+                }}
               >
                 Cancel
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
+      <div
+        style={{
+          maxWidth: "500px",
+          margin: "0 auto",
+          padding: "20px",
+          border: "1px solid #007BFF",
+          borderRadius: "5px",
+          boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
+          marginTop: "3rem",
+          width:"38rem"
+        }}
+      >
+        <h2
+          style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
+        >
+          Session Mode
+        </h2>
+        <div style={{ marginBottom: "20px" }}>
+          <label style={{ display: "block", fontSize: "1rem", color: "#333" }}>
+            <input
+              type="checkbox"
+              value="Online"
+              checked={checkboxValues.Online}
+              onChange={() => handleSessionModeCheckboxChange("Online")}
+              style={{ marginRight: "8px" }}
+            />
+            Online
+          </label>
+        </div>
+        <div style={{ marginBottom: "20px" }}>
+          <label style={{ display: "block", fontSize: "1rem", color: "#333" }}>
+            <input
+              type="checkbox"
+              value="Offline"
+              checked={checkboxValues.Offline}
+              onChange={() => handleSessionModeCheckboxChange("Offline")}
+              style={{ marginRight: "8px" }}
+            />
+            Offline
+          </label>
+        </div>
+        <button
+          onClick={handleSessionModeSaveClick}
+          style={{
+            padding: "0.5rem 1rem",
+            backgroundColor: "#007BFF",
+            color: "#fff",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "1rem",
+            backgroundColor:"#68B545"
+          }}
+        >
+          Save
+        </button>
+      </div>
+
+      <div
+        style={{
+          maxWidth: "500px",
+          margin: "3rem auto",
+          padding: "20px",
+          border: "1px solid #007BFF",
+          borderRadius: "5px",
+          boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+        }}
+      >
+        <h2
+          style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
+        >
+          Language Selection Form
+        </h2>
+        <FormControl style={{ width: "100%", marginBottom: "1rem" }}>
+          <InputLabel
+            htmlFor="language"
+            style={{ fontSize: "1rem", color: "#333" }}
+          >
+            Select Language
+          </InputLabel>
+          <Select
+            id="language"
+            multiple
+            value={selectedLanguages}
+            onChange={handleLanguageChange}
+            label="Select Language"
+            // style={{ backgroundColor: "rgba(104, 181, 69, 0.25)" }} // Dropdown background color
+          >
+            <MenuItem value="english">English</MenuItem>
+            <MenuItem value="hindi">Hindi</MenuItem>
+            <MenuItem value="telugu">Telugu</MenuItem>
+            {/* Add more language options */}
+          </Select>
+        </FormControl>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleLanguageSaveClick}
+          style={{
+            marginTop: "1rem",
+            backgroundColor: "#68B545",
+            color: "#fff",
+            fontSize: "1rem",
+          }}
+        >
+          Save
+        </Button>
+      </div>
 
       {showContactForm && (
-        <div className="modalContainer">
-          <div className="modal">
+        <div className="modalContainer" style={{ textAlign: "center" }}>
+          <div
+            className="modal"
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: "8px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              padding: "20px",
+            }}
+          >
             <h2>Edit Contact Details</h2>
-            <label htmlFor="email" style={{ fontSize: "1rem" }}>
+            <label
+              htmlFor="email"
+              style={{
+                fontSize: "1rem",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
               Email:
             </label>
             <input
@@ -742,9 +1100,23 @@ function TherapistProfilePage() {
               id="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                marginBottom: "16px",
+              }}
             />
 
-            <label htmlFor="mobile" style={{ fontSize: "1rem" }}>
+            <label
+              htmlFor="mobile"
+              style={{
+                fontSize: "1rem",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
               Mobile:
             </label>
             <input
@@ -752,9 +1124,23 @@ function TherapistProfilePage() {
               id="mobile"
               value={mobile}
               onChange={e => setMobile(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                marginBottom: "16px",
+              }}
             />
 
-            <label htmlFor="emergencyContact" style={{ fontSize: "1rem" }}>
+            <label
+              htmlFor="emergencyContact"
+              style={{
+                fontSize: "1rem",
+                display: "block",
+                marginBottom: "8px",
+              }}
+            >
               Emergency Contact:
             </label>
             <input
@@ -762,15 +1148,45 @@ function TherapistProfilePage() {
               id="emergencyContact"
               value={emergencyContact}
               onChange={e => setEmergencyContact(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                marginBottom: "20px",
+              }}
             />
 
-            <div className="buttonContainer">
-              <button className="saveButton" onClick={handleContactSaveClick}>
+            <div
+              className="buttonContainer"
+              style={{ display: "flex", justifyContent: "center" }}
+            >
+              <button
+                className="saveButton"
+                onClick={handleContactSaveClick}
+                style={{
+                  backgroundColor: "#D67449",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  padding: "10px 20px",
+                  cursor: "pointer",
+                  marginRight: "16px",
+                }}
+              >
                 Save
               </button>
               <button
                 className="cancelButton"
                 onClick={() => setShowContactForm(false)}
+                style={{
+                  backgroundColor: "white",
+                  color: "#D67449",
+                  border: "1px solid #D67449",
+                  borderRadius: "4px",
+                  padding: "10px 20px",
+                  cursor: "pointer",
+                }}
               >
                 Cancel
               </button>
@@ -797,7 +1213,7 @@ function TherapistProfilePage() {
         </div>
 
         <div className="pagination" style={{ marginTop: "20px" }}>
-          {therapist?.sessions.length > slotsPerPage && (
+          {therapist?.sessions?.length > slotsPerPage && (
             <ul
               style={{
                 listStyleType: "none",
@@ -949,7 +1365,7 @@ function TherapistProfilePage() {
               }}
             >
               <h3 style={{ width: "10rem" }}>Selected Slots:</h3>
-              {slots.length > 0 ? (
+              {slots?.length > 0 ? (
                 <ul>
                   {slots?.map((slot, index) => (
                     <li key={index}>

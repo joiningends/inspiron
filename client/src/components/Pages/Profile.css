@@ -1,0 +1,12 @@
+/* Custom CSS for Toast Text and Background Colors */
+/* Success Toast */
+.react-toastify-container .toastify-success .Toastify__toast-body {
+  background-color: #4caf50; /* Green color for success */
+  color: #fff; /* Text color for success */
+}
+
+/* Error Toast */
+.react-toastify-container .toastify-error .Toastify__toast-body {
+  background-color: #f44336; /* Red color for error */
+  color: #fff; /* Text color for error */
+}

@@ -9,7 +9,6 @@ const AssessmentCard = ({
   assessment_id,
 }) => {
   const [loaded, setLoaded] = useState(false);
-  console.log(assessmentImage);
 
   useEffect(() => {
     // Simulate loading delay
@@ -20,13 +19,12 @@ const AssessmentCard = ({
     return () => clearTimeout(timer);
   }, []);
 
-  const blob = new Blob([assessmentImage?.data], {
-    type: assessmentImage?.contentType,
-  });
+  const imageUrl = assessmentImage;
+  console.log(imageUrl);
   return (
     <div className={`AssessmentCard ${loaded ? "loaded" : ""}`}>
       <div className="image-container">
-        <img src={blob} alt="Assessment" />
+        <img src={imageUrl} alt="Assessment" />
       </div>
       <div className="card-content">
         <div className="title">{assessment_name}</div>

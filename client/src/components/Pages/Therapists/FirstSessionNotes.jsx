@@ -1,11 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./FirstSessionNotes.css";
+import axios from "axios";
+import Checkbox from "@material-ui/core/Checkbox";
+import { useParams } from "react-router-dom";
+import {
+  Container,
+  Paper,
+  Typography,
+  Grid,
+  FormControlLabel,
+  Radio,
+  TextField,
+  Button,
+  Box,
+  Card,
+  CardContent,
+  RadioGroup,
+  FormControl,
+} from "@material-ui/core";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function SociodemographicForm() {
   const [fullName, setFullName] = useState("");
-  const [age, setAge] = useState("");
-  const [gender, setGender] = useState("");
-  const [pronouns, setPronouns] = useState("");
+  const [appointmentDetails, setAppointmentDetails] = useState(null);
+  console.log(appointmentDetails?.socioeconomic?.json);
+  const [age, setAge] = useState(appointmentDetails?.socioeconomic?.json?.Age);
+  const [gender, setGender] = useState(
+    appointmentDetails?.socioeconomic?.json?.Gender
+  );
+  const [pronouns, setPronouns] = useState(
+    appointmentDetails?.socioeconomic?.json
+  );
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [address, setAddress] = useState("");
@@ -24,6 +50,21 @@ function SociodemographicForm() {
   const [maritalStatus, setMaritalStatus] = useState("");
   const [reference, setReference] = useState("");
   const [languagesKnown, setLanguagesKnown] = useState([]);
+  const { id } = useParams();
+
+  useEffect(() => {
+    fetch(`http://localhost:4000/api/v1/users/${id}`)
+      .then(response => response.json())
+      .then(data => {
+        setAppointmentDetails(data);
+        setFullName(data?.name);
+        console.log(data);
+        // Retrieve therapist details
+      })
+      .catch(error =>
+        console.error("Error retrieving appointment details:", error)
+      );
+  }, [id]);
 
   const handleLanguagesKnownChange = e => {
     const selectedLanguage = e.target.value;
@@ -37,8 +78,39 @@ function SociodemographicForm() {
       );
     }
   };
-  const handleFormSubmit = e => {
+
+  const handleFormSubmit = async e => {
     e.preventDefault();
+
+    // Perform form validation
+    if (
+      fullName === "" ||
+      age === "" ||
+      gender === "" ||
+      pronouns === "" ||
+      height === "" ||
+      weight === "" ||
+      address === "" ||
+      contactDetails === "" ||
+      emergencyContactName === "" ||
+      emergencyContactNumber === "" ||
+      education === "" ||
+      occupation === "" ||
+      socioeconomicStatus === "" ||
+      informantName === "" ||
+      relationshipWithPatient === "" ||
+      durationOfStay === "" ||
+      information === "" ||
+      religionEthnicity === "" ||
+      dateOfBirth === "" ||
+      maritalStatus === "" ||
+      reference === "" ||
+      languagesKnown.length === 0
+    ) {
+      // Display an error message if any field is empty
+      toast.error("Please fill in all the required fields.");
+      return;
+    }
 
     // Create JSON object from form data
     const json = {
@@ -67,1046 +139,1001 @@ function SociodemographicForm() {
     };
 
     console.log("Form JSON:", json);
-
     // Reset the form fields
-    setFullName("");
-    setAge("");
-    setGender("");
-    setPronouns("");
-    setHeight("");
-    setWeight("");
-    setAddress("");
-    setContactDetails("");
-    setEmergencyContactName("");
-    setEmergencyContactNumber("");
-    setEducation("");
-    setOccupation("");
-    setSocioeconomicStatus("");
-    setInformantName("");
-    setRelationshipWithPatient("");
-    setDurationOfStay("");
-    setInformation("");
-    setReligionEthnicity("");
-    setDateOfBirth("");
-    setLanguagesKnown([]);
-    setMaritalStatus("");
-    setReference("");
-  };
 
-  return (
-    <form className="sociodemographic-form" onSubmit={handleFormSubmit}>
-      <h3>Sociodemographic Details</h3>
-      <label>
-        Full Name:
-        <input
-          type="text"
-          value={fullName}
-          onChange={e => setFullName(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Age:
-        <select value={age} onChange={e => setAge(e.target.value)} required>
-          <option value="">Select Age</option>
-          {Array.from({ length: 100 }, (_, i) => (
-            <option key={i} value={i + 1}>
-              {i + 1}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Gender:
-        <select
-          value={gender}
-          onChange={e => setGender(e.target.value)}
-          required
-        >
-          <option value="">Select Gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="transgender">Transgender</option>
-          <option value="preferNotToSay">Prefer not to say</option>
-        </select>
-      </label>
-      <label>
-        Pronouns:
-        <select
-          value={pronouns}
-          onChange={e => setPronouns(e.target.value)}
-          required
-        >
-          <option value="">Select Pronouns</option>
-          <option value="he/him">He/Him</option>
-          <option value="she/her">She/Her</option>
-          <option value="they/them">They/Them</option>
-          <option value="noPronouns">No pronouns</option>
-        </select>
-      </label>
-      <label>
-        Height (in CM):
-        <input
-          type="text"
-          value={height}
-          onChange={e => setHeight(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Weight (in Kg):
-        <input
-          type="text"
-          value={weight}
-          onChange={e => setWeight(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Full Address:
-        <input
-          type="text"
-          value={address}
-          onChange={e => setAddress(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Contact Details:
-        <input
-          type="text"
-          value={contactDetails}
-          onChange={e => setContactDetails(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Emergency Contact Name:
-        <input
-          type="text"
-          value={emergencyContactName}
-          onChange={e => setEmergencyContactName(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Emergency Contact Number:
-        <input
-          type="text"
-          value={emergencyContactNumber}
-          onChange={e => setEmergencyContactNumber(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Education:
-        <textarea
-          value={education}
-          onChange={e => setEducation(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Occupation:
-        <input
-          type="text"
-          value={occupation}
-          onChange={e => setOccupation(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Socioeconomic Status:
-        <select
-          value={socioeconomicStatus}
-          onChange={e => setSocioeconomicStatus(e.target.value)}
-          required
-        >
-          <option value="">Select SocioeconomicStatus</option>
-          <option value="lower">Lower</option>
-          <option value="middle">Middle</option>
-          <option value="upper">Upper</option>
-        </select>
-      </label>
-      <label>
-        Informant Name:
-        <input
-          type="text"
-          value={informantName}
-          onChange={e => setInformantName(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Relationship with Patient:
-        <select
-          value={relationshipWithPatient}
-          onChange={e => setRelationshipWithPatient(e.target.value)}
-          required
-        >
-          <option value="">Select Relationship</option>
-          <option value="parents">Parents</option>
-          <option value="relative">Relative</option>
-          <option value="cousin">Cousin</option>
-          <option value="friends">Friends</option>
-          <option value="colleague">Colleague</option>
-        </select>
-      </label>
-      <label>
-        Duration of Stay with Patient:
-        <select
-          value={durationOfStay}
-          onChange={e => setDurationOfStay(e.target.value)}
-          required
-        >
-          <option value="">Select Duration of Stay</option>
-          <option value="hindu">2 days</option>
-        </select>
-      </label>
-      <label>
-        Information:
-        <select
-          value={information}
-          onChange={e => setInformation(e.target.value)}
-          required
-        >
-          <option value="">Select Information</option>
-          <option value="reliable">Reliable</option>
-          <option value="adequate">Adequate</option>
-          <option value="questionable">Questionable</option>
-        </select>
-      </label>
-      <label>
-        Religion/Ethnicity:
-        <select
-          value={religionEthnicity}
-          onChange={e => setReligionEthnicity(e.target.value)}
-          required
-        >
-          <option value="">Select Religion/Ethnicity</option>
-          <option value="hindu">Hindu</option>
-          <option value="muslim">Muslim</option>
-          <option value="christian">Christian</option>
-          <option value="jain">Jain</option>
-          <option value="others">Others</option>
-        </select>
-      </label>
-      <label>
-        Date of Birth:
-        <input
-          type="date"
-          value={dateOfBirth}
-          onChange={e => setDateOfBirth(e.target.value)}
-          required
-        />
-      </label>
-      <label style={{ display: "block", textAlign: "center" }}>
-        <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-          Languages Known:
-        </span>
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            marginTop: "0.5rem",
-          }}
-        >
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginRight: "1rem",
-              marginBottom: "0.5rem",
-              flexBasis: "25%",
-            }}
-          >
-            <input
-              type="checkbox"
-              value="english"
-              checked={languagesKnown.includes("english")}
-              onChange={handleLanguagesKnownChange}
-              style={{ marginRight: "0.3rem" }}
-            />
-            English
-          </label>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginRight: "1rem",
-              marginBottom: "0.5rem",
-              flexBasis: "25%",
-            }}
-          >
-            <input
-              type="checkbox"
-              value="hindi"
-              checked={languagesKnown.includes("hindi")}
-              onChange={handleLanguagesKnownChange}
-              style={{ marginRight: "0.3rem" }}
-            />
-            Hindi
-          </label>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginRight: "1rem",
-              marginBottom: "0.5rem",
-              flexBasis: "25%",
-            }}
-          >
-            <input
-              type="checkbox"
-              value="telugu"
-              checked={languagesKnown.includes("telugu")}
-              onChange={handleLanguagesKnownChange}
-              style={{ marginRight: "0.3rem" }}
-            />
-            Telugu
-          </label>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginRight: "1rem",
-              marginBottom: "0.5rem",
-              flexBasis: "25%",
-            }}
-          >
-            <input
-              type="checkbox"
-              value="marathi"
-              checked={languagesKnown.includes("marathi")}
-              onChange={handleLanguagesKnownChange}
-              style={{ marginRight: "0.3rem" }}
-            />
-            Marathi
-          </label>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginRight: "1rem",
-              marginBottom: "0.5rem",
-              flexBasis: "25%",
-            }}
-          >
-            <input
-              type="checkbox"
-              value="kannada"
-              checked={languagesKnown.includes("kannada")}
-              onChange={handleLanguagesKnownChange}
-              style={{ marginRight: "0.3rem" }}
-            />
-            Kannada
-          </label>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginRight: "1rem",
-              marginBottom: "0.5rem",
-              flexBasis: "25%",
-            }}
-          >
-            <input
-              type="checkbox"
-              value="tamil"
-              checked={languagesKnown.includes("tamil")}
-              onChange={handleLanguagesKnownChange}
-              style={{ marginRight: "0.3rem" }}
-            />
-            Tamil
-          </label>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginRight: "1rem",
-              marginBottom: "0.5rem",
-              flexBasis: "25%",
-            }}
-          >
-            <input
-              type="checkbox"
-              value="other"
-              checked={languagesKnown.includes("other")}
-              onChange={handleLanguagesKnownChange}
-              style={{ marginRight: "0.3rem" }}
-            />
-            Other
-          </label>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginRight: "1rem",
-              marginBottom: "0.5rem",
-              flexBasis: "25%",
-            }}
-          >
-            <input
-              type="checkbox"
-              value="foreignLanguage"
-              checked={languagesKnown.includes("foreignLanguage")}
-              onChange={handleLanguagesKnownChange}
-              style={{ marginRight: "0.3rem" }}
-            />
-            Foreign Language
-          </label>
-        </div>
-      </label>
-
-      <label>
-        Marital Status:
-        <select
-          value={maritalStatus}
-          onChange={e => setMaritalStatus(e.target.value)}
-          required
-        >
-          <option value="">Select Marital Status</option>
-          <option value="married">Married</option>
-          <option value="unmarried">Unmarried</option>
-          <option value="single">Single</option>
-          <option value="relationship">In a relationship</option>
-        </select>
-      </label>
-      <label>
-        Reference:
-        <select
-          value={reference}
-          onChange={e => setReference(e.target.value)}
-          required
-        >
-          <option value="">Select Reference</option>
-          <option value="doctor">Doctor</option>
-          <option value="familyFriend">Family &amp; friend</option>
-          <option value="socialMedia">Social media</option>
-          <option value="googleSearch">Google search</option>
-          <option value="employeeReference">Employee reference</option>
-          <option value="clientReference">Client reference</option>
-        </select>
-      </label>
-      <button type="submit">Submit</button>
-    </form>
-  );
-}
-
-function ChiefComplaintsForm() {
-  const [step, setStep] = useState(1);
-  const [onset, setOnset] = useState("");
-
-  const handleOnsetChange = event => {
-    setOnset(event.target.value);
-  };
-
-  const initialFormData = [
-    {
-      questionText: "1. Depressive symptoms",
-      options: [
-        { id: "option1", label: "Sadness" },
-        { id: "option2", label: "Tearfulness/ Crying spells" },
-        { id: "option3", label: "Low levels of Energy/Tiredness/exhaustion" },
-        // Add more options as needed
-      ],
-      selectedOptions: [],
-      comments: {},
-    },
-    {
-      questionText: "2. Mania",
-      options: [
-        { id: "option1", label: "Impulsivity" },
-        { id: "option2", label: "Grandiosity" },
-        // Add more options as needed
-      ],
-      selectedOptions: [],
-      comments: {},
-    },
-    // Add more questions as needed
-  ];
-
-  const [formData, setFormData] = useState(initialFormData);
-
-  const handleNextStep = () => {
-    setStep(prevStep => prevStep + 1);
-  };
-
-  const handlePrevStep = () => {
-    setStep(prevStep => prevStep - 1);
-  };
-
-  const handleOptionChange = (questionIndex, selectedOptions) => {
-    setFormData(prevFormData => {
-      const updatedFormData = [...prevFormData];
-      updatedFormData[questionIndex].selectedOptions = selectedOptions;
-      return updatedFormData;
-    });
-  };
-
-  const handleCommentChange = (questionIndex, optionId, comment) => {
-    setFormData(prevFormData => {
-      const updatedFormData = [...prevFormData];
-      updatedFormData[questionIndex].comments = {
-        ...updatedFormData[questionIndex].comments,
-        [optionId]: comment,
-      };
-      return updatedFormData;
-    });
-  };
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    // Create JSON object from form data
-    const json = {
-      onset,
-      ...formData.reduce((acc, question) => {
-        const selectedOptionsWithText = question.options
-          .filter(option => question.selectedOptions.includes(option.id))
-          .map(option => ({
-            id: option.id,
-            label: option.label,
-            comment: question.comments[option.id] || "",
-          }));
-        acc[question.questionText] = selectedOptionsWithText;
-        return acc;
-      }, {}),
+    const dataToSend = {
+      socioeconomic: { json },
     };
 
-    // Reset the form
-    setOnset("");
-    setFormData(initialFormData);
+    try {
+      const response = await axios.put(
+        `http://localhost:4000/api/v1/users/${id}/sess`,
+        dataToSend,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      toast.success("Form submitted successfully");
 
-    console.log("Form JSON:", json);
-  };
-
-  return (
-    <form
-      className="multi-step-form"
-      style={{
-        marginTop: "3rem",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-      }}
-    >
-      {step <= formData.length + 1 && (
-        <>
-          {step === 1 && (
-            <>
-              <h3>Onset: (single choice) - mandatory</h3>
-              <ul style={{ listStyle: "none", padding: 0 }}>
-                <li>
-                  <label>
-                    <input
-                      type="radio"
-                      name="onset"
-                      value="Acute (Sudden)"
-                      checked={onset === "Acute (Sudden)"}
-                      onChange={handleOnsetChange}
-                      required
-                    />
-                    Acute (Sudden)
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="radio"
-                      name="onset"
-                      value="Abrupt (Few hours to few days)"
-                      checked={onset === "Abrupt (Few hours to few days)"}
-                      onChange={handleOnsetChange}
-                      required
-                    />
-                    Abrupt (Few hours to few days)
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="radio"
-                      name="onset"
-                      value="Sub-acute (Few days to few weeks)"
-                      checked={onset === "Sub-acute (Few days to few weeks)"}
-                      onChange={handleOnsetChange}
-                      required
-                    />
-                    Sub-acute (Few days to few weeks)
-                  </label>
-                </li>
-                <li>
-                  <label>
-                    <input
-                      type="radio"
-                      name="onset"
-                      value="Insidious (Few weeks to few months)"
-                      checked={onset === "Insidious (Few weeks to few months)"}
-                      onChange={handleOnsetChange}
-                      required
-                    />
-                    Insidious (Few weeks to few months)
-                  </label>
-                </li>
-                {/* Add more onset options as needed */}
-              </ul>
-              <div className="button-container">
-                <button type="button" onClick={handleNextStep}>
-                  Next
-                </button>
-              </div>
-            </>
-          )}
-          {step > 1 && (
-            <>
-              <h3>{formData[step - 2].questionText}</h3>
-              <ul
-                className="options-container"
-                style={{ listStyle: "none", padding: 0 }}
-              >
-                {formData[step - 2].options.map(option => (
-                  <li key={option.id} style={{ marginBottom: "1rem" }}>
-                    <label style={{ display: "flex", alignItems: "center" }}>
-                      <input
-                        type="checkbox"
-                        value={option.id}
-                        checked={formData[step - 2].selectedOptions.includes(
-                          option.id
-                        )}
-                        onChange={e => {
-                          const selectedOptions = e.target.checked
-                            ? [
-                                ...formData[step - 2].selectedOptions,
-                                e.target.value,
-                              ]
-                            : formData[step - 2].selectedOptions.filter(
-                                optionId => optionId !== e.target.value
-                              );
-                          handleOptionChange(step - 2, selectedOptions);
-                        }}
-                      />
-                      {option.label}
-                    </label>
-                    {formData[step - 2].selectedOptions.includes(option.id) && (
-                      <textarea
-                        value={formData[step - 2].comments[option.id] || ""}
-                        onChange={e =>
-                          handleCommentChange(
-                            step - 2,
-                            option.id,
-                            e.target.value
-                          )
-                        }
-                        placeholder="Enter comment"
-                      />
-                    )}
-                  </li>
-                ))}
-              </ul>
-              <div className="button-container">
-                {step > 1 && (
-                  <button type="button" onClick={handlePrevStep}>
-                    Previous
-                  </button>
-                )}
-                {step < formData.length + 1 ? (
-                  <button type="button" onClick={handleNextStep}>
-                    Next
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    className="submit-button"
-                  >
-                    Submit
-                  </button>
-                )}
-              </div>
-            </>
-          )}
-        </>
-      )}
-    </form>
-  );
-}
-
-function HistoryOfPresentingIllnessForm() {
-  // Form logic and state for History of Presenting Illness form
-  const [step, setStep] = useState(1);
-  const [onset, setOnset] = useState("");
-
-  const handleOnsetChange = event => {
-    setOnset(event.target.value);
-  };
-
-  const [formData, setFormData] = useState({
-    question1: { selectedOptions: [], comments: {} },
-    question2: { selectedOptions: [], comments: {} },
-    question3: { comment: "" },
-    question4: { comment: "" },
-    question5: { comment: "" },
-    question6: { comment: "" },
-    question7: { comment: "" },
-    question8: { comment: "" },
-  });
-
-  const handleNextStep = () => {
-    if (step < questions.length) {
-      if (
-        step <= 3 ||
-        (step > 3 && formData[`question${step}`]?.comment !== undefined)
-      ) {
-        setStep(prevStep => prevStep + 1);
-      }
+      console.log("POST Request Response:", response.data);
+    } catch (error) {
+      console.error("Error sending POST request:", error.message);
+      toast.error("Form submission failed");
     }
   };
 
-  const handlePrevStep = () => {
-    setStep(prevStep => prevStep - 1);
-  };
-
-  const handleMultiSelectOptionChange = (question, selectedOptions) => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      [question]: {
-        ...prevFormData[question],
-        selectedOptions: [...selectedOptions],
-      },
-    }));
-  };
-
-  const handleCommentChange = (question, optionId, comment) => {
-    setFormData(prevFormData => {
-      let updatedFormData = { ...prevFormData };
-
-      if (
-        question === "question1" ||
-        question === "question4" ||
-        question === "question5" ||
-        question === "question6"
-      ) {
-        updatedFormData[question].comment = comment;
-      } else if (question === "question2" || question === "question3") {
-        const updatedComments = {
-          ...updatedFormData[question].comments,
-          [optionId]: {
-            ...updatedFormData[question].comments?.[optionId],
-            comment: comment,
-          },
-        };
-
-        updatedFormData[question] = {
-          ...updatedFormData[question],
-          comments: updatedComments,
-        };
-      }
-
-      return updatedFormData;
-    });
-  };
-
-  const handleCommentChangeQ1 = comment => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      question1: {
-        ...prevFormData.question1,
-        comment: comment,
-      },
-    }));
-  };
-
-  const handleCommentChangeQ4 = comment => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      question4: {
-        ...prevFormData.question4,
-        comment: comment,
-      },
-    }));
-  };
-
-  const handleCommentChangeQ5 = comment => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      question5: {
-        ...prevFormData.question5,
-        comment: comment,
-      },
-    }));
-  };
-
-  const handleCommentChangeQ6 = comment => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      question6: {
-        ...prevFormData.question6,
-        comment: comment,
-      },
-    }));
-  };
-
-  const handleSubmit = e => {
-    e.preventDefault();
-
-    const currentQuestion = questions[step - 2];
-    const questionText = currentQuestion.questionText;
-
-    // Create JSON object from form data
-    const json = {
-      onset,
-      questionText,
-      ...formData,
-    };
-
-    console.log("Form JSON:", json);
-
-    // Reset the form
-    setOnset("");
-    setFormData({
-      question1: { selectedOptions: [], comments: {} },
-      question2: { selectedOptions: [], comments: {} },
-      question3: { comment: "" },
-      question4: { comment: "" },
-      question5: { comment: "" },
-      question6: { comment: "" },
-      question7: { comment: "" },
-      question8: { comment: "" },
-    });
-  };
-
-  const questions = [
-    {
-      id: "question1",
-      questionText: "Genetic & Family history of mental health conditions",
-      options: [],
-    },
-    {
-      id: "question2",
-      questionText: "Childhood & Adolescents",
-      options: [
-        "Exposure to Death or loss",
-        "Financial difficulties",
-        "Bullying",
-        "Academics",
-        "Learning difficulty",
-        "Poor concentration",
-        "Physical, verbal, sexual abuse",
-        "Domestic violence",
-        "Witnessing violence",
-        "Separation",
-        "Neglect",
-        "Natural catastrophe",
-        "Accident",
-        "War",
-        "Terrorism",
-        "Discrimination- religion, ethnicity, racism, body shaming",
-        "Exposure to substance use",
-        "Unhealthy relationships",
-        "Pandemic",
-      ],
-    },
-    {
-      id: "question3",
-      questionText: "Adulthood",
-      options: [
-        "Increased responsibilities",
-        "Financial difficulties",
-        "Poor job satisfaction",
-        "Marriage & relationship",
-        "Fertility & pregnancy",
-        "Body image issues",
-        "Poor career choice",
-        "Work-life balance",
-        "Abuse – physical, verbal, emotional, sexual",
-        "Marital rape",
-        "Lack of employment",
-        "Concerns with attachment or finding a suitable partner",
-        "Death or loss",
-      ],
-    },
-    {
-      id: "question4",
-      questionText: "Geriatric",
-      options: [],
-    },
-    {
-      id: "question5",
-      questionText: "Physical illness",
-      options: [],
-    },
-    {
-      id: "question6",
-      questionText: "Psychological illness",
-      options: [],
-    },
-  ];
-
   return (
-    <form
-      className="multi-step-form"
-      onSubmit={handleSubmit}
-      style={{ marginTop: "3rem" }}
-    >
-      {step > 1 && (
-        <>
-          <h3>{questions[step - 2].questionText}</h3>
-          {questions[step - 2].options.length > 0 ? (
-            <ul className="options-container">
-              {/* Options for multi-select questions */}
-              {questions[step - 2].options.map(option => (
-                <li key={option}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      value={option}
-                      checked={
-                        formData[
-                          questions[step - 2].id
-                        ]?.selectedOptions?.includes(option) || false
-                      }
-                      onChange={e => {
-                        const selectedOptions = e.target.checked
-                          ? [
-                              ...(formData[questions[step - 2].id]
-                                ?.selectedOptions || []),
-                              e.target.value,
-                            ]
-                          : formData[
-                              questions[step - 2].id
-                            ]?.selectedOptions?.filter(
-                              selectedOption =>
-                                selectedOption !== e.target.value
-                            );
-                        handleMultiSelectOptionChange(
-                          questions[step - 2].id,
-                          selectedOptions
-                        );
-                      }}
-                    />
-                    {option}
-                  </label>
-                  {formData[questions[step - 2].id]?.selectedOptions?.includes(
-                    option
-                  ) && (
-                    <textarea
-                      value={
-                        formData[questions[step - 2].id]?.comments?.[option]
-                          ?.comment || ""
-                      }
-                      onChange={e =>
-                        handleCommentChange(
-                          questions[step - 2].id,
-                          option,
-                          e.target.value
-                        )
-                      }
-                      placeholder="Enter comment"
-                    />
-                  )}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <textarea
-              value={formData[questions[step - 2].id]?.comment || ""}
-              onChange={e =>
-                handleCommentChange(
-                  questions[step - 2].id,
-                  null,
-                  e.target.value
-                )
-              }
-              placeholder="Enter comment"
-            />
-          )}
-
-          <div className="button-container">
-            {step > 1 && (
-              <button type="button" onClick={handlePrevStep}>
-                Previous
-              </button>
-            )}
-            {step < questions.length && (
-              <button type="button" onClick={handleNextStep}>
-                Next
-              </button>
-            )}
-            {step === questions.length && (
-              <button type="submit" className="submit-button">
-                Submit
-              </button>
-            )}
+    <>
+      <form className="sociodemographic-form" onSubmit={handleFormSubmit}>
+        <h3>Sociodemographic Details</h3>
+        <label>
+          Full Name:
+          <input
+            type="text"
+            value={fullName}
+            onChange={e => setFullName(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Age:
+          <select value={age} onChange={e => setAge(e.target.value)} required>
+            <option value="">Select Age</option>
+            {Array.from({ length: 100 }, (_, i) => (
+              <option key={i} value={i + 1}>
+                {i + 1}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Gender:
+          <select
+            value={gender}
+            onChange={e => setGender(e.target.value)}
+            required
+          >
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="transgender">Transgender</option>
+            <option value="preferNotToSay">Prefer not to say</option>
+          </select>
+        </label>
+        <label>
+          Pronouns:
+          <select
+            value={pronouns}
+            onChange={e => setPronouns(e.target.value)}
+            required
+          >
+            <option value="">Select Pronouns</option>
+            <option value="he/him">He/Him</option>
+            <option value="she/her">She/Her</option>
+            <option value="they/them">They/Them</option>
+            <option value="noPronouns">No pronouns</option>
+          </select>
+        </label>
+        <label>
+          Height (in CM):
+          <input
+            type="text"
+            value={height}
+            onChange={e => setHeight(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Weight (in Kg):
+          <input
+            type="text"
+            value={weight}
+            onChange={e => setWeight(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Full Address:
+          <input
+            type="text"
+            value={address}
+            onChange={e => setAddress(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Contact Details:
+          <input
+            type="text"
+            value={contactDetails}
+            onChange={e => setContactDetails(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Emergency Contact Name:
+          <input
+            type="text"
+            value={emergencyContactName}
+            onChange={e => setEmergencyContactName(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Emergency Contact Number:
+          <input
+            type="text"
+            value={emergencyContactNumber}
+            onChange={e => setEmergencyContactNumber(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Education:
+          <textarea
+            value={education}
+            onChange={e => setEducation(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Occupation:
+          <input
+            type="text"
+            value={occupation}
+            onChange={e => setOccupation(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Socioeconomic Status:
+          <select
+            value={socioeconomicStatus}
+            onChange={e => setSocioeconomicStatus(e.target.value)}
+            required
+          >
+            <option value="">Select SocioeconomicStatus</option>
+            <option value="lower">Lower</option>
+            <option value="middle">Middle</option>
+            <option value="upper">Upper</option>
+          </select>
+        </label>
+        <label>
+          Informant Name:
+          <input
+            type="text"
+            value={informantName}
+            onChange={e => setInformantName(e.target.value)}
+            required
+          />
+        </label>
+        <label>
+          Relationship with Patient:
+          <select
+            value={relationshipWithPatient}
+            onChange={e => setRelationshipWithPatient(e.target.value)}
+            required
+          >
+            <option value="">Select Relationship</option>
+            <option value="parents">Parents</option>
+            <option value="relative">Relative</option>
+            <option value="cousin">Cousin</option>
+            <option value="friends">Friends</option>
+            <option value="colleague">Colleague</option>
+          </select>
+        </label>
+        <label>
+          Duration of Stay with Patient:
+          <select
+            value={durationOfStay}
+            onChange={e => setDurationOfStay(e.target.value)}
+            required
+          >
+            <option value="">Select Duration of Stay</option>
+            <option value="hindu">2 days</option>
+          </select>
+        </label>
+        <label>
+          Information:
+          <select
+            value={information}
+            onChange={e => setInformation(e.target.value)}
+            required
+          >
+            <option value="">Select Information</option>
+            <option value="reliable">Reliable</option>
+            <option value="adequate">Adequate</option>
+            <option value="questionable">Questionable</option>
+          </select>
+        </label>
+        <label>
+          Religion/Ethnicity:
+          <select
+            value={religionEthnicity}
+            onChange={e => setReligionEthnicity(e.target.value)}
+            required
+          >
+            <option value="">Select Religion/Ethnicity</option>
+            <option value="hindu">Hindu</option>
+            <option value="muslim">Muslim</option>
+            <option value="christian">Christian</option>
+            <option value="jain">Jain</option>
+            <option value="others">Others</option>
+          </select>
+        </label>
+        <label>
+          Date of Birth:
+          <input
+            type="date"
+            value={dateOfBirth}
+            onChange={e => setDateOfBirth(e.target.value)}
+            required
+          />
+        </label>
+        <label style={{ display: "block", textAlign: "center" }}>
+          <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+            Languages Known:
+          </span>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              marginTop: "0.5rem",
+            }}
+          >
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "1rem",
+                marginBottom: "0.5rem",
+                flexBasis: "25%",
+              }}
+            >
+              <input
+                type="checkbox"
+                value="english"
+                checked={languagesKnown.includes("english")}
+                onChange={handleLanguagesKnownChange}
+                style={{ marginRight: "0.3rem" }}
+              />
+              English
+            </label>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "1rem",
+                marginBottom: "0.5rem",
+                flexBasis: "25%",
+              }}
+            >
+              <input
+                type="checkbox"
+                value="hindi"
+                checked={languagesKnown.includes("hindi")}
+                onChange={handleLanguagesKnownChange}
+                style={{ marginRight: "0.3rem" }}
+              />
+              Hindi
+            </label>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "1rem",
+                marginBottom: "0.5rem",
+                flexBasis: "25%",
+              }}
+            >
+              <input
+                type="checkbox"
+                value="telugu"
+                checked={languagesKnown.includes("telugu")}
+                onChange={handleLanguagesKnownChange}
+                style={{ marginRight: "0.3rem" }}
+              />
+              Telugu
+            </label>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "1rem",
+                marginBottom: "0.5rem",
+                flexBasis: "25%",
+              }}
+            >
+              <input
+                type="checkbox"
+                value="marathi"
+                checked={languagesKnown.includes("marathi")}
+                onChange={handleLanguagesKnownChange}
+                style={{ marginRight: "0.3rem" }}
+              />
+              Marathi
+            </label>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "1rem",
+                marginBottom: "0.5rem",
+                flexBasis: "25%",
+              }}
+            >
+              <input
+                type="checkbox"
+                value="kannada"
+                checked={languagesKnown.includes("kannada")}
+                onChange={handleLanguagesKnownChange}
+                style={{ marginRight: "0.3rem" }}
+              />
+              Kannada
+            </label>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "1rem",
+                marginBottom: "0.5rem",
+                flexBasis: "25%",
+              }}
+            >
+              <input
+                type="checkbox"
+                value="tamil"
+                checked={languagesKnown.includes("tamil")}
+                onChange={handleLanguagesKnownChange}
+                style={{ marginRight: "0.3rem" }}
+              />
+              Tamil
+            </label>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "1rem",
+                marginBottom: "0.5rem",
+                flexBasis: "25%",
+              }}
+            >
+              <input
+                type="checkbox"
+                value="other"
+                checked={languagesKnown.includes("other")}
+                onChange={handleLanguagesKnownChange}
+                style={{ marginRight: "0.3rem" }}
+              />
+              Other
+            </label>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: "1rem",
+                marginBottom: "0.5rem",
+                flexBasis: "25%",
+              }}
+            >
+              <input
+                type="checkbox"
+                value="foreignLanguage"
+                checked={languagesKnown.includes("foreignLanguage")}
+                onChange={handleLanguagesKnownChange}
+                style={{ marginRight: "0.3rem" }}
+              />
+              Foreign Language
+            </label>
           </div>
-        </>
-      )}
+        </label>
 
-      {step === 1 && (
-        <>
-          <h3>Onset:</h3>
-          <ul>
-            <li>
-              <label>
-                <input
-                  type="radio"
-                  name="onset"
-                  value="Acute (Sudden)"
-                  checked={onset === "Acute (Sudden)"}
-                  onChange={handleOnsetChange}
-                />
-                Acute (Sudden)
-              </label>
-            </li>
-            <li>
-              <label>
-                <input
-                  type="radio"
-                  name="onset"
-                  value="Abrupt (Few hours to few days)"
-                  checked={onset === "Abrupt (Few hours to few days)"}
-                  onChange={handleOnsetChange}
-                />
-                Abrupt (Few hours to few days)
-              </label>
-            </li>
-            <li>
-              <label>
-                <input
-                  type="radio"
-                  name="onset"
-                  value="Sub-acute (Few days to few weeks)"
-                  checked={onset === "Sub-acute (Few days to few weeks)"}
-                  onChange={handleOnsetChange}
-                />
-                Sub-acute (Few days to few weeks)
-              </label>
-            </li>
-            <li>
-              <label>
-                <input
-                  type="radio"
-                  name="onset"
-                  value="Insidious (Few weeks to few months)"
-                  checked={onset === "Insidious (Few weeks to few months)"}
-                  onChange={handleOnsetChange}
-                />
-                Insidious (Few weeks to few months)
-              </label>
-            </li>
-          </ul>
-          <div className="button-container">
-            {step < questions.length + 1 && (
-              <button type="button" onClick={handleNextStep}>
-                Next
-              </button>
-            )}
-          </div>
-        </>
-      )}
-    </form>
+        <label>
+          Marital Status:
+          <select
+            value={maritalStatus}
+            onChange={e => setMaritalStatus(e.target.value)}
+            required
+          >
+            <option value="">Select Marital Status</option>
+            <option value="married">Married</option>
+            <option value="unmarried">Unmarried</option>
+            <option value="single">Single</option>
+            <option value="relationship">In a relationship</option>
+          </select>
+        </label>
+        <label>
+          Reference:
+          <select
+            value={reference}
+            onChange={e => setReference(e.target.value)}
+            required
+          >
+            <option value="">Select Reference</option>
+            <option value="doctor">Doctor</option>
+            <option value="familyFriend">Family &amp; friend</option>
+            <option value="socialMedia">Social media</option>
+            <option value="googleSearch">Google search</option>
+            <option value="employeeReference">Employee reference</option>
+            <option value="clientReference">Client reference</option>
+          </select>
+        </label>
+        <button
+          type="submit"
+          style={{ backgroundColor: "#D67449", color: "white" }}
+        >
+          Submit
+        </button>
+      </form>
+      <ToastContainer />
+    </>
   );
 }
+
+const onsetOptions = [
+  "Acute (Sudden)",
+  "Abrupt (Few hours to few days)",
+  "Sub-acute (Few days to few weeks)",
+  "Insidious (Few weeks to few months)",
+];
+
+function ChiefComplaintsForm() {
+  const [fetchedData, setFetchedData] = useState([]);
+  const [userResponses, setUserResponses] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [isPrevDisabled, setIsPrevDisabled] = useState(true);
+  const [selectedOnset, setSelectedOnset] = useState(null);
+  const [showOnsetPopup, setShowOnsetPopup] = useState(true);
+  const { id } = useParams();
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:4000/api/v1/headings")
+      .then(response => setFetchedData(response.data))
+      .catch(error => console.error("Error fetching data:", error));
+  }, []);
+
+  useEffect(() => {
+    const isFirstQuestion = currentQuestionIndex === 0;
+    setIsPrevDisabled(isFirstQuestion);
+  }, [currentQuestionIndex]);
+
+  const handleNextQuestion = () => {
+    if (showOnsetPopup) {
+      setShowOnsetPopup(false);
+    } else {
+      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+    }
+  };
+
+  const handlePrevQuestion = () => {
+    if (showOnsetPopup) {
+      setShowOnsetPopup(false);
+    } else {
+      setCurrentQuestionIndex(prevIndex => prevIndex - 1);
+    }
+  };
+
+  const handleOptionChange = optionId => {
+    const updatedResponses = [...userResponses];
+    const response = updatedResponses[currentQuestionIndex] || {};
+    const selectedOptions = response.selectedOptions || [];
+
+    if (selectedOptions.includes(optionId)) {
+      selectedOptions.splice(selectedOptions.indexOf(optionId), 1);
+    } else {
+      selectedOptions.push(optionId);
+    }
+
+    updatedResponses[currentQuestionIndex] = {
+      ...response,
+      selectedOptions,
+    };
+    setUserResponses(updatedResponses);
+  };
+
+  const handleCommentChange = (optionId, comment) => {
+    const updatedResponses = [...userResponses];
+    const response = updatedResponses[currentQuestionIndex] || {};
+    updatedResponses[currentQuestionIndex] = {
+      ...response,
+      optionComments: {
+        ...response.optionComments,
+        [optionId]: comment,
+      },
+    };
+    setUserResponses(updatedResponses);
+  };
+
+  const handleSubmit = async () => {
+    const formattedResponses = fetchedData.map((questionData, index) => {
+      const selectedOptionIds = userResponses[index]?.selectedOptions || [];
+      const selectedOptions = selectedOptionIds.map(optionId => {
+        const selectedOption = questionData.options.find(
+          option => option._id === optionId
+        );
+        return selectedOption ? selectedOption.text : "";
+      });
+
+      const optionComments = userResponses[index]?.optionComments || {};
+      const formattedOptionComments = Object.keys(optionComments).reduce(
+        (acc, optionId) => {
+          const optionName = questionData.options.find(
+            option => option._id === optionId
+          )?.text;
+          if (optionName) {
+            acc[optionName] = optionComments[optionId];
+          }
+          return acc;
+        },
+        {}
+      );
+
+      return {
+        question: questionData.name,
+        selectedOptions,
+        optionComments: formattedOptionComments,
+      };
+    });
+
+    const result = [
+      ...formattedResponses,
+      {
+        question: "Onset",
+        selectedOptions: [selectedOnset],
+        optionComments: {},
+      },
+    ];
+
+    const dataToSen = JSON.stringify(result, null, 2);
+
+    const dataToSend = {
+      chief: {
+        result, // Wrap the data under the "chief" field
+      },
+    };
+
+    try {
+      const response = await axios.put(
+        `http://localhost:4000/api/v1/users/${id}/sess`,
+        dataToSend,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      toast.success("Form submitted successfully");
+      console.log("PUT Request Response:", response.data);
+    } catch (error) {
+      console.error("Error sending PUT request:", error.message);
+      toast.error("Form submission failed");
+    }
+  };
+
+  return (
+    <>
+      <Container maxWidth="sm">
+        <Paper elevation={3} style={{ padding: "20px" }}>
+          {showOnsetPopup ? (
+            <>
+              <Typography variant="h5">Select Onset</Typography>
+              <Grid container spacing={2}>
+                {onsetOptions.map((option, index) => (
+                  <Grid item key={index} xs={12}>
+                    <FormControlLabel
+                      control={
+                        <Radio
+                          checked={selectedOnset === option}
+                          onChange={() => setSelectedOnset(option)}
+                        />
+                      }
+                      label={option}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+              <Box display="flex" justifyContent="center" mt={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setShowOnsetPopup(false)}
+                  style={{
+                backgroundColor: "#D67449",
+                color: "white",
+              }}
+                >
+                  Next
+                </Button>
+              </Box>
+            </>
+          ) : (
+            <>
+              <Typography variant="h5">
+                {fetchedData[currentQuestionIndex]?.name}
+              </Typography>
+              <Grid container spacing={2}>
+                {fetchedData[currentQuestionIndex]?.options.map(
+                  (option, index) => (
+                    <Grid item key={`${option._id}-${index}`} xs={12}>
+                      <FormControlLabel
+                        control={
+                          <Radio
+                            checked={userResponses[
+                              currentQuestionIndex
+                            ]?.selectedOptions.includes(option._id)}
+                            onChange={() => handleOptionChange(option._id)}
+                          />
+                        }
+                        label={option.text}
+                      />
+                      {userResponses[
+                        currentQuestionIndex
+                      ]?.selectedOptions.includes(option._id) && (
+                        <TextField
+                          label="Comment"
+                          variant="outlined"
+                          value={
+                            userResponses[currentQuestionIndex]
+                              ?.optionComments?.[option._id] || ""
+                          }
+                          onChange={e =>
+                            handleCommentChange(option._id, e.target.value)
+                          }
+                          style={{ marginTop: "10px" }}
+                          fullWidth
+                        />
+                      )}
+                    </Grid>
+                  )
+                )}
+              </Grid>
+              <Box display="flex" justifyContent="space-between" mt={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handlePrevQuestion}
+                  disabled={isPrevDisabled}
+                  style={{
+                    backgroundColor: "white",
+                    border: "1px solid #D67449",
+                    color: "white",
+                  }}
+                >
+                  Previous
+                </Button>
+                {currentQuestionIndex < fetchedData.length - 1 ? (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleNextQuestion}
+                    style={{ backgroundColor: "#D67449", color: "white" }}
+                  >
+                    Next
+                  </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmit}
+                    style={{ backgroundColor: "#D67449", color: "white" }}
+                  >
+                    Submit
+                  </Button>
+                )}
+              </Box>
+            </>
+          )}
+        </Paper>
+      </Container>
+      <ToastContainer />
+    </>
+  );
+}
+
+const HistoryOfPresentingIllnessForm = () => {
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(-1); // Start with -1 to show onset popup
+  const [selectedOptions, setSelectedOptions] = useState({});
+  const [personalComments, setPersonalComments] = useState({});
+  const [onsetSelection, setOnsetSelection] = useState(null);
+  const { id } = useParams();
+
+  useEffect(() => {
+    // Fetch questions from the API
+    axios
+      .get("http://localhost:4000/api/v1/illnesses")
+      .then(response => {
+        setQuestions(response.data);
+      })
+      .catch(error => {
+        console.error("Error fetching questions:", error);
+      });
+  }, []);
+
+  const handleOptionChange = (questionId, optionId) => {
+    setSelectedOptions(prevSelectedOptions => {
+      const prevSelected = prevSelectedOptions[questionId] || [];
+      if (prevSelected.includes(optionId)) {
+        // Deselect the option
+        return {
+          ...prevSelectedOptions,
+          [questionId]: prevSelected.filter(id => id !== optionId),
+        };
+      } else {
+        // Select the option
+        return {
+          ...prevSelectedOptions,
+          [questionId]: [...prevSelected, optionId],
+        };
+      }
+    });
+
+    setPersonalComments(prevPersonalComments => ({
+      ...prevPersonalComments,
+      [optionId]: prevPersonalComments[optionId] || "",
+    }));
+  };
+
+  const handlePersonalCommentChange = (optionId, comment) => {
+    setPersonalComments(prevPersonalComments => ({
+      ...prevPersonalComments,
+      [optionId]: comment,
+    }));
+  };
+
+  const handleOnsetSelection = event => {
+    setOnsetSelection(event.target.value);
+  };
+
+  const handlePopupClose = () => {
+    setCurrentQuestionIndex(0); // Move to the first question after closing the popup
+  };
+
+  const handleNext = () => {
+    if (currentQuestionIndex === -1) {
+      setCurrentQuestionIndex(0);
+    } else {
+      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestionIndex === 0 && onsetSelection === null) {
+      setCurrentQuestionIndex(-1); // Go back to onset popup
+    } else if (currentQuestionIndex === 0 && onsetSelection !== null) {
+      setOnsetSelection(null); // Clear onset selection
+      setCurrentQuestionIndex(-1); // Go back to onset popup
+    } else {
+      setCurrentQuestionIndex(prevIndex => prevIndex - 1);
+    }
+  };
+
+  const handleSubmit = async () => {
+    const result = [];
+    if (onsetSelection !== null) {
+      result.push({
+        question: "Onset",
+        option: onsetSelection,
+        comment: personalComments["onset"] || "",
+      });
+    }
+    questions.forEach(question => {
+      const selectedOptionIds = selectedOptions[question._id] || [];
+      const comments = selectedOptionIds.map(optionId => ({
+        option: question.options.find(option => option._id === optionId).text,
+        comment: personalComments[optionId] || "",
+      }));
+      if (comments.length > 0) {
+        result.push({
+          question: question.name,
+          options: comments,
+        });
+      } else if (
+        question.options.length === 0 &&
+        personalComments[question._id]
+      ) {
+        result.push({
+          question: question.name,
+          comment: personalComments[question._id],
+        });
+      }
+    });
+
+    try {
+      const dataToSen = JSON.stringify(result, null, 2); // JSON.stringify to format the data
+      console.log(dataToSen);
+
+      const dataToSend = {
+        illness: {
+          result, // Wrap the data under the "chief" field
+        },
+      };
+      console.log(dataToSend);
+
+      const response = await axios.put(
+        `http://localhost:4000/api/v1/users/${id}/sess`,
+        {
+          illness: { result },
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      toast.success("Form submitted successfully");
+      console.log("PUT Request Response:", response.data);
+    } catch (error) {
+      console.error("Error sending PUT request:", error.message);
+      toast.error("Form submission failed");
+    }
+  };
+
+  if (currentQuestionIndex === -1) {
+    // Show onset popup
+    return (
+      <Card>
+        <CardContent>
+          <Typography variant="h5">Onset</Typography>
+          <Typography variant="body1">
+            Please select the onset type that best describes the illness:
+          </Typography>
+          <FormControl component="fieldset">
+            <RadioGroup
+              name="onset-options"
+              value={onsetSelection || ""}
+              onChange={handleOnsetSelection}
+            >
+              <FormControlLabel
+                value="Acute"
+                control={<Radio />}
+                label="Acute (Sudden)"
+              />
+              <FormControlLabel
+                value="Abrupt"
+                control={<Radio />}
+                label="Abrupt (Few hours to few days)"
+              />
+              <FormControlLabel
+                value="Sub-acute"
+                control={<Radio />}
+                label="Sub-acute (Few days to few weeks)"
+              />
+              <FormControlLabel
+                value="Insidious"
+                control={<Radio />}
+                label="Insidious (Few weeks to few months)"
+              />
+            </RadioGroup>
+          </FormControl>
+          <Button disabled={onsetSelection === null} onClick={handlePopupClose} style={{
+                backgroundColor: "#D67449",
+                color: "white",
+              }}>
+            Continue
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const currentQuestion = questions[currentQuestionIndex];
+
+  if (!currentQuestion) {
+    return <div>No more questions.</div>;
+  }
+
+  return (
+    <>
+      <Card>
+        <CardContent>
+          <Typography variant="h5">{currentQuestion.name}</Typography>
+          {currentQuestion.options.length === 0 ? (
+            <TextField
+              label="Comment"
+              multiline
+              rows={3}
+              fullWidth
+              value={personalComments[currentQuestion._id] || ""}
+              onChange={event =>
+                handlePersonalCommentChange(
+                  currentQuestion._id,
+                  event.target.value
+                )
+              }
+              variant="outlined"
+              margin="dense"
+            />
+          ) : (
+            <form>
+              {currentQuestion.options.map(option => (
+                <div key={option._id}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={
+                          selectedOptions[currentQuestion._id]?.includes(
+                            option._id
+                          ) || false
+                        }
+                        onChange={() =>
+                          handleOptionChange(currentQuestion._id, option._id)
+                        }
+                      />
+                    }
+                    label={option.text}
+                  />
+                  {selectedOptions[currentQuestion._id]?.includes(
+                    option._id
+                  ) && (
+                    <TextField
+                      label={`Personal Comment for ${option.text}`}
+                      multiline
+                      rows={2}
+                      fullWidth
+                      value={personalComments[option._id] || ""}
+                      onChange={event =>
+                        handlePersonalCommentChange(
+                          option._id,
+                          event.target.value
+                        )
+                      }
+                      variant="outlined"
+                      margin="dense"
+                    />
+                  )}
+                </div>
+              ))}
+            </form>
+          )}
+          <Button
+            disabled={currentQuestionIndex === 0 && onsetSelection === null}
+            onClick={handlePrevious}
+            style={{
+              backgroundColor: "white",
+              border: "1px solid #D67449",
+              color: "white",
+              marginRight: "1rem",
+            }}
+          >
+            Previous
+          </Button>
+          {currentQuestionIndex === questions.length - 1 ? (
+            <Button
+              onClick={handleSubmit}
+              style={{
+                backgroundColor: "#D67449",
+                color: "white",
+              }}
+            >
+              Submit
+            </Button>
+          ) : (
+            <Button
+              disabled={
+                currentQuestion.options.length > 0 &&
+                !selectedOptions[currentQuestion._id]?.length
+              }
+              onClick={handleNext}
+              style={{
+                backgroundColor: "#D67449",
+                color: "white",
+              }}
+            >
+              Next
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+      <ToastContainer />
+    </>
+  );
+};
 
 function FirstSessionNotes() {
   const [activeForm, setActiveForm] = useState("");

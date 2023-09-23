@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
 import "./CorporateUser.css";
 
 function CorporateUser() {
@@ -16,6 +19,7 @@ function CorporateUser() {
           `http://localhost:4000/api/v1/users/group/${groupid}`
         );
         setUsers(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -47,13 +51,12 @@ function CorporateUser() {
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
 
-  const handlePageChange = pageNumber => {
+  const handlePageChange = (event, pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
   return (
     <div>
-      <h2>Corporate User Details for Group ID: {groupid}</h2>
       <table>
         <thead>
           <tr>
@@ -61,6 +64,7 @@ function CorporateUser() {
             <th>Employee Id</th>
             <th>Email</th>
             <th>Phone Number</th>
+            <th>Credit</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -71,22 +75,25 @@ function CorporateUser() {
               <td>{user.empid}</td>
               <td>{user.email}</td>
               <td>{user.mobile}</td>
+              <td>{user.credits}</td>
               <td>
-                {user.types === "approve" ? (
-                  <button onClick={() => handleAction(user._id, "disapprove")}>
-                    Disapprove
-                  </button>
+                {user.types === "approved" ? (
+                  <Button onClick={() => handleAction(user._id, "disabled")}>
+                    Disable
+                  </Button>
+                ) : user.types === "disabled" ? (
+                  <Button onClick={() => handleAction(user._id, "approved")}>
+                    Enable
+                  </Button>
                 ) : (
-                  <div>
-                    <button onClick={() => handleAction(user._id, "approve")}>
+                  <Stack direction="row" spacing={1}>
+                    <Button onClick={() => handleAction(user._id, "approved")}>
                       Approve
-                    </button>
-                    <button
-                      onClick={() => handleAction(user._id, "disapprove")}
-                    >
-                      Disapprove
-                    </button>
-                  </div>
+                    </Button>
+                    <Button onClick={() => handleAction(user._id, "disabled")}>
+                      Disable
+                    </Button>
+                  </Stack>
                 )}
               </td>
             </tr>
@@ -95,31 +102,13 @@ function CorporateUser() {
       </table>
       <div className="pagination-container">
         <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(users.length / usersPerPage)}
-          onPageChange={handlePageChange}
+          count={Math.ceil(users.length / usersPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
         />
       </div>
     </div>
   );
 }
-
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
-
-  return (
-    <div className="pagination">
-      {pageNumbers.map(number => (
-        <span
-          key={number}
-          className={`page-number ${number === currentPage ? "active" : ""}`}
-          onClick={() => onPageChange(number)}
-        >
-          {number}
-        </span>
-      ))}
-    </div>
-  );
-};
 
 export default CorporateUser;

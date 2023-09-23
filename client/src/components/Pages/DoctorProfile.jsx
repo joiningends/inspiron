@@ -12,7 +12,53 @@ import clock from "./clock.png";
 import happy from "./emoji-happy.png";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import LanguageIcon from "@mui/icons-material/Language";
+import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import MonitorIcon from '@mui/icons-material/DesktopWindows';
+
 import { fetchTherapist, fetchTherapists } from "../redux/Action";
+
+const containerStyle = {
+  display: 'flex',
+  justifyContent: 'space-around',
+  alignItems: 'center',
+};
+
+const infoBoxStyle = {
+  padding: '16px',
+  minWidth: '150px',
+  boxShadow: '0px 0px 10px rgba(0,0,0,0.2)',
+  borderRadius: '10px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '#68B545', // Background color
+  color: 'white', // Text color
+};
+
+const titleStyle = {
+  fontSize: '1.2rem',
+  marginBottom: '10px',
+};
+
+const listStyle = {
+  listStyleType: 'none',
+  padding: 0,
+};
+
+const listItemStyle = {
+  fontSize: '1rem',
+  margin: '5px 0',
+};
+
+const iconStyle = {
+  fontSize: '2rem',
+}
 
 const DoctorProfile = () => {
   const { id } = useParams(); // Access the therapist ID from the URL parameter
@@ -60,11 +106,7 @@ const DoctorProfile = () => {
           className="imgDiv"
           style={{ width: "10rem", height: "12rem", overflow: "hidden" }}
         >
-          <img
-            src={`data:${imageUrl?.contentType};base64,${imageUrl?.data}`}
-            className="doctorImg"
-            alt="Rounded"
-          />
+          <img src={imageUrl} className="doctorImg" alt="Rounded" />
         </div>
 
         <div className="aboutDiv">
@@ -151,26 +193,53 @@ const DoctorProfile = () => {
       </div>
 
       <div className={`allOfferings ${showOfferings ? "show" : ""}`}>
-        <div className="mode">
-          <span>
-            <img src={video} alt="Video" />
-          </span>
-          <div>
-            <div className="mode1">
-              <h3 className="modeTitle">Mode of Therapy</h3>
-              <span className="modeImg">
-                <img src={arrow} className="modeImage" alt="Arrow" />
-              </span>
-            </div>
-            <div className="modeChoice">
-              {therapist?.modeOfSession.map((mode, index) => (
-                <span className="session-mode" key={index}>
-                  {mode}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
+      <Grid container spacing={2} style={containerStyle}>
+      <Grid item xs={4}>
+        <Paper style={infoBoxStyle}>
+          <LanguageIcon style={iconStyle} />
+          <Typography variant="h6" style={titleStyle}>
+            Languages Known
+          </Typography>
+          <ul style={listStyle}>
+            {therapist.languages.map((language, index) => (
+              <li key={index} style={listItemStyle}>
+                {language}
+              </li>
+            ))}
+          </ul>
+        </Paper>
+      </Grid>
+      <Grid item xs={4}>
+        <Paper style={infoBoxStyle}>
+          <EmojiObjectsIcon style={iconStyle} />
+          <Typography variant="h6" style={titleStyle}>
+            Expertise
+          </Typography>
+          <ul style={listStyle}>
+            {therapist.expertise.map((expertise, index) => (
+              <li key={index} style={listItemStyle}>
+                {expertise.type.join(', ')}
+              </li>
+            ))}
+          </ul>
+        </Paper>
+      </Grid>
+      <Grid item xs={4}>
+        <Paper style={infoBoxStyle}>
+          <MonitorIcon style={iconStyle} />
+          <Typography variant="h6" style={titleStyle}>
+            Mode Of Session
+          </Typography>
+          <ul style={listStyle}>
+            {therapist.modeOfSession.map((mode, index) => (
+              <li key={index} style={listItemStyle}>
+                {mode}
+              </li>
+            ))}
+          </ul>
+        </Paper>
+      </Grid>
+    </Grid>
       </div>
       <div className="booknowBtnLayout" style={{ marginTop: "3rem" }}>
         <div className="booknowBtnLayout1">

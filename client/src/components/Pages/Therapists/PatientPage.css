@@ -1,0 +1,20 @@
+.profile-container {
+  /* Your existing styles for profile-container */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Horizontally center content */
+  justify-content: center; /* Vertically center content */
+}
+
+.profile-details {
+  /* Additional styles for profile-details */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Horizontally center content */
+  justify-content: center; /* Vertically center content */
+}
+
+.meet-link-container {
+  /* Additional styles for the meet link container */
+  text-align: center; /* Center the text horizontally */
+}

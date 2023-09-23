@@ -286,7 +286,7 @@ const createUser = userData => {
   return dispatch => {
     dispatch(createUserRequest());
     axios
-      .post(`${API_URL}/users`, userData)
+      .post(`${API_URL}/users/register`, userData)
       .then(() => {
         dispatch(createUserSuccess());
       })

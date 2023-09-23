@@ -8,6 +8,7 @@ import {
   faEye,
   faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
+import { faBuilding } from '@fortawesome/free-solid-svg-icons';
 import { faAddressCard } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -373,6 +374,17 @@ const GroupSignUp = () => {
             required
           />
         </div>
+        <div className="form-group">
+        <FontAwesomeIcon icon={faBuilding} className={`icon ${company ? "active" : ""}`} />
+        <input
+          type="text"
+          id="company"
+          name="company"
+          placeholder="Company Name"
+          value={company}
+          readOnly // Set the input as readOnly to make it non-editable
+        />
+      </div>
 
         <button type="submit" onClick={handleSubmit}>
           Sign Up

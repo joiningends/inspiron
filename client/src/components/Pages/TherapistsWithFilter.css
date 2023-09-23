@@ -156,3 +156,48 @@
   }
 }
 
+
+/* TherapistsWithFilter.css */
+.pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination ul {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination li {
+  background-color: #fff;
+  color: #5179BD;
+  border: 1px solid #5179BD;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s, box-shadow 0.2s;
+  border-radius: 50%;
+}
+
+.pagination li.active {
+  background-color: #5179BD;
+  color: #fff;
+  border: 1px solid #fff;
+  transform: scale(1.1); /* Add a 3D effect on hover */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Add a box shadow on hover */
+}
+
+.pagination li:hover {
+  background-color: #5179BD; /* Change background color on hover */
+  color: #fff; /* Change text color on hover */
+  transform: scale(1.05); /* Add a hover effect */
+}

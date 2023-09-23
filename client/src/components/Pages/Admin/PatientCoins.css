@@ -1,0 +1,8 @@
+/* PatientCoins.css */
+
+.edit-icon {
+  cursor: pointer;
+  font-size: 1.2rem; /* Adjust the font size as needed */
+  color: #1976d2; /* Change the color as desired */
+  margin-left: 5px; /* Add some space between the icon and the text */
+}

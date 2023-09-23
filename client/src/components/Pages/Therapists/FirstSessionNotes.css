@@ -264,3 +264,22 @@ button[type="submit"] {
 .multi-step-form .submit-button:hover {
   background-color: #1e87dc;
 }
+
+/* Increase the font size and add some padding to the toast messages */
+.Toastify__toast {
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+/* Style for success messages */
+.Toastify__toast--success {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+/* Style for error messages */
+.Toastify__toast--error {
+  background-color: #f44336;
+  color: #fff;
+}

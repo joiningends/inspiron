@@ -4,14 +4,12 @@ import inspiron from "./inspironWheel.png";
 import { Link } from "react-router-dom";
 
 function Therapist({ therapist }) {
+  console.log(therapist);
   return (
     <div className="therapist-container">
       <div className="therapist-card">
         <div className="therapist-image-container">
-          <img
-            src={therapist?.image}
-            alt="Rounded"
-          />
+          <img src={therapist?.image} alt="Rounded" />
           <img src={inspiron} alt="Watermark" className="watermark" />
         </div>
         <div className="therapist-content-container">

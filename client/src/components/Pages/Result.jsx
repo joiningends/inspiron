@@ -4,17 +4,34 @@ import axios from "axios";
 import "./Result.css";
 
 const getTherapists = async assessmentScore => {
+  let storedAssessment;
   try {
-    const response = await axios.post(
-      "http://localhost:4000/api/v1/therapists/score",
-      {
-        assessmentScore,
-      }
-    );
-
-    return response.data;
+    storedAssessment = JSON.parse(localStorage.getItem("assessment"));
   } catch (error) {
-    throw new Error("Failed to retrieve therapists");
+    console.error("Error parsing stored assessment:", error);
+    storedAssessment = null;
+  }
+  const groupId = localStorage.getItem("groupid");
+  const cleanGroupId = groupId.replace(/"/g, "");
+
+  const assessmentId = storedAssessment?._id;
+  console.log(storedAssessment);
+
+  let url = `http://localhost:4000/api/v1/therapists/score/${assessmentId}/${assessmentScore}`;
+
+  if (cleanGroupId !== "null") {
+    url = `http://localhost:4000/api/v1/therapists/score/${assessmentId}/${cleanGroupId}/${assessmentScore}`;
+  }
+
+  console.log(url);
+  try {
+    const response = await axios.get(url);
+    localStorage.setItem("therapistsData", JSON.stringify(response.data));
+    console.log(response)
+    // Handle the response data as needed
+    console.log("Response data:", response.data);
+  } catch (error) {
+    console.error("Error fetching data:", error);
   }
 };
 

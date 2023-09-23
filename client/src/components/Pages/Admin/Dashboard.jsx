@@ -26,6 +26,7 @@ function Dashboard() {
           "http://localhost:4000/api/v1/therapists/total-therapists"
         );
         setTherapistsDetails(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching therapist details:", error);
       }
@@ -37,9 +38,12 @@ function Dashboard() {
   const [availableAddress, setAvailableAddress] = React.useState(null);
 
   React.useEffect(() => {
-    axios.get("http://localhost:4000/api/v1/categories").then(response => {
-      setAvailableAddress(response.data);
-    });
+    axios
+      .get("http://localhost:4000/api/v1/categories/center/info")
+      .then(response => {
+        setAvailableAddress(response.data?.categories);
+        console.log(response.data);
+      });
   }, []);
 
   const handleDetails = therapistId => {
@@ -65,10 +69,10 @@ function Dashboard() {
         availability: [
           {
             location: address,
-            day: [],
-            timeSlots: [],
+            day: "Monday",
           },
         ],
+        therapisttype: profession,
       })
       .then(function (response) {
         console.log(response);
@@ -184,9 +188,9 @@ function Dashboard() {
                   Patients
                 </th>
                 <th style={{ padding: "0.3rem", textAlign: "left" }}>Status</th>
-                <th style={{ padding: "0.3rem", textAlign: "left" }}>
+                {/* <th style={{ padding: "0.3rem", textAlign: "left" }}>
                   Revenue
-                </th>
+                </th> */}
                 <th></th>
               </tr>
             </thead>
@@ -232,9 +236,9 @@ function Dashboard() {
                   <td style={{ padding: "0.3rem", textAlign: "left" }}>
                     {therapist?.status}
                   </td>
-                  <td style={{ padding: "0.3rem", textAlign: "left" }}>
+                  {/* <td style={{ padding: "0.3rem", textAlign: "left" }}>
                     {therapist?.totalRevenue}
-                  </td>
+                  </td> */}
                   <td style={{ padding: "0.3rem", textAlign: "left" }}>
                     <button
                       onClick={() => handleDetails(therapist?._id)}

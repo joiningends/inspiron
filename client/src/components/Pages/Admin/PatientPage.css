@@ -114,3 +114,12 @@
     margin-top: 0.3rem;
   }
 }
+
+.table-container table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.table-container tr {
+  border-bottom: none;
+}
