@@ -6,7 +6,6 @@ import {
 } from "../../redux/Action";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import "./TherapistAppointment.css"
 
 function TherapistAppointment() {
   const [activeButton, setActiveButton] = useState(1);
@@ -82,15 +81,18 @@ function TherapistAppointment() {
     }
   };
 
-  const renderPaginationControls = (currentPage, handlePageChange, totalItems) => {
+  const renderPaginationControls = (
+    currentPage,
+    handlePageChange,
+    totalItems
+  ) => {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
-  
+
     return (
       <div className="pagination-controls">
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="pagination-button"
         >
           Previous
         </button>
@@ -98,7 +100,7 @@ function TherapistAppointment() {
           <button
             key={index}
             onClick={() => handlePageChange(index + 1)}
-            className={`pagination-button ${currentPage === index + 1 ? "active" : ""}`}
+            className={currentPage === index + 1 ? "active" : ""}
           >
             {index + 1}
           </button>
@@ -106,14 +108,12 @@ function TherapistAppointment() {
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="pagination-button"
         >
           Next
         </button>
       </div>
     );
   };
-  
 
   const todayAppointmentCount = todayAppointments?.appointments?.length || 0;
   const upcomingAppointmentCount =

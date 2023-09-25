@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-  Paper,
-} from "@mui/material";
 
 const buttonStyle = {
   marginRight: "10px",
@@ -41,17 +33,17 @@ function OpenFirstSessionNotes() {
     const apiUrl = `http://localhost:4000/api/v1/users/${userId}`;
 
     fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         setUserData(data);
         console.log(data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error fetching data:", error);
       });
   }, [userId]);
 
-  const handleButtonClick = field => {
+  const handleButtonClick = (field) => {
     setSelectedField(field);
   };
 
@@ -81,28 +73,28 @@ function OpenFirstSessionNotes() {
           <h2 style={{ marginTop: "20px", marginBottom: "10px" }}>
             Socioeconomic Data
           </h2>
-          <Paper>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Field</TableCell>
-                  <TableCell>Value</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
+          <div className="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
                 {Object.entries(userData.socioeconomic.json).map(
                   ([key, value]) => (
-                    <TableRow key={key}>
-                      <TableCell>{key}</TableCell>
-                      <TableCell>
+                    <tr key={key}>
+                      <td>{key}</td>
+                      <td>
                         {Array.isArray(value) ? value.join(", ") : value}
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   )
                 )}
-              </TableBody>
-            </Table>
-          </Paper>
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : null}
       {selectedField === "chief" &&
@@ -120,7 +112,7 @@ function OpenFirstSessionNotes() {
             Chief Data
           </h2>
           {userData.chief[0].result
-            .filter(result => result.selectedOptions.length > 0)
+            .filter((result) => result.selectedOptions.length > 0)
             .map((result, index) => (
               <div
                 key={index}

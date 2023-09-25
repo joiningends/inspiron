@@ -16,7 +16,7 @@ import TherapistHomePage from "./components/Pages/Therapists/TherapistHomePage";
 import TherapistAppointment from "./components/Pages/Therapists/TherapistAppointment";
 import TherapistProfilePage from "./components/Pages/Therapists/TherapistProfilePage";
 import PatientDetails from "./components/Pages/Therapists/PatientDetails";
-import FirstSessionNotes from "./components/Pages/Therapists/FirstSessionNotes";
+//import FirstSessionNotes from "./components/Pages/Therapists/FirstSessionNotes";
 import Dashboard from "./components/Pages/Admin/Dashboard";
 import CreateAssessment from "./components/Pages/Admin/CreateAssessment";
 import AssessmentCreatePage from "./components/Pages/Admin/AssessmentCreatePage";
@@ -112,10 +112,7 @@ function App() {
                   path="/patient-details/:id"
                   element={<PatientDetails />}
                 />
-                <Route
-                  path="/patient-details-first-session-notes/:id"
-                  element={<FirstSessionNotes />}
-                />
+               
                 <Route path="/therapists" element={<TherapistHomePage />} />
                 <Route path="/timeSlots" element={<TimeSlots />} />
                 <Route
@@ -180,10 +177,7 @@ function App() {
                   path="/userPayment/:userId"
                   element={<CustomerPayment />}
                 />
-                <Route
-                  path="/patient-details-first-session-notes/:id"
-                  element={<FirstSessionNotes />}
-                />
+                
                 <Route
                   path="/openFirstSessionNotes/:userId"
                   element={<OpenFirstSessionNotes />}
