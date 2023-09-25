@@ -304,9 +304,7 @@ const loginUser = async (req, res) => {
       return res.status(400).send('Invalid email or password!');
     }
 
-    if (user.isVerified  === 'false') {
-      return res.status(400).send('Email not verified. Please check your email for verification instructions.');
-    }
+    
     
     if (user && bcrypt.compareSync(password, user.passwordHash)) {
       let role = 'user'; // Default role is user
