@@ -1,0 +1,285 @@
+/* FirstSessionNotes.css */
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.session-button {
+  background-color: rgba(81, 121, 189, 0.08);
+  color: black;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 15rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.session-button:hover {
+  background-color: #5179BD;
+  color: white;
+  width: 15rem;
+}
+
+.active-session-button {
+  background-color: #5179BD;
+  color: white;
+  width: 15rem;
+}
+
+@media (max-width: 768px) {
+  .session-button {
+    font-size: 12px;
+  }
+}
+
+form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type="text"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+select[multiple] {
+  height: auto;
+}
+
+button[type="submit"] {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  form {
+    max-width: 100%;
+    padding: 20px;
+  }
+}
+
+/* SociodemographicForm.css */
+.sociodemographic-form {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px;
+  margin: 40px auto 0; /* Added margin-top: 40px to create spacing */
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sociodemographic-form h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.sociodemographic-form label {
+  display: block;
+  margin-bottom: 15px;
+  color: #555;
+  font-size: 14px; /* Updated text size for labels */
+}
+
+.sociodemographic-form input[type="text"],
+.sociodemographic-form select,
+.sociodemographic-form textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.sociodemographic-form input[type="date"] {
+  appearance: none;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23333' height='24' viewBox='0 0 24 24' width='24'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M12 5.99l-5 5L6.01 13H4v6h16v-6h-2.01l-.99-2.01-5-5zm2 10.5h-4v-4h4v4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 24px;
+  cursor: pointer;
+}
+
+.sociodemographic-form select[multiple] {
+  height: auto;
+}
+
+.sociodemographic-form textarea {
+  resize: vertical;
+}
+
+.sociodemographic-form button[type="submit"] {
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sociodemographic-form .form-group {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .sociodemographic-form {
+    padding: 20px;
+  }
+
+  .sociodemographic-form input[type="text"],
+  .sociodemographic-form select,
+  .sociodemographic-form textarea {
+    font-size: 12px;
+  }
+
+  .sociodemographic-form input[type="date"] {
+    font-size: 12px;
+  }
+
+  .sociodemographic-form button[type="submit"] {
+    font-size: 14px;
+  }
+
+  .sociodemographic-form label {
+    font-size: 12px; /* Updated text size for labels on smaller screens */
+  }
+}
+
+
+/* Form container */
+.multi-step-form {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 3rem;
+}
+
+/* Section headings */
+.multi-step-form h3 {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* List styles */
+.multi-step-form ul {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+}
+
+.multi-step-form ul li {
+  flex-basis: 50%;
+  margin-bottom: 0.5rem;
+}
+
+/* Checkbox label styles */
+.multi-step-form ul li label {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Checkbox input styles */
+.multi-step-form ul li input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+/* Textarea styles */
+.multi-step-form textarea {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Button container */
+.multi-step-form .button-container {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+/* Button styles */
+.multi-step-form button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.multi-step-form button:hover {
+  background-color: #45a049;
+}
+
+.multi-step-form .submit-button {
+  background-color: #2196f3;
+}
+
+.multi-step-form .submit-button:hover {
+  background-color: #1e87dc;
+}
+
+/* Increase the font size and add some padding to the toast messages */
+.Toastify__toast {
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+/* Style for success messages */
+.Toastify__toast--success {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+/* Style for error messages */
+.Toastify__toast--error {
+  background-color: #f44336;
+  color: #fff;
+}

@@ -1,13 +1,28 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  IconButton,
+  Paper,
+  TableContainer,
+  Typography,
+  withStyles,
+  TablePagination,
+  TableSortLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from "@material-ui/core";
+import PaymentIcon from "@material-ui/icons/Payment";
 import moment from "moment";
 
-const styles = {
-  tableContainer: {
-    maxWidth: "600px",
-    margin: "0 auto",
-  },
-};
+const styles = theme => ({});
 
 function PendingPayments(props) {
   const { classes } = props;
@@ -79,43 +94,48 @@ function PendingPayments(props) {
 
   return (
     <div>
-      <h1>Pending Payments</h1>
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error.message}</p>}
+      <Typography variant="h5" gutterBottom>
+        Pending Payments
+      </Typography>
+      {loading && <Typography>Loading...</Typography>}
+      {error && <Typography>Error: {error.message}</Typography>}
       {!loading && !error && (
         <div>
-          <div style={styles.tableContainer}>
-            <table>
-              <thead>
-                <tr>
-                  <th>
-                    <button
+          <TableContainer component={Paper} className={classes.tableContainer}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <TableSortLabel
+                      active={orderBy === "therapist.name"}
+                      direction={orderBy === "therapist.name" ? order : "asc"}
                       onClick={() => handleSort("therapist.name")}
-                      style={{ cursor: "pointer" }}
                     >
                       Therapist Name
-                    </button>
-                  </th>
-                  <th>
-                    <button
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel
+                      active={orderBy === "dateTime"}
+                      direction={orderBy === "dateTime" ? order : "asc"}
                       onClick={() => handleSort("dateTime")}
-                      style={{ cursor: "pointer" }}
                     >
                       Appointment Date
-                    </button>
-                  </th>
-                  <th>
-                    <button
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel
+                      active={orderBy === "startTime"}
+                      direction={orderBy === "startTime" ? order : "asc"}
                       onClick={() => handleSort("startTime")}
-                      style={{ cursor: "pointer" }}
                     >
                       Appointment Time
-                    </button>
-                  </th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {data
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .sort((a, b) => {
@@ -125,70 +145,64 @@ function PendingPayments(props) {
                       : b[orderBy]?.localeCompare(a[orderBy]);
                   })
                   .map(payment => (
-                    <tr key={payment._id}>
-                      <td>{payment.therapist.name}</td>
-                      <td>{formatDate(payment.dateTime)}</td>
-                      <td>{payment.startTime} </td>
-                      <td>
-                        <button
+                    <TableRow key={payment._id}>
+                      <TableCell>{payment.therapist.name}</TableCell>
+                      <TableCell>{formatDate(payment.dateTime)}</TableCell>
+                      <TableCell>{payment.startTime} </TableCell>
+                      <TableCell>
+                        <IconButton
+                          color="primary"
+                          aria-label="Make Payment"
                           onClick={() => handleMakePaymentClick(payment)}
-                          style={{ cursor: "pointer" }}
                         >
-                          Make Payment
-                        </button>
-                      </td>
-                    </tr>
+                          <PaymentIcon />
+                        </IconButton>
+                        <span>Make Payment</span>
+                      </TableCell>
+                    </TableRow>
                   ))}
-              </tbody>
-            </table>
-          </div>
-          <div>
-            <div>
-              <span>Rows per page: </span>
-              <select onChange={handleChangeRowsPerPage}>
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-              </select>
-            </div>
-            <div>
-              <span>
-                Page {page + 1} of {Math.ceil(data.length / rowsPerPage)}
-              </span>
-              <button
-                onClick={() => handleChangePage(null, page - 1)}
-                disabled={page === 0}
-                style={{ cursor: "pointer" }}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={data.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+          <Dialog
+            open={openPaymentDialog}
+            onClose={() => setOpenPaymentDialog(false)}
+            aria-labelledby="payment-dialog-title"
+          >
+            <DialogTitle id="payment-dialog-title">Confirm Payment</DialogTitle>
+            <DialogContent>
+              {selectedPayment && (
+                <Typography>
+                  Confirm payment for {selectedPayment.therapist.name} on{" "}
+                  {selectedPayment.dateTime} at {selectedPayment.startTime}?
+                </Typography>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => setOpenPaymentDialog(false)}
+                color="primary"
               >
-                Previous
-              </button>
-              <button
-                onClick={() => handleChangePage(null, page + 1)}
-                disabled={page === Math.ceil(data.length / rowsPerPage) - 1}
-                style={{ cursor: "pointer" }}
-              >
-                Next
-              </button>
-            </div>
-          </div>
-          {selectedPayment && (
-            <div>
-              <div>
-                Confirm payment for {selectedPayment.therapist.name} on{" "}
-                {selectedPayment.dateTime} at {selectedPayment.startTime}?
-              </div>
-              <div>
-                <button onClick={() => setOpenPaymentDialog(false)}>
-                  Cancel
-                </button>
-                <button onClick={handlePaymentConfirm}>Confirm</button>
-              </div>
-            </div>
-          )}
+                Cancel
+              </Button>
+              <Button onClick={handlePaymentConfirm} color="primary">
+                Confirm
+              </Button>
+            </DialogActions>
+          </Dialog>
         </div>
       )}
     </div>
   );
 }
 
-export default PendingPayments;
+export default withStyles(styles)(PendingPayments);
