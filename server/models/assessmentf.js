@@ -1,67 +1,65 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const assessmentSchema = new mongoose.Schema({
-    hostId: {
-         type: Number, 
-         required: false,
-         },
-        
+  hostId: {
+    type: Number,
+    required: false,
+  },
+
   assessment_name: {
     type: String,
     required: false,
   },
-  summary: { 
+  summary: {
     type: String,
-     required: false,
-    },
-    slug: {
-      type: String,
-      required: false,
-      
-    },
+    required: false,
+  },
+  slug: {
+    type: String,
+    required: false,
+  },
   type: {
-     type: Number,
-      default: 0 
-    },
-    image: {
-      type: String,
-    },
-  
- 
-    assessmentScore: { 
     type: Number,
-     default: 0
-     },
-  
+    default: 0,
+  },
+  image: {
+    type: String,
+  },
+
+  assessmentScore: {
+    type: Number,
+    default: 0,
+  },
+
   published: {
-     type: Number, 
-     required: false, 
-    },
-  createdAt: { 
+    type: Number,
+    required: false,
+  },
+  createdAt: {
     type: Date,
     default: Date.now,
-    },
+  },
   updatedAt: {
-     type: Date, 
-     default: Date.now, 
-    },
+    type: Date,
+    default: Date.now,
+  },
   publishedAt: {
-     type: Date,
-     default: Date.now,
-    },
+    type: Date,
+    default: Date.now,
+  },
   startsAt: {
-     type: Object, 
-     required: false,
-    },
-  endsAt: { 
     type: Object,
-     
-     required: false,
-    },
-  content: { 
-    type: String, 
-    required:false
-},
+    required: false,
+  },
+  endsAt: {
+    type: Object,
+
+    required: false,
+  },
+  content: {
+    type: String,
+    required: false,
+  },
   questions: [
     {
       question: {
@@ -86,11 +84,13 @@ const assessmentSchema = new mongoose.Schema({
     type: {
       min: Number,
       max: Number,
-      expertise:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Expertise',
-      }],
-      serverityname: [String]
+      expertise: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Expertise",
+        },
+      ],
+      serverityname: [String],
     },
     required: false,
   },
@@ -98,11 +98,13 @@ const assessmentSchema = new mongoose.Schema({
     type: {
       min: Number,
       max: Number,
-      expertise:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Expertise',
-      }],
-      serverityname: [String]
+      expertise: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Expertise",
+        },
+      ],
+      serverityname: [String],
     },
     required: false,
   },
@@ -110,15 +112,17 @@ const assessmentSchema = new mongoose.Schema({
     type: {
       min: Number,
       max: Number,
-      expertise:[{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Expertise',
-      }],
-      serverityname: [String]
+      expertise: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Expertise",
+        },
+      ],
+      serverityname: [String],
     },
     required: false,
   },
 });
-const Assessment = mongoose.model('Assessment', assessmentSchema);
+const Assessment = mongoose.model("Assessment", assessmentSchema);
 
 module.exports = Assessment;

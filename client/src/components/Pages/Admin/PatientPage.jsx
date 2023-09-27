@@ -21,7 +21,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import DescriptionIcon from "@mui/icons-material/Description";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PaymentIcon from "@mui/icons-material/Payment";
-import "./PatientPage.css";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn"; // Placeholder icon
 
 function formatDate(isoDate) {
   if (!isoDate) return "";
@@ -113,8 +113,7 @@ function PatientPage() {
               <TableCell>Last Session Date</TableCell>
               <TableCell>Total Sessions</TableCell>
               <TableCell>Corporate Name</TableCell>
-              <TableCell>Coin Balance</TableCell>
-              <TableCell>Patient Summary</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -128,16 +127,6 @@ function PatientPage() {
                   <TableCell>{formatDate(patient.date)}</TableCell>
                   <TableCell>{patient.Sessionnumber}</TableCell>
                   <TableCell>{patient.clientName}</TableCell>
-                  <TableCell>
-                    {patient.coinBalance}
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => handleCoinsClick(patient._id)}
-                    >
-                      Coins
-                    </Button>
-                  </TableCell>
                   <TableCell>
                     <Tooltip title="Details" arrow>
                       <Button
@@ -155,6 +144,7 @@ function PatientPage() {
                         variant="outlined"
                         size="small"
                         className="view-download-button"
+                        style={{ marginLeft: "1rem" }}
                       >
                         <DescriptionIcon />
                       </Button>
@@ -162,10 +152,21 @@ function PatientPage() {
                     <Tooltip title="Payment" arrow>
                       <Button
                         variant="outlined"
+                        style={{ marginLeft: "1rem" }}
                         size="small"
                         onClick={() => handlePaymentClick(patient._id)}
                       >
                         <PaymentIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Coins" arrow>
+                      <Button
+                        variant="outlined"
+                        style={{ marginLeft: "1rem" }}
+                        size="small"
+                        onClick={() => handleCoinsClick(patient._id)}
+                      >
+                        <MonetizationOnIcon />
                       </Button>
                     </Tooltip>
                   </TableCell>

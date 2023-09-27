@@ -2,17 +2,23 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Group.css";
 import { Link } from "react-router-dom";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 
 function Groups() {
   const [data, setData] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [allowCompanyPayment, setAllowCompanyPayment] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const [copyNotificationVisible, setCopyNotificationVisible] = useState(false); // Added
 
   const fetchData = async () => {
     try {
       const response = await axios.get("http://localhost:4000/api/v1/clients");
       setData(response.data.clients);
+      console.log(response.data.clients)
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -21,6 +27,16 @@ function Groups() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handlePageChange = (event, page) => {
+    setCurrentPage(page);
+  };
+
+  const pageCount = Math.ceil(data.length / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = data.slice(startIndex, endIndex);
 
   const handleAddCorporateClick = () => {
     setShowForm(true);
@@ -56,14 +72,22 @@ function Groups() {
     }
   };
 
-  function copyToClipboard(text) {
+  const copyToClipboard = text => {
     const textArea = document.createElement("textarea");
     textArea.value = text;
     document.body.appendChild(textArea);
     textArea.select();
     document.execCommand("copy");
     document.body.removeChild(textArea);
-  }
+
+    // Show the "Text copied" notification
+    setCopyNotificationVisible(true);
+
+    // Hide the notification after 2 seconds (adjust as needed)
+    setTimeout(() => {
+      setCopyNotificationVisible(false);
+    }, 2000);
+  };
 
   return (
     <div className="table-container">
@@ -112,9 +136,6 @@ function Groups() {
 
               <button type="submit">Submit</button>
             </form>
-            <button className="close-button" onClick={() => setShowForm(false)}>
-              Close
-            </button>
           </div>
         </div>
       )}
@@ -129,16 +150,18 @@ function Groups() {
             <th>Group Name</th>
             <th>Address</th>
             <th>Group Id</th>
+            <th>Credit</th>
             <th>URL</th>
             <th>Details</th>
           </tr>
         </thead>
         <tbody>
-          {data.map(group => (
+          {currentData.map(group => (
             <tr key={group._id}>
               <td>{group.name}</td>
               <td>{group.address}</td>
               <td>{group.groupid}</td>
+              <td>{group.credit}</td>
               <td>
                 {group.name === "Retail" ? (
                   <span>N/A</span>
@@ -151,9 +174,6 @@ function Groups() {
                     >
                       Link
                     </a>
-                    <button onClick={() => copyToClipboard(group.url)}>
-                      Copy
-                    </button>
                   </>
                 )}
               </td>
@@ -173,6 +193,18 @@ function Groups() {
           ))}
         </tbody>
       </table>
+      <Stack spacing={2} sx={{ marginTop: "20px" }}>
+        <Pagination
+          count={pageCount}
+          page={currentPage}
+          onChange={handlePageChange}
+          variant="outlined"
+          shape="rounded"
+        />
+      </Stack>
+      {copyNotificationVisible && (
+        <div className="copy-notification">Text copied</div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
 import {
-  RiInformationLine,
-  RiEdit2Line,
   RiDeleteBin2Line,
   RiAddLine,
 } from "react-icons/ri";
@@ -17,13 +15,6 @@ function CreateAssessment() {
     dispatch(fetchAssessments());
   }, [dispatch]);
 
-  const handleDetails = assessmentId => {
-    console.log("Details clicked for assessment ID:", assessmentId);
-  };
-
-  const handleEdit = assessmentId => {
-    console.log("Edit clicked for assessment ID:", assessmentId);
-  };
 
   const handleDelete = assessmentId => {
     console.log("Delete clicked for assessment ID:", assessmentId);
@@ -51,20 +42,6 @@ function CreateAssessment() {
               <td>{assessment.assessment_name}</td>
               <td>{assessment.questions.length}</td>
               <td>
-                <button
-                  className="action-button"
-                  onClick={() => handleDetails(assessment.hostId)}
-                >
-                  Details
-                  <RiInformationLine className="action-icon" />
-                </button>
-                <button
-                  className="action-button"
-                  onClick={() => handleEdit(assessment.hostId)}
-                >
-                  Edit
-                  <RiEdit2Line className="action-icon" />
-                </button>
                 <button
                   className="action-button"
                   onClick={() => handleDelete(assessment.hostId)}

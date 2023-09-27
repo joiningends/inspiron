@@ -2,13 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./AssessmentCreatePage.css";
 import { AiOutlineArrowLeft, AiOutlinePlus } from "react-icons/ai";
-import { createAssessment } from "../../redux/Action";
-import { margin } from "@mui/system";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function AssessmentCreatePage() {
   const [assessmentName, setAssessmentName] = useState("");
+  const [assessmentSummary, setAssessmentSummary] = useState("");
   const [image, setImage] = useState(null);
   const [questions, setQuestions] = useState([]);
 
@@ -48,6 +47,10 @@ function AssessmentCreatePage() {
 
   const handleAssessmentNameChange = event => {
     setAssessmentName(event.target.value);
+  };
+
+  const handleAssessmentSummaryChange = event => {
+    setAssessmentSummary(event.target.value);
   };
 
   const handleGoBack = () => {
@@ -146,6 +149,7 @@ function AssessmentCreatePage() {
       // Get low, medium, and high severities data
       const assessmentData = {
         assessment_name: assessmentName,
+        summary:assessmentSummary,
         image: image ? image.name : "",
         questions: questionsData,
         high: {
@@ -187,7 +191,7 @@ function AssessmentCreatePage() {
       );
 
       console.log(image);
-      console.log(updateResponse)
+      console.log(updateResponse);
 
       console.log("Assessment created:", response.data.assessment._id);
 
@@ -200,9 +204,8 @@ function AssessmentCreatePage() {
       setTimeout(() => {
         window.location.href = "/admin-Create-Assessment";
       }, 3000);
-
       // Optionally, you can navigate to another page upon successful assessment creation
-      window.location.href = "path-to-assessment-list-page";
+      window.location.href = "/admin-Create-Assessment";
     } catch (error) {
       console.error("Error creating assessment:", error);
       toast.error("Failed to Add Assessment", {
@@ -262,6 +265,37 @@ function AssessmentCreatePage() {
             }}
           />
         </div>
+
+        <div style={{ marginBottom: "20px" }}>
+          <label
+            htmlFor="assessmentSummary"
+            style={{
+              marginRight: "10px",
+              fontWeight: "bold",
+              fontSize: "14px",
+              color: "#555555",
+            }}
+          >
+            Assessment Summary:
+          </label>
+          <input
+            type="text"
+            id="assessmentName"
+            value={assessmentSummary}
+            onChange={handleAssessmentSummaryChange}
+            required
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "5px",
+              border: "1px solid #D67449",
+              fontSize: "14px",
+              color: "#555555",
+              transition: "all 0.3s ease-out",
+            }}
+          />
+        </div>
+
         <div style={{ marginBottom: "20px" }}>
           <label
             htmlFor="image"

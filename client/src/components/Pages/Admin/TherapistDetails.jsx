@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchTherapist,
   updateTherapist,
-  updateTherapistImage,
 } from "../../redux/Action";
 import { FaEdit } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa";
@@ -17,7 +16,6 @@ import {
   Box,
   Typography,
   Container,
-  Grid,
   Button,
   Select,
   MenuItem,

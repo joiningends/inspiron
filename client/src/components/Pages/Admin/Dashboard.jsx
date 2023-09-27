@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Dashboard.css";
-import { fetchTherapists } from "../../redux/Action";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import createTherapistimg from "./intermediary.png";
 import rightSideArrow from "./right-arrow.png";
 
@@ -26,7 +25,6 @@ function Dashboard() {
           "http://localhost:4000/api/v1/therapists/total-therapists"
         );
         setTherapistsDetails(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching therapist details:", error);
       }
@@ -40,13 +38,12 @@ function Dashboard() {
   React.useEffect(() => {
     axios
       .get("http://localhost:4000/api/v1/categories/center/info")
-      .then(response => {
+      .then((response) => {
         setAvailableAddress(response.data?.categories);
-        console.log(response.data);
       });
   }, []);
 
-  const handleDetails = therapistId => {
+  const handleDetails = (therapistId) => {
     const url = `/therapists-Details/${therapistId}`;
     window.open(url, "_blank");
   };
@@ -59,7 +56,7 @@ function Dashboard() {
     setShowForm(false);
   };
 
-  const handleFormSubmit = e => {
+  const handleFormSubmit = (e) => {
     e.preventDefault();
     axios
       .post("http://localhost:4000/api/v1/therapists", {
@@ -75,17 +72,21 @@ function Dashboard() {
         therapisttype: profession,
       })
       .then(function (response) {
-        console.log(response);
         setShowForm(false);
         window.location.reload();
       })
       .catch(function (error) {
         console.log(error);
       });
-    console.log("Form submitted");
   };
 
-  let optionItems = availableAddress?.map(item => (
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredTherapists = therapistsData.therapists.filter((therapist) =>
+    therapist.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const optionItems = availableAddress?.map((item) => (
     <option key={item?._id} value={item?._id}>
       {`${item?.centerName}, ${item?.centerAddress}`}
     </option>
@@ -93,16 +94,7 @@ function Dashboard() {
 
   return (
     <>
-      <div
-        className="therapistsDetailsAvailability"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          marginBottom: "1rem",
-        }}
-      >
+      <div className="therapistsDetailsAvailability">
         <div
           style={{
             fontSize: "0.9rem",
@@ -161,11 +153,15 @@ function Dashboard() {
         </div>
       </div>
 
-      <div
-        className="adminDashboardContainer"
-        style={{ padding: "1rem", width: "100%" }}
-      >
+      <div className="adminDashboardContainer" style={{ padding: "1rem", width: "100%" }}>
         <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>Therapists</h2>
+        <input
+          type="text"
+          placeholder="Search by name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ marginBottom: "1rem" ,width:"91%"}}
+        />
         <div style={{ overflowX: "auto" }}>
           <table
             style={{
@@ -188,14 +184,11 @@ function Dashboard() {
                   Patients
                 </th>
                 <th style={{ padding: "0.3rem", textAlign: "left" }}>Status</th>
-                {/* <th style={{ padding: "0.3rem", textAlign: "left" }}>
-                  Revenue
-                </th> */}
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {therapistsData.therapists.map(therapist => (
+              {filteredTherapists.map((therapist) => (
                 <tr key={therapist._id}>
                   <td
                     style={{
@@ -236,9 +229,6 @@ function Dashboard() {
                   <td style={{ padding: "0.3rem", textAlign: "left" }}>
                     {therapist?.status}
                   </td>
-                  {/* <td style={{ padding: "0.3rem", textAlign: "left" }}>
-                    {therapist?.totalRevenue}
-                  </td> */}
                   <td style={{ padding: "0.3rem", textAlign: "left" }}>
                     <button
                       onClick={() => handleDetails(therapist?._id)}
@@ -264,7 +254,7 @@ function Dashboard() {
               <input
                 type="text"
                 style={{ width: "100%" }}
-                onChange={e => setName(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 required
               />
             </label>
@@ -273,7 +263,7 @@ function Dashboard() {
               <input
                 type="email"
                 style={{ width: "100%" }}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </label>
@@ -282,7 +272,7 @@ function Dashboard() {
               <input
                 type="text"
                 style={{ width: "100%" }}
-                onChange={e => setPhoneNumebr(e.target.value)}
+                onChange={(e) => setPhoneNumebr(e.target.value)}
                 required
               />
             </label>
@@ -311,7 +301,7 @@ function Dashboard() {
               Location:
               <select
                 style={{ width: "100%", borderRadius: "1rem" }}
-                onChange={e => setAddress(e.target.value)}
+                onChange={(e) => setAddress(e.target.value)}
                 required
               >
                 {optionItems}

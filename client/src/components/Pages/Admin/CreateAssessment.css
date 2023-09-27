@@ -1,3 +1,43 @@
+/* CreateAssessment.css */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pagination {
+  display: inline-block;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.pagination-link,
+.pagination-disabled {
+  padding: 8px 16px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.pagination-link {
+  color: #007bff;
+}
+
+.pagination-link:hover {
+  background-color: #007bff;
+  color: #fff;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.pagination-disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
 .back-button {
   display: flex;
   align-items: center;

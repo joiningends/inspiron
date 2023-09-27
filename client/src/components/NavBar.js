@@ -218,17 +218,6 @@ function NavBar() {
                 <li className="nav-item">
                   <NavLink
                     exact
-                    to="/edit_add-questions"
-                    activeClassName="active"
-                    className="nav-links"
-                    onClick={handleClick}
-                  >
-                    First Session Note
-                  </NavLink>
-                </li>
-                <li className="nav-item">
-                  <NavLink
-                    exact
                     to="/Group"
                     activeClassName="active"
                     className="nav-links"

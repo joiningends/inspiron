@@ -19,6 +19,7 @@ import {
   InputLabel,
   Divider,
 } from "@mui/material";
+import Box from "@mui/material/Box";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DescriptionIcon from "@mui/icons-material/Description";
 
@@ -58,6 +59,7 @@ function SettingPage() {
   });
 
   console.log(sessionInfo);
+  console.log(experienceLevels);
 
   const [experienceTableData, setExperienceTableData] = useState([]);
   const [detailsIndex, setDetailsIndex] = useState(null);
@@ -104,6 +106,22 @@ function SettingPage() {
     } else {
       alert("Please upload a Lab Test List file first");
     }
+  };
+
+  const handleEditChiefNote = () => {
+    // Add your logic for editing Chief-First Session Note here
+    const editChiefNoteUrl = "/edit_add-questions";
+
+    // Open a new window or tab with the specified URL
+    window.open(editChiefNoteUrl, "_blank");
+  };
+
+  const handleEditIllnessNote = () => {
+    // Add your logic for editing Illness-First Session Note here
+    const editChiefNoteUrl = "/edit_add-question01";
+
+    // Open a new window or tab with the specified URL
+    window.open(editChiefNoteUrl, "_blank");
   };
 
   useEffect(() => {
@@ -295,9 +313,34 @@ function SettingPage() {
     setCenterPinCode("");
   };
 
-  const handleRemoveCenterClick = index => {
-    const newCenters = centers.filter((_, i) => i !== index);
-    setCenters(newCenters);
+  const handleRemoveCenterClick = async index => {
+    try {
+      // Assuming centers is an array of objects and each object has a unique _id
+      const centerToRemove = centers[index];
+
+      // Send a DELETE request to the API with the _id of the center to be removed
+      const response = await fetch(
+        `http://localhost:4000/api/v1/categories/${centerToRemove._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json", // Set the appropriate content type
+            // You may need to include any authentication headers if required by your API
+          },
+        }
+      );
+
+      if (response.ok) {
+        // If the DELETE request is successful, update the state to remove the center
+        const newCenters = centers.filter((_, i) => i !== index);
+        setCenters(newCenters);
+      } else {
+        // Handle errors if the DELETE request fails
+        console.error("Failed to remove center");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   const validateContactNo = value => /^\d{10}$/.test(value);
@@ -390,9 +433,18 @@ function SettingPage() {
     }
   };
 
-  const handleRemoveExperienceLevel = index => {
-    const newExperienceLevels = experienceLevels.filter((_, i) => i !== index);
-    setExperienceLevels(newExperienceLevels);
+  const handleRemoveExperienceLevel = async (index, experienceId) => {
+    try {
+      // Make an HTTP DELETE request to the API endpoint
+      await axios.delete(`http://localhost:4000/api/v1/expriences/${experienceId}`);
+      
+      // If the request is successful, remove the experience level from the state
+      const newExperienceLevels = experienceLevels.filter((_, i) => i !== index);
+      setExperienceLevels(newExperienceLevels);
+    } catch (error) {
+      // Handle errors here, e.g., show an error message to the user
+      console.error('Error removing experience level:', error);
+    }
   };
 
   const handleRemoveExperienceLevelDetail = index => {
@@ -860,7 +912,7 @@ function SettingPage() {
                         <Button
                           variant="outlined"
                           startIcon={<DeleteIcon />}
-                          onClick={() => handleRemoveExperienceLevel(index)}
+                          onClick={() => handleRemoveExperienceLevel(0, level._id)}
                           style={{
                             backgroundColor: "white",
                             color: "#D67449",
@@ -1069,7 +1121,30 @@ function SettingPage() {
         </TableContainer>
       </Container>
 
-      <Container maxWidth="md" style={{ marginTop: "2rem" }}>
+      <Box
+        boxShadow={3}
+        p={3}
+        style={{ marginTop: "3rem", width: "95%", marginLeft: "1.5rem" }}
+      >
+        <h2>Edit First Session Note</h2>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleEditChiefNote}
+          style={{ marginRight: "1rem" }}
+        >
+          Edit Chief-First Session Note
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleEditIllnessNote}
+        >
+          Edit Illness-First Session Note
+        </Button>
+      </Box>
+
+      <Container maxWidth="md" style={{ marginTop: "3rem" }}>
         <Paper elevation={3} style={{ padding: "20px" }}>
           <h2
             style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
