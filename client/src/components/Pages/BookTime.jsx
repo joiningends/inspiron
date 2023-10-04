@@ -489,7 +489,7 @@ function BookTime() {
   const endIndex = startIndex + slotsPerPage;
 
   // Filter the sessions based on the current page
-  const sessionsToDisplay = sessions.slice(startIndex, endIndex);
+  const sessionsToDisplay = sessions?.slice(startIndex, endIndex);
 
   // Update the pagination controls
   function handlePageChange(newPage) {
@@ -532,7 +532,7 @@ function BookTime() {
               </span>
               <span>
                 <h3 className="subDetails">
-                  {therapist.usersRecommended.length}
+                  {therapist?.usersRecommended?.length}
                 </h3>
               </span>
               <span
@@ -551,7 +551,7 @@ function BookTime() {
                 />
               </span>
               <span>
-                <h3 className="subDetails">{therapist.availableSessions}</h3>
+                <h3 className="subDetails">{therapist?.availableSessions}</h3>
               </span>
               <span className="lastUserDetailRow">Available Sessions</span>
             </div>
@@ -564,7 +564,7 @@ function BookTime() {
                 />
               </span>
               <span>
-                <h3 className="subDetails">{therapist.userReviews.length}</h3>
+                <h3 className="subDetails">{therapist?.userReviews?.length}</h3>
               </span>
               <span className="lastUserDetailRow1">User Reviews</span>
             </div>
@@ -583,7 +583,7 @@ function BookTime() {
         >
           {sessionsToDisplay &&
           Array.isArray(sessionsToDisplay) &&
-          sessionsToDisplay.length > 0 ? (
+          sessionsToDisplay?.length > 0 ? (
             sessionsToDisplay.map(session => (
               <div
                 key={session?.date}
@@ -686,7 +686,7 @@ function BookTime() {
           </span>
           <button
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={endIndex >= sessions.length}
+            disabled={endIndex >= sessions?.length}
             style={paginationButtonStyle}
           >
             Next

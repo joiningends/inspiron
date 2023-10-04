@@ -145,7 +145,7 @@ const DoctorProfile = () => {
             <img src={thubmsup} className="profileIcons" alt="Thumbs Up" />
           </span>
           <span>
-            <h3 className="subDetails">{therapist?.usersRecommended.length}</h3>
+            <h3 className="subDetails">{therapist?.usersRecommended?.length}</h3>
           </span>
           <span className="lastUserDetailRow">User Recommended</span>
         </div>
@@ -163,7 +163,7 @@ const DoctorProfile = () => {
             <img src={happy} className="profileIcons" alt="Happy" />
           </span>
           <span>
-            <h3 className="subDetails">{therapist?.userReviews.length}</h3>
+            <h3 className="subDetails">{therapist?.userReviews?.length}</h3>
           </span>
           <span className="lastUserDetailRow">User Reviews</span>
         </div>

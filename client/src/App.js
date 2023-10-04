@@ -45,6 +45,9 @@ import CustomerPayment from "./components/Pages/Admin/CustomerPayment";
 import PendingPayments from "./components/Pages/PendingPayments";
 import PaymentSuccessPageCorp from "./components/Pages/PaymentSuccessPageCorp";
 import { Navigate } from "react-router-dom";
+import Prescription from "./components/Pages/Therapists/Prescription";
+import ResetPasswordPage from "./components/Pages/ResetPasswordPassPage";
+import Thankyou from "./components/Pages/Thankyou";
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -131,6 +134,7 @@ function App() {
                   path="/openFirstSessionNotes/:userId"
                   element={<OpenFirstSessionNotes />}
                 />
+                <Route path="/prescription/:id" element={<Prescription />} />
               </>
             )}
 
@@ -193,11 +197,16 @@ function App() {
             <Route path="/login" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
             <Route path="/forgotpassword" element={<Forgotpassword />} />
+
             <Route
-              path="/resetpassword/reset/:resetId"
-              element={<ResetPassword />}
+              path="passwordReset/reset/:token"
+              element={<ResetPasswordPage />}
             />
             <Route path="/login/:company/:groupId" element={<GroupSignUp />} />
+            <Route
+              path="/thankyouForRegistering_teamInspiron/verify/:token"
+              element={<Thankyou />}
+            />
           </Routes>
         </div>
       </Router>

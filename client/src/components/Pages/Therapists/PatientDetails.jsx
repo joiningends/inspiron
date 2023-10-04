@@ -183,6 +183,10 @@ function PatientDetails() {
     marginBottom: "16px",
   };
 
+  const openPrescription = () => {
+    window.open(`/prescription/${id}`, "_blank"); // "_blank" opens in a new window/tab
+  };
+
   return (
     <>
       <div className="profile-container">
@@ -300,6 +304,19 @@ function PatientDetails() {
             >
               Book Session
             </button>
+            {therapistDetails.psychiatriste === 0 ? (
+              <button
+                className="book-session-button"
+                style={{
+                  backgroundColor: "#D67449",
+                  color: "white",
+                  marginLeft: "1rem",
+                }}
+                onClick={openPrescription}
+              >
+                Extend Session
+              </button>
+            ) : null}
             {appointmentDetails.extensionprice === 0 ? (
               <button
                 className="book-session-button"

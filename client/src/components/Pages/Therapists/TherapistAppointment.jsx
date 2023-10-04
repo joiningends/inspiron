@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  fetchTherapist,
   fetchTodayAppointments,
   getAppointmentsByTherapist,
 } from "../../redux/Action";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import "./TherapistAppointment.css"
+import "./TherapistAppointment.css";
 
 function TherapistAppointment() {
   const [activeButton, setActiveButton] = useState(1);
@@ -16,6 +17,7 @@ function TherapistAppointment() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const dispatch = useDispatch();
 
+  const therapist = useSelector(state => state.therapist);
   const todayAppointments = useSelector(state => state.todayAppointments);
   const allAppointments = useSelector(state => state.appointmentByTherapist);
   const [upcomingAppointments, setUpcomingAppointment] = useState([]);
@@ -32,8 +34,11 @@ function TherapistAppointment() {
   }, []);
 
   const handleDetailsClick = patientId => {
-    // Open a new page with the patient's details
     window.open(`/patient-details/${patientId}`, "_blank");
+  };
+
+  const handleFillPrescriptionClick = patientId => {
+    window.open(`/prescription/${patientId}`, "_blank");
   };
 
   useEffect(() => {
@@ -42,6 +47,7 @@ function TherapistAppointment() {
         const apiUrlUpcoming = `http://localhost:4000/api/v1/appointments/therapists/${therapistId}/upcoming`;
         try {
           await dispatch(fetchTodayAppointments(therapistId));
+          await dispatch(fetchTherapist(therapistId));
           axios
             .get(apiUrlUpcoming)
             .then(response => {
@@ -82,9 +88,13 @@ function TherapistAppointment() {
     }
   };
 
-  const renderPaginationControls = (currentPage, handlePageChange, totalItems) => {
+  const renderPaginationControls = (
+    currentPage,
+    handlePageChange,
+    totalItems
+  ) => {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
-  
+
     return (
       <div className="pagination-controls">
         <button
@@ -98,7 +108,9 @@ function TherapistAppointment() {
           <button
             key={index}
             onClick={() => handlePageChange(index + 1)}
-            className={`pagination-button ${currentPage === index + 1 ? "active" : ""}`}
+            className={`pagination-button ${
+              currentPage === index + 1 ? "active" : ""
+            }`}
           >
             {index + 1}
           </button>
@@ -113,13 +125,11 @@ function TherapistAppointment() {
       </div>
     );
   };
-  
 
   const todayAppointmentCount = todayAppointments?.appointments?.length || 0;
   const upcomingAppointmentCount =
     upcomingAppointments?.totalUpcomingPatients || 0;
   const allAppointmentCount = allAppointments?.appointments?.length || 0;
-  console.log(upcomingAppointments);
 
   return (
     <div>
@@ -234,6 +244,9 @@ function TherapistAppointment() {
                 <th className="table-header-cell">Session Mode</th>
                 <th className="table-header-cell">Actions</th>
                 <th className="table-header-cell">Session Note Status</th>
+                {therapist?.therapisttype === "psychiatrist" && (
+                  <th className="table-header-cell">Prescription</th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -294,6 +307,20 @@ function TherapistAppointment() {
                     <td className="table-body-cell">
                       {appointment?.sessionstatus}
                     </td>
+                    {therapist?.therapisttype === "psychiatrist" ? (
+                      <td className="table-body-cell">
+                        <button
+                          className="button fill-prescription-button"
+                          onClick={() =>
+                            handleFillPrescriptionClick(appointment?._id)
+                          }
+                        >
+                          Fill Prescription
+                        </button>
+                      </td>
+                    ) : (
+                      <td className="table-body-cell"></td>
+                    )}
                   </tr>
                 ))}
             </tbody>
@@ -318,6 +345,9 @@ function TherapistAppointment() {
                 <th className="table-header-cell">Session Mode</th>
                 <th className="table-header-cell">Actions</th>
                 <th className="table-header-cell">Session Note Status</th>
+                {therapist?.therapisttype === "psychiatrist" && (
+                  <th className="table-header-cell">Prescription</th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -378,6 +408,20 @@ function TherapistAppointment() {
                     <td className="table-body-cell">
                       {appointment?.sessionstatus}
                     </td>
+                    {therapist?.therapisttype === "psychiatrist" ? (
+                      <td className="table-body-cell">
+                        <button
+                          className="button fill-prescription-button"
+                          onClick={() =>
+                            handleFillPrescriptionClick(appointment?._id)
+                          }
+                        >
+                          Fill Prescription
+                        </button>
+                      </td>
+                    ) : (
+                      <td className="table-body-cell"></td>
+                    )}
                   </tr>
                 ))}
             </tbody>
@@ -403,6 +447,9 @@ function TherapistAppointment() {
                 <th className="table-header-cell">Session Mode</th>
                 <th className="table-header-cell">Actions</th>
                 <th className="table-header-cell">Session Note Status</th>
+                {therapist?.therapisttype === "psychiatrist" && (
+                  <th className="table-header-cell">Prescription</th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -463,6 +510,20 @@ function TherapistAppointment() {
                     <td className="table-body-cell">
                       {appointment?.sessionstatus}
                     </td>
+                    {therapist?.therapisttype === "psychiatrist" ? (
+                      <td className="table-body-cell">
+                        <button
+                          className="button fill-prescription-button"
+                          onClick={() =>
+                            handleFillPrescriptionClick(appointment?._id)
+                          }
+                        >
+                          Fill Prescription
+                        </button>
+                      </td>
+                    ) : (
+                      <td className="table-body-cell"></td>
+                    )}
                   </tr>
                 ))}
             </tbody>

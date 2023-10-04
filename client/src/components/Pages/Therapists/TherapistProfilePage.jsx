@@ -168,7 +168,7 @@ function TherapistProfilePage() {
           },
         }
       );
-
+      window.location.reload();
       // Assuming the response.data.image contains the URL of the uploaded image.
     } catch (error) {
       console.error("Failed to upload image:", error);
@@ -497,7 +497,7 @@ function TherapistProfilePage() {
     <>
       <div className="rounded-image-container" style={{ position: "relative" }}>
         <div className="rounded-image">
-          <img src={therapist?.image} alt="Rounded" />
+          <img src={therapist?.image} alt="Therapist_image" />
           <div
             className="edit-button"
             style={{
@@ -973,7 +973,7 @@ function TherapistProfilePage() {
           borderRadius: "5px",
           boxShadow: "0px 0px 5px rgba(0, 0, 0, 0.2)",
           marginTop: "3rem",
-          width:"38rem"
+          width: "38rem",
         }}
       >
         <h2
@@ -1015,7 +1015,7 @@ function TherapistProfilePage() {
             borderRadius: "4px",
             cursor: "pointer",
             fontSize: "1rem",
-            backgroundColor:"#68B545"
+            backgroundColor: "#68B545",
           }}
         >
           Save
@@ -1052,9 +1052,9 @@ function TherapistProfilePage() {
             label="Select Language"
             // style={{ backgroundColor: "rgba(104, 181, 69, 0.25)" }} // Dropdown background color
           >
-            <MenuItem value="english">English</MenuItem>
-            <MenuItem value="hindi">Hindi</MenuItem>
-            <MenuItem value="telugu">Telugu</MenuItem>
+            <MenuItem value="English">English</MenuItem>
+            <MenuItem value="Hindi">Hindi</MenuItem>
+            <MenuItem value="Telugu">Telugu</MenuItem>
             {/* Add more language options */}
           </Select>
         </FormControl>

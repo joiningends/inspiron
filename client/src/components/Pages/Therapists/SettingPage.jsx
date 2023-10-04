@@ -18,6 +18,7 @@ import {
   DialogActions,
   InputLabel,
   Divider,
+  tableRowClasses,
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -76,10 +77,84 @@ function SettingPage() {
   const [medicineListFile, setMedicineListFile] = useState(null);
   const [labTestListFile, setLabTestListFile] = useState(null);
 
-  const handleMedicineListUpload = e => {
+  const [medicineList, setMedicineList] = useState([]);
+  // State to control the visibility of the popup dialog
+  const [openDialog, setOpenDialog] = useState(false);
+
+
+  const [labTestList, setLabTestList] = useState([]);
+  // State to control the visibility of the lab test list popup dialog
+  const [openLabTestDialog, setOpenLabTestDialog] = useState(false);
+
+  // Function to handle the "View Lab Test List" button click
+  const viewLabTestList = async () => {
+    try {
+      // Fetch data from the lab tests API
+      const response = await axios.get('http://localhost:4000/api/v1/labtests');
+      // Set the fetched data to the state
+      setLabTestList(response.data);
+      // Open the lab test list popup dialog
+      setOpenLabTestDialog(true);
+    } catch (error) {
+      console.error('Error fetching lab test list:', error);
+    }
+  };
+
+  // Function to close the lab test list popup dialog
+  const handleCloseLabTestDialog = () => {
+    setOpenLabTestDialog(false);
+  };
+
+  // Function to handle the "View Medicine List" button click
+  const viewMedicineList = async () => {
+    try {
+      // Fetch data from the API
+      const response = await axios.get(
+        "http://localhost:4000/api/v1/medicence"
+      );
+      // Set the fetched data to the state
+      setMedicineList(response.data);
+      // Open the popup dialog
+      setOpenDialog(true);
+    } catch (error) {
+      console.error("Error fetching medicine list:", error);
+    }
+  };
+
+  // Function to close the popup dialog
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleMedicineListUpload = async e => {
     const file = e.target.files[0];
+    console.log(file);
     if (file) {
-      setMedicineListFile(file);
+      // Create a new FormData object
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        // Make a POST request to your backend API endpoint for uploading medicine lists
+        const response = await axios.post(
+          "http://localhost:4000/api/v1/medicence",
+          formData
+        );
+
+        if (response.status === 201) {
+          // Handle a successful response, e.g., show a success message
+          alert("Medicine List uploaded successfully");
+        } else {
+          // Handle other response statuses, e.g., display an error message
+          alert("Error uploading Medicine List");
+        }
+
+        console.log(response);
+      } catch (error) {
+        // Handle any errors, e.g., display an error message
+        console.error("Error uploading Medicine List:", error);
+        alert("Error uploading Medicine List");
+      }
     }
   };
 
@@ -90,23 +165,7 @@ function SettingPage() {
     }
   };
 
-  const viewMedicineList = () => {
-    if (medicineListFile) {
-      // Handle viewing the medicine list here, e.g., parsing the Excel file.
-      alert("Viewing Medicine List");
-    } else {
-      alert("Please upload a Medicine List file first");
-    }
-  };
-
-  const viewLabTestList = () => {
-    if (labTestListFile) {
-      // Handle viewing the lab test list here, e.g., parsing the Excel file.
-      alert("Viewing Lab Test List");
-    } else {
-      alert("Please upload a Lab Test List file first");
-    }
-  };
+  
 
   const handleEditChiefNote = () => {
     // Add your logic for editing Chief-First Session Note here
@@ -436,14 +495,18 @@ function SettingPage() {
   const handleRemoveExperienceLevel = async (index, experienceId) => {
     try {
       // Make an HTTP DELETE request to the API endpoint
-      await axios.delete(`http://localhost:4000/api/v1/expriences/${experienceId}`);
-      
+      await axios.delete(
+        `http://localhost:4000/api/v1/expriences/${experienceId}`
+      );
+
       // If the request is successful, remove the experience level from the state
-      const newExperienceLevels = experienceLevels.filter((_, i) => i !== index);
+      const newExperienceLevels = experienceLevels.filter(
+        (_, i) => i !== index
+      );
       setExperienceLevels(newExperienceLevels);
     } catch (error) {
       // Handle errors here, e.g., show an error message to the user
-      console.error('Error removing experience level:', error);
+      console.error("Error removing experience level:", error);
     }
   };
 
@@ -509,6 +572,26 @@ function SettingPage() {
         console.error("Error fetching experience levels:", error);
       });
   }, []);
+
+  const handleExperinceDetailsRemove = async itemId => {
+    try {
+      // Make a DELETE request to the API
+      const response = await axios.delete(
+        `http://localhost:4000/api/v1/prices/${itemId}`
+      );
+
+      // Check if the DELETE request was successful (status code 200)
+      if (response.status === 200) {
+        window.location.reload();
+      } else {
+        // Handle other status codes or errors
+        console.error("Failed to delete item");
+      }
+    } catch (error) {
+      // Handle network errors or exceptions
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <Container maxWidth="lg">
@@ -912,7 +995,9 @@ function SettingPage() {
                         <Button
                           variant="outlined"
                           startIcon={<DeleteIcon />}
-                          onClick={() => handleRemoveExperienceLevel(0, level._id)}
+                          onClick={() =>
+                            handleRemoveExperienceLevel(0, level._id)
+                          }
                           style={{
                             backgroundColor: "white",
                             color: "#D67449",
@@ -964,6 +1049,8 @@ function SettingPage() {
                           <TableCell>Session Number</TableCell>
                           <TableCell>Session Price</TableCell>
                           <TableCell>Discount Session Price</TableCell>
+                          <TableCell>Action</TableCell>{" "}
+                          {/* New "Action" column */}
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -972,6 +1059,15 @@ function SettingPage() {
                             <TableCell>{detail.session}</TableCell>
                             <TableCell>{detail.sessionPrice}</TableCell>
                             <TableCell>{detail.discountPrice}</TableCell>
+                            <TableCell>
+                              <button
+                                onClick={() =>
+                                  handleExperinceDetailsRemove(detail._id)
+                                }
+                              >
+                                Remove
+                              </button>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -1178,14 +1274,13 @@ function SettingPage() {
               <Button
                 variant="contained"
                 onClick={viewMedicineList}
-                disabled={!medicineListFile}
                 startIcon={<DescriptionIcon />}
                 style={{
                   color: "white",
                   backgroundColor: "#D67449",
                 }}
               >
-                View List
+                View Medicine List
               </Button>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -1214,19 +1309,81 @@ function SettingPage() {
               <Button
                 variant="contained"
                 onClick={viewLabTestList}
-                disabled={!labTestListFile}
                 startIcon={<DescriptionIcon />}
                 style={{
                   color: "white",
                   backgroundColor: "#D67449",
                 }}
               >
-                View List
+                View Lab Test List
               </Button>
             </Grid>
           </Grid>
         </Paper>
       </Container>
+
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md">
+        <DialogTitle>Medicine List</DialogTitle>
+        <DialogContent>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>S.No.</TableCell>
+                  <TableCell>Name</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {/* Loop through the medicineList state and display the data in table rows */}
+                {medicineList.map((medicine, index) => (
+                  <TableRow key={medicine._id}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{medicine.name}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleCloseDialog}
+            color="primary"
+            style={{ backgroundColor: "#D67449", color: "white" }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openLabTestDialog} onClose={handleCloseLabTestDialog} maxWidth="md">
+        <DialogTitle>Lab Test List</DialogTitle>
+        <DialogContent>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>S.No.</TableCell>
+                  <TableCell>Name</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {/* Loop through the labTestList state and display the data in table rows */}
+                {labTestList?.map((labTest, index) => (
+                  <TableRow key={labTest._id}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{labTest.name}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseLabTestDialog} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

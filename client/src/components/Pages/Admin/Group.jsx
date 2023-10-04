@@ -4,6 +4,13 @@ import "./Group.css";
 import { Link } from "react-router-dom";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
 
 function Groups() {
   const [data, setData] = useState([]);
@@ -11,14 +18,16 @@ function Groups() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [allowCompanyPayment, setAllowCompanyPayment] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-  const [copyNotificationVisible, setCopyNotificationVisible] = useState(false); // Added
+  const [copyNotificationVisible, setCopyNotificationVisible] = useState(false);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [paymentCredit, setPaymentCredit] = useState("");
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const fetchData = async () => {
     try {
       const response = await axios.get("http://localhost:4000/api/v1/clients");
       setData(response.data.clients);
-      console.log(response.data.clients)
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -32,25 +41,25 @@ function Groups() {
     setCurrentPage(page);
   };
 
-  const pageCount = Math.ceil(data.length / itemsPerPage);
+  const pageCount = Math.ceil(data.length / 5);
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+  const startIndex = (currentPage - 1) * 5;
+  const endIndex = startIndex + 5;
   const currentData = data.slice(startIndex, endIndex);
 
   const handleAddCorporateClick = () => {
     setShowForm(true);
   };
 
-  const handleImageUpload = event => {
+  const handleImageUpload = (event) => {
     setSelectedImage(event.target.files[0]);
   };
 
-  const handleAllowCompanyPaymentChange = event => {
+  const handleAllowCompanyPaymentChange = (event) => {
     setAllowCompanyPayment(event.target.value === "yes");
   };
 
-  const handleFormSubmit = async event => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
 
     const formData = new FormData();
@@ -64,7 +73,6 @@ function Groups() {
         "http://localhost:4000/api/v1/clients",
         formData
       );
-      console.log("Form submitted successfully", response);
       setShowForm(false);
       fetchData();
     } catch (error) {
@@ -72,7 +80,7 @@ function Groups() {
     }
   };
 
-  const copyToClipboard = text => {
+  const copyToClipboard = (text) => {
     const textArea = document.createElement("textarea");
     textArea.value = text;
     document.body.appendChild(textArea);
@@ -80,13 +88,52 @@ function Groups() {
     document.execCommand("copy");
     document.body.removeChild(textArea);
 
-    // Show the "Text copied" notification
     setCopyNotificationVisible(true);
 
-    // Hide the notification after 2 seconds (adjust as needed)
     setTimeout(() => {
       setCopyNotificationVisible(false);
     }, 2000);
+  };
+
+  const handlePaymentButtonClick = (group) => {
+    setPaymentCredit("");
+    setSelectedGroupId(group._id);
+    setPaymentDialogOpen(true);
+  };
+
+  const handleClosePaymentDialog = () => {
+    setPaymentDialogOpen(false);
+  };
+
+  const handleConfirmPayment = async () => {
+    if (!paymentCredit || isNaN(paymentCredit) || paymentCredit <= 0) {
+      setErrorMessage("Please enter a valid positive number for payment.");
+      return;
+    }
+
+    const valueToSubtract = parseInt(paymentCredit);
+
+    if (valueToSubtract > data.find((group) => group._id === selectedGroupId).credit) {
+      setErrorMessage("Payment cannot be greater than the available credit.");
+      return;
+    }
+
+    try {
+      await axios.put(
+        `http://localhost:4000/api/v1/clients/${selectedGroupId}/subtract-credits`,
+        {
+          valueToSubtract,
+        }
+      );
+      setPaymentDialogOpen(false);
+      fetchData();
+    } catch (error) {
+      console.error("Error subtracting credits:", error);
+    }
+  };
+
+  const handleSnackbarClose = () => {
+    setErrorMessage("");
   };
 
   return (
@@ -156,35 +203,31 @@ function Groups() {
           </tr>
         </thead>
         <tbody>
-          {currentData.map(group => (
+          {currentData.map((group) => (
             <tr key={group._id}>
               <td>{group.name}</td>
               <td>{group.address}</td>
               <td>{group.groupid}</td>
-              <td>{group.credit}</td>
+              <td>
+                {group.credit}
+                <button onClick={() => handlePaymentButtonClick(group)}>
+                  Payment
+                </button>
+              </td>
               <td>
                 {group.name === "Retail" ? (
                   <span>N/A</span>
                 ) : (
-                  <>
-                    <a
-                      href={group.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Link
-                    </a>
-                  </>
+                  <a href={group.url} target="_blank" rel="noopener noreferrer">
+                    Link
+                  </a>
                 )}
               </td>
               <td>
                 {group.name === "Retail" ? (
                   <span>N/A</span>
                 ) : (
-                  <Link
-                    to={`/corporate-user/${group.groupid}`}
-                    className="details-link"
-                  >
+                  <Link to={`/corporate-user/${group.groupid}`} className="details-link">
                     Details
                   </Link>
                 )}
@@ -205,6 +248,39 @@ function Groups() {
       {copyNotificationVisible && (
         <div className="copy-notification">Text copied</div>
       )}
+      <Dialog
+        open={paymentDialogOpen}
+        onClose={handleClosePaymentDialog}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Credit for which payment received</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Payment Credit"
+            type="number"
+            fullWidth
+            value={paymentCredit}
+            onChange={(e) => setPaymentCredit(e.target.value)}
+            error={errorMessage !== ""}
+            helperText={errorMessage}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClosePaymentDialog} color="primary">
+            Close
+          </Button>
+          <Button onClick={handleConfirmPayment} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={errorMessage !== ""}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+        message={errorMessage}
+      />
     </div>
   );
 }

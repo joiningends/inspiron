@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchTherapist,
-  updateTherapist,
-} from "../../redux/Action";
+import { fetchTherapist, updateTherapist } from "../../redux/Action";
 import { FaEdit } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa";
 import Modal from "react-modal";
@@ -172,6 +169,7 @@ function TherapistDetails() {
     // You can send the selectedOptions array to your API for saving if needed
     console.log(selectedOptions);
     dispatch(updateTherapist(therapistId, { modeOfSession: selectedOptions }));
+    window.location.reload();
   };
   const indexOfLastSlot = currentPage * slotsPerPage;
   const indexOfFirstSlot = indexOfLastSlot - slotsPerPage;
@@ -209,6 +207,7 @@ function TherapistDetails() {
         languages: selectedLanguages,
       })
     );
+    window.location.reload();
   };
 
   const paginate = pageNumber => setCurrentPage(pageNumber);
@@ -256,6 +255,7 @@ function TherapistDetails() {
         .then(response => {
           // Handle the response if needed
           console.log("API response:", response.data);
+          window.location.reload();
         })
         .catch(error => {
           // Handle errors if the API request fails
@@ -327,6 +327,7 @@ function TherapistDetails() {
       .then(response => {
         // Handle the response if needed
         console.log("API response:", response.data);
+        window.location.reload();
       })
       .catch(error => {
         // Handle errors if the API request fails
@@ -376,6 +377,7 @@ function TherapistDetails() {
   const handleMeetLinkSave = () => {
     dispatch(updateTherapist(therapistId, { meetLink: meetLink }));
     setIsMeetLinkEditing(false);
+    window.location.reload();
   };
 
   const handleMeetLinkEdit = () => {
@@ -420,6 +422,7 @@ function TherapistDetails() {
         permanentaddress: permanentAddress,
       })
     );
+    window.location.reload();
     setShowAddressForm(false);
   };
 
@@ -442,8 +445,8 @@ function TherapistDetails() {
         emergencymobile: emergencyContact,
       })
     );
-
     setShowContactForm(false);
+    window.location.reload();
   };
 
   const handleSaveClick = () => {
@@ -455,6 +458,7 @@ function TherapistDetails() {
       })
     );
     setShowEditForm(false);
+    window.location.reload();
   };
 
   const handleCancelClick = () => {
@@ -1152,9 +1156,9 @@ function TherapistDetails() {
             label="Select Language"
             // style={{ backgroundColor: "rgba(104, 181, 69, 0.25)" }} // Dropdown background color
           >
-            <MenuItem value="english">English</MenuItem>
-            <MenuItem value="hindi">Hindi</MenuItem>
-            <MenuItem value="telugu">Telugu</MenuItem>
+            <MenuItem value="English">English</MenuItem>
+            <MenuItem value="Hindi">Hindi</MenuItem>
+            <MenuItem value="Telugu">Telugu</MenuItem>
             {/* Add more language options */}
           </Select>
         </FormControl>

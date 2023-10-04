@@ -18,6 +18,8 @@ function Dashboard() {
     therapists: [],
   });
 
+  console.log(therapistsData);
+
   useEffect(() => {
     const fetchTherapistsDetails = async () => {
       try {
@@ -38,12 +40,12 @@ function Dashboard() {
   React.useEffect(() => {
     axios
       .get("http://localhost:4000/api/v1/categories/center/info")
-      .then((response) => {
+      .then(response => {
         setAvailableAddress(response.data?.categories);
       });
   }, []);
 
-  const handleDetails = (therapistId) => {
+  const handleDetails = therapistId => {
     const url = `/therapists-Details/${therapistId}`;
     window.open(url, "_blank");
   };
@@ -56,7 +58,7 @@ function Dashboard() {
     setShowForm(false);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = e => {
     e.preventDefault();
     axios
       .post("http://localhost:4000/api/v1/therapists", {
@@ -82,11 +84,11 @@ function Dashboard() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredTherapists = therapistsData.therapists.filter((therapist) =>
+  const filteredTherapists = therapistsData.therapists.filter(therapist =>
     therapist.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const optionItems = availableAddress?.map((item) => (
+  const optionItems = availableAddress?.map(item => (
     <option key={item?._id} value={item?._id}>
       {`${item?.centerName}, ${item?.centerAddress}`}
     </option>
@@ -153,14 +155,17 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="adminDashboardContainer" style={{ padding: "1rem", width: "100%" }}>
+      <div
+        className="adminDashboardContainer"
+        style={{ padding: "1rem", width: "100%" }}
+      >
         <h2 style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>Therapists</h2>
         <input
           type="text"
           placeholder="Search by name"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ marginBottom: "1rem" ,width:"91%"}}
+          onChange={e => setSearchQuery(e.target.value)}
+          style={{ marginBottom: "1rem", width: "91%" }}
         />
         <div style={{ overflowX: "auto" }}>
           <table
@@ -188,7 +193,7 @@ function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {filteredTherapists.map((therapist) => (
+              {filteredTherapists.map(therapist => (
                 <tr key={therapist._id}>
                   <td
                     style={{
@@ -254,7 +259,7 @@ function Dashboard() {
               <input
                 type="text"
                 style={{ width: "100%" }}
-                onChange={(e) => setName(e.target.value)}
+                onChange={e => setName(e.target.value)}
                 required
               />
             </label>
@@ -263,7 +268,7 @@ function Dashboard() {
               <input
                 type="email"
                 style={{ width: "100%" }}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 required
               />
             </label>
@@ -272,7 +277,7 @@ function Dashboard() {
               <input
                 type="text"
                 style={{ width: "100%" }}
-                onChange={(e) => setPhoneNumebr(e.target.value)}
+                onChange={e => setPhoneNumebr(e.target.value)}
                 required
               />
             </label>
@@ -301,7 +306,7 @@ function Dashboard() {
               Location:
               <select
                 style={{ width: "100%", borderRadius: "1rem" }}
-                onChange={(e) => setAddress(e.target.value)}
+                onChange={e => setAddress(e.target.value)}
                 required
               >
                 {optionItems}

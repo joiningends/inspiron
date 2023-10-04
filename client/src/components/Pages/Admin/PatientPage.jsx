@@ -55,6 +55,7 @@ function PatientPage() {
     const fetchPatientData = async () => {
       try {
         const response = await axios.get("http://localhost:4000/api/v1/users");
+        console.log(response.data);
         setPatients(response.data);
       } catch (error) {
         console.error("Error fetching patients data:", error);

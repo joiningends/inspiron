@@ -39,7 +39,6 @@ const Signin = () => {
   const handleSubmit = async e => {
     e.preventDefault();
 
-    // Check if any required fields are missing
     if (!formData.email || !formData.password) {
       toast.error("Please fill in all required fields.", {
         position: "top-right",
@@ -50,19 +49,18 @@ const Signin = () => {
         draggable: true,
         progress: undefined,
         style: {
-          background: "#ff7f50", // Change the background color
-          color: "#fff", // Change the text color
+          background: "#ff7f50",
+          color: "#fff",
           fontSize: "14px",
           borderRadius: "4px",
           padding: "12px",
           boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
         },
       });
-      return; // Stop form submission if any required field is missing
+      return;
     }
 
     try {
-      // Send login request to the backend
       const response = await fetch("http://localhost:4000/api/v1/users/login", {
         method: "POST",
         headers: {
@@ -71,60 +69,67 @@ const Signin = () => {
         body: JSON.stringify(formData),
       });
 
-      console.log("hello");
-      console.log(response);
-
       if (response.ok) {
-        // Login successful, extract and store user information and token
         const data = await response.json();
-        console.log(data);
-        console.log("hello");
-        const { user, token, role, empid, groupid, userId } = data;
 
-        // Store the user information and token in localStorage or other secure storage mechanisms
-        localStorage.setItem("user", JSON.stringify(user));
-        localStorage.setItem("role", JSON.stringify(role));
-        localStorage.setItem("empid", JSON.stringify(empid));
-        localStorage.setItem("groupid", JSON.stringify(groupid));
-        localStorage.setItem("userId", JSON.stringify(userId));
-        console.log(userId);
-        console.log(groupid);
-        console.log(user);
-        localStorage.setItem("token", token);
-        // Clear the form data
+        toast.success("Login successful.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          style: {
+            background: "green",
+            color: "#fff",
+            fontSize: "14px",
+            borderRadius: "4px",
+            padding: "12px",
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+          },
+        });
+
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("role", JSON.stringify(data.role));
+        localStorage.setItem("empid", JSON.stringify(data.empid));
+        localStorage.setItem("groupid", JSON.stringify(data.groupid));
+        localStorage.setItem("userId", JSON.stringify(data.userId));
+        localStorage.setItem("token", data.token);
+
         setFormData({
           email: "",
           password: "",
         });
 
-        // Redirect to the "/FindTherapist" page
         const savedGroupid = JSON.parse(localStorage.getItem("groupid"));
-
-        if (savedGroupid === null) {
-          window.location.href = "/";
-        } else {
-          window.location.href = "/";
-        }
-
-        //
+        const redirectPath = savedGroupid === null ? "/" : "/";
+        window.location.href = redirectPath;
       } else {
-        // Login failed
-        console.log("Login failed");
+        toast.error(
+          "Login failed. Please check your credentials and try again.",
+          {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            style: {
+              background: "#ff7f50",
+              color: "#fff",
+              fontSize: "14px",
+              borderRadius: "4px",
+              padding: "12px",
+              boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+            },
+          }
+        );
       }
     } catch (error) {
       console.error("Error during login:", error);
-    }
-  };
-
-  const isValidEmail = email => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
-  };
-
-  const handleEmailBlur = () => {
-    const validEmail = isValidEmail(formData.email);
-    if (!validEmail) {
-      toast.error("Please enter a valid email address.", {
+      toast.error("An error occurred during login. Please try again later.", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: true,
@@ -133,8 +138,8 @@ const Signin = () => {
         draggable: true,
         progress: undefined,
         style: {
-          background: "#ff7f50", // Change the background color
-          color: "#fff", // Change the text color
+          background: "#ff7f50",
+          color: "#fff",
           fontSize: "14px",
           borderRadius: "4px",
           padding: "12px",
@@ -160,7 +165,7 @@ const Signin = () => {
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            onBlur={handleEmailBlur}
+            onBlur={handleInputBlur}
             required
           />
         </div>
@@ -181,7 +186,6 @@ const Signin = () => {
             required
           />
           <FontAwesomeIcon
-            // icon={showPassword ? faEyeSlash : faEye}
             className={`toggle-password-icon ${
               formData.password ? "active" : ""
             }`}
