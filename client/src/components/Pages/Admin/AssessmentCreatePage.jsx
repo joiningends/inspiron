@@ -34,7 +34,7 @@ function AssessmentCreatePage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:4000/api/v1/expetises")
+      .get("http://localhost:8080/api/v1/expetises")
       .then(response => {
         setExpertiseList(response.data);
       })
@@ -167,7 +167,7 @@ function AssessmentCreatePage() {
       console.log(assessmentData);
       // Send assessment data to the backend API
       const response = await axios.post(
-        "http://localhost:4000/api/v1/assessments",
+        "http://localhost:8080/api/v1/assessments",
         assessmentData
       );
 

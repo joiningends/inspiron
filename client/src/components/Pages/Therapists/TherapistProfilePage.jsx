@@ -54,7 +54,7 @@ function TherapistProfilePage() {
 
     try {
       const response = await axios.put(
-        `http://localhost:4000/api/v1/therapists/${therapistId}/image`,
+        `http://localhost:8080/api/v1/therapists/${therapistId}/image`,
         formData,
         {
           headers: {

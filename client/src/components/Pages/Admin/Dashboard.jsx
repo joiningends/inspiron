@@ -26,7 +26,7 @@ function Dashboard() {
     const fetchTherapistsDetails = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/api/v1/therapists/total-therapists"
+          "http://localhost:8080/api/v1/therapists/total-therapists"
         );
         // Assuming the response data is an object with 'totalTherapists' and 'therapists' properties
         console.log(response.data);
@@ -43,7 +43,7 @@ function Dashboard() {
   const [availableAddress, setAvailableAddress] = React.useState(null);
 
   React.useEffect(() => {
-    axios.get("http://localhost:4000/api/v1/categories").then(response => {
+    axios.get("http://localhost:8080/api/v1/categories").then(response => {
       setAvailableAddress(response.data);
     });
   }, []);
@@ -81,7 +81,7 @@ function Dashboard() {
       ],
     });
     axios
-      .post("http://localhost:4000/api/v1/therapists", {
+      .post("http://localhost:8080/api/v1/therapists", {
         mobile,
         name,
         email,
