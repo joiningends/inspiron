@@ -7,6 +7,7 @@ const cors = require("cors");
 require("dotenv/config");
 const authJwt = require("./helpers/jwt");
 const errorHandler = require("./helpers/error-handler");
+const path= require('path');
 
 app.use(cors());
 app.options("*", cors());
@@ -34,8 +35,17 @@ const onsetsRoutes = require("./routes/onsets");
 const PaymentsRoutes = require("./routes/payments");
 const expertisesRoutes = require("./routes/expertise");
 
-
-
+const _dirname= path.dirname("")
+const buildPath = path.join(__dirname, '../client/build');
+app.use(express.static(buildPath));
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(buildPath, 'index.html')),
+  function(err){
+    if(err){
+      res.status(500).send(err)
+    }
+  }
+});
 const api = process.env.API_URL;
 const PORT = process.env.PORT ||8080;
 app.use(`${api}/appointments`, appointmentsRoutes);
