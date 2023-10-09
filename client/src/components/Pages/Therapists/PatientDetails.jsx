@@ -10,13 +10,13 @@ function PatientDetails() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/v1/appointments/${id}`)
+    fetch(`http://localhost:4000/api/v1/appointments/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setAppointmentDetails(data);
 
         // Retrieve therapist details
-        fetch(`http://localhost:8080/api/v1/therapists/${data.therapist}`)
+        fetch(`http://localhost:4000/api/v1/therapists/${data.therapist}`)
           .then((response) => response.json())
           .then((therapistData) => {
             setTherapistDetails(therapistData);

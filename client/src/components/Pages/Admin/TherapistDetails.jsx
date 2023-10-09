@@ -71,7 +71,7 @@ function TherapistDetails() {
     const fetchExpertises = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/v1/expetises"
+          "http://localhost:4000/api/v1/expetises"
         );
         // Assuming the response data is an array of expertises
         setExpertisesData(response.data);
@@ -224,7 +224,7 @@ function TherapistDetails() {
       console.log(dataToSend);
 
       // Hit the API using the fetch API
-      fetch(`http://localhost:8080/api/v1/therapists/${therapistId}/approve`, {
+      fetch(`http://localhost:4000/api/v1/therapists/${therapistId}/approve`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

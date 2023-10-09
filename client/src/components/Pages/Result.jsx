@@ -6,7 +6,7 @@ import "./Result.css";
 const getTherapists = async assessmentScore => {
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/v1/therapists/score",
+      "http://localhost:4000/api/v1/therapists/score",
       {
         assessmentScore,
       }

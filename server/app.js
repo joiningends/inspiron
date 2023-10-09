@@ -47,7 +47,7 @@ app.get('/*', (req, res) => {
   }
 });
 const api = process.env.API_URL;
-const PORT = process.env.PORT ||8080;
+const PORT = process.env.PORT ||4000;
 app.use(`${api}/appointments`, appointmentsRoutes);
 app.use(`${api}/users`, usersRoutes);
 app.use(`${api}/therapists`,  therapistsRoutes);
