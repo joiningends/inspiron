@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/static/css/main.2a258d02.css",
+    "main.js": "/static/js/main.56938bb6.js",
+    "static/media/groupDiscuss.jpg": "/static/media/groupDiscuss.06ff81f56fc7a57734ba.jpg",
+    "static/media/inspironWheel.png": "/static/media/inspironWheel.68a29855a490196aaf15.png",
+    "static/media/GroupHomeImage.png": "/static/media/GroupHomeImage.0063e316e2a61f8a510b.png",
+    "static/media/myimg.jpg": "/static/media/myimg.f102b9164bfdea5a75a6.jpg",
+    "static/media/intermediary.png": "/static/media/intermediary.e5d3f36b5ce5c8a6c210.png",
+    "static/media/thumbs-up.png": "/static/media/thumbs-up.ab933a184fa604f37ae4.png",
+    "static/media/clock.png": "/static/media/clock.45b0736b20ad251e6cdb.png",
+    "static/media/inspironwhitewheel.png": "/static/media/inspironwhitewheel.de005498f906da452e88.png",
+    "static/media/favorite.svg": "/static/media/favorite.7753fa317e64861f1f4e1ef1dd85c4cc.svg",
+    "index.html": "/index.html",
+    "main.2a258d02.css.map": "/static/css/main.2a258d02.css.map",
+    "main.56938bb6.js.map": "/static/js/main.56938bb6.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2a258d02.css",
+    "static/js/main.56938bb6.js"
+  ]
+}
