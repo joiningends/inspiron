@@ -2675,7 +2675,7 @@ exports.updatePackage = async (req, res) => {
 
 exports.updatePackage = async (req, res) => {
   try {
-    const { appointmentId } = req.params;
+    const appointmentId = req.params.id;
     const { package } = req.body; 
 
     // Find the appointment by its ID
