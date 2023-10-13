@@ -2747,7 +2747,7 @@ const appointmentDate = appointment.dateTime;
 
     sendWhatsAppMessage(user.mobile, `
       Hi ${user.name},
-      Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentStartTime}.
+      Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointment.StartTime}.
       Please log into the application 5 mins before the start of the session.
       Thanks,
       Team Inspiron
