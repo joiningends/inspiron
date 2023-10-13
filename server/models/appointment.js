@@ -31,7 +31,7 @@ const appointmentSchema = new mongoose.Schema({
   },
   paymentMethod:{
     type: String,
-    enum: ['Online', 'Offline','Book by Therapist'],
+    enum: ['Online', 'Offline','Book by Therapist', 'From package'],
     default: 'Online',
   },
   price:{
@@ -123,7 +123,14 @@ default:false
         type: Boolean,
         default: false,
       },
-    
+      coinpositive: {
+        type: Boolean,
+        default: false,
+      },
+     package: {
+        type: Boolean,
+        default: false,
+      },
 
     });
     
@@ -133,3 +140,4 @@ default:false
 
 
 exports.Appointment = mongoose.model('Appointment', appointmentSchema);
+
