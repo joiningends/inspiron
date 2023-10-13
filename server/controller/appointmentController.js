@@ -2705,7 +2705,7 @@ exports.updatePackage = async (req, res) => {
 
     if (package) {
       // If package is true, update payment method and payment status
-      appointment.paymentMethod = 'From package';
+      appointment.paymentMethod = 'Online';
       appointment.paymentstatus = 'Success';
       const therapistSessions = therapist.sessions || [];
 
