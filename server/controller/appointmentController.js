@@ -2741,7 +2741,7 @@ exports.updatePackage = async (req, res) => {
 
     const updatedAppointment = await appointment.save();
     const therapistName = therapist.name;
-
+const appointmentDate = appointment.dateTime;
     const dateObject = new Date(appointmentDate);
     const appointmentDateonly = dateObject.toISOString().split('T')[0];
 
