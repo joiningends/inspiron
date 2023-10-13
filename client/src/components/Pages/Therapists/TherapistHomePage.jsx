@@ -19,8 +19,6 @@ const TherapistHomePage = () => {
   const therapist = useSelector(state => state.therapist);
   const [upcomingAppointments, setUpcomingAppointment] = useState([]);
 
-
-
   const [therapistId, setTherapistId] = useState(null);
 
   useEffect(() => {
@@ -44,8 +42,8 @@ const TherapistHomePage = () => {
       if (therapistId) {
         try {
           // Call the API to fetch therapist data with the therapistId
-          const apiUrlUpcoming = `http://localhost:4000/api/v1/appointments/therapists/${therapistId}/upcoming`;
-  
+          const apiUrlUpcoming = `${process.env.REACT_APP_SERVER_URL}/appointments/therapists/${therapistId}/upcoming`;
+
           axios
             .get(apiUrlUpcoming)
             .then(response => {
@@ -54,7 +52,7 @@ const TherapistHomePage = () => {
             .catch(error => {
               console.error("Error fetching upcoming appointments:", error);
             });
-  
+
           await dispatch(fetchTherapist(therapistId));
           await dispatch(fetchTodayAppointments(therapistId));
           await dispatch(getAppointmentsByTherapist(therapistId));
@@ -65,10 +63,9 @@ const TherapistHomePage = () => {
         }
       }
     };
-  
+
     fetchTherapistData();
   }, [therapistId]);
-  
 
   console.log(therapist);
   console.log(todayAppointments);

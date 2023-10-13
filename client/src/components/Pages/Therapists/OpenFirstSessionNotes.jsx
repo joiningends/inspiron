@@ -38,7 +38,7 @@ function OpenFirstSessionNotes() {
   const { userId } = useParams();
 
   useEffect(() => {
-    const apiUrl = `http://localhost:4000/api/v1/users/${userId}`;
+    const apiUrl = `${process.env.REACT_APP_SERVER_URL}/users/${userId}`;
 
     fetch(apiUrl)
       .then(response => response.json())

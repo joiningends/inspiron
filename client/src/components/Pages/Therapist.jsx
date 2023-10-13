@@ -4,12 +4,27 @@ import inspiron from "./inspironWheel.png";
 import { Link } from "react-router-dom";
 
 function Therapist({ therapist }) {
+  const nextAvailableDateTime = new Date(therapist?.nextAvailableDateTime);
+
+  const formattedDate = nextAvailableDateTime.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  // Format the time in HH:mm format
+  const formattedTime = nextAvailableDateTime.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   console.log(therapist);
   return (
     <div className="therapist-container">
       <div className="therapist-card">
         <div className="therapist-image-container">
           <img src={therapist?.image} alt="Rounded" />
+
           <img src={inspiron} alt="Watermark" className="watermark" />
         </div>
         <div className="therapist-content-container">
@@ -47,7 +62,7 @@ function Therapist({ therapist }) {
             </span>
           </div>
           <span className="therapist-available">
-            Next Available Date and Time: {therapist?.nextAvailableDateTime}
+            Next Available Date and Time: {formattedDate} - {formattedTime}
           </span>
           <div className="therapist-buttons-container">
             <Link

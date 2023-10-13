@@ -41,17 +41,11 @@ function PendingPayments(props) {
   const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
 
-  const handleMakePaymentClick = appointmentData => {
-    const url = `bookaslot/bookYourSession/${appointmentData.therapist._id}/${appointmentData._id}`;
-    console.log(url);
-    window.location.href = url;
-  };
-
   const fetchData = async () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `http://localhost:4000/api/v1/appointments/users/${userId}/paymentpending`
+        `${process.env.REACT_APP_SERVER_URL}/appointments/users/${userId}/paymentpending`
       );
       setData(response.data);
       console.log(response.data);
@@ -76,19 +70,34 @@ function PendingPayments(props) {
     setOrderBy(columnId);
   };
 
-  const handleChangePage = (event, newPage) => {
+  const handlePageChange = (event, newPage) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = event => {
+  const handleRowsPerPageChange = event => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
+  useEffect(() => {
+    document.addEventListener("pageChange", handlePageChange);
+    document.addEventListener("rowsPerPageChange", handleRowsPerPageChange);
+
+    return () => {
+      document.removeEventListener("pageChange", handlePageChange);
+      document.removeEventListener(
+        "rowsPerPageChange",
+        handleRowsPerPageChange
+      );
+    };
+  }, []);
+
+  const handleMakePaymentClick = appointmentData => {
+    const url = `bookaslot/bookYourSession/${appointmentData.therapist._id}/${appointmentData._id}`;
+    window.location.href = url;
+  };
+
   const handlePaymentConfirm = () => {
-    console.log(
-      `Payment for ${selectedPayment.therapist.name} on ${selectedPayment.dateTime}`
-    );
     setOpenPaymentDialog(false);
   };
 
@@ -170,8 +179,8 @@ function PendingPayments(props) {
             count={data.length}
             rowsPerPage={rowsPerPage}
             page={page}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
+            onChangePage={handlePageChange}
+            onChangeRowsPerPage={handleRowsPerPageChange}
           />
           <Dialog
             open={openPaymentDialog}

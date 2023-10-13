@@ -4,6 +4,7 @@ import "./Home.css";
 import groupHomePage from "./GroupHomeImage.png";
 
 export const Home = () => {
+  console.log(process.env.REACT_APP_SERVER_URL);
   return (
     <>
       <div className="homepageBanner">
@@ -19,16 +20,16 @@ export const Home = () => {
             ever since the 1500s, when an unknown printer took a galley of type
             and scrambled it to make a type specimen book.
           </p>
-            <span>
-              <Link to={`/FindTherapist`} className="linkButton primary">
-                FIND YOUR THERAPIST
-              </Link>
-            </span>
-            <span>
-              <Link to={`/assessment`} className="linkButton secondary">
-                TAKE YOUR ASSESSMENT
-              </Link>
-            </span>
+          <span>
+            <Link to={`/FindTherapist`} className="linkButton primary">
+              FIND YOUR THERAPIST
+            </Link>
+          </span>
+          <span>
+            <Link to={`/assessment`} className="linkButton secondary">
+              TAKE YOUR ASSESSMENT
+            </Link>
+          </span>
         </div>
         <div className="homepageBackgroundImage">
           <img src={groupHomePage} alt="homepageBackgroundImage" />

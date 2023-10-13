@@ -66,6 +66,31 @@ function TherapistProfilePage() {
     Offline: false,
   });
 
+  const [sessionInfo, setSessionInfo] = useState(null);
+  const [sessionDuration, setSessionDuration] = useState(
+    sessionInfo?.categories[0]?.sessionDuration
+  );
+  const [sessionCoolOffTime, setSessionCoolOffTime] = useState(
+    sessionInfo?.categories[0]?.timeBetweenSessions
+  );
+
+  useEffect(() => {
+    // Make the API request when the component mounts
+    fetch(`${process.env.REACT_APP_SERVER_URL}/categories/session/info`)
+      .then(response => response.json())
+      .then(data => {
+        // Update state with the fetched data and set loading to false
+        setSessionInfo(data);
+        setSessionDuration(data?.categories[0]?.sessionDuration);
+        setSessionCoolOffTime(data?.categories[0]?.timeBetweenSessions);
+        console.log(data.categories[0]?.timeBetweenSessions);
+      })
+      .catch(error => {
+        // Handle any errors that occurred during the fetch and update error state
+        setSessionInfo(null);
+      });
+  }, []);
+
   const handleSessionModeCheckboxChange = option => {
     const newCheckboxValues = {
       ...checkboxValues,
@@ -129,7 +154,7 @@ function TherapistProfilePage() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:4000/api/v1/categories/center/info`)
+      .get(`${process.env.REACT_APP_SERVER_URL}/categories/center/info`)
       .then(response => {
         const fetchedData = response.data;
         setAvailability(fetchedData.categories);
@@ -160,7 +185,7 @@ function TherapistProfilePage() {
 
     try {
       const response = await axios.put(
-        `http://localhost:4000/api/v1/therapists/${therapistId}/image`,
+        `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}/image`,
         formData,
         {
           headers: {
@@ -274,7 +299,7 @@ function TherapistProfilePage() {
 
   const calculateEndTime = startTime => {
     const start = moment(startTime, "HH:mm");
-    const end = start.clone().add(timeSlotDuration, "minutes").format("HH:mm");
+    const end = start.clone().add(sessionDuration, "minutes").format("HH:mm");
     return end;
   };
 
@@ -288,15 +313,15 @@ function TherapistProfilePage() {
     const duration = moment.duration(newSlotStartTime.diff(lastSlotEndTime));
     const cooldownMinutes = duration.asMinutes();
 
-    return cooldownMinutes < cooldownPeriod;
+    return cooldownMinutes < sessionCoolOffTime;
   };
 
   const getNextAvailableSlot = startTime => {
     const lastSlotEndTime = moment(slots[slots.length - 1].endTime, "HH:mm");
     const nextStartTime = lastSlotEndTime
       .clone()
-      .add(cooldownPeriod, "minutes");
-    const nextEndTime = nextStartTime.clone().add(timeSlotDuration, "minutes");
+      .add(sessionCoolOffTime, "minutes");
+    const nextEndTime = nextStartTime.clone().add(sessionDuration, "minutes");
     const nextSlot = {
       startTime: nextStartTime.format("HH:mm"),
       endTime: nextEndTime.format("HH:mm"),
@@ -755,7 +780,12 @@ function TherapistProfilePage() {
             </div>
             <div className="educationFormButtons">
               <button onClick={handleAddEducation}>Add</button>
-              <button onClick={handleCancelEducationClick}>Cancel</button>
+              <button
+                onClick={handleCancelEducationClick}
+                style={{ background: "#D67449", color: "white" }}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </Modal>
@@ -1200,7 +1230,7 @@ function TherapistProfilePage() {
         <div className="date-slots-container">
           {currentSlots?.map((session, index) => (
             <div key={index}>
-              <h2>Date: {session?.date}</h2>
+              <h2>Date: {formatDate(session?.date)}</h2>
               <ul>
                 {session?.timeSlots?.map((slot, slotIndex) => (
                   <li key={slotIndex}>
@@ -1377,6 +1407,99 @@ function TherapistProfilePage() {
                 <p>No slots selected</p>
               )}
             </div>
+            {showAddressForm && (
+              <div className="editFormContainer" style={{ textAlign: "left" }}>
+                <div
+                  className="editForm"
+                  style={{
+                    backgroundColor: "#fff",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                    padding: "20px",
+                  }}
+                >
+                  <h2>Edit Address</h2>
+                  <label
+                    htmlFor="currentAddress"
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "8px",
+                      display: "block",
+                    }}
+                  >
+                    Current Address:
+                  </label>
+                  <input
+                    type="text"
+                    id="currentAddress"
+                    value={currentAddress}
+                    onChange={e => setCurrentAddress(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      marginBottom: "16px",
+                    }}
+                  />
+                  <label
+                    htmlFor="permanentAddress"
+                    style={{
+                      fontSize: "1rem",
+                      marginBottom: "8px",
+                      display: "block",
+                    }}
+                  >
+                    Permanent Address:
+                  </label>
+                  <input
+                    type="text"
+                    id="permanentAddress"
+                    value={permanentAddress}
+                    onChange={e => setPermanentAddress(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      marginBottom: "20px",
+                    }}
+                  />
+                  <div
+                    className="buttons"
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    <button
+                      onClick={handleAddressSaveClick}
+                      style={{
+                        backgroundColor: "#D67449",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        padding: "10px 20px",
+                        cursor: "pointer",
+                        marginRight: "16px",
+                      }}
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={handleAddressCancelClick}
+                      style={{
+                        backgroundColor: "white",
+                        color: "#D67449",
+                        border: "1px solid #D67449",
+                        borderRadius: "4px",
+                        padding: "10px 20px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {date && slots.length > 0 && (
               <div className="button-container">

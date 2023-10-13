@@ -48,6 +48,9 @@ import { Navigate } from "react-router-dom";
 import Prescription from "./components/Pages/Therapists/Prescription";
 import ResetPasswordPage from "./components/Pages/ResetPasswordPassPage";
 import Thankyou from "./components/Pages/Thankyou";
+import CompletePayment from "./components/Pages/CompletePayment";
+import PaymentConfirm from "./components/Pages/PaymentConfirm";
+
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -58,10 +61,12 @@ function App() {
   const empid = JSON.parse(localStorage.getItem("empid"));
   const isEmpidNull = empid === null;
 
+  const excludedPath = "/thankyouForRegistering_teamInspiron/verify/:token";
+
   return (
     <>
       <Router>
-        <NavBar />
+        {window.location.pathname !== excludedPath && <NavBar />}
         <div className="pages">
           <Routes>
             {isUser && (
@@ -94,6 +99,14 @@ function App() {
                 <Route path="/Profile" element={<Profile />} />
                 <Route path="/Appointments" element={<Appointments />} />
                 <Route
+                  path="/completePayment/:userId/:amount/:experienceLevel"
+                  element={<CompletePayment />}
+                />
+                <Route
+                  path="/paymentConfirm/:amount"
+                  element={<PaymentConfirm />}
+                />
+                <Route
                   path="/PendingPayments"
                   element={
                     isEmpidNull ? (
@@ -106,7 +119,6 @@ function App() {
               </>
             )}
 
-            {/* Routes shown to the therapist only */}
             {isTherapist && (
               <>
                 <Route path="/appointment" element={<TherapistAppointment />} />
@@ -138,7 +150,6 @@ function App() {
               </>
             )}
 
-            {/* Routes shown to the admin only */}
             {isAdmin && (
               <>
                 <Route path="/admin-Dashboard" element={<Dashboard />} />
@@ -197,7 +208,6 @@ function App() {
             <Route path="/login" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
             <Route path="/forgotpassword" element={<Forgotpassword />} />
-
             <Route
               path="passwordReset/reset/:token"
               element={<ResetPasswordPage />}

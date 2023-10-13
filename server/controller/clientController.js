@@ -39,7 +39,7 @@ exports.getClientById = async (req, res) => {
       let generatedGroupId = 'not-generated'; // Use a default value for not explicitly generated
   
       // Generate the URL based on the presence of address
-      let generatedUrl = `http://localhost:3000/login`;
+      let generatedUrl = `${process.env.CLIENT_URL}/login`;
   
       if (address) {
         // Generate a random 6-character alphanumeric groupid
@@ -80,8 +80,18 @@ exports.updateClient = async (req, res) => {
   try {
     const { name, address, image, credit,companypayment } = req.body;
     const clientId = req.params.id;
-    
-    // Find the existing client by ID
+    const file = req.file;
+    let imagePath;
+
+    if (file) {
+      const fileName = file.filename;
+      const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+      imagePath = `${basePath}${fileName}`;
+    } else {
+      imagePath = req.body.image;
+    }
+ 
+   
     const existingClient = await Client.findById(clientId);
 
     // Check if the client exists
@@ -109,7 +119,7 @@ exports.updateClient = async (req, res) => {
     await existingClient.save();
 
     // Generate the URL based on the presence of address and image
-    let generatedUrl = 'http://localhost:3000/group-signup';
+    let generatedUrl = '${process.env.CLIENT_URL}/group-signup';
     if (address && existingClient.image) {
       generatedUrl += `/${name}/${existingClient.groupid}`; // Use existingClient.groupid
     }
@@ -154,6 +164,11 @@ exports.subtractCredits = async (req, res) => {
 
     // Validate that valueToSubtract is a positive number
     if (typeof valueToSubtract !== 'number' || valueToSubtract <= 0) {
+      return res.status(400).json({ error: 'Invalid value to subtract' });
+    }
+
+    // Check if valueToSubtract is an integer or a float
+    if (!Number.isInteger(valueToSubtract) && valueToSubtract < 0.01) {
       return res.status(400).json({ error: 'Invalid value to subtract' });
     }
 

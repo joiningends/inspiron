@@ -48,7 +48,7 @@ const SessionHistoryOfPatients = () => {
   };
 
   const handleSessionHistoryClick = appointmentId => {
-    const sessionHistoryUrl = `http://localhost:4000/api/v1/appointments/${appointmentId}`;
+    const sessionHistoryUrl = `${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}`;
 
     fetch(sessionHistoryUrl)
       .then(response => response.json())
@@ -67,7 +67,7 @@ const SessionHistoryOfPatients = () => {
   };
 
   useEffect(() => {
-    const apiUrl = `http://localhost:4000/api/v1/appointments/users/${id}`;
+    const apiUrl = `${process.env.REACT_APP_SERVER_URL}/appointments/users/${id}`;
 
     // Fetch patient details data based on userId and therapistId
     fetch(apiUrl)

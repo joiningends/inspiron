@@ -324,12 +324,8 @@ if (negativeCoinBalance) {
         expriencelevel: therapist.level,
 
       });
-      if (existingCoin.coinBalance > 0) {
-        savedAppointment.paymentstatus = 'Success';
-        await savedAppointment.save(); 
-      }
       
-      
+
       if (existingCoin) {
         // Update the existing coin balance
         existingCoin.coinBalance = existingCoin.coinBalance - 1;
@@ -810,7 +806,7 @@ calculatedAverage = Math.round((totalDiscountPriceIncludingAppointment / totalSe
     if (existingCoin) {
       // Update the existing coin balance
       existingCoin.coinBalance = existingCoin.coinBalance - 1;
-      if (existingCoin.coinBalance > 0) {
+      if (existingCoin.coinBalance < 0) {
         existingCoin.avarage = calculatedAverage; // Update the average if negative
       }
       await existingCoin.save();

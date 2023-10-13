@@ -5,20 +5,23 @@ const paymentSchema = new mongoose.Schema({
   
   appointmentId: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    
     ref: 'Appointment', // Reference to the Appointment model
+  },
+  user:{
+    type: mongoose.Schema.Types.ObjectId,
   },
   paymentStatus: {
     type: String,
-    required: true,
+    
   },
   razorpayOrderId: {
     type: String,
-    required: true,
+    
   },
   razorpayPaymentId: {
     type: String,
-    required: true,
+    
   },
   amount: {
     type: Number,

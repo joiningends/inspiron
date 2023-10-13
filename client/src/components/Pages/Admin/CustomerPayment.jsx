@@ -15,7 +15,8 @@ import {
   DoneOutline as DoneOutlineIcon,
   AccessTime as AccessTimeIcon,
 } from "@mui/icons-material";
-import ReactPaginate from "react-paginate";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 import { useParams } from "react-router-dom";
 import "./CustomerPayment.css";
 import { confirmAlert } from "react-confirm-alert";
@@ -40,23 +41,22 @@ function CustomerPayment() {
   const [payments, setPayments] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [perPage] = useState(10);
+  const [selectedExtension, setSelectedExtension] = useState(null);
   const { userId } = useParams();
 
   const fetchPaymentData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/v1/appointments/users/${userId}/payment`
+        `${process.env.REACT_APP_SERVER_URL}/appointments/users/${userId}/payment`
       );
-      console.log(userId);
 
       const formattedPayments = response.data.map(payment => ({
         ...payment,
         date: formatDate(payment.dateTime),
       }));
 
-      console.log(payments);
-      setPayments(formattedPayments);
       console.log(formattedPayments);
+      setPayments(formattedPayments);
     } catch (error) {
       console.error("Error fetching payment data:", error);
     }
@@ -77,7 +77,7 @@ function CustomerPayment() {
     try {
       // Step 1: Fetch payment details
       const response = await axios.get(
-        `http://localhost:4000/api/v1/appointments/${appointmentId}/payment`
+        `${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}/payment`
       );
 
       const { message, extensionprice } = response.data;
@@ -91,10 +91,10 @@ function CustomerPayment() {
           {
             label: "Yes",
             onClick: async () => {
-              // Step 3: If user chooses 'Yes' for "message," make the first payment confirmation request
+              // Step 3: If the user chooses 'Yes' for "message," make the first payment confirmation request
               try {
                 const paymentResponse = await axios.put(
-                  `http://localhost:4000/api/v1/appointments/${appointmentId}/paymentrecived`,
+                  `${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}/paymentrecived`,
                   { paymentrecived: true }
                 );
 
@@ -110,17 +110,19 @@ function CustomerPayment() {
                       {
                         label: "Yes",
                         onClick: async () => {
-                          // Step 6: If user chooses 'Yes' for "extensionprice," make the second payment confirmation request
+                          // Step 6: If the user chooses 'Yes' for "extensionprice," make the second payment confirmation request
                           try {
                             const extensionResponse = await axios.get(
-                              `http://localhost:4000/api/v1/appointments/${appointmentId}/updatepaymentstatus`
+                              `${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}/updatepaymentstatus`
                             );
 
                             console.log(
                               "Extension payment confirmed:",
                               extensionResponse.data
                             );
-                            // You can update the UI or take further actions here.
+
+                            // Step 7: Reload the page after completing the payment process
+                            window.location.reload();
                           } catch (error) {
                             console.error(
                               "Error confirming extension payment:",
@@ -137,6 +139,9 @@ function CustomerPayment() {
                       },
                     ],
                   });
+                } else {
+                  // Step 7: Reload the page after completing the payment process
+                  window.location.reload();
                 }
               } catch (error) {
                 console.error("Error confirming payment:", error);
@@ -166,11 +171,10 @@ function CustomerPayment() {
           onClick: async () => {
             try {
               const response = await axios.get(
-                `http://localhost:4000/api/v1/appointments/${appointmentId}/success`
+                `${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}/success`
               );
 
               console.log("Payment confirmed:", response.data);
-              // You can update the UI or take further actions here.
             } catch (error) {
               console.error("Error confirming payment:", error);
             }
@@ -178,12 +182,49 @@ function CustomerPayment() {
         },
         {
           label: "No",
-          onClick: () => {
-            // Do nothing or handle the "No" response as needed
-          },
+          onClick: () => {},
         },
       ],
     });
+    window.location.reload();
+  };
+
+  const handleAcceptExtensionAmount = async (appointmentId, extensionprice) => {
+    try {
+      console.log(extensionprice);
+
+      confirmAlert({
+        title: "Accept Extension Amount",
+        message: `Extension Amount: ${extensionprice}`,
+        buttons: [
+          {
+            label: "Accept",
+            onClick: async () => {
+              try {
+                const extensionResponse = await axios.get(
+                  `${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}/updatepaymentstatus`
+                );
+
+                console.log(
+                  "Extension payment confirmed:",
+                  extensionResponse.data
+                );
+
+                window.location.reload();
+              } catch (error) {
+                console.error("Error confirming extension payment:", error);
+              }
+            },
+          },
+          {
+            label: "Cancel",
+            onClick: () => {},
+          },
+        ],
+      });
+    } catch (error) {
+      console.error("Error fetching extension price:", error);
+    }
   };
 
   return (
@@ -234,17 +275,34 @@ function CustomerPayment() {
                       Confirm Payment
                     </Button>
                   )}
-                  {payment.paymentMethod === "Offline" &&
-                    payment.paymentstatus !== "success" && (
+                  {payment.paymentstatus === "Success" &&
+                    (payment.paymentMethod === "Online" ||
+                      payment.paymentMethod === "Offline") &&
+                    payment.extensionprice > 0 && (
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleMakePayment(payment._id)}
+                        onClick={() =>
+                          handleAcceptExtensionAmount(
+                            payment._id,
+                            payment.extensionprice
+                          )
+                        }
                         style={{ backgroundColor: "#D67449", color: "white" }}
                       >
-                        Make Payment
+                        Accept Extension Amount
                       </Button>
                     )}
+                  {payment.paymentstatus !== "Success" && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleMakePayment(payment._id)}
+                      style={{ backgroundColor: "#D67449", color: "white" }}
+                    >
+                      Make Payment
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
@@ -252,19 +310,15 @@ function CustomerPayment() {
         </Table>
       </TableContainer>
       <div className="pagination-container">
-        <ReactPaginate
-          previousLabel={"Previous"}
-          nextLabel={"Next"}
-          breakLabel={"..."}
-          breakClassName={"break-me"}
-          pageCount={Math.ceil(payments.length / perPage)}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={5}
-          onPageChange={handlePageChange}
-          containerClassName={"pagination"}
-          subContainerClassName={"pages pagination"}
-          activeClassName={"active"}
-        />
+        <Stack direction="row" spacing={2} justifyContent="center">
+          <Pagination
+            count={Math.ceil(payments.length / perPage)}
+            page={currentPage + 1}
+            onChange={(event, page) => handlePageChange({ selected: page - 1 })}
+            variant="outlined"
+            shape="rounded"
+          />
+        </Stack>
       </div>
     </div>
   );

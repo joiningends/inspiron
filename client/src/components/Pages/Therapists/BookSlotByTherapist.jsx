@@ -3,37 +3,76 @@ import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTherapist } from "../../redux/Action";
 import axios from "axios";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
+
+const formatDate = date => {
+  const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+  return new Date(date)
+    .toLocaleDateString(undefined, options)
+    .replace(/\//g, "-");
+};
 
 const Popup = ({ selectedTimeSlot, selectedDate, onClose, onBookNow }) => {
-  const { userid } = useParams();
+  const formattedDate = formatDate(selectedDate);
+
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 9999,
-      }}
-    >
-      <div style={{ backgroundColor: "#fff", padding: "20px" }}>
-        <h3>Date: {selectedDate}</h3>
-        {/* <p>Start Time: {selectedTimeSlot.startTime}</p> */}
-        {/* <p>End Time: {selectedTimeSlot.endTime}</p> */}
-        {/* <p>
+    <Dialog open={true} onClose={onClose} maxWidth="md" fullWidth={true}>
+      <DialogTitle
+        style={{
+          backgroundColor: "#68B545",
+          color: "#fff",
+        }}
+      >
+        <span>Date: {formattedDate}</span>
+        <Button
+          style={{
+            position: "absolute",
+            right: "8px",
+            top: "8px",
+            color: "#fff",
+          }}
+          onClick={onClose}
+        >
+          Close
+        </Button>
+      </DialogTitle>
+      <DialogContent
+        style={{
+          padding: "16px",
+          backgroundColor: "#68B545",
+          color: "#fff",
+        }}
+      >
+        <p>Start Time: {selectedTimeSlot.startTime}</p>
+        <p>End Time: {selectedTimeSlot.endTime}</p>
+        <p>
           Session Type: {selectedTimeSlot.sessionType}{" "}
           {selectedTimeSlot.sessionType === "offline" && "/ Online"}
-        </p> */}
-        {/* <p>Location: {selectedTimeSlot.location}</p> */}
-        <button onClick={onClose}>Close</button>
-        <button onClick={onBookNow}>Book Now</button>
-      </div>
-    </div>
+        </p>
+        {selectedTimeSlot.location && (
+          <p>Location: {selectedTimeSlot.location}</p>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={onBookNow}
+          variant="contained"
+          color="primary"
+          style={{
+            backgroundColor: "#68B545",
+            color: "#fff",
+          }}
+        >
+          Book Now
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
@@ -86,7 +125,7 @@ function BookSlotByTherapist() {
     // Make the API request
     axios
       .post(
-        "http://localhost:4000/api/v1/appointments/therapist",
+        `${process.env.REACT_APP_SERVER_URL}/appointments/therapist`,
         appointmentData
       )
       .then(response => {
@@ -97,7 +136,7 @@ function BookSlotByTherapist() {
         handleClosePopup(); // Close the popup after booking
         setTimeout(() => {
           hideMessage();
-          window.location.reload();
+          window.open("/dashboard");
         }, 2000); // Hide the message after 2 seconds and reload the page
       })
       .catch(error => {
@@ -108,8 +147,8 @@ function BookSlotByTherapist() {
         setShowMessage(true);
         setTimeout(() => {
           hideMessage();
-          window.location.reload();
-        }, 2000); // Hide the message after 2 seconds without reloading the page
+          window.location.href = "/appointment"; // Set the desired URL
+        }, 2000);
       });
   };
   useEffect(() => {
@@ -193,7 +232,7 @@ function BookSlotByTherapist() {
                     borderRadius: "8px",
                   }}
                 >
-                  Date: {session?.date}
+                  Date: {formatDate(session?.date)}
                 </h3>
                 {session.timeSlots.map((timeSlot, index) => (
                   <div

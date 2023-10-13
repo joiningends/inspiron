@@ -16,7 +16,7 @@ function CorporateUser() {
     async function fetchUserData() {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/v1/users/group/${groupid}`
+          `${process.env.REACT_APP_SERVER_URL}/users/group/${groupid}`
         );
         setUsers(response.data);
         console.log(response.data);
@@ -30,9 +30,12 @@ function CorporateUser() {
 
   const handleAction = async (userId, action) => {
     try {
-      await axios.put(`http://localhost:4000/api/v1/users/${userId}/types`, {
-        types: action,
-      });
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_URL}/users/${userId}/types`,
+        {
+          types: action,
+        }
+      );
 
       setUsers(prevUsers =>
         prevUsers.map(user => {

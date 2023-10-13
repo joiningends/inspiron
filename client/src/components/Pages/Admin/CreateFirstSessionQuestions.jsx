@@ -14,7 +14,7 @@ function Questions() {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/api/v1/headings" // Replace with your actual API endpoint
+          `${process.env.REACT_APP_SERVER_URL}/headings`
         );
         setQuestions(response.data);
       } catch (error) {
@@ -47,7 +47,7 @@ function Questions() {
       });
 
       await axios.put(
-        `http://localhost:4000/api/v1/headings/${editQuestion}`, // Replace with your actual API endpoint
+        `${process.env.REACT_APP_SERVER_URL}/headings/${editQuestion}`,
         {
           name: editedName,
         }
@@ -61,7 +61,6 @@ function Questions() {
         [editQuestion]: false,
       }));
 
-      // Clear the newOptions state after saving
       setNewOptions({});
     } catch (error) {
       console.error("Error:", error.message);
@@ -80,11 +79,10 @@ function Questions() {
   const handleOptionAction = async (questionId, optionAction, optionId) => {
     try {
       let updatedQuestions;
-      console.log(optionId);
+
       if (optionAction === "delete") {
-        // Delete option
         await axios.put(
-          `http://localhost:4000/api/v1/headings/${questionId}`, // Replace with your actual API endpoint
+          `${process.env.REACT_APP_SERVER_URL}/headings/${questionId}`,
           {
             deleteOptions: [optionId],
           }
@@ -111,19 +109,19 @@ function Questions() {
     try {
       if (newOptionText) {
         const newOption = { text: newOptionText };
-        // Send a POST request to add the new option
+
         await axios.put(
-          `http://localhost:4000/api/v1/headings/${questionId}`, // Replace with your actual API endpoint
-          { options: [newOption] }
+          `${process.env.REACT_APP_SERVER_URL}/headings/${questionId}`,
+          {
+            options: [newOption],
+          }
         );
 
-        // Fetch the updated data from the server after adding the new option
         const response = await axios.get(
-          "http://localhost:4000/api/v1/headings" // Replace with your actual API endpoint
+          `${process.env.REACT_APP_SERVER_URL}/headings`
         );
         setQuestions(response.data);
 
-        // Clear the new option text
         setNewOptionText("");
       }
     } catch (error) {
@@ -163,7 +161,7 @@ function Questions() {
                       handleEditQuestion(question._id, question.name)
                     }
                   >
-                    <i className="fas fa-edit"></i>
+                    <i className="fa fa-edit"></i> Edit
                   </button>
                 </div>
               </div>
@@ -184,7 +182,7 @@ function Questions() {
                           )
                         }
                       >
-                        <i className="fas fa-times"></i>
+                        <i className="fa fa-times"></i> Remove
                       </button>
                     )}
                 </li>

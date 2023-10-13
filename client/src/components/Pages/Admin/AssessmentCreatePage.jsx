@@ -36,7 +36,7 @@ function AssessmentCreatePage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:4000/api/v1/expetises")
+      .get(`${process.env.REACT_APP_SERVER_URL}/expetises`)
       .then(response => {
         setExpertiseList(response.data);
       })
@@ -149,7 +149,7 @@ function AssessmentCreatePage() {
       // Get low, medium, and high severities data
       const assessmentData = {
         assessment_name: assessmentName,
-        summary:assessmentSummary,
+        summary: assessmentSummary,
         image: image ? image.name : "",
         questions: questionsData,
         high: {
@@ -174,14 +174,14 @@ function AssessmentCreatePage() {
       console.log(assessmentData);
       // Send assessment data to the backend API
       const response = await axios.post(
-        "http://localhost:4000/api/v1/assessments",
+        `${process.env.REACT_APP_SERVER_URL}/assessments`,
         assessmentData
       );
 
       const formData = new FormData();
       formData.append("image", image);
       const updateResponse = await axios.put(
-        `http://localhost:4000/api/v1/assessments/${response.data.assessment._id}`,
+        `${process.env.REACT_APP_SERVER_URL}/assessments/${response.data.assessment._id}`,
         formData,
         {
           headers: {

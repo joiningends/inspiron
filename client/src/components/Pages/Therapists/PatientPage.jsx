@@ -61,12 +61,14 @@ function PatientPage() {
       setTherapistId(id);
 
       // Fetch patient data from the API
-      fetch(`http://localhost:4000/api/v1/appointments/therapists/${id}/name`)
+      fetch(
+        `${process.env.REACT_APP_SERVER_URL}/appointments/therapists/${id}/name`
+      )
         .then(response => response.json())
         .then(data => {
           // Assuming the API response contains an array of patients
           setPatients(data);
-          console.log(data)
+          console.log(data);
         })
         .catch(error => {
           console.error("Error fetching patient data: ", error);

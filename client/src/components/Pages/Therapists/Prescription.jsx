@@ -21,8 +21,6 @@ import _ from "lodash";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
-
-
 function Prescription() {
   const { id } = useParams();
   const [editMode, setEditMode] = useState(true);
@@ -52,7 +50,7 @@ function Prescription() {
     const fetchAppointmentData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/v1/appointments/${id}`
+          `${process.env.REACT_APP_SERVER_URL}/appointments/${id}`
         );
         setAppointmentData(response.data);
 
@@ -60,7 +58,7 @@ function Prescription() {
 
         if (userId) {
           const userResponse = await axios.get(
-            `http://localhost:4000/api/v1/users/${userId}`
+            `${process.env.REACT_APP_SERVER_URL}/users/${userId}`
           );
           setUserData(userResponse.data);
         }
@@ -72,7 +70,7 @@ function Prescription() {
     fetchAppointmentData();
 
     axios
-      .get("http://localhost:4000/api/v1/medicence")
+      .get(`${process.env.REACT_APP_SERVER_URL}/medicence`)
       .then(response => {
         setMedicineList(response.data);
       })
@@ -81,7 +79,7 @@ function Prescription() {
       });
 
     axios
-      .get("http://localhost:4000/api/v1/labtests")
+      .get(`${process.env.REACT_APP_SERVER_URL}/labtests`)
       .then(response => {
         setLabTestList(response.data);
       })
@@ -109,11 +107,11 @@ function Prescription() {
 
   const handleProvidePdf = () => {
     const doc = new jsPDF();
-  
+
     // Define the margins and page width
     const pageWidth = doc.internal.pageSize.width;
     const margin = 10;
-  
+
     // User Information Table
     doc.setFontSize(14);
     doc.text("User Information", margin, margin + 10);
@@ -129,7 +127,7 @@ function Prescription() {
       theme: "grid",
       styles: { cellPadding: 5, fontSize: 12 },
     });
-  
+
     // Diagnosis and Description
     doc.setFontSize(14);
     doc.text("Diagnosis:", margin, doc.autoTable.previous.finalY + 10);
@@ -139,7 +137,7 @@ function Prescription() {
     doc.text("Description:", margin, doc.autoTable.previous.finalY + 20);
     doc.setFontSize(12);
     doc.text(description, margin, doc.autoTable.previous.finalY + 25);
-  
+
     // Medicine List Table
     doc.setFontSize(14);
     doc.text("Medicine List", margin, doc.autoTable.previous.finalY + 20);
@@ -157,11 +155,13 @@ function Prescription() {
       styles: { cellPadding: 5, fontSize: 12 },
       head: [["#", "Name", "Dosage", "Frequency", "Instructions"]],
     });
-  
+
     // Lab Tests Table
     doc.setFontSize(14);
     doc.text("Lab Tests", margin, doc.autoTable.previous.finalY + 20);
-    const labTestTableData = selectedLabTests.map((labTest, index) => [labTest]);
+    const labTestTableData = selectedLabTests.map((labTest, index) => [
+      labTest,
+    ]);
     doc.autoTable({
       startY: doc.autoTable.previous.finalY + 30,
       body: labTestTableData,
@@ -169,12 +169,11 @@ function Prescription() {
       styles: { cellPadding: 5, fontSize: 12 },
       head: [["Lab Test Name"]],
     });
-  
+
     // Save the PDF
     const fileName = `prescription_${new Date().toISOString()}.pdf`;
     doc.save(fileName);
   };
-  
 
   const tableCellStyle = {
     borderBottom: "none",

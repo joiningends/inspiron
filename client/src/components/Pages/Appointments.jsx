@@ -210,7 +210,7 @@ function Appointments() {
 
   const handleSeeSessionNote = appointmentId => {
     axios
-      .get(`http://localhost:4000/api/v1/appointments/${appointmentId}`)
+      .get(`${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}`)
       .then(response => {
         setSessionNotes(response.data.sessionnotes);
       })
@@ -232,7 +232,7 @@ function Appointments() {
     if (!showPastAppointments) {
       axios
         .get(
-          `http://localhost:4000/api/v1/appointments/users/${userId}/upcoming-appointments`
+          `${process.env.REACT_APP_SERVER_URL}/appointments/users/${userId}/upcoming-appointments`
         )
         .then(response => {
           setUpcomingAppointments(response.data.upcomingAppointments);
@@ -244,7 +244,7 @@ function Appointments() {
         });
     } else {
       axios
-        .get(`http://localhost:4000/api/v1/appointments/users/${userId}`)
+        .get(`${process.env.REACT_APP_SERVER_URL}/appointments/users/${userId}`)
         .then(response => {
           setPastAppointments(response.data.appointments);
           setLoading(false);

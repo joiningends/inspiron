@@ -61,13 +61,16 @@ const Signin = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:4000/api/v1/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/users/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -97,6 +100,9 @@ const Signin = () => {
         localStorage.setItem("userId", JSON.stringify(data.userId));
         localStorage.setItem("token", data.token);
 
+        const userRole = localStorage.getItem("role");
+        const parsedUserRole = JSON.parse(userRole);
+
         setFormData({
           email: "",
           password: "",
@@ -104,7 +110,14 @@ const Signin = () => {
 
         const savedGroupid = JSON.parse(localStorage.getItem("groupid"));
         const redirectPath = savedGroupid === null ? "/" : "/";
-        window.location.href = redirectPath;
+
+        if (parsedUserRole === "user") {
+          window.location.href = "/";
+        } else if (parsedUserRole === "therapist") {
+          window.location.href = "/therapists";
+        } else if (parsedUserRole === "admin") {
+          window.location.href = "/admin-Dashboard";
+        }
       } else {
         toast.error(
           "Login failed. Please check your credentials and try again.",

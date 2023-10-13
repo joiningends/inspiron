@@ -8,7 +8,7 @@ import {
   faEye,
   faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
-import { faBuilding } from '@fortawesome/free-solid-svg-icons';
+import { faBuilding } from "@fortawesome/free-solid-svg-icons";
 import { faAddressCard } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -145,7 +145,7 @@ const GroupSignUp = () => {
     try {
       // Send the registration data to the server
       const response = await axios.post(
-        `http://localhost:4000/api/v1/users/register/${groupId}`,
+        `${process.env.REACT_APP_SERVER_URL}/users/register/${groupId}`,
         {
           name: formData.name,
           mobile: formData.mobile,
@@ -375,16 +375,19 @@ const GroupSignUp = () => {
           />
         </div>
         <div className="form-group">
-        <FontAwesomeIcon icon={faBuilding} className={`icon ${company ? "active" : ""}`} />
-        <input
-          type="text"
-          id="company"
-          name="company"
-          placeholder="Company Name"
-          value={company}
-          readOnly // Set the input as readOnly to make it non-editable
-        />
-      </div>
+          <FontAwesomeIcon
+            icon={faBuilding}
+            className={`icon ${company ? "active" : ""}`}
+          />
+          <input
+            type="text"
+            id="company"
+            name="company"
+            placeholder="Company Name"
+            value={company}
+            readOnly // Set the input as readOnly to make it non-editable
+          />
+        </div>
 
         <button type="submit" onClick={handleSubmit}>
           Sign Up

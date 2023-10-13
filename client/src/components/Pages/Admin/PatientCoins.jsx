@@ -27,7 +27,7 @@ function PatientCoins() {
 
   useEffect(() => {
     // Define the API URL with the patientId parameter
-    const apiUrl = `http://localhost:4000/api/v1/coins/${patientId}`;
+    const apiUrl = `${process.env.REACT_APP_SERVER_URL}/coins/${patientId}`;
 
     // Fetch data from the API
     axios
@@ -59,7 +59,10 @@ function PatientCoins() {
 
     // Send the PUT request to update the coinBalance
     axios
-      .put(`http://localhost:4000/api/v1/coins/${editedItem._id}`, updatedData)
+      .put(
+        `${process.env.REACT_APP_SERVER_URL}/coins/${editedItem._id}`,
+        updatedData
+      )
       .then(response => {
         // Update the state with the updated data
         const updatedCoinData = coinData.map(data =>

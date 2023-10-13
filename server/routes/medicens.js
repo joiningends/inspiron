@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const mediceneController = require('../controller/mediceneController');
 
 
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, './public/uploads'); // Specify the destination folder

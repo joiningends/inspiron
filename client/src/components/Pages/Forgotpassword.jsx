@@ -25,7 +25,7 @@ function ForgotPassword() {
     // Send a request to the backend API for password recovery
     try {
       const response = await fetch(
-        "http://localhost:4000/api/v1/users/forgot-password",
+        `${process.env.REACT_APP_SERVER_URL}/users/forgot-password`,
         {
           method: "POST",
           headers: {

@@ -193,7 +193,7 @@ function BookTime() {
 
   useEffect(() => {
     // Define the API URLs
-    const therapistApiUrl = `http://localhost:4000/api/v1/therapists/${id}`;
+    const therapistApiUrl = `${process.env.REACT_APP_SERVER_URL}/therapists/${id}`;
 
     // Send a GET request to the therapist API
     axios
@@ -210,7 +210,7 @@ function BookTime() {
 
   useEffect(() => {
     // Define the API URL with the patientId parameter
-    const apiUrl = `http://localhost:4000/api/v1/coins/${cleanUserId}`;
+    const apiUrl = `${process.env.REACT_APP_SERVER_URL}/coins/${cleanUserId}`;
 
     // Fetch data from the API
     axios
@@ -226,7 +226,7 @@ function BookTime() {
 
   useEffect(() => {
     // Define the API URL
-    const apiUrl = `http://localhost:4000/api/v1/users/${cleanUserId}`;
+    const apiUrl = `${process.env.REACT_APP_SERVER_URL}/users/${cleanUserId}`;
 
     // Send a GET request to the API
     axios
@@ -249,6 +249,7 @@ function BookTime() {
   // Your therapist and coin data
 
   const coinDataArray = coinData; // Replace with your coinData
+  console.log(coinData);
 
   useEffect(() => {
     // Check if therapist and coinData are available
@@ -298,21 +299,11 @@ function BookTime() {
   console.log(selectedDate);
 
   const handleBookNow = () => {
-    if (!selectedTimeSlot) {
-      return; // If no time slot is selected, do nothing
-    }
-
+    if (!selectedTimeSlot) return;
     const { sessionType } = selectedTimeSlot;
-
-    // Prepare the data for the API request
-
     let sessionMode;
-
-    if (sessionType.toLowerCase() === "online") {
-      sessionMode = "Online";
-    } else {
-      sessionMode = "Both";
-    }
+    if (sessionType.toLowerCase() === "online") sessionMode = "Online";
+    else sessionMode = "Both";
 
     const appointmentData = {
       therapistId: id,
@@ -328,57 +319,136 @@ function BookTime() {
     };
 
     axios
-      .post("http://localhost:4000/api/v1/appointments", appointmentData)
+      .post(`${process.env.REACT_APP_SERVER_URL}/appointments`, appointmentData)
       .then(response => {
-        // Handle the success response here, if needed
-        console.log(response.data._id);
-        console.log(response.data);
         setAppointmentId(response.data._id);
         const url = `bookYourSession/${appointmentData.therapistId}/${response.data._id}`;
-        console.log(url);
-
         window.location.href = url;
       })
       .catch(error => {
-        // Check for specific error status code (e.g., 400 Bad Request)
         if (error.response && error.response.status === 400) {
-          // Display a toast notification asking the user to complete previous dues
-          toast.error(
-            "Please complete your previous dues before booking a new appointment.",
-            {
-              autoClose: 5000, // Adjust as needed
+          const errorMessage = error.response.data.message;
+          const userId = error.response.data.userId;
+          const amountToPay = parseInt(errorMessage.match(/\d+/)[0]);
+          const expriencelevel = error.response.data.expriencelevel;
+          const userExperience =
+            expriencelevel && expriencelevel.length > 0
+              ? expriencelevel[0]
+              : null;
+
+          if (userId) {
+            if (userExperience !== null) {
+              toast.error(
+                <div
+                  style={{
+                    backgroundColor: "red",
+                    color: "white",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+                    padding: "16px",
+                    textAlign: "center",
+                  }}
+                >
+                  <p>
+                    Please pay the amount {amountToPay} to complete your dues
+                    from the previous appointment.
+                  </p>
+                  <button
+                    style={{
+                      backgroundColor: "lightcoral",
+                      color: "white",
+                      border: "none",
+                      padding: "10px 20px",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      borderRadius: "4px",
+                      marginTop: "10px",
+                    }}
+                    onClick={() =>
+                      handlePayNow(userId, amountToPay, expriencelevel)
+                    }
+                  >
+                    Pay Now
+                  </button>
+                </div>,
+                {
+                  autoClose: 5000,
+                  closeButton: false,
+                  hideProgressBar: true,
+                  style: {
+                    background: "none",
+                  },
+                }
+              );
             }
-          );
+          }
         } else if (error.response && error.response.status === 409) {
-          // Display a toast notification for a time slot conflict error
           toast.error(
-            "Please choose another time slot. This slot is not available.",
+            <div
+              style={{
+                backgroundColor: "red",
+                color: "white",
+                borderRadius: "8px",
+                boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+                padding: "16px",
+                textAlign: "center",
+              }}
+            >
+              <p>
+                Please choose another time slot. This slot is not available.
+              </p>
+            </div>,
             {
-              autoClose: 5000, // Adjust as needed
+              autoClose: 5000,
+              closeButton: false,
+              hideProgressBar: true,
+              style: {
+                background: "none",
+              },
             }
           );
         } else {
-          // Display a generic error toast for other errors
-          toast.error("Error booking appointment: " + error.message, {
-            autoClose: 5000, // Adjust as needed
-          });
+          toast.error(
+            <div
+              style={{
+                backgroundColor: "red",
+                color: "white",
+                borderRadius: "8px",
+                boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+                padding: "16px",
+                textAlign: "center",
+              }}
+            >
+              <p>Error booking appointment: {error.message}</p>
+            </div>,
+            {
+              autoClose: 5000,
+              closeButton: false,
+              hideProgressBar: true,
+              style: {
+                background: "none",
+              },
+            }
+          );
 
-          // Handle other errors here, providing more details
           console.error("Error booking appointment:", error);
           if (error.response) {
-            // The request was made, but the server responded with an error
             console.error("Status Code:", error.response.status);
             console.error("Response Data:", error.response.data);
           } else if (error.request) {
-            // The request was made, but no response was received
             console.error("No response received from the server");
           } else {
-            // Something happened in setting up the request that triggered an error
             console.error("Error setting up the request:", error.message);
           }
         }
       });
   };
+
+  function handlePayNow(userId, amount, experienceLevel) {
+    const paymentUrl = `/completePayment/${userId}/${amount}/${experienceLevel}`;
+    window.open(paymentUrl, "_blank");
+  }
+
   const handleBookNowCorporate = () => {
     if (!selectedTimeSlot) {
       return; // If no time slot is selected, do nothing
@@ -401,7 +471,7 @@ function BookTime() {
 
     // console.log(appointmentData);
     axios
-      .post("http://localhost:4000/api/v1/appointments", appointmentData)
+      .post(`${process.env.REACT_APP_SERVER_URL}/appointments`, appointmentData)
       .then(response => {
         // Handle the success response here, if needed
         console.log(response.data._id);

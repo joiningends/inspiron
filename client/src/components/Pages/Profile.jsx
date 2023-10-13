@@ -95,11 +95,11 @@ function Profile() {
     const userId = JSON.parse(localStorage.getItem("userId"));
 
     if (userId) {
-      const apiUrl = `http://localhost:4000/api/v1/users/${userId}`;
+      const apiUrl = `${process.env.REACT_APP_SERVER_URL}/users/${userId}`;
 
       fetch(apiUrl)
-        .then((response) => response.json())
-        .then((userData) => {
+        .then(response => response.json())
+        .then(userData => {
           setName(userData?.name || "");
           setEmail(userData?.email || "");
           setDob(
@@ -109,11 +109,9 @@ function Profile() {
           );
           setAge(userData?.age || "");
           setGender(userData?.gender || "");
-          setMobileNumber(
-            userData?.mobile ? userData.mobile.toString() : ""
-          );
+          setMobileNumber(userData?.mobile ? userData.mobile.toString() : "");
         })
-        .catch((error) => {
+        .catch(error => {
           console.error("Error fetching user data:", error);
         });
     }
@@ -135,7 +133,7 @@ function Profile() {
     }
 
     const userId = JSON.parse(localStorage.getItem("userId"));
-    const apiUrl = `http://localhost:4000/api/v1/users/${userId}`;
+    const apiUrl = `${process.env.REACT_APP_SERVER_URL}/users/${userId}`;
 
     const updatedUserData = {
       name,
@@ -153,14 +151,14 @@ function Profile() {
       },
       body: JSON.stringify(updatedUserData),
     })
-      .then((response) => response.json())
-      .then((responseJson) => {
+      .then(response => response.json())
+      .then(responseJson => {
         setIsEditing(false);
         toast.success("Profile updated successfully!", {
           position: "bottom-right",
         });
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("Error updating user data:", error);
         toast.error("Failed to update profile. Please try again later.", {
           position: "bottom-right",
@@ -168,7 +166,7 @@ function Profile() {
       });
   };
 
-  const handleChangeMobileNumber = (e) => {
+  const handleChangeMobileNumber = e => {
     const numericValue = e.target.value.replace(/\D/g, "");
     setMobileNumber(numericValue);
   };
@@ -176,7 +174,9 @@ function Profile() {
   return (
     <ThemeProvider theme={theme}>
       <ProfileContainer>
-        <Title variant="h4">Edit Profile</Title>
+        <Title variant="h4" style={{ color: "#D67449" }}>
+          Edit Profile
+        </Title>
         <FieldContainer>
           <InputLabel>Name:</InputLabel>
           <DisabledInputField
@@ -190,7 +190,7 @@ function Profile() {
           <InputLabel style={{ marginTop: "1rem" }}>Date of Birth:</InputLabel>
           <DatePicker
             selected={dob}
-            onChange={(date) => setDob(date)}
+            onChange={date => setDob(date)}
             dateFormat={dob ? "dd-MM-yyyy" : "dd-MM-yyyy"}
             maxDate={currentDate}
             disabled={!isEditing}
@@ -210,7 +210,7 @@ function Profile() {
             aria-label="gender"
             name="gender"
             value={gender}
-            onChange={(e) => setGender(e.target.value)}
+            onChange={e => setGender(e.target.value)}
             disabled={!isEditing}
           >
             <FormControlLabel
@@ -253,7 +253,7 @@ function Profile() {
               variant="contained"
               onClick={handleUpdateClick}
               style={{
-                backgroundColor: "#1877f2",
+                backgroundColor: "#D67449",
                 color: "white",
               }}
             >

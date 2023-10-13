@@ -17,17 +17,17 @@ const getTherapists = async assessmentScore => {
   const assessmentId = storedAssessment?._id;
   console.log(storedAssessment);
 
-  let url = `http://localhost:4000/api/v1/therapists/score/${assessmentId}/${assessmentScore}`;
+  let url = `${process.env.REACT_APP_SERVER_URL}/therapists/score/${assessmentId}/${assessmentScore}`;
 
   if (cleanGroupId !== "null") {
-    url = `http://localhost:4000/api/v1/therapists/score/${assessmentId}/${cleanGroupId}/${assessmentScore}`;
+    url = `${process.env.REACT_APP_SERVER_URL}/therapists/score/${assessmentId}/${cleanGroupId}/${assessmentScore}`;
   }
 
   console.log(url);
   try {
     const response = await axios.get(url);
     localStorage.setItem("therapistsData", JSON.stringify(response.data));
-    console.log(response)
+    console.log(response);
     // Handle the response data as needed
     console.log("Response data:", response.data);
   } catch (error) {

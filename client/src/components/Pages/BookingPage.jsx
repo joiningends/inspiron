@@ -17,8 +17,6 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-
-
 const containerStyle = {
   padding: "20px",
   borderRadius: "10px",
@@ -80,7 +78,7 @@ function BookingPage() {
         alert("Payment successful!");
 
         // Continue with the API request and other logic as needed
-        fetch(`http://localhost:4000/api/v1/payments/verify/${appointmentId}`, {
+        fetch(`${process.env.REACT_APP_SERVER_URL}/payments/verify/${appointmentId}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -132,7 +130,7 @@ function BookingPage() {
   });
 
   useEffect(() => {
-    const therapistApiUrl = `http://localhost:4000/api/v1/therapists/${therapistId}`;
+    const therapistApiUrl = `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}`;
     fetch(therapistApiUrl)
       .then(response => response.json())
       .then(responseData => {
@@ -146,7 +144,7 @@ function BookingPage() {
 
   useEffect(() => {
     if (experienceLevel) {
-      const priceApiUrl = `http://localhost:4000/api/v1/prices/${experienceLevel}`;
+      const priceApiUrl = `${process.env.REACT_APP_SERVER_URL}/prices/${experienceLevel}`;
       fetch(priceApiUrl)
         .then(response => response.json())
         .then(responseData => {
@@ -190,16 +188,13 @@ function BookingPage() {
         priceId: selectedOptionId,
       };
 
-      fetch(
-        `http://localhost:4000/api/v1/appointments/${appointmentId}/price`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      )
+      fetch(`${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}/price`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
         .then(response => response.json())
         .then(responseData => {
           console.log(responseData);
@@ -220,7 +215,7 @@ function BookingPage() {
     setOpenPaymentDialog(false);
 
     if (selectedPaymentMode === "online") {
-      fetch("http://localhost:4000/api/v1/payments/orders", {
+      fetch(`${process.env.REACT_APP_SERVER_URL}/payments/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -282,7 +277,7 @@ function BookingPage() {
         });
     } else if (selectedPaymentMode === "offline") {
       fetch(
-        `http://localhost:4000/api/v1/appointments/${appointmentId}/payment/${therapistId}`,
+        `${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}/payment/${therapistId}`,
         {
           method: "PUT",
           headers: {
@@ -313,7 +308,7 @@ function BookingPage() {
       response;
 
     if (selectedPaymentMode === "online") {
-      const verifyApiUrl = `http://localhost:4000/api/v1/payments/verify/${appointmentId}`;
+      const verifyApiUrl = `${process.env.REACT_APP_SERVER_URL}/payments/verify/${appointmentId}`;
 
       // Make a POST request to the verify API
       fetch(verifyApiUrl, {
@@ -344,7 +339,7 @@ function BookingPage() {
     async function fetchAppointmentData() {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/v1/appointments/${appointmentId}`
+          `${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}`
         );
         // Set the appointment data in state
         setAppointmentData(response.data);

@@ -1,0 +1,11 @@
+/* Add this rule to horizontally align pagination */
+.pagination.horizontal-align {
+  display: flex;
+  justify-content: center;
+}
+
+/* Optional: Style for individual pagination items (if needed) */
+.pagination.horizontal-align li {
+  margin: 0 5px; /* Adjust the margin as needed */
+  list-style-type: none;
+}

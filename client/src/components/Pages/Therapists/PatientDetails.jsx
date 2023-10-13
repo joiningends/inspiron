@@ -41,11 +41,11 @@ function PatientDetails() {
 
   const endSession = async () => {
     console.log(
-      `http://localhost:4000/api/v1/users/${appointmentDetails?.user?._id}/ended/${appointmentDetails?._id}`
+      `${process.env.REACT_APP_SERVER_URL}/users/${appointmentDetails?.user?._id}/ended/${appointmentDetails?._id}`
     );
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/v1/users/${appointmentDetails?.user?._id}/ended/${appointmentDetails?._id}`
+        `${process.env.REACT_APP_SERVER_URL}/users/${appointmentDetails?.user?._id}/ended/${appointmentDetails?._id}`
       );
 
       // Optionally, you can handle the response if needed
@@ -55,6 +55,9 @@ function PatientDetails() {
       window.location.reload();
     } catch (error) {
       console.error("Error ending session:", error);
+
+      // Show an error toast notification
+      toast.error("Please fill first session note first."); // Customize the error message as needed
     }
   };
 
@@ -68,7 +71,10 @@ function PatientDetails() {
   const openExtendSession = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/v1/appointments/${id}/extend-session`
+        `${process.env.REACT_APP_SERVER_URL}/appointments/${id}/extend-session`
+      );
+      console.log(
+        `${process.env.REACT_APP_SERVER_URL}/appointments/${id}/extend-session`
       );
       console.log("API Response:", response.data);
 
@@ -88,14 +94,17 @@ function PatientDetails() {
       toast.error("Failed to extend session. Please try again."); // Customize the error message as needed
     }
   };
+
   useEffect(() => {
-    fetch(`http://localhost:4000/api/v1/appointments/${id}`)
+    fetch(`${process.env.REACT_APP_SERVER_URL}/appointments/${id}`)
       .then(response => response.json())
       .then(data => {
         setAppointmentDetails(data);
 
         // Retrieve therapist details
-        fetch(`http://localhost:4000/api/v1/therapists/${data.therapist}`)
+        fetch(
+          `${process.env.REACT_APP_SERVER_URL}/therapists/${data.therapist}`
+        )
           .then(response => response.json())
           .then(therapistData => {
             setTherapistDetails(therapistData);
@@ -117,7 +126,7 @@ function PatientDetails() {
     try {
       console.log("Start button clicked");
       const response = await axios.get(
-        `http://localhost:4000/api/v1/users/status/${id}`
+        `${process.env.REACT_APP_SERVER_URL}/users/status/${id}`
       );
       console.log("API Response:", response.data);
       window.open(therapistDetails?.meetLink, "_blank");
@@ -150,7 +159,7 @@ function PatientDetails() {
     try {
       console.log("Start button clicked");
       const response = await axios.put(
-        `http://localhost:4000/api/v1/appointments/${appointmentDetails?._id}/sessionotes`,
+        `${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentDetails?._id}/sessionotes`,
         formData, // The data you want to update
         {
           headers: {
@@ -158,7 +167,12 @@ function PatientDetails() {
           },
         }
       );
-      toast.success("Form submitted successfully");
+      toast.success("Form submitted successfully", {
+        onClose: () => {
+          window.location.reload();
+        },
+      });
+
       console.log("API Response:", response.data);
     } catch (error) {
       console.error("Error making API request:", error);
@@ -189,149 +203,166 @@ function PatientDetails() {
 
   return (
     <>
-      <div className="profile-container">
+      <div
+        className="profile-container"
+        style={{ display: "flex", flexDirection: "column" }}
+      >
         <h1 className="profile-title">Patient Details</h1>
         <ToastContainer />
-        <div className="profile-details">
-          <div className="detail-item">
+
+        <div
+          style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
+        >
+          <div
+            className="detail-item"
+            style={{ flexBasis: "45%", margin: "0.5rem" }}
+          >
             <span className="detail-label">Name:</span>
             <span className="detail-value">
               {appointmentDetails?.user?.name}
             </span>
           </div>
-          <div className="detail-item">
+          <div
+            className="detail-item"
+            style={{ flexBasis: "45%", margin: "0.5rem" }}
+          >
             <span className="detail-label">Age:</span>
             <span className="detail-value">
               {appointmentDetails?.user?.age}
             </span>
           </div>
-          <div className="detail-item">
+          <div
+            className="detail-item"
+            style={{ flexBasis: "45%", margin: "0.5rem" }}
+          >
             <span className="detail-label">Gender:</span>
             <span className="detail-value">
               {appointmentDetails.user?.gender}
             </span>
           </div>
-          <div className="detail-item">
+          <div
+            className="detail-item"
+            style={{ flexBasis: "45%", margin: "0.5rem" }}
+          >
             <span className="detail-label">Date:</span>
             <span className="detail-value">
               {new Date(appointmentDetails.dateTime).toLocaleDateString()}
             </span>
           </div>
-          <div className="detail-item">
+          <div
+            className="detail-item"
+            style={{ flexBasis: "45%", margin: "0.5rem" }}
+          >
             <span className="detail-label">Time:</span>
             <span className="detail-value">{appointmentDetails.startTime}</span>
           </div>
-          <div className="detail-item">
+          <div
+            className="detail-item"
+            style={{ flexBasis: "45%", margin: "0.5rem" }}
+          >
             <span className="detail-label">Session Mode:</span>
             <span className="detail-value">
               {appointmentDetails?.sessionMode}
             </span>
           </div>
         </div>
-        <div
-          className="detail-item meet-link-container"
-          style={{ marginTop: "1rem" }}
-        >
-          <span className="detail-label">Meet Link:</span>
-          <span className="detail-value">{therapistDetails?.meetLink}</span>
+
+        <div className="meet-link-container" style={{ margin: "0.8rem" }}>
+          <div className="detail-item">
+            <span className="detail-label">Meet Link:</span>
+            <span className="detail-value">{therapistDetails?.meetLink}</span>
+          </div>
         </div>
-        {appointmentDetails?.status === "pending" &&
-          appointmentDetails?.sessionstatus !== "Completed" && (
-            <button
-              className="start-button"
-              onClick={startSession}
-              style={{ backgroundColor: "#D67449", color: "white" }}
-            >
-              Start
-            </button>
+
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {appointmentDetails?.status === "pending" &&
+            appointmentDetails?.sessionstatus !== "Completed" && (
+              <button
+                className="start-button"
+                onClick={startSession}
+                style={{
+                  backgroundColor: "#D67449",
+                  color: "white",
+                }}
+              >
+                Start
+              </button>
+            )}
+          {appointmentDetails?.status === "started" && (
+            <>
+              <button
+                className="book-session-button"
+                style={{
+                  backgroundColor: "#D67449",
+                  color: "white",
+                  marginLeft: "0.5rem",
+                }}
+                disabled={true}
+              >
+                Started
+              </button>
+              <button
+                className="book-session-button"
+                style={{
+                  backgroundColor: "#D67449",
+                  color: "white",
+                  marginLeft: "0.5rem",
+                }}
+                onClick={endSession}
+              >
+                End Session
+              </button>
+              <button
+                className="book-session-button"
+                style={{
+                  backgroundColor: "#D67449",
+                  color: "white",
+                  marginLeft: "0.5rem",
+                }}
+                onClick={openFirstSessionNotes}
+              >
+                First Session Note
+              </button>
+              <button
+                className="book-session-button"
+                style={{
+                  backgroundColor: "#D67449",
+                  color: "white",
+                  marginLeft: "0.5rem",
+                }}
+                onClick={openBookingPage}
+              >
+                Book Session
+              </button>
+              {therapistDetails.psychiatriste === 0 ? (
+                <button
+                  className="book-session-button"
+                  style={{
+                    backgroundColor: "#D67449",
+                    color: "white",
+                    marginLeft: "0.5rem",
+                  }}
+                  onClick={openPrescription}
+                >
+                  Extend Session
+                </button>
+              ) : null}
+              {appointmentDetails.extensionprice === 0 ? (
+                <button
+                  className="book-session-button"
+                  style={{
+                    backgroundColor: "#D67449",
+                    color: "white",
+                    marginLeft: "0.5rem",
+                  }}
+                  onClick={openExtendSession}
+                >
+                  Extend Session
+                </button>
+              ) : null}
+            </>
           )}
-        {appointmentDetails?.status === "started" && (
-          <>
-            <button
-              className="book-session-button"
-              style={{
-                backgroundColor: "#D67449",
-                color: "white",
-                marginLeft: "1rem",
-              }}
-              disabled={true}
-            >
-              Started
-            </button>
-            <button
-              className="book-session-button"
-              style={{
-                backgroundColor: "#D67449",
-                color: "white",
-                marginLeft: "1rem",
-              }}
-              onClick={endSession}
-            >
-              End Session
-            </button>
-            {appointmentDetails.firstsession === "Pending" ? (
-              <button
-                className="book-session-button"
-                style={{
-                  backgroundColor: "#D67449",
-                  color: "white",
-                  marginLeft: "1rem",
-                }}
-                onClick={openExtendSession}
-              >
-                Extend Session
-              </button>
-            ) : null}
-            <button
-              className="book-session-button"
-              style={{
-                backgroundColor: "#D67449",
-                color: "white",
-                marginLeft: "1rem",
-              }}
-              onClick={openFirstSessionNotes}
-            >
-              First Session Note
-            </button>
-            <button
-              className="book-session-button"
-              style={{
-                backgroundColor: "#D67449",
-                color: "white",
-                marginLeft: "1rem",
-              }}
-              onClick={openBookingPage}
-            >
-              Book Session
-            </button>
-            {therapistDetails.psychiatriste === 0 ? (
-              <button
-                className="book-session-button"
-                style={{
-                  backgroundColor: "#D67449",
-                  color: "white",
-                  marginLeft: "1rem",
-                }}
-                onClick={openPrescription}
-              >
-                Extend Session
-              </button>
-            ) : null}
-            {appointmentDetails.extensionprice === 0 ? (
-              <button
-                className="book-session-button"
-                style={{
-                  backgroundColor: "#D67449",
-                  color: "white",
-                  marginLeft: "1rem",
-                }}
-                onClick={openExtendSession}
-              >
-                Extend Session
-              </button>
-            ) : null}
-          </>
-        )}
+        </div>
       </div>
 
       {appointmentDetails?.status === "ended" &&

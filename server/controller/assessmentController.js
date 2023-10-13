@@ -1,5 +1,6 @@
-const Assessment = require("../models/assessmentf");
-const puppeteer = require("puppeteer");
+const Assessment = require('../models/assessmentf');
+const puppeteer = require('puppeteer');
+
 
 // GET all assessments
 async function getAllAssessments(req, res) {
@@ -7,7 +8,7 @@ async function getAllAssessments(req, res) {
     const assessments = await Assessment.find();
     res.json(assessments);
   } catch (error) {
-    res.status(500).json({ error: "Failed to retrieve assessments" });
+    res.status(500).json({ error: 'Failed to retrieve assessments' });
   }
 }
 
@@ -16,15 +17,17 @@ async function getAssessmentById(req, res) {
   try {
     const assessment = await Assessment.findById(req.params.id);
     if (!assessment) {
-      return res.status(404).json({ error: "Assessment not found" });
+      return res.status(404).json({ error: 'Assessment not found' });
     }
     res.json(assessment);
   } catch (error) {
-    res.status(500).json({ error: "Failed to retrieve assessment" });
+    res.status(500).json({ error: 'Failed to retrieve assessment' });
   }
 }
 const createAssessment = async (req, res) => {
   try {
+    
+
     const {
       hostId,
       assessment_name,
@@ -43,6 +46,8 @@ const createAssessment = async (req, res) => {
       high,
       /* other fields */
     } = req.body;
+
+    
 
     const newAssessment = new Assessment({
       hostId,
@@ -65,17 +70,12 @@ const createAssessment = async (req, res) => {
 
     await newAssessment.save();
 
-    console.log("Created Assessment:", newAssessment); // Log the created assessment
+    console.log('Created Assessment:', newAssessment); // Log the created assessment
 
-    res.status(201).json({
-      message: "Assessment created successfully",
-      assessment: newAssessment,
-    });
+    res.status(201).json({ message: 'Assessment created successfully', assessment: newAssessment });
   } catch (error) {
-    console.error("Error creating assessment:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while creating the assessment" });
+    console.error('Error creating assessment:', error);
+    res.status(500).json({ error: 'An error occurred while creating the assessment' });
   }
 };
 
@@ -87,18 +87,18 @@ const updateAssessment = async (req, res) => {
 
     if (file) {
       const fileName = file.filename;
-      const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+      const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
       imagePath = `${basePath}${fileName}`;
     } else {
       imagePath = req.body.image;
     }
-
+ 
     // Find the existing assessment by ID
     const existingAssessment = await Assessment.findById(assessmentId);
 
     // Check if the assessment exists
     if (!existingAssessment) {
-      return res.status(404).json({ error: "Assessment not found" });
+      return res.status(404).json({ error: 'Assessment not found' });
     }
 
     // Update the assessment fields conditionally
@@ -124,7 +124,7 @@ const updateAssessment = async (req, res) => {
 
     // Check if an image was uploaded
     if (req.file) {
-      existingAssessment.image = imagePath;
+     existingAssessment.image = imagePath;
     }
 
     if (req.body.assessmentScore) {
@@ -166,27 +166,29 @@ const updateAssessment = async (req, res) => {
     // Save the updated assessment
     await existingAssessment.save();
 
-    res.status(200).json({ message: "Assessment updated successfully" });
+    res.status(200).json({ message: 'Assessment updated successfully' });
   } catch (error) {
-    console.error("Error updating assessment:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while updating the assessment" });
+    console.error('Error updating assessment:', error);
+    res.status(500).json({ error: 'An error occurred while updating the assessment' });
   }
 };
+
+ 
+
 
 // DELETE an assessment
 async function deleteAssessment(req, res) {
   try {
     const assessment = await Assessment.findByIdAndDelete(req.params.id);
     if (!assessment) {
-      return res.status(404).json({ error: "Assessment not found" });
+      return res.status(404).json({ error: 'Assessment not found' });
     }
-    res.json({ message: "Assessment deleted successfully" });
+    res.json({ message: 'Assessment deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: "Failed to delete assessment" });
+    res.status(500).json({ error: 'Failed to delete assessment' });
   }
 }
+
 
 async function getSeverityInfoByRouteScore(req, res) {
   try {
@@ -198,47 +200,29 @@ async function getSeverityInfoByRouteScore(req, res) {
     const assessments = await Assessment.find({
       $or: [
         {
-          "low.min": { $lte: routeScore },
-          "low.max": { $gte: routeScore },
+          'low.min': { $lte: routeScore },
+          'low.max': { $gte: routeScore },
         },
         {
-          "medium.min": { $lte: routeScore },
-          "medium.max": { $gte: routeScore },
+          'medium.min': { $lte: routeScore },
+          'medium.max': { $gte: routeScore },
         },
         {
-          "high.min": { $lte: routeScore },
-          "high.max": { $gte: routeScore },
+          'high.min': { $lte: routeScore },
+          'high.max': { $gte: routeScore },
         },
       ],
     });
 
     const severityInfo = assessments.reduce((acc, assessment) => {
-      if (
-        assessment.low.min <= routeScore &&
-        routeScore <= assessment.low.max
-      ) {
-        acc.push({
-          severityName: assessment.low.serverityname,
-          score: routeScore,
-        });
+      if (assessment.low.min <= routeScore && routeScore <= assessment.low.max) {
+        acc.push({ severityName: assessment.low.serverityname, score: routeScore });
       }
-      if (
-        assessment.medium.min <= routeScore &&
-        routeScore <= assessment.medium.max
-      ) {
-        acc.push({
-          severityName: assessment.medium.serverityname,
-          score: routeScore,
-        });
+      if (assessment.medium.min <= routeScore && routeScore <= assessment.medium.max) {
+        acc.push({ severityName: assessment.medium.serverityname, score: routeScore });
       }
-      if (
-        assessment.high.min <= routeScore &&
-        routeScore <= assessment.high.max
-      ) {
-        acc.push({
-          severityName: assessment.high.serverityname,
-          score: routeScore,
-        });
+      if (assessment.high.min <= routeScore && routeScore <= assessment.high.max) {
+        acc.push({ severityName: assessment.high.serverityname, score: routeScore });
       }
       return acc;
     }, []);
@@ -250,51 +234,60 @@ async function getSeverityInfoByRouteScore(req, res) {
       userId: userId,
     });
   } catch (error) {
-    console.error("Error fetching severity information:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Error fetching severity information" });
+    console.error('Error fetching severity information:', error);
+    res.status(500).json({ success: false, message: 'Error fetching severity information' });
   }
 }
 
+
+
+
 async function generatePDF(req, res) {
+  
   try {
     const { assessmentName } = req.params; // Assuming you pass the assessment name in the route
-    const browser = await puppeteer.launch({ headless: "new" });
+    const browser = await puppeteer.launch({ headless: 'new' });
 
     const page = await browser.newPage();
 
-    await page.goto("https://www.inspirononline.com/book-appointment-psychologists-bangalore/", {
-      waitUntil: "networkidle2",
+    await page.goto('https://www.youtube.com', {
+      waitUntil: 'networkidle2'
     });
     await page.setViewport({ width: 1680, height: 1050 });
     const todayDate = new Date();
     const pdfFilename = `${assessmentName}-${todayDate.getTime()}.pdf`; // Set the PDF filename
 
-    const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
+    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
 
     await browser.close();
 
     // Set response headers to indicate that the response will be a PDF file attachment
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename=${pdfFilename}`);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=${pdfFilename}`);
 
     // Send the PDF buffer as a download
     res.end(pdfBuffer);
   } catch (error) {
-    console.error("Error generating PDF:", error);
-    res.status(500).send("Error generating PDF");
+    console.error('Error generating PDF:', error);
+    res.status(500).send('Error generating PDF');
   }
 }
+
+
+
+
+ 
+
 
 module.exports = {
   getAllAssessments,
   getAssessmentById,
   createAssessment,
-
+  
   updateAssessment,
 
-  deleteAssessment,
-  getSeverityInfoByRouteScore,
-  generatePDF,
+  
+    deleteAssessment,
+    getSeverityInfoByRouteScore,
+    generatePDF 
 };

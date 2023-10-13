@@ -6,7 +6,9 @@ import { FaTimes } from "react-icons/fa";
 import Modal from "react-modal";
 import { Link, useParams } from "react-router-dom";
 import "../Therapists/TherapistProfilePage.css";
+import { toast } from "react-toastify";
 import axios from "axios";
+import { ToastContainer } from "react-toastify";
 import {
   Checkbox,
   FormControlLabel,
@@ -50,7 +52,7 @@ function TherapistDetails() {
     const fetchExpertises = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/api/v1/expertises"
+          `${process.env.REACT_APP_SERVER_URL}/expertises`
         );
         setExpertisesData(response.data);
         console.log(response.data);
@@ -213,7 +215,7 @@ function TherapistDetails() {
   const paginate = pageNumber => setCurrentPage(pageNumber);
 
   useEffect(() => {
-    const apiUrl = "http://localhost:4000/api/v1/prices";
+    const apiUrl = `${process.env.REACT_APP_SERVER_URL}/prices`;
 
     axios
       .get(apiUrl)
@@ -242,7 +244,7 @@ function TherapistDetails() {
     if (selectedPriceData) {
       console.log(`"expriencelevel":["${selectedPriceData._id}"]`);
 
-      const url = `http://localhost:4000/api/v1/therapists/${therapistId}/approve`;
+      const url = `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}/approve`;
 
       // Data you are passing to the dispatch method
       const requestData = {
@@ -273,7 +275,7 @@ function TherapistDetails() {
     async function fetchClients() {
       try {
         const response = await axios.get(
-          "http://localhost:4000/api/v1/clients"
+          `${process.env.REACT_APP_SERVER_URL}/clients`
         );
         setClients(response.data.clients);
       } catch (error) {
@@ -314,7 +316,7 @@ function TherapistDetails() {
     setHasChanges(false);
     console.log("Selected Group IDs:", selectedIds);
 
-    const url = `http://localhost:4000/api/v1/therapists/${therapistId}/approve`;
+    const url = `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}/approve`;
 
     // Data you are passing to the dispatch method
     const requestData = {
@@ -356,7 +358,7 @@ function TherapistDetails() {
     const fetchExpertises = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/api/v1/expetises"
+          `${process.env.REACT_APP_SERVER_URL}/expetises`
         );
         // Assuming the response data is an array of expertises
         setExpertisesData(response.data);
@@ -492,19 +494,39 @@ function TherapistDetails() {
       try {
         setIsClickable(false); // Disable the button while the request is being made
         const response = await axios.get(
-          `http://localhost:4000/api/v1/therapists/${therapistId}/status`
+          `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}/status`
         );
-        // Handle the response if needed
+
+        // Check if the request was successful (you can define your own condition here)
+        if (response.status === 200) {
+          // Show the toast message for success
+          toast.success("Therapist Approved", {
+            onClose: () => {
+              // After the toast message is closed, navigate to "/admin-Dashboard"
+              window.open("/admin-Dashboard", "_self"); // "_self" opens the URL in the same tab
+            },
+          });
+        } else {
+          // Handle the response if needed for other status codes
+        }
       } catch (error) {
         // Handle errors here
+        console.error("Error:", error);
+
+        // Check if the error is related to missing fields (you can modify this condition)
+        // Show a toast message indicating that all fields must be filled
+        toast.error("Please fill out all required fields");
       } finally {
         setIsClickable(true); // Re-enable the button after the request is completed
       }
+    } else {
+      toast.error("Please fill out all required fields");
     }
   };
 
   return (
     <>
+      <ToastContainer />
       <div className="rounded-image-container" style={{ position: "relative" }}>
         <div className="rounded-image">
           <img src={therapist?.image} alt="Rounded" />
@@ -732,7 +754,12 @@ function TherapistDetails() {
             </div>
             <div className="educationFormButtons">
               <button onClick={handleAddEducation}>Add</button>
-              <button onClick={handleCancelEducationClick}>Cancel</button>
+              <button
+                onClick={handleCancelEducationClick}
+                style={{ backgroundColor: "#D67449", color: "white" }}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </Modal>

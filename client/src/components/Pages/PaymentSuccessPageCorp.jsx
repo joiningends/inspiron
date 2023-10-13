@@ -25,7 +25,7 @@ function PaymentSuccessPageCorp() {
 
   useEffect(() => {
     // Make an API request to fetch appointment data based on appointmentId
-    fetch(`http://localhost:4000/api/v1/appointments/${appointmentId}`)
+    fetch(`${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}`)
       .then(response => response.json())
       .then(data => {
         setAppointmentData(data);

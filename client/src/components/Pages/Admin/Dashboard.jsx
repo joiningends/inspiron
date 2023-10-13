@@ -24,7 +24,7 @@ function Dashboard() {
     const fetchTherapistsDetails = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/api/v1/therapists/total-therapists"
+          `${process.env.REACT_APP_SERVER_URL}/therapists/total-therapists`
         );
         setTherapistsDetails(response.data);
       } catch (error) {
@@ -39,7 +39,7 @@ function Dashboard() {
 
   React.useEffect(() => {
     axios
-      .get("http://localhost:4000/api/v1/categories/center/info")
+      .get(`${process.env.REACT_APP_SERVER_URL}/categories/center/info`)
       .then(response => {
         setAvailableAddress(response.data?.categories);
       });
@@ -61,7 +61,7 @@ function Dashboard() {
   const handleFormSubmit = e => {
     e.preventDefault();
     axios
-      .post("http://localhost:4000/api/v1/therapists", {
+      .post(`${process.env.REACT_APP_SERVER_URL}/therapists`, {
         mobile,
         name,
         email,
@@ -177,9 +177,8 @@ function Dashboard() {
           >
             <thead>
               <tr>
-                <th style={{ padding: "0.3rem", textAlign: "left" }}>
-                  Therapist
-                </th>
+                <th style={{ padding: "0.3rem", textAlign: "left" }}>Name</th>
+                <th style={{ padding: "0.3rem", textAlign: "left" }}>Type</th>
                 <th style={{ padding: "0.3rem", textAlign: "left" }}>Gender</th>
                 <th style={{ padding: "0.3rem", textAlign: "left" }}>Email</th>
                 <th style={{ padding: "0.3rem", textAlign: "left" }}>
@@ -215,6 +214,9 @@ function Dashboard() {
                       }}
                     />
                     {therapist?.name}
+                  </td>
+                  <td style={{ padding: "0.3rem", textAlign: "left" }}>
+                    {therapist?.therapisttype}
                   </td>
                   <td style={{ padding: "0.3rem", textAlign: "left" }}>
                     {therapist?.gender}
@@ -286,18 +288,18 @@ function Dashboard() {
               <label style={{ display: "inline-block", marginLeft: "10px" }}>
                 <input
                   type="radio"
-                  value="therapist"
-                  checked={profession === "therapist"}
-                  onChange={() => setProfession("therapist")}
+                  value="Therapist"
+                  checked={profession === "Therapist"}
+                  onChange={() => setProfession("Therapist")}
                 />
                 Therapist
               </label>
               <label style={{ display: "inline-block", marginLeft: "10px" }}>
                 <input
                   type="radio"
-                  value="psychiatrist"
-                  checked={profession === "psychiatrist"}
-                  onChange={() => setProfession("psychiatrist")}
+                  value="Psychiatrist"
+                  checked={profession === "Psychiatrist"}
+                  onChange={() => setProfession("Psychiatrist")}
                 />
                 Psychiatrist
               </label>
@@ -312,17 +314,29 @@ function Dashboard() {
                 {optionItems}
               </select>
             </label>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <button
                 type="button"
                 onClick={handleFormCancel}
                 style={{
-                  width: "48%",
+                  marginTop: "0.5rem",
+                  flex: "1",
                   backgroundColor: "white",
+                  height: "2rem",
                   color: "#D67449",
                   border: "1px solid #D67449",
                   borderRadius: "1rem",
                   marginBottom: "10px",
+                  display: "inline-flex", // Ensure proper inline display
+                  alignItems: "center", // Center vertically
+
+                  justifyContent: "center", // Center horizontally
                 }}
               >
                 Cancel
@@ -330,11 +344,16 @@ function Dashboard() {
               <button
                 type="submit"
                 style={{
+                  flex: "1",
                   backgroundColor: "#D67449",
                   color: "white",
                   borderRadius: "1rem",
-                  width: "48%",
+                  height: "2rem",
                   marginBottom: "10px",
+                  display: "inline-flex", // Ensure proper inline display
+                  alignItems: "center", // Center vertically
+                  justifyContent: "center", // Center horizontally
+                  marginTop: "0.5rem",
                 }}
               >
                 Submit

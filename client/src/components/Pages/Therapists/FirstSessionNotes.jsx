@@ -53,7 +53,7 @@ function SociodemographicForm() {
   const { id } = useParams();
 
   useEffect(() => {
-    fetch(`http://localhost:4000/api/v1/users/${id}`)
+    fetch(`${process.env.REACT_APP_SERVER_URL}/users/${id}`)
       .then(response => response.json())
       .then(data => {
         setAppointmentDetails(data);
@@ -147,7 +147,7 @@ function SociodemographicForm() {
 
     try {
       const response = await axios.put(
-        `http://localhost:4000/api/v1/users/${id}/sess`,
+        `${process.env.REACT_APP_SERVER_URL}/users/${id}/sess`,
         dataToSend,
         {
           headers: {
@@ -591,7 +591,7 @@ function ChiefComplaintsForm() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:4000/api/v1/headings")
+      .get(`${process.env.REACT_APP_SERVER_URL}/headings`)
       .then(response => setFetchedData(response.data))
       .catch(error => console.error("Error fetching data:", error));
   }, []);
@@ -698,7 +698,7 @@ function ChiefComplaintsForm() {
 
     try {
       const response = await axios.put(
-        `http://localhost:4000/api/v1/users/${id}/sess`,
+        `${process.env.REACT_APP_SERVER_URL}/users/${id}/sess`,
         dataToSend,
         {
           headers: {
@@ -742,9 +742,9 @@ function ChiefComplaintsForm() {
                   color="primary"
                   onClick={() => setShowOnsetPopup(false)}
                   style={{
-                backgroundColor: "#D67449",
-                color: "white",
-              }}
+                    backgroundColor: "#D67449",
+                    color: "white",
+                  }}
                 >
                   Next
                 </Button>
@@ -845,7 +845,7 @@ const HistoryOfPresentingIllnessForm = () => {
   useEffect(() => {
     // Fetch questions from the API
     axios
-      .get("http://localhost:4000/api/v1/illnesses")
+      .get(`${process.env.REACT_APP_SERVER_URL}/illnesses`)
       .then(response => {
         setQuestions(response.data);
       })
@@ -955,7 +955,7 @@ const HistoryOfPresentingIllnessForm = () => {
       console.log(dataToSend);
 
       const response = await axios.put(
-        `http://localhost:4000/api/v1/users/${id}/sess`,
+        `${process.env.REACT_APP_SERVER_URL}/users/${id}/sess`,
         {
           illness: { result },
         },
@@ -1011,10 +1011,14 @@ const HistoryOfPresentingIllnessForm = () => {
               />
             </RadioGroup>
           </FormControl>
-          <Button disabled={onsetSelection === null} onClick={handlePopupClose} style={{
-                backgroundColor: "#D67449",
-                color: "white",
-              }}>
+          <Button
+            disabled={onsetSelection === null}
+            onClick={handlePopupClose}
+            style={{
+              backgroundColor: "#D67449",
+              color: "white",
+            }}
+          >
             Continue
           </Button>
         </CardContent>

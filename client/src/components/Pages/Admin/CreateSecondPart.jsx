@@ -15,7 +15,7 @@ function CreateSecondPart() {
     const fetchIllnessesData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/api/v1/illnesses"
+          `${process.env.REACT_APP_SERVER_URL}/illnesses`
         );
         // Filter out illnesses with no options
         const filteredData = response.data.filter(
@@ -52,9 +52,12 @@ function CreateSecondPart() {
 
     try {
       // Send PUT request to update the illness name
-      await axios.put(`http://localhost:4000/api/v1/illnesses/${questionId}`, {
-        name: editedQuestion,
-      });
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_URL}/illnesses/${questionId}`,
+        {
+          name: editedQuestion,
+        }
+      );
     } catch (error) {
       console.error("Error updating illness name:", error);
     }
@@ -75,9 +78,12 @@ function CreateSecondPart() {
 
     try {
       // Send PUT request to update the options
-      await axios.put(`http://localhost:4000/api/v1/illnesses/${questionId}`, {
-        deleteOptions: [optionText],
-      });
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_URL}/illnesses/${questionId}`,
+        {
+          deleteOptions: [optionText],
+        }
+      );
     } catch (error) {
       console.error("Error deleting option:", error);
     }
@@ -97,9 +103,12 @@ function CreateSecondPart() {
           : illness
       );
       setIllnessesData(updatedIllnessesData);
-      await axios.put(`http://localhost:4000/api/v1/illnesses/${questionId}`, {
-        options: [newOption],
-      });
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_URL}/illnesses/${questionId}`,
+        {
+          options: [newOption],
+        }
+      );
     } catch (error) {
       console.error("Error adding option:", error);
     }

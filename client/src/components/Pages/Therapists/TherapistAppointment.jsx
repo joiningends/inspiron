@@ -44,7 +44,7 @@ function TherapistAppointment() {
   useEffect(() => {
     const fetchTherapistData = async () => {
       if (therapistId) {
-        const apiUrlUpcoming = `http://localhost:4000/api/v1/appointments/therapists/${therapistId}/upcoming`;
+        const apiUrlUpcoming = `${process.env.REACT_APP_SERVER_URL}/appointments/therapists/${therapistId}/upcoming`;
         try {
           await dispatch(fetchTodayAppointments(therapistId));
           await dispatch(fetchTherapist(therapistId));
@@ -244,7 +244,7 @@ function TherapistAppointment() {
                 <th className="table-header-cell">Session Mode</th>
                 <th className="table-header-cell">Actions</th>
                 <th className="table-header-cell">Session Note Status</th>
-                {therapist?.therapisttype === "psychiatrist" && (
+                {therapist?.therapisttype === "Psychiatrist" && (
                   <th className="table-header-cell">Prescription</th>
                 )}
               </tr>
@@ -345,7 +345,7 @@ function TherapistAppointment() {
                 <th className="table-header-cell">Session Mode</th>
                 <th className="table-header-cell">Actions</th>
                 <th className="table-header-cell">Session Note Status</th>
-                {therapist?.therapisttype === "psychiatrist" && (
+                {therapist?.therapisttype === "Psychiatrist" && (
                   <th className="table-header-cell">Prescription</th>
                 )}
               </tr>
@@ -408,7 +408,7 @@ function TherapistAppointment() {
                     <td className="table-body-cell">
                       {appointment?.sessionstatus}
                     </td>
-                    {therapist?.therapisttype === "psychiatrist" ? (
+                    {therapist?.therapisttype === "Psychiatrist" ? (
                       <td className="table-body-cell">
                         <button
                           className="button fill-prescription-button"
@@ -447,7 +447,7 @@ function TherapistAppointment() {
                 <th className="table-header-cell">Session Mode</th>
                 <th className="table-header-cell">Actions</th>
                 <th className="table-header-cell">Session Note Status</th>
-                {therapist?.therapisttype === "psychiatrist" && (
+                {therapist?.therapisttype === "Psychiatrist" && (
                   <th className="table-header-cell">Prescription</th>
                 )}
               </tr>
@@ -510,7 +510,7 @@ function TherapistAppointment() {
                     <td className="table-body-cell">
                       {appointment?.sessionstatus}
                     </td>
-                    {therapist?.therapisttype === "psychiatrist" ? (
+                    {therapist?.therapisttype === "Psychiatrist" ? (
                       <td className="table-body-cell">
                         <button
                           className="button fill-prescription-button"

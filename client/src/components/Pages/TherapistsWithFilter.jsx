@@ -56,7 +56,7 @@ export const TherapistsWithFilter = () => {
 
   useEffect(() => {
     // Define the API endpoint
-    const apiUrl = "http://localhost:4000/api/v1/prices";
+    const apiUrl = `${process.env.REACT_APP_SERVER_URL}/prices`;
 
     // Make the GET request using Axios
     axios
@@ -83,7 +83,7 @@ export const TherapistsWithFilter = () => {
 
   useEffect(() => {
     // Define the API endpoint
-    const apiUrl = "http://localhost:4000/api/v1/expetises";
+    const apiUrl = `${process.env.REACT_APP_SERVER_URL}/expetises`;
 
     // Make the GET request using Axios
     axios
@@ -107,7 +107,7 @@ export const TherapistsWithFilter = () => {
     console.log(cleanGroupId);
     if (groupId !== "null") {
       // Construct the URL
-      const url = `http://localhost:4000/api/v1/therapists/group/${cleanGroupId}`;
+      const url = `${process.env.REACT_APP_SERVER_URL}/therapists/group/${cleanGroupId}`;
       console.log(url);
       // Make the GET request using Axios
       axios
@@ -123,7 +123,7 @@ export const TherapistsWithFilter = () => {
         });
     } else {
       // If groupid doesn't exist, dispatch the fetchTherapists action
-      const url = `http://localhost:4000/api/v1/therapists/all`;
+      const url = `${process.env.REACT_APP_SERVER_URL}/therapists/all`;
       console.log(url);
       // Make the GET request using Axios
       axios
@@ -270,10 +270,10 @@ export const TherapistsWithFilter = () => {
       label: "Gender",
       options: ["Male", "Female"],
     },
-    {
-      label: "Age",
-      options: ["18-25", "26-35", "36-45", "46-above"],
-    },
+    // {
+    //   label: "Age",
+    //   options: ["18-25", "26-35", "36-45", "46-above"],
+    // },
   ];
 
   const handleApplyFilters = () => {

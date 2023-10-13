@@ -81,7 +81,6 @@ function SettingPage() {
   // State to control the visibility of the popup dialog
   const [openDialog, setOpenDialog] = useState(false);
 
-
   const [labTestList, setLabTestList] = useState([]);
   // State to control the visibility of the lab test list popup dialog
   const [openLabTestDialog, setOpenLabTestDialog] = useState(false);
@@ -90,13 +89,15 @@ function SettingPage() {
   const viewLabTestList = async () => {
     try {
       // Fetch data from the lab tests API
-      const response = await axios.get('http://localhost:4000/api/v1/labtests');
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_URL}/labtests`
+      );
       // Set the fetched data to the state
       setLabTestList(response.data);
       // Open the lab test list popup dialog
       setOpenLabTestDialog(true);
     } catch (error) {
-      console.error('Error fetching lab test list:', error);
+      console.error("Error fetching lab test list:", error);
     }
   };
 
@@ -110,7 +111,7 @@ function SettingPage() {
     try {
       // Fetch data from the API
       const response = await axios.get(
-        "http://localhost:4000/api/v1/medicence"
+        `${process.env.REACT_APP_SERVER_URL}/medicence`
       );
       // Set the fetched data to the state
       setMedicineList(response.data);
@@ -137,7 +138,7 @@ function SettingPage() {
       try {
         // Make a POST request to your backend API endpoint for uploading medicine lists
         const response = await axios.post(
-          "http://localhost:4000/api/v1/medicence",
+          `${process.env.REACT_APP_SERVER_URL}/medicence`,
           formData
         );
 
@@ -165,8 +166,6 @@ function SettingPage() {
     }
   };
 
-  
-
   const handleEditChiefNote = () => {
     // Add your logic for editing Chief-First Session Note here
     const editChiefNoteUrl = "/edit_add-questions";
@@ -185,7 +184,7 @@ function SettingPage() {
 
   useEffect(() => {
     // Fetch data from the API
-    fetch("http://localhost:4000/api/v1/expetises")
+    fetch(`${process.env.REACT_APP_SERVER_URL}/expetises`)
       .then(response => response.json())
       .then(data => {
         // Extract "type" values from the API response and update the state
@@ -213,7 +212,7 @@ function SettingPage() {
       };
 
       // Make the POST request to add expertise
-      fetch("http://localhost:4000/api/v1/expetises", {
+      fetch(`${process.env.REACT_APP_SERVER_URL}/expetises`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -237,7 +236,7 @@ function SettingPage() {
 
   const handleRemoveExpertise = id => {
     // Make the DELETE request to remove expertise
-    fetch(`http://localhost:4000/api/v1/expetises/${id}`, {
+    fetch(`${process.env.REACT_APP_SERVER_URL}/expetises/${id}`, {
       method: "DELETE",
     })
       .then(() => {
@@ -252,7 +251,7 @@ function SettingPage() {
 
   useEffect(() => {
     // Make the API request when the component mounts
-    fetch("http://localhost:4000/api/v1/categories/session/info")
+    fetch(`${process.env.REACT_APP_SERVER_URL}/categories/session/info`)
       .then(response => response.json())
       .then(data => {
         // Update state with the fetched data and set loading to false
@@ -287,7 +286,7 @@ function SettingPage() {
   const handleDetailsClick = async (index, id) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/api/v1/prices/${id}`
+        `${process.env.REACT_APP_SERVER_URL}/prices/${id}`
       );
       setSelectedExperienceDetails(response.data);
       console.log(response.data);
@@ -311,13 +310,16 @@ function SettingPage() {
     console.log(newCenter);
 
     try {
-      const response = await fetch("http://localhost:4000/api/v1/categories", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newCenter),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/categories`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newCenter),
+        }
+      );
 
       if (response.ok) {
         // Handle successful response
@@ -346,7 +348,7 @@ function SettingPage() {
     async function fetchCenters() {
       try {
         const response = await fetch(
-          "http://localhost:4000/api/v1/categories/center/info"
+          `${process.env.REACT_APP_SERVER_URL}/categories/center/info`
         );
         if (response.ok) {
           const data = await response.json();
@@ -379,7 +381,7 @@ function SettingPage() {
 
       // Send a DELETE request to the API with the _id of the center to be removed
       const response = await fetch(
-        `http://localhost:4000/api/v1/categories/${centerToRemove._id}`,
+        `${process.env.REACT_APP_SERVER_URL}/categories/${centerToRemove._id}`,
         {
           method: "DELETE",
           headers: {
@@ -412,7 +414,7 @@ function SettingPage() {
   const handleSaveSessionClick = async id => {
     // const updateData = async () => {
     //   try {
-    //     const response = await axios.put('http://localhost:4000/api/v1/categories/session/info', dataToUpdate);
+    //     const response = await axios.put('${process.env.REACT_APP_SERVER_URL}/categories/session/info', dataToUpdate);
     //     console.log('PUT request successful:', response.data);
     //     // Handle success or perform any necessary actions here
     //   } catch (error) {
@@ -429,7 +431,7 @@ function SettingPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:4000/api/v1/categories/update-session/64bad3d92b8b7b3b420212f5`,
+        `${process.env.REACT_APP_SERVER_URL}/categories/update-session/64edce0080fb2f1db3822f15`,
         {
           method: "PUT",
           headers: {
@@ -472,7 +474,7 @@ function SettingPage() {
       try {
         // Send a POST request to the API
         const response = await axios.post(
-          "http://localhost:4000/api/v1/prices",
+          `${process.env.REACT_APP_SERVER_URL}/prices`,
           {
             expriencelevel: selectedExperienceLevelId,
             session: newExperienceEntry.sessionNumber,
@@ -496,7 +498,7 @@ function SettingPage() {
     try {
       // Make an HTTP DELETE request to the API endpoint
       await axios.delete(
-        `http://localhost:4000/api/v1/expriences/${experienceId}`
+        `${process.env.REACT_APP_SERVER_URL}/expriences/${experienceId}`
       );
 
       // If the request is successful, remove the experience level from the state
@@ -537,7 +539,7 @@ function SettingPage() {
 
       try {
         const response = await fetch(
-          "http://localhost:4000/api/v1/expriences",
+          `${process.env.REACT_APP_SERVER_URL}/expriences`,
           {
             method: "POST",
             headers: {
@@ -562,7 +564,7 @@ function SettingPage() {
 
   useEffect(() => {
     // Fetch experience levels from the API
-    fetch("http://localhost:4000/api/v1/expriences")
+    fetch(`${process.env.REACT_APP_SERVER_URL}/expriences`)
       .then(response => response.json())
       .then(data => {
         // Update the state with the fetched experience levels
@@ -577,7 +579,7 @@ function SettingPage() {
     try {
       // Make a DELETE request to the API
       const response = await axios.delete(
-        `http://localhost:4000/api/v1/prices/${itemId}`
+        `${process.env.REACT_APP_SERVER_URL}/prices/${itemId}`
       );
 
       // Check if the DELETE request was successful (status code 200)
@@ -727,14 +729,6 @@ function SettingPage() {
                       <TableCell>{center.city}</TableCell>
                       <TableCell>{center.pin}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="outlined"
-                          startIcon={<EditIcon />}
-                          onClick={() => handleEditCenterClick(index)}
-                          style={{ backgroundColor: "#D67449", color: "white" }}
-                        >
-                          Edit
-                        </Button>
                         <Button
                           variant="outlined"
                           startIcon={<DeleteIcon />}
@@ -1082,81 +1076,7 @@ function SettingPage() {
           )}
         </Dialog>
       </Paper>
-      <Paper
-        elevation={3}
-        className="setting-paper"
-        style={{ marginTop: "2rem" }}
-      >
-        <h2
-          style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
-        >
-          Session Settings
-        </h2>
-        <Grid container spacing={2}>
-          <Grid item xs={4} className="input-field">
-            <TextField
-              fullWidth
-              type="number"
-              value={sessionDuration}
-              onChange={e => setSessionDuration(e.target.value)}
-              disabled={!isSessionEditing}
-            />
-          </Grid>
-          <Grid item xs={4} className="input-field">
-            <TextField
-              fullWidth
-              type="number"
-              onChange={e => setSessionCoolOffTime(e.target.value)}
-              value={sessionCoolOffTime}
-              disabled={!isSessionEditing}
-            />
-          </Grid>
-          <Grid item xs={4} className="input-field">
-            <TextField
-              fullWidth
-              label="Session Extension Time (in min)"
-              type="number"
-              value={30}
-              disabled
-            />
-          </Grid>
-        </Grid>
-        {isSessionEditing ? (
-          <div className="button-container">
-            <Button
-              variant="contained"
-              startIcon={<SaveIcon />}
-              onClick={handleSaveSessionClick}
-              className="save-button"
-              style={{ backgroundColor: "#D67449", color: "white" }}
-            >
-              Save Session Settings
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={handleCancelSessionClick}
-              className="cancel-button"
-              style={{
-                backgroundColor: "white",
-                color: "#D67449",
-                border: "1px solid #D67449",
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-        ) : (
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={handleEditSessionClick}
-            className="edit-button"
-            style={{ backgroundColor: "#D67449", color: "white" }}
-          >
-            Edit Session Settings
-          </Button>
-        )}
-      </Paper>
+
       <Container maxWidth="lg" style={{ marginTop: "2rem" }}>
         <Paper elevation={3} style={{ padding: "16px", marginBottom: "16px" }}>
           <h1 style={{ textAlign: "center", marginBottom: "16px" }}>
@@ -1355,7 +1275,11 @@ function SettingPage() {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={openLabTestDialog} onClose={handleCloseLabTestDialog} maxWidth="md">
+      <Dialog
+        open={openLabTestDialog}
+        onClose={handleCloseLabTestDialog}
+        maxWidth="md"
+      >
         <DialogTitle>Lab Test List</DialogTitle>
         <DialogContent>
           <TableContainer>

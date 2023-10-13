@@ -18,7 +18,6 @@ const therapistSchema = new mongoose.Schema({
   },
   age: {
     type: Number,
-    require: false,
   },
   expriencelevel:[
       {

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:4000/api/v1";
+const API_URL = `${process.env.REACT_APP_SERVER_URL}`;
 
 // Fetch therapists
 const FETCH_THERAPISTS_REQUEST = "FETCH_THERAPISTS_REQUEST";

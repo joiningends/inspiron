@@ -633,22 +633,24 @@ const updateTherapistImage = async (req, res) => {
 
 
 
-
-
   async function updatePrimaryDetails(req, res) {
     const therapistId = req.params.id;
-    const { name, dateOfBirth, gender } = req.body;
+    const { name, dob, gender } = req.body;
   
     try {
-      // Calculate age from the date of birth
-      const dob = new Date(dateOfBirth);
+      // Parse the date of birth string into a Date object
+      const dobDate = new Date(dob);
+  
       const currentYear = new Date().getFullYear();
-      const birthYear = dob.getFullYear();
+      const birthYear = dobDate.getFullYear();
       const age = currentYear - birthYear;
   
+       // Debugging
+  
+      // Find the therapist by ID and update the fields
       const therapist = await Therapist.findByIdAndUpdate(
         therapistId,
-        { name, dateOfBirth, gender, age }, // Update age field
+        { name, dob, gender, age }, // Update age field
         { new: true }
       );
   
@@ -656,13 +658,15 @@ const updateTherapistImage = async (req, res) => {
         return res.status(404).json({ success: false, message: 'Therapist not found' });
       }
   
+      console.log('Updated Therapist:', therapist); // Debugging
+  
       res.json({ success: true, therapist });
     } catch (error) {
       res.status(500).json({ success: false, error: error.message });
     }
   }
   
-async function updateContactDetails(req, res) {
+  async function updateContactDetails(req, res) {
   const therapistId = req.params.id;
   const { email, mobile, emergencymobile } = req.body;
 
@@ -892,7 +896,11 @@ const sendApprovalEmail = (therapist) => {
     html: `
       <p>Dear ${therapist.name}</p>
       <p>Congratulations! Your therapist profile has been approved.</p>
-      <p>Add the required details in your profile</p>`,
+      \n
+      Thanks,
+      \n
+      Team Inspiron
+      `,
   };
 
   // Send the email
@@ -925,7 +933,9 @@ const sendDisapprovalEmail = (therapist) => {
     html: `
       <p>Dear ${therapist.name}</p>
       <p>We regret to inform you that your therapist profile has been disapproved.</p>
-      <p>Please review and update your profile to meet the approval criteria.</p>`,
+      <p>Please review and update your profile to meet the approval criteria.</p>\n
+      Thanks,\n
+      Team Inspiron`,
   };
 
   // Send the email

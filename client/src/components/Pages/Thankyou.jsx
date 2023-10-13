@@ -13,10 +13,10 @@ const ContainerWrapper = styled(Container)`
 const PaperWrapper = styled(Paper)`
   padding: 20px;
   text-align: center;
-  background: linear-gradient(45deg, #2196f3 30%, #21cbf3 90%);
+  background-color: #68B54; /* Background color changed to #68B54 */
   box-shadow: 0 3px 5px 2px rgba(33, 203, 243, 0.3);
   border-radius: 10px;
-  color: white;
+  color: white; /* Text color changed to white */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 `;
 
@@ -29,7 +29,7 @@ function Thankyou() {
 
   useEffect(() => {
     // Make a GET request to your backend to verify the email
-    fetch(`http://localhost:4000/api/v1/users/verify/${token}`)
+    fetch(`${process.env.REACT_APP_SERVER_URL}/users/verify/${token}`)
       .then(response => {
         console.log(response);
         if (response.status === 200) {
@@ -67,6 +67,7 @@ function Thankyou() {
             variant="contained"
             color="primary"
             onClick={handleLoginClick}
+            style={{ backgroundColor: "#D67449", color: "white" }}
           >
             Go to Login
           </Button>

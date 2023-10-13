@@ -22,7 +22,7 @@ function ResetPasswordPage() {
 
     try {
       const response = await fetch(
-        "http://localhost:4000/api/v1/users/reset-password",
+        `${process.env.REACT_APP_SERVER_URL}/users/reset-password`,
         {
           method: "POST",
           headers: {

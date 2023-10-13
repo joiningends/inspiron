@@ -47,7 +47,7 @@ function OnePatientDetails() {
   };
 
   const handleSessionHistoryClick = appointmentId => {
-    const sessionHistoryUrl = `http://localhost:4000/api/v1/appointments/${appointmentId}`;
+    const sessionHistoryUrl = `${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}`;
 
     fetch(sessionHistoryUrl)
       .then(response => response.json())
@@ -66,7 +66,7 @@ function OnePatientDetails() {
   };
 
   useEffect(() => {
-    const apiUrl = `http://localhost:4000/api/v1/appointments/users/${userId}/therapists/${therapistId}/latest-appointment`;
+    const apiUrl = `${process.env.REACT_APP_SERVER_URL}/appointments/users/${userId}/therapists/${therapistId}/latest-appointment`;
 
     // Fetch patient details data based on userId and therapistId
     fetch(apiUrl)
