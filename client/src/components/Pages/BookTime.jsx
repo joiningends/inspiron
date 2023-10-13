@@ -13,6 +13,11 @@ import jwt_decode from "jwt-decode";
 import { Modal, Button } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import styles (adjust the path as needed)
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
 const Popup = ({
   selectedTimeSlot,
@@ -117,7 +122,7 @@ const Popup = ({
           >
             Close
           </button>
-          {groupId === "null" && !isBalanceGreaterThanZero ? (
+          {groupId === "null" ? (
             <button
               style={{
                 padding: "10px 20px",
@@ -167,6 +172,8 @@ function BookTime() {
   const [userId, setUserId] = useState();
   const [appointmentId, setAppointmentId] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [appointmentNewId, setAppointmentNewId] = useState("");
 
   const storedUserId = localStorage.getItem("userId");
   const cleanUserId = storedUserId.replace(/"/g, "");
@@ -190,6 +197,19 @@ function BookTime() {
     outline: "none",
     marginRight: "10px",
   };
+
+  // const handleDialogChoice = (choice) => {
+  //   setOpenDialog(false); // Close the dialog
+
+  //   if (choice === 'yes') {
+  //     // Code for 'Yes' choice
+  //     // axios.post(...).then(response => { ... });
+  //   } else {
+  //     // Code for 'No' choice
+  //     const url = `bookYourSession/${appointmentData.therapistId}/${response.data._id}`;
+  //     // window.location.href = url;
+  //   }
+  // };
 
   useEffect(() => {
     // Define the API URLs
@@ -322,8 +342,20 @@ function BookTime() {
       .post(`${process.env.REACT_APP_SERVER_URL}/appointments`, appointmentData)
       .then(response => {
         setAppointmentId(response.data._id);
-        const url = `bookYourSession/${appointmentData.therapistId}/${response.data._id}`;
-        window.location.href = url;
+        console.log(response.data.coinpositive);
+        console.log("HIIIIIII");
+        console.log(response.data);
+        if (response.data.coinpositive === true) {
+          // Show the dialog when response.data.coinpositive is true
+          console.log("ASHUUuuuuuuuuuu");
+          setOpenDialog(true);
+          setPopupVisible(false);
+          setAppointmentNewId(response.data._id);
+        } else {
+          // Continue with your code logic when response.data.coinpositive is false
+          const url = `bookYourSession/${appointmentData.therapistId}/${response.data._id}`;
+          window.location.href = url;
+        }
       })
       .catch(error => {
         if (error.response && error.response.status === 400) {
@@ -566,9 +598,58 @@ function BookTime() {
     setCurrentPage(newPage);
   }
 
+  const handleDialogChoice = choice => {
+    setOpenDialog(false); // Close the dialog
+
+    if (choice === "yes") {
+      // Code for 'Yes' choice
+      // axios.post(...).then(response => { ... });
+      const appointmentNewIdValue = appointmentNewId.replace(/"/g, "");
+      axios
+        .put(
+          `${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentNewIdValue}/package`,
+          {
+            package: "true",
+          }
+        )
+        .then(response => {
+          // Handle the response if needed
+          console.log(response.data);
+          window.open(`/sessionIsBookedCorp/${response.data._id}`, "_self");
+        })
+        .catch(err => {
+          console.log(err); // Log the error for debugging purposes
+          toast.error(
+            "There was a problem while booking your appointment. Please try again later.",
+            "Error"
+          );
+        });
+    } else {
+      // Code for 'No' choice
+      const appointmentNewIdValue = appointmentNewId.replace(/"/g, "");
+      const url = `bookYourSession/${id}/${appointmentNewIdValue}`;
+      window.location.href = url;
+    }
+  };
+
   return (
     <>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
+      <Dialog open={openDialog} onClose={() => handleDialogChoice("no")}>
+        <DialogTitle>Do you want to continue your ongoing package?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Please select an option:</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => handleDialogChoice("yes")} color="primary">
+            Yes
+          </Button>
+          <Button onClick={() => handleDialogChoice("no")} color="primary">
+            No
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <div className="booktime-container1">
         <div className="booktime-imgDiv">
           <img
@@ -774,62 +855,6 @@ function BookTime() {
           isBalanceGreaterThanZero={isBalanceGreaterThanZero}
           onBookNowCorp={handleBookNowCorporate}
         />
-      )}
-      {/* Material-UI Dialog for the "Continue Previous Package" modal */}
-      {isBalanceGreaterThanZero && (
-        <Modal
-          open={isModalOpen}
-          onClose={closeModal}
-          style={{
-            position: "fixed",
-            top: "20px",
-            right: "20px",
-            zIndex: 9999,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              borderRadius: "8px",
-              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
-              textAlign: "center",
-              padding: "16px",
-              width: "100%", // Adjust the width as needed
-            }}
-          >
-            <h2>Do you want to continue the previous package?</h2>
-            <div>
-              <button
-                style={{
-                  margin: "8px",
-                  padding: "8px 16px",
-                  backgroundColor: "#D67449", // Background color for Yes button
-                  color: "white", // Text color for Yes button
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-                onClick={handleYesClick}
-              >
-                Yes
-              </button>
-              <button
-                style={{
-                  margin: "8px",
-                  padding: "8px 16px",
-                  backgroundColor: "white", // Background color for No button
-                  border: "1px solid #D67449", // Border color for No button
-                  color: "#D67449", // Text color for No button
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
-                onClick={handleNoClick}
-              >
-                No
-              </button>
-            </div>
-          </div>
-        </Modal>
       )}
     </>
   );
