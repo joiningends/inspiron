@@ -38,5 +38,5 @@ router.get('/:id/payment', appointmentController.getAppointmentByIdoffline);
 router.put('/:appointmentId/paymentrecived', appointmentController.updatePaymentStatus);
 router.get('/:id/sucess', appointmentController.setPaymentStatusToSuccess);
 router.get('/:appointmentId/updatepaymentstatus', appointmentController.updatePaymentStatusextend);
-router.put('/:appointmentId/package', appointmentController.updatePackage);
+router.put('/:id/package', appointmentController.updatePackage);
 module.exports = router;
