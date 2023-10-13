@@ -324,7 +324,12 @@ if (negativeCoinBalance) {
         expriencelevel: therapist.level,
 
       });
-      
+      if(existingCoin.coinBalance > 0){
+        savedAppointment.coinpositive = true
+        await savedAppointment.save();
+      }
+
+
 
       if (existingCoin) {
         // Update the existing coin balance
@@ -2640,4 +2645,156 @@ cron.schedule('* * * * *', async () => {
   }
 });
 
+exports.updatePackage = async (req, res) => {
+  try {
+    const { appointmentId } = req.params;
+    const { package } = req.body; 
 
+    // Find the appointment by its ID
+    const appointment = await Appointment.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found' });
+    }
+
+    
+    appointment.package = package;
+
+   
+    const updatedAppointment = await appointment.save();
+
+    return res.status(200).json(updatedAppointment);
+  } catch (error) {
+    console.error('Error updating package:', error);
+    return res.status(500).json({ error: 'An error occurred while updating the package' });
+  }
+};
+
+
+
+
+exports.updatePackage = async (req, res) => {
+  try {
+    const { appointmentId } = req.params;
+    const { package } = req.body; 
+
+    // Find the appointment by its ID
+    const appointment = await Appointment.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found' });
+    }
+
+    appointment.package = package;
+
+    // Get the therapist information
+    const therapistId = appointment.therapist;
+    const therapist = await Therapist.findById(therapistId).select('name level sessions');
+
+    if (!therapist) {
+      return res.status(404).json({ error: 'Therapist not found' });
+    }
+
+    // Get the user information
+    const userId = appointment.user;
+    const user = await User.findById(userId).select('name email priceHistory mobile');
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (package) {
+      // If package is true, update payment method and payment status
+      appointment.paymentMethod = 'From package';
+      appointment.paymentstatus = 'Success';
+      const therapistSessions = therapist.sessions || [];
+
+      const appointmentDate = appointment.dateTime;
+      const appointmentStartTime = appointment.startTime;
+
+      const updatedTherapistSessions = therapistSessions.filter(session => {
+        const sessionDate = new Date(session.date);
+        const matchingTimeSlotIndex = session.timeSlots.findIndex(timeSlot => timeSlot.startTime === appointmentStartTime);
+
+        if (sessionDate.toDateString() === appointmentDate.toDateString() && matchingTimeSlotIndex !== -1) {
+          session.timeSlots.splice(matchingTimeSlotIndex, 1);
+          return session.timeSlots.length > 0;
+        }
+        return true;
+      });
+
+      const updatedTherapistSessionsWithoutEmptySessions = updatedTherapistSessions.filter(session => session.timeSlots.length > 0);
+
+      const filter = { _id: therapist._id };
+      const update = {
+        sessions: updatedTherapistSessionsWithoutEmptySessions,
+      };
+
+      const options = { new: true };
+      const updatedTherapistInDB = await Therapist.findOneAndUpdate(filter, update, options);
+
+      if (!updatedTherapistInDB) {
+        console.log('Failed to update therapist sessions in the database');
+        return res.status(500).json({ error: 'Failed to update therapist sessions' });
+      }
+    }
+
+    const updatedAppointment = await appointment.save();
+    const therapistName = therapist.name;
+
+    const dateObject = new Date(appointmentDate);
+    const appointmentDateonly = dateObject.toISOString().split('T')[0];
+
+    sendWhatsAppMessage(user.mobile, `
+      Hi ${user.name},
+      Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentStartTime}.
+      Please log into the application 5 mins before the start of the session.
+      Thanks,
+      Team Inspiron
+    `);
+
+    const emailMessage = `
+      Hi ${user.name},
+      Thank you for successfully booking an appointment with ${therapist.name} on ${appointmentDateonly} at ${appointmentStartTime}. Please log into the application 5 mins before the start of the session.
+      Thanks,
+      Team Inspiron
+    `;
+
+    sendEmailforpackage(user.email, 'Appointment Confirmation', emailMessage);
+
+    return res.status(201).json(updatedAppointment);
+  } catch (error) {
+    console.error('Error updating package:', error);
+    return res.status(500).json({ error: 'An error occurred while updating the package' });
+  }
+};
+
+const sendEmailforpackage = (to, subject, message) => {
+  console.log('Recipient email:', to);
+
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    requireTLS: true,
+    auth: {
+      user: 'inspiron434580@gmail.com',
+      pass: 'rogiprjtijqxyedm',
+    },
+  });
+
+  const mailOptions = {
+    from: 'inspiron434580@gmail.com',
+    to: to,
+    subject: 'Booking Confirmation',
+    text: message,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error sending email:', error);
+    } else {
+      console.log('Email sent:', info.response);
+    }
+  });
+};
