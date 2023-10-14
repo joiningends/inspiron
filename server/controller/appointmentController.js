@@ -2588,8 +2588,7 @@ cron.schedule('* * * * *', async () => {
       reminded: false, // Only get appointments that have not been reminded
     });
 
-    console.log('Upcoming Appointments:', upcomingAppointments);
-
+    
     for (const appointment of upcomingAppointments) {
       const appointmentDateTime = new Date(
         appointment.dateTime.toDateString() + ' ' + appointment.startTime
