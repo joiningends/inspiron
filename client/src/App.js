@@ -24,6 +24,7 @@ import TherapistDetails from "./components/Pages/Admin/TherapistDetails";
 import PatientPage from "./components/Pages/Admin/PatientPage";
 import PatientPagee from "./components/Pages/Therapists/PatientPage";
 import TimeSlots from "./components/Pages/Therapists/TimeSlots";
+import BookSlotByTherapist from "./components/Pages/Therapists/BookSlotByTherapist";
 import SessionHistoryOfPatients from "./components/Pages/Admin/SessionHistoryOfPatients";
 import CreateFirstSessionQuestions from "./components/Pages/Admin/CreateFirstSessionQuestions";
 import CreateSecondPart from "./components/Pages/Admin/CreateSecondPart";
@@ -32,7 +33,6 @@ import GroupSignUp from "./components/Pages/GroupSignup";
 import CorporateUser from "./components/Pages/Admin/CorporateUser";
 import SettingPage from "./components/Pages/Therapists/SettingPage";
 import PatientCoins from "./components/Pages/Admin/PatientCoins";
-import BookSlotByTherapist from "./components/Pages/Therapists/BookSlotByTherapist";
 import Forgotpassword from "./components/Pages/Forgotpassword";
 import ResetPassword from "./components/Pages/ResetPassword";
 import OnePatientDetails from "./components/Pages/Therapists/OnePatientDetails";
@@ -50,7 +50,6 @@ import ResetPasswordPage from "./components/Pages/ResetPasswordPassPage";
 import Thankyou from "./components/Pages/Thankyou";
 import CompletePayment from "./components/Pages/CompletePayment";
 import PaymentConfirm from "./components/Pages/PaymentConfirm";
-
 
 function App() {
   const userRole = localStorage.getItem("role");

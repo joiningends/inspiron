@@ -60,7 +60,7 @@ function BookingPage() {
   const [apiResponse, setApiResponse] = useState(null);
   const [appointmentData, setAppointmentData] = useState(null);
   const [error, setError] = useState(null);
-  console.log(appointmentData);
+
 
   const [razorpayOptions, setRazorpayOptions] = useState({
     key: "rzp_test_9RNyyq8jjMD11V",
@@ -71,7 +71,6 @@ function BookingPage() {
     image: "https://your-therapy-center.com/logo.png",
     order_id: "",
     handler: response => {
-      console.log(response);
 
       // Check if the payment was successful
       if (response.razorpay_payment_id) {
@@ -92,7 +91,6 @@ function BookingPage() {
         })
           .then(apiResponse => apiResponse.json())
           .then(data => {
-            console.log("API Response:", data);
             // Handle the API response as needed
 
             // After successful payment and API processing, open a new page
@@ -175,7 +173,6 @@ function BookingPage() {
       });
     }
   };
-  console.log(appointmentId);
 
   const calculateDiscount = (sessionPrice, discountPrice) => {
     const discount = ((sessionPrice - discountPrice) / sessionPrice) * 100;
@@ -197,7 +194,6 @@ function BookingPage() {
       })
         .then(response => response.json())
         .then(responseData => {
-          console.log(responseData);
           setApiResponse(responseData);
           setOpenPaymentDialog(true);
         })
@@ -226,8 +222,6 @@ function BookingPage() {
       })
         .then(response => response.json())
         .then(data => {
-          console.log(data.data.id);
-          console.log(data);
 
           // Customize the appearance of the Razorpay payment form
           const razorpayOptionsWithTheme = {
@@ -290,7 +284,6 @@ function BookingPage() {
       )
         .then(response => response.json())
         .then(responseData => {
-          console.log(responseData);
           window.open(`/sessionIsBooked/${appointmentId}`, "_self");
         })
         .catch(error => {
@@ -324,7 +317,7 @@ function BookingPage() {
       })
         .then(response => response.json())
         .then(data => {
-          console.log("Payment verification response:", data);
+
           // Handle the verification response as needed
         })
         .catch(error => {

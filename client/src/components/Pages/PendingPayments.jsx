@@ -48,7 +48,6 @@ function PendingPayments(props) {
         `${process.env.REACT_APP_SERVER_URL}/appointments/users/${userId}/paymentpending`
       );
       setData(response.data);
-      console.log(response.data);
       setLoading(false);
     } catch (error) {
       setError(error);

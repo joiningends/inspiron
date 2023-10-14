@@ -15,7 +15,6 @@ const getTherapists = async assessmentScore => {
   const cleanGroupId = groupId.replace(/"/g, "");
 
   const assessmentId = storedAssessment?._id;
-  console.log(storedAssessment);
 
   let url = `${process.env.REACT_APP_SERVER_URL}/therapists/score/${assessmentId}/${assessmentScore}`;
 
@@ -23,13 +22,9 @@ const getTherapists = async assessmentScore => {
     url = `${process.env.REACT_APP_SERVER_URL}/therapists/score/${assessmentId}/${cleanGroupId}/${assessmentScore}`;
   }
 
-  console.log(url);
   try {
     const response = await axios.get(url);
     localStorage.setItem("therapistsData", JSON.stringify(response.data));
-    console.log(response);
-    // Handle the response data as needed
-    console.log("Response data:", response.data);
   } catch (error) {
     console.error("Error fetching data:", error);
   }

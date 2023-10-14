@@ -14,9 +14,7 @@ function Assessments() {
     dispatch(fetchAssessments()); // Fetch the therapist using the ID
   }, [dispatch]);
 
-  console.log(assessments)
 
-  console.log(assessments);
   return (
     <>
       <div

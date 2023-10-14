@@ -20,7 +20,6 @@ const AssessmentCard = ({
   }, []);
 
   const imageUrl = assessmentImage;
-  console.log(imageUrl);
   return (
     <div className={`AssessmentCard ${loaded ? "loaded" : ""}`}>
       <div className="image-container">

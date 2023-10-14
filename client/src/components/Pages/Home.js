@@ -4,7 +4,6 @@ import "./Home.css";
 import groupHomePage from "./GroupHomeImage.png";
 
 export const Home = () => {
-  console.log(process.env.REACT_APP_SERVER_URL);
   return (
     <>
       <div className="homepageBanner">

@@ -29,10 +29,7 @@ const Popup = ({
   isBalanceGreaterThanZero,
 }) => {
   const { id } = useParams();
-  console.log(id);
 
-  console.log(cleanUserId);
-  console.log("Hello");
   const groupId = localStorage.getItem("groupid");
 
   return (
@@ -177,16 +174,11 @@ function BookTime() {
 
   const storedUserId = localStorage.getItem("userId");
   const cleanUserId = storedUserId.replace(/"/g, "");
-  console.log(storedUserId);
-  console.log(cleanUserId);
-
+ 
   const [userData, setUserData] = useState(null);
   const [coinData, setCoinData] = useState([]);
-  console.log(coinData);
-  console.log(userData);
 
   const [therapistData, setTherapistData] = useState(null);
-  console.log(therapistData);
   const paginationButtonStyle = {
     backgroundColor: "#5179BD",
     color: "white",
@@ -237,7 +229,6 @@ function BookTime() {
       .get(apiUrl)
       .then(response => {
         setCoinData(response.data);
-        console.log(response.data);
       })
       .catch(error => {
         console.error("Error fetching data:", error);
@@ -264,12 +255,10 @@ function BookTime() {
   const [isBalanceGreaterThanZero, setIsBalanceGreaterThanZero] =
     useState(false);
 
-  console.log(isBalanceGreaterThanZero);
 
   // Your therapist and coin data
 
   const coinDataArray = coinData; // Replace with your coinData
-  console.log(coinData);
 
   useEffect(() => {
     // Check if therapist and coinData are available
@@ -282,12 +271,10 @@ function BookTime() {
         coin => coin.expriencelevel[0] === therapistLevel.level
       );
 
-      console.log(therapistLevel);
 
       if (matchingCoinData) {
         // Check if the coinBalance is greater than 0
         if (matchingCoinData.coinBalance >= 1) {
-          console.log(matchingCoinData.coinBalance);
           // Set the state variable to true
           setIsBalanceGreaterThanZero(true);
           setIsModalOpen(true);
@@ -315,9 +302,6 @@ function BookTime() {
     }
   }, []);
 
-  console.log(selectedTimeSlot);
-  console.log(selectedDate);
-
   const handleBookNow = () => {
     if (!selectedTimeSlot) return;
     const { sessionType } = selectedTimeSlot;
@@ -342,12 +326,9 @@ function BookTime() {
       .post(`${process.env.REACT_APP_SERVER_URL}/appointments`, appointmentData)
       .then(response => {
         setAppointmentId(response.data._id);
-        console.log(response.data.coinpositive);
-        console.log("HIIIIIII");
-        console.log(response.data);
+
         if (response.data.coinpositive === true) {
           // Show the dialog when response.data.coinpositive is true
-          console.log("ASHUUuuuuuuuuuu");
           setOpenDialog(true);
           setPopupVisible(false);
           setAppointmentNewId(response.data._id);
@@ -501,13 +482,10 @@ function BookTime() {
       },
     };
 
-    // console.log(appointmentData);
     axios
       .post(`${process.env.REACT_APP_SERVER_URL}/appointments`, appointmentData)
       .then(response => {
         // Handle the success response here, if needed
-        console.log(response.data._id);
-        console.log(response.data);
         setAppointmentId(response.data._id);
         window.open(`/sessionIsBookedCorp/${response.data._id}`, "_self");
       })
@@ -520,7 +498,6 @@ function BookTime() {
   };
 
   const handleTimeSlotClick = (timeSlot, date) => {
-    console.log(timeSlot);
     setSelectedTimeSlot(timeSlot);
     setSelectedDate(date);
     setPopupVisible(true);
@@ -550,7 +527,7 @@ function BookTime() {
   }
 
   const sessions = therapist?.sessions; // Add the sessions data from the therapist object
-  console.log(sessions);
+
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -614,11 +591,11 @@ function BookTime() {
         )
         .then(response => {
           // Handle the response if needed
-          console.log(response.data);
+
           window.open(`/sessionIsBookedCorp/${response.data._id}`, "_self");
         })
         .catch(err => {
-          console.log(err); // Log the error for debugging purposes
+
           toast.error(
             "There was a problem while booking your appointment. Please try again later.",
             "Error"

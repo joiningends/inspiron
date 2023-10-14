@@ -79,11 +79,8 @@ const DoctorProfile = () => {
 
   useEffect(() => {
     setImageUrl(therapist?.image);
-    console.log(therapist?.image);
-    console.log("hello");
   }, [therapist]);
 
-  console.log(therapist);
 
   const [showOfferings, setShowOfferings] = useState(true);
 

@@ -108,7 +108,6 @@ function CompletePayment() {
           description: "Payment for Course",
           order_id: order_id,
           handler: function (response) {
-            console.log("Payment successful:", response);
 
             // Handle the successful payment response here
             const {
@@ -118,15 +117,7 @@ function CompletePayment() {
             } = response;
 
             // Make a POST request to the verification URL
-            console.log({
-              userid: userId,
-              experiencelevel: experienceLevel,
-              razorpay_order_id,
-              razorpay_payment_id,
-              razorpay_signature,
-              amount: actualAmount, // Send the actual amount in rupees
-              currency: "INR",
-            });
+            
             axios
               .post(`${process.env.REACT_APP_SERVER_URL}/payments/verify`, {
                 userid: userId,
@@ -139,7 +130,6 @@ function CompletePayment() {
               })
               .then(verifyResponse => {
                 // Handle the verification response here
-                console.log("Verification successful:", verifyResponse.data);
                 var url = `/FindTherapist`;
                 window.open(url, "_self");
               })
