@@ -11,25 +11,25 @@ const fetchTherapistsRequest = () => ({
   type: FETCH_THERAPISTS_REQUEST,
 });
 
-const fetchTherapistsSuccess = therapists => ({
+const fetchTherapistsSuccess = (therapists) => ({
   type: FETCH_THERAPISTS_SUCCESS,
   payload: therapists,
 });
 
-const fetchTherapistsFailure = error => ({
+const fetchTherapistsFailure = (error) => ({
   type: FETCH_THERAPISTS_FAILURE,
   payload: error,
 });
 
 const fetchTherapists = () => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(fetchTherapistsRequest());
     axios
       .get(`${API_URL}/therapists/all`)
-      .then(response => {
+      .then((response) => {
         dispatch(fetchTherapistsSuccess(response.data));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(fetchTherapistsFailure(error.message));
       });
   };
@@ -44,25 +44,25 @@ const fetchTherapistRequest = () => ({
   type: FETCH_THERAPIST_REQUEST,
 });
 
-const fetchTherapistSuccess = therapist => ({
+const fetchTherapistSuccess = (therapist) => ({
   type: FETCH_THERAPIST_SUCCESS,
   payload: therapist,
 });
 
-const fetchTherapistFailure = error => ({
+const fetchTherapistFailure = (error) => ({
   type: FETCH_THERAPIST_FAILURE,
   payload: error,
 });
 
-const fetchTherapist = id => {
-  return dispatch => {
+const fetchTherapist = (id) => {
+  return (dispatch) => {
     dispatch(fetchTherapistRequest());
     axios
       .get(`${API_URL}/therapists/${id}`)
-      .then(response => {
+      .then((response) => {
         dispatch(fetchTherapistSuccess(response.data));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(fetchTherapistFailure(error.message));
       });
   };
@@ -81,20 +81,20 @@ const createTherapistSuccess = () => ({
   type: CREATE_THERAPIST_SUCCESS,
 });
 
-const createTherapistFailure = error => ({
+const createTherapistFailure = (error) => ({
   type: CREATE_THERAPIST_FAILURE,
   payload: error,
 });
 
-const createTherapist = therapistData => {
-  return dispatch => {
+const createTherapist = (therapistData) => {
+  return (dispatch) => {
     dispatch(createTherapistRequest());
     axios
       .post(`${API_URL}/therapists`, therapistData)
       .then(() => {
         dispatch(createTherapistSuccess());
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(createTherapistFailure(error.message));
       });
   };
@@ -109,25 +109,25 @@ const fetchAssessmentsRequest = () => ({
   type: FETCH_ASSESSMENTS_REQUEST,
 });
 
-const fetchAssessmentsSuccess = assessments => ({
+const fetchAssessmentsSuccess = (assessments) => ({
   type: FETCH_ASSESSMENTS_SUCCESS,
   payload: assessments,
 });
 
-const fetchAssessmentsFailure = error => ({
+const fetchAssessmentsFailure = (error) => ({
   type: FETCH_ASSESSMENTS_FAILURE,
   payload: error,
 });
 
-const fetchAssessments = therapistId => {
-  return dispatch => {
+const fetchAssessments = (therapistId) => {
+  return (dispatch) => {
     dispatch(fetchAssessmentsRequest());
     axios
       .get(`${API_URL}/assessments?therapistId=${therapistId}`)
-      .then(response => {
+      .then((response) => {
         dispatch(fetchAssessmentsSuccess(response.data));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(fetchAssessmentsFailure(error.message));
       });
   };
@@ -142,25 +142,25 @@ const fetchAssessmentRequest = () => ({
   type: FETCH_ASSESSMENT_REQUEST,
 });
 
-const fetchAssessmentSuccess = assessment => ({
+const fetchAssessmentSuccess = (assessment) => ({
   type: FETCH_ASSESSMENT_SUCCESS,
   payload: assessment,
 });
 
-const fetchAssessmentFailure = error => ({
+const fetchAssessmentFailure = (error) => ({
   type: FETCH_ASSESSMENT_FAILURE,
   payload: error,
 });
 
-const fetchAssessment = assessmentId => {
-  return dispatch => {
+const fetchAssessment = (assessmentId) => {
+  return (dispatch) => {
     dispatch(fetchAssessmentRequest());
     axios
       .get(`${API_URL}/assessments/${assessmentId}`)
-      .then(response => {
+      .then((response) => {
         dispatch(fetchAssessmentSuccess(response.data));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(fetchAssessmentFailure(error.message));
       });
   };
@@ -179,20 +179,20 @@ const createAssessmentSuccess = () => ({
   type: CREATE_ASSESSMENT_SUCCESS,
 });
 
-const createAssessmentFailure = error => ({
+const createAssessmentFailure = (error) => ({
   type: CREATE_ASSESSMENT_FAILURE,
   payload: error,
 });
 
-const createAssessment = assessmentData => {
-  return dispatch => {
+const createAssessment = (assessmentData) => {
+  return (dispatch) => {
     dispatch(createAssessmentRequest());
     axios
       .post(`${API_URL}/assessments`, assessmentData)
       .then(() => {
         dispatch(createAssessmentSuccess());
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(createAssessmentFailure(error.message));
       });
   };
@@ -207,25 +207,25 @@ const fetchUsersRequest = () => ({
   type: FETCH_USERS_REQUEST,
 });
 
-const fetchUsersSuccess = users => ({
+const fetchUsersSuccess = (users) => ({
   type: FETCH_USERS_SUCCESS,
   payload: users,
 });
 
-const fetchUsersFailure = error => ({
+const fetchUsersFailure = (error) => ({
   type: FETCH_USERS_FAILURE,
   payload: error,
 });
 
 const fetchUsers = () => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(fetchUsersRequest());
     axios
       .get(`${API_URL}/users`)
-      .then(response => {
+      .then((response) => {
         dispatch(fetchUsersSuccess(response.data));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(fetchUsersFailure(error.message));
       });
   };
@@ -240,25 +240,25 @@ const fetchUserRequest = () => ({
   type: FETCH_USER_REQUEST,
 });
 
-const fetchUserSuccess = user => ({
+const fetchUserSuccess = (user) => ({
   type: FETCH_USER_SUCCESS,
   payload: user,
 });
 
-const fetchUserFailure = error => ({
+const fetchUserFailure = (error) => ({
   type: FETCH_USER_FAILURE,
   payload: error,
 });
 
-const fetchUser = id => {
-  return dispatch => {
+const fetchUser = (id) => {
+  return (dispatch) => {
     dispatch(fetchUserRequest());
     axios
       .get(`${API_URL}/users/${id}`)
-      .then(response => {
+      .then((response) => {
         dispatch(fetchUserSuccess(response.data));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(fetchUserFailure(error.message));
       });
   };
@@ -277,20 +277,20 @@ const createUserSuccess = () => ({
   type: CREATE_USER_SUCCESS,
 });
 
-const createUserFailure = error => ({
+const createUserFailure = (error) => ({
   type: CREATE_USER_FAILURE,
   payload: error,
 });
 
-const createUser = userData => {
-  return dispatch => {
+const createUser = (userData) => {
+  return (dispatch) => {
     dispatch(createUserRequest());
     axios
       .post(`${API_URL}/users/register`, userData)
       .then(() => {
         dispatch(createUserSuccess());
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(createUserFailure(error.message));
       });
   };
@@ -309,20 +309,20 @@ const updateUserSuccess = () => ({
   type: UPDATE_USER_SUCCESS,
 });
 
-const updateUserFailure = error => ({
+const updateUserFailure = (error) => ({
   type: UPDATE_USER_FAILURE,
   payload: error,
 });
 
 const updateUser = (id, userData) => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(updateUserRequest());
     axios
       .put(`${API_URL}/users/${id}`, userData)
       .then(() => {
         dispatch(updateUserSuccess());
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(updateUserFailure(error.message));
       });
   };
@@ -341,20 +341,20 @@ const deleteUserSuccess = () => ({
   type: DELETE_USER_SUCCESS,
 });
 
-const deleteUserFailure = error => ({
+const deleteUserFailure = (error) => ({
   type: DELETE_USER_FAILURE,
   payload: error,
 });
 
-const deleteUser = id => {
-  return dispatch => {
+const deleteUser = (id) => {
+  return (dispatch) => {
     dispatch(deleteUserRequest());
     axios
       .delete(`${API_URL}/users/${id}`)
       .then(() => {
         dispatch(deleteUserSuccess());
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(deleteUserFailure(error.message));
       });
   };
@@ -377,13 +377,13 @@ const loginSuccess = (user, token) => ({
   },
 });
 
-const loginFailure = error => ({
+const loginFailure = (error) => ({
   type: LOGIN_FAILURE,
   payload: error,
 });
 
-const login = userData => {
-  return async dispatch => {
+const login = (userData) => {
+  return async (dispatch) => {
     dispatch(loginRequest());
     try {
       const response = await axios.post(`${API_URL}/users/login`, userData);
@@ -409,18 +409,18 @@ const registerRequest = () => ({
   type: REGISTER_REQUEST,
 });
 
-const registerSuccess = user => ({
+const registerSuccess = (user) => ({
   type: REGISTER_SUCCESS,
   payload: user,
 });
 
-const registerFailure = error => ({
+const registerFailure = (error) => ({
   type: REGISTER_FAILURE,
   payload: error,
 });
 
-const register = userData => {
-  return async dispatch => {
+const register = (userData) => {
+  return async (dispatch) => {
     dispatch(registerRequest());
     try {
       const response = await axios.post(`${API_URL}/register`, userData);
@@ -441,18 +441,18 @@ const getUserCountRequest = () => ({
   type: GET_USER_COUNT_REQUEST,
 });
 
-const getUserCountSuccess = userCount => ({
+const getUserCountSuccess = (userCount) => ({
   type: GET_USER_COUNT_SUCCESS,
   payload: userCount,
 });
 
-const getUserCountFailure = error => ({
+const getUserCountFailure = (error) => ({
   type: GET_USER_COUNT_FAILURE,
   payload: error,
 });
 
 const getUserCount = () => {
-  return async dispatch => {
+  return async (dispatch) => {
     dispatch(getUserCountRequest());
     try {
       const response = await axios.get(`${API_URL}/get/count`);
@@ -477,20 +477,20 @@ const createAppointmentSuccess = () => ({
   type: CREATE_APPOINTMENT_SUCCESS,
 });
 
-const createAppointmentFailure = error => ({
+const createAppointmentFailure = (error) => ({
   type: CREATE_APPOINTMENT_FAILURE,
   payload: error,
 });
 
-const createAppointment = appointmentData => {
-  return dispatch => {
+const createAppointment = (appointmentData) => {
+  return (dispatch) => {
     dispatch(createAppointmentRequest());
     axios
       .post(`${API_URL}/appointments`, appointmentData)
       .then(() => {
         dispatch(createAppointmentSuccess());
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(createAppointmentFailure(error.message));
       });
   };
@@ -508,18 +508,18 @@ const getAppointmentsByTherapistRequest = () => ({
   type: GET_APPOINTMENTS_BY_THERAPIST_REQUEST,
 });
 
-const getAppointmentsByTherapistSuccess = appointments => ({
+const getAppointmentsByTherapistSuccess = (appointments) => ({
   type: GET_APPOINTMENTS_BY_THERAPIST_SUCCESS,
   payload: appointments,
 });
 
-const getAppointmentsByTherapistFailure = error => ({
+const getAppointmentsByTherapistFailure = (error) => ({
   type: GET_APPOINTMENTS_BY_THERAPIST_FAILURE,
   payload: error,
 });
 
-const getAppointmentsByTherapist = therapistId => {
-  return async dispatch => {
+const getAppointmentsByTherapist = (therapistId) => {
+  return async (dispatch) => {
     dispatch(getAppointmentsByTherapistRequest());
     try {
       const response = await axios.get(
@@ -541,7 +541,7 @@ export const GET_UPCOMING_APPOINTMENTS_BY_THERAPIST_FAILURE =
 
 // Action creator to fetch upcoming appointments by therapist
 export const getUpcomingAppointmentsByTherapist =
-  therapistId => async dispatch => {
+  (therapistId) => async (dispatch) => {
     try {
       dispatch({ type: GET_UPCOMING_APPOINTMENTS_BY_THERAPIST_REQUEST });
 
@@ -570,7 +570,7 @@ const FETCH_TODAY_APPOINTMENTS_SUCCESS = "FETCH_TODAY_APPOINTMENTS_SUCCESS";
 const FETCH_TODAY_APPOINTMENTS_FAILURE = "FETCH_TODAY_APPOINTMENTS_FAILURE";
 
 // Action Creators
-const fetchTodayAppointments = therapistId => async dispatch => {
+const fetchTodayAppointments = (therapistId) => async (dispatch) => {
   dispatch({ type: FETCH_TODAY_APPOINTMENTS_REQUEST });
 
   try {
@@ -595,16 +595,16 @@ export const UPDATE_THERAPIST_REQUEST = "UPDATE_THERAPIST_REQUEST";
 export const UPDATE_THERAPIST_SUCCESS = "UPDATE_THERAPIST_SUCCESS";
 export const UPDATE_THERAPIST_FAILURE = "UPDATE_THERAPIST_FAILURE";
 
-export const updateTherapist = (therapistId, updatedData) => dispatch => {
+export const updateTherapist = (therapistId, updatedData) => (dispatch) => {
   dispatch({ type: UPDATE_THERAPIST_REQUEST });
 
   axios
     .put(`${API_URL}/therapists/${therapistId}`, updatedData)
-    .then(response => {
+    .then((response) => {
       const therapist = response.data.therapist;
       dispatch({ type: UPDATE_THERAPIST_SUCCESS, payload: therapist });
     })
-    .catch(error => {
+    .catch((error) => {
       dispatch({ type: UPDATE_THERAPIST_FAILURE, payload: error.message });
     });
 };
@@ -616,7 +616,7 @@ export const UPDATE_THERAPIST_IMAGE_FAILURE = "UPDATE_THERAPIST_IMAGE_FAILURE";
 
 // Action Creators
 export const updateTherapistImage = (id, file) => {
-  return async dispatch => {
+  return async (dispatch) => {
     dispatch({ type: UPDATE_THERAPIST_IMAGE_REQUEST });
 
     try {

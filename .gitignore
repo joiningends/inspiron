@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+node_modules
+=======
 server/inspiron/node_modules/.yarn-integrity
 server/inspiron/node_modules/.bin/mime
 server/inspiron/node_modules/.bin/mime.cmd
@@ -19240,4 +19243,8 @@ server/node_modules/string_decoder/node_modules/safe-buffer/LICENSE
 server/node_modules/string_decoder/node_modules/safe-buffer/README.md
 server/node_modules/tar/node_modules/.bin/mkdirp.ps1
 server/node_modules/string_decoder/node_modules/safe-buffer/package.json
+<<<<<<< HEAD
 node_modules
+=======
+>>>>>>> 31a5d0dd8eca4b511e747f2d94983b8a50dc51bc
+>>>>>>> main
