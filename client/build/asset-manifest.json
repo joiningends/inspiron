@@ -1,22 +1,29 @@
 {
   "files": {
-    "main.css": "/static/css/main.2a258d02.css",
-    "main.js": "/static/js/main.56938bb6.js",
+    "main.css": "/static/css/main.41afc6a5.css",
+    "main.js": "/static/js/main.e73f9e6c.js",
+    "static/js/498.7380588e.chunk.js": "/static/js/498.7380588e.chunk.js",
+    "static/js/703.4695d686.chunk.js": "/static/js/703.4695d686.chunk.js",
+    "static/js/513.fb7bbbe9.chunk.js": "/static/js/513.fb7bbbe9.chunk.js",
     "static/media/groupDiscuss.jpg": "/static/media/groupDiscuss.06ff81f56fc7a57734ba.jpg",
     "static/media/inspironWheel.png": "/static/media/inspironWheel.68a29855a490196aaf15.png",
     "static/media/GroupHomeImage.png": "/static/media/GroupHomeImage.0063e316e2a61f8a510b.png",
     "static/media/myimg.jpg": "/static/media/myimg.f102b9164bfdea5a75a6.jpg",
+    "static/media/Artboard 2.png": "/static/media/Artboard 2.10236bded706326f977d.png",
     "static/media/intermediary.png": "/static/media/intermediary.e5d3f36b5ce5c8a6c210.png",
     "static/media/thumbs-up.png": "/static/media/thumbs-up.ab933a184fa604f37ae4.png",
     "static/media/clock.png": "/static/media/clock.45b0736b20ad251e6cdb.png",
     "static/media/inspironwhitewheel.png": "/static/media/inspironwhitewheel.de005498f906da452e88.png",
     "static/media/favorite.svg": "/static/media/favorite.7753fa317e64861f1f4e1ef1dd85c4cc.svg",
     "index.html": "/index.html",
-    "main.2a258d02.css.map": "/static/css/main.2a258d02.css.map",
-    "main.56938bb6.js.map": "/static/js/main.56938bb6.js.map"
+    "main.41afc6a5.css.map": "/static/css/main.41afc6a5.css.map",
+    "main.e73f9e6c.js.map": "/static/js/main.e73f9e6c.js.map",
+    "498.7380588e.chunk.js.map": "/static/js/498.7380588e.chunk.js.map",
+    "703.4695d686.chunk.js.map": "/static/js/703.4695d686.chunk.js.map",
+    "513.fb7bbbe9.chunk.js.map": "/static/js/513.fb7bbbe9.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.2a258d02.css",
-    "static/js/main.56938bb6.js"
+    "static/css/main.41afc6a5.css",
+    "static/js/main.e73f9e6c.js"
   ]
 }
