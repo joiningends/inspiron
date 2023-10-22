@@ -102,6 +102,6 @@ mongoose
   });
 
 //Server
-app.listen(4000, () => {
-  console.log("server is running http://localhost:4000");
+app.listen(5001, () => {
+  console.log("server is running http://localhost:5001");
 });
