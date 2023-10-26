@@ -162,6 +162,23 @@ const Signup = () => {
         boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
       },
     });
+    toast.success("Please verify your mail ID.", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      style: {
+        background: "green",
+        color: "#fff",
+        fontSize: "14px",
+        borderRadius: "4px",
+        padding: "12px",
+        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+      },
+    });
   };
 
   const isValidPhoneNumber = phone => {
@@ -316,9 +333,7 @@ const Signup = () => {
             }}
             required
           />
-          {!passwordMatch && (
-            <p className="error">Passwords do not match</p>
-          )}
+          {!passwordMatch && <p className="error">Passwords do not match</p>}
         </div>
         <button type="submit" onClick={handleSubmit}>
           Sign Up
