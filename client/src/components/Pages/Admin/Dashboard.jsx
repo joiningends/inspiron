@@ -84,7 +84,7 @@ function Dashboard() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredTherapists = therapistsData.therapists.filter(therapist =>
+  const filteredTherapists = therapistsData?.therapists?.filter(therapist =>
     therapist.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -192,7 +192,7 @@ function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {filteredTherapists.map(therapist => (
+              {filteredTherapists?.map(therapist => (
                 <tr key={therapist._id}>
                   <td
                     style={{

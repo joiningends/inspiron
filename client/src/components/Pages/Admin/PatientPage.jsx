@@ -75,9 +75,16 @@ function PatientPage() {
   };
 
   const filterPatients = () => {
-    return patients.filter(patient =>
-      patient.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Ensure that patients is an array
+    if (!Array.isArray(patients)) {
+      return [];
+    }
+
+    return patients
+      .filter(patient =>
+        patient.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .slice(startIndex, endIndex);
   };
 
   const startIndex = (currentPage - 1) * patientsPerPage;

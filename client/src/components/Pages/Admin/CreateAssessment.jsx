@@ -1,8 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  RiDeleteBin2Line,
-  RiAddLine,
-} from "react-icons/ri";
+import { RiDeleteBin2Line, RiAddLine } from "react-icons/ri";
 import "./CreateAssessment.css";
 import { fetchAssessments } from "../../redux/Action";
 import { useSelector, useDispatch } from "react-redux";
@@ -14,7 +11,6 @@ function CreateAssessment() {
   useEffect(() => {
     dispatch(fetchAssessments());
   }, [dispatch]);
-
 
   const handleDelete = assessmentId => {
     console.log("Delete clicked for assessment ID:", assessmentId);
@@ -37,20 +33,21 @@ function CreateAssessment() {
           </tr>
         </thead>
         <tbody>
-          {assessments.map(assessment => (
-            <tr key={assessment.hostId}>
-              <td>{assessment.assessment_name}</td>
-              <td>{assessment.questions.length}</td>
-              <td>
-                <button
-                  className="action-button"
-                  onClick={() => handleDelete(assessment.hostId)}
-                >
-                  <RiDeleteBin2Line className="action-icon delete-icon" />
-                </button>
-              </td>
-            </tr>
-          ))}
+          {Array.isArray(assessments) &&
+            assessments.map(assessment => (
+              <tr key={assessment.hostId}>
+                <td>{assessment.assessment_name}</td>
+                <td>{assessment.questions.length}</td>
+                <td>
+                  <button
+                    className="action-button"
+                    onClick={() => handleDelete(assessment.hostId)}
+                  >
+                    <RiDeleteBin2Line className="action-icon delete-icon" />
+                  </button>
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
       <button

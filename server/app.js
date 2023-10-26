@@ -50,14 +50,14 @@ const whatsappRoutes = require("./routes/whatsapp");
 const _dirname = path.dirname("");
 const buildPath = path.join(__dirname, "../client/build");
 app.use(express.static(buildPath));
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(buildPath, "index.html")),
-    function (err) {
-      if (err) {
-        res.status(500).send(err);
-      }
-    };
-});
+// app.get("/*", (req, res) => {
+//   res.sendFile(path.join(buildPath, "index.html")),
+//     function (err) {
+//       if (err) {
+//         res.status(500).send(err);
+//       }
+//     };
+// });
 const api = process.env.API_URL;
 const PORT = process.env.PORT || 5001;
 app.use(`${api}/appointments`, appointmentsRoutes);

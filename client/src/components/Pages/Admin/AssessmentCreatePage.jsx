@@ -561,29 +561,30 @@ function AssessmentCreatePage() {
                 Expertise:
               </label>
               <div style={{ display: "flex", flexWrap: "wrap" }}>
-                {expertiseList.map(expertise => (
-                  <label
-                    key={expertise._id}
-                    htmlFor={`expertise-option-${expertise._id}-${severityIndex}`}
-                    style={{ fontSize: "1rem", margin: "0.5rem" }}
-                  >
-                    <input
-                      type="checkbox"
-                      id={`expertise-option-${expertise._id}-${severityIndex}`}
-                      value={expertise._id}
-                      checked={severity.expertiseList.includes(expertise._id)}
-                      onChange={event =>
-                        handleExpertiseChange(
-                          event,
-                          severityIndex,
-                          event.target.value
-                        )
-                      }
-                      style={{ marginRight: "5px" }}
-                    />
-                    {expertise.type[0]}
-                  </label>
-                ))}
+                {Array.isArray(expertiseList) &&
+                  expertiseList.map(expertise => (
+                    <label
+                      key={expertise._id}
+                      htmlFor={`expertise-option-${expertise._id}-${severityIndex}`}
+                      style={{ fontSize: "1rem", margin: "0.5rem" }}
+                    >
+                      <input
+                        type="checkbox"
+                        id={`expertise-option-${expertise._id}-${severityIndex}`}
+                        value={expertise._id}
+                        checked={severity.expertiseList.includes(expertise._id)}
+                        onChange={event =>
+                          handleExpertiseChange(
+                            event,
+                            severityIndex,
+                            event.target.value
+                          )
+                        }
+                        style={{ marginRight: "5px" }}
+                      />
+                      {expertise.type[0]}
+                    </label>
+                  ))}
               </div>
             </div>
           </div>

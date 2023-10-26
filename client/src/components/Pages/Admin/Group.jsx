@@ -44,11 +44,11 @@ function Groups() {
     setCurrentPage(page);
   };
 
-  const pageCount = Math.ceil(data.length / 5);
+  const pageCount = Math.ceil(data?.length / 5);
 
   const startIndex = (currentPage - 1) * 5;
   const endIndex = startIndex + 5;
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = data?.slice(startIndex, endIndex);
 
   const handleAddCorporateClick = () => {
     setShowForm(true);
@@ -241,7 +241,7 @@ function Groups() {
             </tr>
           </thead>
           <tbody>
-            {currentData.map(group => (
+            {currentData?.map(group => (
               <tr key={group._id}>
                 <td>{group.name}</td>
                 <td>{group.address}</td>
