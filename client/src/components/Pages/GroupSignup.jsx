@@ -166,7 +166,7 @@ const GroupSignUp = () => {
       });
 
       // Show success message using toast
-      toast.success("Successfully signed up!", {
+      toast.success("Please verify your mail ID.", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: true,
@@ -175,7 +175,7 @@ const GroupSignUp = () => {
         draggable: true,
         progress: undefined,
         style: {
-          background: "#68b545",
+          background: "green",
           color: "#fff",
           fontSize: "14px",
           borderRadius: "4px",
