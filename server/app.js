@@ -77,7 +77,7 @@ app.use(`${api}/whatsapp`, whatsappRoutes);
 const _dirname = path.dirname("");
 const buildPath = path.join(__dirname, "../client/build");
 app.use(express.static(buildPath));
-app.get("/", (_, res) => {
+app.get("/*", (_, res) => {
   res.sendFile(path.join(buildPath, "index.html")),
     function (err) {
       if (err) {
