@@ -47,17 +47,6 @@ const labtestRoutes = require("./routes/labtests");
 const ePrescriptionRoutes = require("./routes/eprescriptions");
 const whatsappRoutes = require("./routes/whatsapp");
 
-const _dirname = path.dirname("");
-const buildPath = path.join(__dirname, "../client/build");
-app.use(express.static(buildPath));
-// app.get("/*", (req, res) => {
-//   res.sendFile(path.join(buildPath, "index.html")),
-//     function (err) {
-//       if (err) {
-//         res.status(500).send(err);
-//       }
-//     };
-// });
 const api = process.env.API_URL;
 const PORT = process.env.PORT || 5001;
 app.use(`${api}/appointments`, appointmentsRoutes);
@@ -85,6 +74,18 @@ app.use(`${api}/whatsapp`, whatsappRoutes);
 
 // Start the scheduler
 
+const _dirname = path.dirname("");
+const buildPath = path.join(__dirname, "../client/build");
+app.use(express.static(buildPath));
+app.get("/*", (_, res) => {
+  res.sendFile(path.join(buildPath, "index.html")),
+    function (err) {
+      if (err) {
+        res.status(500).send(err);
+      }
+    };
+});
+
 //Database
 mongoose
   .connect(process.env.CONNECTION_STRING, {
@@ -97,7 +98,7 @@ mongoose
 
     setInterval(removeOldPendingAppointments, 1 * 60 * 1000);
   })
-  .catch((err) => {
+  .catch(err => {
     console.log(err);
   });
 
