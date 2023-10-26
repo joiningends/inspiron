@@ -66,7 +66,7 @@ function TherapistDetails() {
 
   useEffect(() => {
     // Check expertise IDs from therapist?.expertise and pre-select checkboxes
-    const therapistExpertises = therapist?.expertise.map(exp => {
+    const therapistExpertises = therapist?.expertise?.map(exp => {
       const matchingExpertise = expertisesData?.find(e => e._id === exp._id);
       return matchingExpertise ? matchingExpertise : null;
     });
@@ -311,7 +311,7 @@ function TherapistDetails() {
   };
 
   const handleSave = () => {
-    const selectedIds = selectedClients.map(client => client._id);
+    const selectedIds = selectedClients?.map(client => client._id);
     setSelectedGroupIds(selectedIds);
     setHasChanges(false);
     console.log("Selected Group IDs:", selectedIds);
@@ -678,7 +678,7 @@ function TherapistDetails() {
             </span>
           </div>
         </div>
-        {therapist?.education.map((item, index) => (
+        {therapist?.education?.map((item, index) => (
           <div
             className="educationItem"
             key={index}
@@ -1327,7 +1327,7 @@ function TherapistDetails() {
             <MenuItem value="" disabled>
               Select a level
             </MenuItem>
-            {priceLevels.map(price => (
+            {priceLevels?.map(price => (
               <MenuItem key={price._id} value={price.expriencelevel._id}>
                 {price.expriencelevel.level}
               </MenuItem>
@@ -1443,7 +1443,7 @@ function TherapistDetails() {
           SELECT GROUP
         </h2>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
-          {clients.map(client => (
+          {clients?.map(client => (
             <div
               key={client._id}
               style={{ flexBasis: "25%", marginBottom: "20px" }}
@@ -1510,7 +1510,7 @@ function TherapistDetails() {
                 Array(
                   Math.ceil(therapist?.sessions.length / slotsPerPage)
                 ).keys()
-              ).map(pageNumber => (
+              )?.map(pageNumber => (
                 <li
                   key={pageNumber}
                   className={currentPage === pageNumber + 1 ? "active" : ""}
