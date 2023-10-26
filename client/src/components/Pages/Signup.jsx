@@ -144,24 +144,6 @@ const Signup = () => {
       confirmPassword: "",
     });
 
-    // Show success message using toast
-    toast.success("Successfully signed up!", {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      style: {
-        background: "#68b545",
-        color: "#fff",
-        fontSize: "14px",
-        borderRadius: "4px",
-        padding: "12px",
-        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-      },
-    });
     toast.success("Please verify your mail ID.", {
       position: "top-right",
       autoClose: 3000,
