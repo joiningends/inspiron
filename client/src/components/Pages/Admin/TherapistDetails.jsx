@@ -67,7 +67,9 @@ function TherapistDetails() {
   useEffect(() => {
     // Check expertise IDs from therapist?.expertise and pre-select checkboxes
     const therapistExpertises = therapist?.expertise?.map(exp => {
-      const matchingExpertise = expertisesData?.find(e => e._id === exp._id);
+      const matchingExpertise = Array.isArray(expertisesData)
+        ? expertisesData.find(e => e._id === exp._id)
+        : null;
       return matchingExpertise ? matchingExpertise : null;
     });
 
@@ -1111,33 +1113,36 @@ function TherapistDetails() {
             gap: "10px", // Adjust the spacing between checkboxes
           }}
         >
-          {expertisesData?.map(expertise => (
-            <label
-              key={expertise?._id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "10px",
-                border: "1px solid #ccc",
-                boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)", // Add shadow
-                padding: "10px", // Increase padding for a better appearance
-                borderRadius: "4px",
-                fontSize: "0.9rem",
-                width: "200px", // Adjust the width as needed
-              }}
-            >
-              <input
-                type="checkbox"
-                value={expertise?._id}
-                checked={selectedExpertises?.some(
-                  exp => exp?._id === expertise?._id
-                )}
-                onChange={handleExpertiseChange}
-                style={{ marginRight: "5px" }}
-              />
-              {expertise?.type[0]}
-            </label>
-          ))}
+          {Array.isArray(expertisesData) &&
+            expertisesData.map(expertise =>
+              expertise && expertise._id ? (
+                <label
+                  key={expertise._id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "10px",
+                    border: "1px solid #ccc",
+                    boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
+                    padding: "10px",
+                    borderRadius: "4px",
+                    fontSize: "0.9rem",
+                    width: "200px",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    value={expertise._id}
+                    checked={selectedExpertises?.some(
+                      exp => exp._id === expertise._id
+                    )}
+                    onChange={handleExpertiseChange}
+                    style={{ marginRight: "5px" }}
+                  />
+                  {expertise.type[0]}
+                </label>
+              ) : null
+            )}
         </div>
         <button
           className="submit-button"
