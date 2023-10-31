@@ -235,7 +235,7 @@ const getTherapistById = async (req, res) => {
   const therapistId = req.params.id;
 
   try {
-    const therapist = await Therapist.findById(therapistId).populate('expertise experiencelevel');
+    const therapist = await Therapist.findById(therapistId).populate('expertise expriencelevel');
 
     if (!therapist) {
       return res.status(404).json({ message: 'Therapist not found' });
