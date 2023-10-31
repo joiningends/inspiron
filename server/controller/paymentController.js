@@ -8,6 +8,9 @@ const { Therapist } = require("../models/therapist");
 const Coin = require("../models/coin");
 const Price = require("../models/prices");
 const nodemailer = require("nodemailer");
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+
 const {
   sendWhatsAppMessage,
   getSentMessageCount,
@@ -301,6 +304,24 @@ const verifyPayment = async (req, res) => {
       // Send the email (you need to implement this function)
       sendEmail(user.email, "Appointment Confirmation", emailMessage);
 
+      const invoiceNumber = "INSPIRON" + Date.now();
+
+      const invoiceData = {
+        invoiceNumber: invoiceNumber,
+        order_id:razorpay_order_id,
+        billedTo: username,
+        email: user.email, 
+        mobile: user.mobile, 
+        amount: amount,
+        totalAmount: amount,
+      };
+      
+      const invoicePath = "invoice.pdf";
+      generateInvoicePDF(invoiceData, invoicePath);
+      const subject = 'Invoice for Your Payment';
+      const message = `Thank you for your payment. Please find the attached invoice.`;
+      sendInvoiceByEmail(user.email, subject, message, invoicePath);
+
       res.status(200).json({
         status: paymentStatus,
         message: "Payment verified successfully",
@@ -372,24 +393,22 @@ const verifyPaymentoverall = async (req, res) => {
       currency,
       userid,
       experiencelevel,
+      useremail,
     } = req.body;
 
-    console.log(req.body);
-    // Verify the payment signature
+    let paymentStatus = 'Failed';
+
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
       .createHmac("sha256", process.env.KEY_SECRET)
       .update(sign.toString())
       .digest("hex");
 
-    let paymentStatus = "Failed"; // Default status is 'failed'
-
     if (razorpay_signature === expectedSign) {
-      paymentStatus = "Success";
+      paymentStatus = 'Success';
 
-      // Create and save payment verification record
       const paymentVerification = new Payment({
-        user: userid, // Use ":" instead of "=" to assign the value
+        user: userid,
         paymentStatus: paymentStatus,
         razorpayOrderId: razorpay_order_id,
         razorpayPaymentId: razorpay_payment_id,
@@ -398,60 +417,155 @@ const verifyPaymentoverall = async (req, res) => {
       });
 
       await paymentVerification.save();
+
+      const existingCoin = await Coin.findOne({
+        user: userid,
+        expriencelevel: experiencelevel,
+      });
+
+      if (existingCoin) {
+        existingCoin.coinBalance = 0;
+        await existingCoin.save();
+      }
+
+      await Appointment.updateMany(
+        {
+          user: userid,
+          level: experiencelevel,
+          paymentstatus: { $nin: ["Success", "Failure"] },
+          paymentMethod: "Online",
+        },
+        {
+          $set: {
+            paymentMethod: "Online",
+            paymentstatus: "Success",
+            paymentrecived: true,
+            extensionprice: 0,
+          },
+        }
+      )
+        .then((result) => {
+          console.log("Update Result:", result);
+        })
+        .catch((error) => {
+          console.error("Update Error:", error);
+        });
+        const user = await User.findById(userid).select(
+          "name "
+        );
+      // Auto-generate an invoice number based on a prefix and timestamp
+      const invoiceNumber = 'INSPIRION' + Date.now();
+
+      const invoiceData = {
+        invoiceNumber: invoiceNumber,
+        billedTo: user.name,
+        amount: amount,
+      };
+      const invoicePath = 'invoice.pdf';
+      generateInvoicePDF(invoiceData, invoicePath);
+
+      const subject = 'Invoice for Your Payment';
+      const message = `Thank you for your payment. Please find the attached invoice.`;
+      sendInvoiceByEmail(useremail, subject, message, invoicePath);
     }
-    const existingCoin = await Coin.findOne({
-      user: userid,
-      expriencelevel: experiencelevel,
-    });
 
-    console.log(userid);
-
-    if (existingCoin) {
-      existingCoin.coinBalance = 0;
-
-      await existingCoin.save();
-    }
-    console.log("User ID:", userid);
-console.log("Experience Level:", experiencelevel);
-
-await Appointment.updateMany(
-  {
-    user: userid,
-    level: experiencelevel,
-    paymentstatus: { $nin: ["Success", "Failure"] },
-    paymentMethod: "Book by Therapist", // Include the condition for paymentMethod
-  },
-  {
-    $set: {
-      paymentMethod: "Online", // Set paymentMethod to "Online" only for matching appointments
-      paymentstatus: "Success",
-      paymentrecived: true,
-      extensionprice : 0,
-
-    },
-  }
-)
-
-.then((result) => {
-  console.log("Update Result:", result);
-})
-.catch((error) => {
-  console.error("Update Error:", error);
-});
-
-    
-    
-    
-    // Send a response
-    res
-      .status(200)
-      .json({ message: `Payment status updated to ${paymentStatus}` });
+    res.status(200).json({ message: `Payment status updated to ${paymentStatus}` });
   } catch (error) {
-    // Handle errors
-    console.error("Error verifying payment:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error('Error verifying payment:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+
+
+
+
+const generateInvoicePDF = (invoiceData, outputPath) => {
+  const doc = new PDFDocument();
+  doc.pipe(fs.createWriteStream(outputPath)); 
+
+  doc.image('public/uploads/logo.png', 50, 50, { width: 100 }); // Add your logo image here
+  doc.moveDown(3.5); // Reduce the gap
+
+  doc.fontSize(16);
+  doc.text('Invoice', { align: 'center' });
+  doc.moveDown(0.5);
+  doc.fontSize(12);
+  doc.text(`Invoice Date: ${new Date().toLocaleDateString()}`);
+  doc.text(`Invoice Number: ${invoiceData.invoiceNumber}`);
+  doc.text(`Billed To: ${invoiceData.billedTo}`);
+  doc.text(`Email: ${invoiceData.email}`);
+  doc.text(`Mobile: ${invoiceData.mobile}`);
+  
+  // Add a small line
+  doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+  
+  doc.fontSize(12);
+
+  // Values for Order ID and Amount
+  const orderID = invoiceData.order_id;
+  const amount = `${invoiceData.amount} INR`;
+
+  // Add a table-like layout for Order ID and Amount
+  doc.text('Order ID', 50, doc.y + 40);
+  doc.text('Amount', 400, doc.y + 1);
+  doc.text(orderID, 50, doc.y + 40);
+  doc.text(amount, 400, doc.y + 1);
+  
+  // Add a line below the headings
+  doc.moveTo(50, doc.y + 40).lineTo(550, doc.y + 40).stroke();
+
+  // Total Amount
+  doc.text(`Total Amount: ${invoiceData.totalAmount} INR`, 400, doc.y + 50);
+
+  doc.end();
+
+  console.log(`Invoice PDF generated at ${outputPath}`);
+};
+
+
+
+
+
+
+
+const sendInvoiceByEmail = (to, subject, message, invoicePath) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com", // Replace with your SMTP server hostname
+    port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
+    secure: false,
+    requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+    auth: {
+      user: "inspiron434580@gmail.com", // Replace with your email address
+      pass: "rogiprjtijqxyedm", // Replace with your email password or application-specific password
+    },
+  });
+
+  const mailOptions = {
+    from: "inspiron434580@gmail.com",
+    to: to,
+    subject: subject,
+    text: message,
+    attachments: [
+      {
+        filename: "invoice.pdf",
+        path: invoicePath,
+      },
+    ],
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error("Error sending email:", error);
+    } else {
+      console.log("Email sent:", info.response);
+    }
+  });
+};
+
+
+
+
 
 module.exports = {
   createOrder,

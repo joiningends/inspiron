@@ -54,6 +54,7 @@ router.put('/:id/ContactDetails', therapistController.updateContactDetails);
 router.put('/:id/address', therapistController. updateAddresses);
 router.put('/:id/education/:educationId',therapistController.updateEducation);
 router.put('/:id/image', upload.single('image'), therapistController.updateTherapistImage );
+router.put('/:id/sign', upload.single('image'), therapistController.updateTherapistsign );
 router.put('/:id/Availability', therapistController.updateAvailability);
 router.delete('/:id', therapistController.deleteTherapist);
 router.delete('/', therapistController.deleteAllTherapists);

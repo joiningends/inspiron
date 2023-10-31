@@ -90,7 +90,9 @@ const assessmentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Expertise',
       }],
-      serverityname: [String]
+      serverityname: [String],
+      result:String,
+      description:String
     },
     required: false,
   },
@@ -102,7 +104,9 @@ const assessmentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Expertise',
       }],
-      serverityname: [String]
+      serverityname: [String],
+      result:String,
+      description:String
     },
     required: false,
   },
@@ -114,7 +118,9 @@ const assessmentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Expertise',
       }],
-      serverityname: [String]
+      serverityname: [String],
+      result:String,
+      description:String
     },
     required: false,
   },

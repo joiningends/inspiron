@@ -34,9 +34,8 @@ const sendWhatsAppMessage = (recipientNumber, message) => {
         // Increment the sent message count
         sentMessageCount++;
         console.log('WhatsApp message sent successfully');
-        
-        // After sending the message, make a request to the tracking service
-        const trackingServiceUrl = '${process.env.JOININFGENDS}/api/v1/groups/track-message'; // Replace with your actual URL
+       
+        const trackingServiceUrl = 'https://wa.joiningends.in/api/v1/groups/track-message'; // Replace with your actual URL
         fetch(trackingServiceUrl, {
           method: 'POST',
           body: JSON.stringify({ clientId: '6516a9a7ab3554b246d9b014', sender: 'Inspiron', recipient: recipientNumber, content: message }),

@@ -309,41 +309,43 @@ exports.createAppointment = async (req, res) => {
         return res.status(201).json(populatedAppointment);
       }
     } else {
-      // Check if the user has a negative coin balance for every level
+     
+
       const negativeCoinBalance = await Coin.findOne({
         user: userId,
-        coinBalance: { $lt: 0 },
+        coinBalance: { $lt: 0, $ne: 0 }, 
       });
+      
+  
 
-      if (negativeCoinBalance) {
-        const { coinBalance, avarage, expriencelevel } = negativeCoinBalance;
 
-        // Step 4: Calculate the product of coin balance and average price
-        const product = -coinBalance * avarage;
+if (negativeCoinBalance) {
+  const { coinBalance, avarage, expriencelevel } = negativeCoinBalance;
 
-        return res.status(400).json({
-          message: `Dear customer, please pay the amount: ${product}`,
-          userId: userId,
-          expriencelevel: expriencelevel,
-        });
-      }
+  
+  const product = (-coinBalance) * avarage;
 
-      // Continue with booking logic for users without groupid and without company payment
-      // Check if the appointment slot is available
-      const existingAppointment = await Appointment.findOne({
-        therapist: therapistId,
-        dateTime,
-        startTime: { $lte: endTime },
-        endTime: { $gte: startTime },
-      });
+  return res.status(400).json({
+    message: `Dear customer, please pay the amount: ${product}`,
+    userId: userId,
+    expriencelevel: expriencelevel,
+  });
+}
 
-      if (existingAppointment) {
-        return res
-          .status(409)
-          .json({ error: "The requested time slot is already booked" });
-      }
+// Continue with booking logic for users without groupid and without company payment
+// Check if the appointment slot is available
+const existingAppointment = await Appointment.findOne({
+  therapist: therapistId,
+  dateTime,
+  startTime: { $lte: endTime },
+  endTime: { $gte: startTime },
+});
 
-      // Create the new appointment
+if (existingAppointment) {
+  return res.status(409).json({ error: 'The requested time slot is already booked' });
+}
+
+
       const newAppointment = new Appointment({
         therapist: therapistId,
         meetlink: therapist.meetLink,
@@ -2884,30 +2886,7 @@ cron.schedule("* * * * *", async () => {
   }
 });
 
-exports.updatePackage = async (req, res) => {
-  try {
-    const { appointmentId } = req.params;
-    const { package } = req.body;
 
-    // Find the appointment by its ID
-    const appointment = await Appointment.findById(appointmentId);
-
-    if (!appointment) {
-      return res.status(404).json({ error: "Appointment not found" });
-    }
-
-    appointment.package = package;
-
-    const updatedAppointment = await appointment.save();
-
-    return res.status(200).json(updatedAppointment);
-  } catch (error) {
-    console.error("Error updating package:", error);
-    return res
-      .status(500)
-      .json({ error: "An error occurred while updating the package" });
-  }
-};
 
 exports.updatePackage = async (req, res) => {
   try {

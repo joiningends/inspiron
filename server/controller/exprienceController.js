@@ -1,5 +1,6 @@
 // controllers/experienceLevelController.js
 const ExperienceLevel = require('../models/exprience');
+const Price = require('../models/prices');
 
 const createExperienceLevel = async (req, res) => {
   try {
@@ -43,13 +44,19 @@ const updateExperienceLevel = async (req, res) => {
 
 const deleteExperienceLevel = async (req, res) => {
   try {
-    const deletedExperienceLevel = await ExperienceLevel.findByIdAndDelete(req.params.id);
+    // Find and delete the ExperienceLevel
+    const deletedExperienceLevel = await ExperienceLevel.findOneAndDelete({ _id: req.params.id });
+    
     if (!deletedExperienceLevel) {
       return res.status(404).json({ error: 'ExperienceLevel not found' });
     }
-    res.json({ message: 'ExperienceLevel deleted successfully' });
+    
+    // Delete the associated Price records
+    await Price.deleteMany({expriencelevel: req.params.id });
+
+    res.json({ message: 'ExperienceLevel and associated Prices deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: 'Could not delete the ExperienceLevel' });
+    res.status(500).json({ error: 'Could not delete the ExperienceLevel and associated Prices' });
   }
 };
 

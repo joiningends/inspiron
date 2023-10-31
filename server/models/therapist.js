@@ -12,6 +12,9 @@ const therapistSchema = new mongoose.Schema({
   image: {
     type: String,
   },
+  sign:{
+    type: String,
+  },
   dob: {
     type: Date,
     require: false,
