@@ -82,3 +82,18 @@ a {
   color: #68b545;
   font-size: 14px; /* Adjust the font size as needed */
 }
+
+.password-input {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.toggle-password-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+

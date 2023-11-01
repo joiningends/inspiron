@@ -26,6 +26,7 @@ function TherapistDetails() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const therapistId = id;
+  console.log(therapistId)
   const therapist = useSelector(state => state.therapist);
   console.log(therapist);
   const [showEditForm, setShowEditForm] = useState(false);
@@ -68,7 +69,7 @@ function TherapistDetails() {
     // Check expertise IDs from therapist?.expertise and pre-select checkboxes
     const therapistExpertises = therapist?.expertise?.map(exp => {
       const matchingExpertise = Array.isArray(expertisesData)
-        ? expertisesData.find(e => e._id === exp._id)
+        ? expertisesData?.find(e => e._id === exp._id)
         : null;
       return matchingExpertise ? matchingExpertise : null;
     });
@@ -279,7 +280,7 @@ function TherapistDetails() {
         const response = await axios.get(
           `${process.env.REACT_APP_SERVER_URL}/clients`
         );
-        setClients(response.data.clients);
+        setClients(response?.data?.clients);
       } catch (error) {
         console.error("Error fetching clients:", error);
       }
@@ -296,7 +297,7 @@ function TherapistDetails() {
 
   const handleCheckboxChange = event => {
     const clientId = event.target.name;
-    const selectedClient = clients.find(client => client._id === clientId);
+    const selectedClient = clients.find(client => client?._id === clientId);
 
     if (event.target.checked) {
       setSelectedClients(prevSelectedClients => [
@@ -1114,7 +1115,7 @@ function TherapistDetails() {
           }}
         >
           {Array.isArray(expertisesData) &&
-            expertisesData.map(expertise =>
+            expertisesData?.map(expertise =>
               expertise && expertise._id ? (
                 <label
                   key={expertise._id}
@@ -1333,8 +1334,8 @@ function TherapistDetails() {
               Select a level
             </MenuItem>
             {priceLevels?.map(price => (
-              <MenuItem key={price._id} value={price.expriencelevel._id}>
-                {price.expriencelevel.level}
+              <MenuItem key={price?._id} value={price.expriencelevel?._id}>
+                {price?.expriencelevel?.level}
               </MenuItem>
             ))}
           </Select>

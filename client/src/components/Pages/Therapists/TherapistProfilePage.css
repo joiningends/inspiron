@@ -481,3 +481,20 @@ line-height: normal;
   padding: 5px 10px;
   cursor: pointer;
 }
+
+.buttonStyle {
+  background-color: #D67449;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 3vh;
+  transition: background-color 0.3s; /* Add a smooth transition */
+  width: 23.5vw;
+}
+
+.buttonStyle:hover {
+  background-color: #E88B63; /* New background color on hover */
+}

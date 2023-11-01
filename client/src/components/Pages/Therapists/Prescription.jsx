@@ -107,14 +107,20 @@ function Prescription() {
 
   const handleProvidePdf = () => {
     const doc = new jsPDF();
-
+  
     // Define the margins and page width
-    const pageWidth = doc.internal.pageSize.width;
     const margin = 10;
-
-    // User Information Table
+    let currentY = margin;
+  
+    // Set the title and headers
+    doc.setFontSize(18);
+    doc.text("Medical Prescription", 105, currentY);
+    currentY += 10; // Add space between title and content
     doc.setFontSize(14);
-    doc.text("User Information", margin, margin + 10);
+  
+    // User Information
+    doc.text("User Information", margin, currentY);
+    currentY += 10; // Add space between section header and content
     const userTableData = [
       ["Name:", userData.name],
       ["Age:", userData.age],
@@ -122,25 +128,40 @@ function Prescription() {
       ["Gender:", userData.gender],
     ];
     doc.autoTable({
-      startY: margin + 20,
+      startY: currentY,
       body: userTableData,
       theme: "grid",
-      styles: { cellPadding: 5, fontSize: 12 },
+      styles: { cellPadding: 2, fontSize: 12, columnWidth: 'auto' },
     });
-
-    // Diagnosis and Description
+  
+    // Diagnosis
+    currentY += doc.autoTable.previous.finalY + 5; // Reduce the gap between sections
     doc.setFontSize(14);
-    doc.text("Diagnosis:", margin, doc.autoTable.previous.finalY + 10);
+    doc.text("Diagnosis", margin, currentY);
+    currentY += 5; // Add space between section header and content
     doc.setFontSize(12);
-    doc.text(diagnosis, margin, doc.autoTable.previous.finalY + 15);
+  
+    // Custom function to split text into multiple lines
+    const splitText = doc.splitTextToSize(diagnosis, 190);
+    doc.text(splitText, margin, currentY);
+  
+    currentY += doc.getTextDimensions(splitText).h + 10; // Add space after diagnosis
+  
+    // Description
     doc.setFontSize(14);
-    doc.text("Description:", margin, doc.autoTable.previous.finalY + 20);
+    doc.text("Description", margin, currentY);
+    currentY += 5; // Add space between section header and content
     doc.setFontSize(12);
-    doc.text(description, margin, doc.autoTable.previous.finalY + 25);
-
-    // Medicine List Table
+  
+    // Custom function to split text into multiple lines
+    const splitDescription = doc.splitTextToSize(description, 190);
+    doc.text(splitDescription, margin, currentY);
+  
+    currentY += doc.getTextDimensions(splitDescription).h + 10; // Add space after description
+  
+    // Medicine List
     doc.setFontSize(14);
-    doc.text("Medicine List", margin, doc.autoTable.previous.finalY + 20);
+    doc.text("Medicine List", margin, currentY);
     const medicineTableData = medicineData.map((medicine, index) => [
       `Medicine ${index + 1}`,
       medicine.name,
@@ -149,31 +170,37 @@ function Prescription() {
       medicine.instructions,
     ]);
     doc.autoTable({
-      startY: doc.autoTable.previous.finalY + 30,
+      startY: currentY + 10, // Add space between section header and content
       body: medicineTableData,
       theme: "striped",
-      styles: { cellPadding: 5, fontSize: 12 },
+      styles: { cellPadding: 2, fontSize: 12, columnWidth: 'auto' },
       head: [["#", "Name", "Dosage", "Frequency", "Instructions"]],
     });
-
-    // Lab Tests Table
+  
+    // Lab Tests
+    
+    currentY += doc.autoTable.previous.finalY + 5; // Reduce the gap between sections
     doc.setFontSize(14);
-    doc.text("Lab Tests", margin, doc.autoTable.previous.finalY + 20);
-    const labTestTableData = selectedLabTests.map((labTest, index) => [
-      labTest,
-    ]);
+    doc.text("Lab Tests", margin, currentY);
+    const labTestTableData = selectedLabTests.map((labTest, index) => [labTest]);
     doc.autoTable({
-      startY: doc.autoTable.previous.finalY + 30,
+      startY: currentY + 5, // Add space between section header and content
       body: labTestTableData,
       theme: "striped",
-      styles: { cellPadding: 5, fontSize: 12 },
+      styles: { cellPadding: 2, fontSize: 12, columnWidth: 'auto' },
       head: [["Lab Test Name"]],
     });
-
+  
     // Save the PDF
     const fileName = `prescription_${new Date().toISOString()}.pdf`;
     doc.save(fileName);
   };
+  
+  
+  
+  
+  
+  
 
   const tableCellStyle = {
     borderBottom: "none",

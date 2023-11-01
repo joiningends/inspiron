@@ -506,6 +506,7 @@ function SettingPage() {
         (_, i) => i !== index
       );
       setExperienceLevels(newExperienceLevels);
+      window.location.reload();
     } catch (error) {
       // Handle errors here, e.g., show an error message to the user
       console.error("Error removing experience level:", error);
@@ -553,6 +554,7 @@ function SettingPage() {
 
         if (response.ok) {
           console.log("Experience level added successfully");
+          window.location.reload();
         } else {
           console.error("Failed to add experience level");
         }

@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useDropzone } from "react-dropzone";
 import {
   fetchTherapist,
   updateTherapist,
@@ -73,6 +75,75 @@ function TherapistProfilePage() {
   const [sessionCoolOffTime, setSessionCoolOffTime] = useState(
     sessionInfo?.categories[0]?.timeBetweenSessions
   );
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  const containerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    maxWidth: '120vw',
+    margin: '0 auto',
+  };
+  
+  const dropzoneStyle = {
+    border: '2px dashed #3498db',
+    borderRadius: '4px',
+    padding: '20px',
+    textAlign: 'center',
+    cursor: 'pointer',
+    backgroundColor: '#f0f0f0',
+    transition: 'border 0.3s ease',
+  };
+  
+  const errorStyle = {
+    color: 'red',
+    marginTop: '10px',
+  };
+  
+  
+  
+
+  // Define the sign update URL here based on your server code
+  const signUpdateURL = `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}/sign`;
+
+  const onDropHandler = useCallback(acceptedFiles => {
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+      if (file.size > 1024 * 1024) {
+        setUploadError("File size should be less than 1MB");
+      } else {
+        setSelectedFile(file);
+        setUploadError("");
+      }
+    }
+  }, []);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: onDropHandler,
+    accept: "image/*",
+    maxFiles: 1,
+  });
+
+  const handleUpload = async () => {
+    if (selectedFile) {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append("image", selectedFile);
+      try {
+        await axios.put(signUpdateURL, formData);
+        // Handle successful upload
+        console.log("Sign uploaded successfully.");
+      } catch (error) {
+        // Handle upload error
+        console.error("Sign upload failed:", error);
+      } finally {
+        setIsUploading(false);
+      }
+    }
+  };
 
   useEffect(() => {
     // Make the API request when the component mounts
@@ -1224,6 +1295,29 @@ function TherapistProfilePage() {
           </div>
         </div>
       )}
+
+      <div style={containerStyle}>
+      <div {...getRootProps()} style={dropzoneStyle}>
+        <input {...getInputProps()} />
+        {selectedFile ? (
+          <p>Selected File: {selectedFile.name}</p>
+        ) : (
+          <p>Drag & drop or click to select a sign image</p>
+        )}
+      </div>
+      {uploadError && <p style={errorStyle}>{uploadError}</p>}
+      {isUploading ? (
+        <p>Uploading...</p>
+      ) : (
+        <button
+          onClick={handleUpload}
+          disabled={!selectedFile}
+          className="buttonStyle" // Apply the CSS class
+        >
+          Upload Sign
+        </button>
+      )}
+    </div>
 
       <div className="TimeSlots">
         <h1>Time Slots</h1>

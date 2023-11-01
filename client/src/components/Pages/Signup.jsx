@@ -29,19 +29,29 @@ const Signup = () => {
 
   const handleChange = e => {
     const { name, value } = e.target;
-    setFormData(prevData => {
-      const updatedData = {
-        ...prevData,
-        [name]: value,
-      };
-      if (name === "password" || name === "confirmPassword") {
-        setPasswordMatch(updatedData.password === updatedData.confirmPassword);
+    let updatedValue = value;
+
+    if (name === "mobile") {
+      // Remove any non-digit characters
+      updatedValue = updatedValue.replace(/\D/g, "");
+
+      // Add "91" in front of the phone number if it doesn't start with it
+      if (!updatedValue.startsWith("91")) {
+        updatedValue = `91${updatedValue}`;
       }
-      if (name === "confirmPassword") {
-        setConfirmPasswordTouched(true);
-      }
-      return updatedData;
-    });
+    }
+
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: updatedValue,
+    }));
+
+    if (name === "password" || name === "confirmPassword") {
+      setPasswordMatch(formData.password === formData.confirmPassword);
+    }
+    if (name === "confirmPassword") {
+      setConfirmPasswordTouched(true);
+    }
   };
 
   const toggleShowPassword = () => {
@@ -56,10 +66,32 @@ const Signup = () => {
     setShowPassword(false);
   };
 
+  const handleEmailBlur = () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(formData.email)) {
+      toast.error("Please enter a valid email address.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          background: "#f44336",
+          color: "#fff",
+          fontSize: "14px",
+          borderRadius: "4px",
+          padding: "12px",
+          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+        },
+      });
+    }
+  };
+
   const handleSubmit = e => {
     e.preventDefault();
 
-    // Check if all fields are completely filled
     if (
       !formData.name ||
       !formData.mobile ||
@@ -87,9 +119,8 @@ const Signup = () => {
       return;
     }
 
-    // Check if the phone number has exactly 10 digits
-    if (formData.mobile.length !== 10) {
-      toast.error("Please enter a valid 10-digit phone number.", {
+    if (formData.mobile.length !== 12) {
+      toast.error("Please enter a valid 12-digit phone number.", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: true,
@@ -109,33 +140,8 @@ const Signup = () => {
       return;
     }
 
-    // Check if the email is in the correct format
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(formData.email)) {
-      toast.error("Please enter a valid email address.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        style: {
-          background: "#f44336",
-          color: "#fff",
-          fontSize: "14px",
-          borderRadius: "4px",
-          padding: "12px",
-          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-        },
-      });
-      return;
-    }
-
-    // Dispatch the createUser action with the form data
     dispatch(createUser(formData));
 
-    // Clear the form data
     setFormData({
       name: "",
       mobile: "",
@@ -163,63 +169,6 @@ const Signup = () => {
     });
   };
 
-  const isValidPhoneNumber = phone => {
-    // Basic validation: check if the phone number has exactly 10 digits
-    return /^\d{10}$/.test(phone);
-  };
-
-  const handlePhoneNumberBlur = () => {
-    const validPhoneNumber = isValidPhoneNumber(formData.mobile);
-    if (!validPhoneNumber) {
-      toast.error("Please enter a valid 10-digit phone number.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        style: {
-          background: "#f44336",
-          color: "#fff",
-          fontSize: "14px",
-          borderRadius: "4px",
-          padding: "12px",
-          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-        },
-      });
-    }
-  };
-
-  const isValidEmail = email => {
-    // Regular expression for email validation
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
-  };
-
-  const handleEmailBlur = () => {
-    const validEmail = isValidEmail(formData.email);
-    if (!validEmail) {
-      toast.error("Please enter a valid email address.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        style: {
-          background: "#f44336",
-          color: "#fff",
-          fontSize: "14px",
-          borderRadius: "4px",
-          padding: "12px",
-          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-        },
-      });
-    }
-  };
-
   return (
     <div className="signup-container">
       <div className="signup-form">
@@ -242,7 +191,7 @@ const Signup = () => {
         <div className="form-group">
           <FontAwesomeIcon
             icon={faPhoneAlt}
-            className={`icon ${formData.phoneNumber ? "active" : ""}`}
+            className={`icon ${formData.mobile ? "active" : ""}`}
           />
           <input
             type="tel"
@@ -251,7 +200,7 @@ const Signup = () => {
             placeholder="Phone Number"
             value={formData.mobile}
             onChange={handleChange}
-            onBlur={handlePhoneNumberBlur}
+            onBlur={handleInputBlur}
             required
           />
         </div>
@@ -276,24 +225,27 @@ const Signup = () => {
             icon={faLock}
             className={`icon ${formData.password ? "active" : ""}`}
           />
-          <input
-            type={showPassword ? "text" : "password"}
-            id="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            required
-          />
-          <FontAwesomeIcon
-            icon={showPassword ? faEyeSlash : faEye}
-            className={`toggle-password-icon ${
-              formData.password ? "active" : ""
-            }`}
-            onClick={toggleShowPassword}
-          />
+          <div className="password-input">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
+              required
+              style={{width:"15rem"}}
+            />
+            <FontAwesomeIcon
+              icon={showPassword ? faEyeSlash : faEye}
+              className={`toggle-password-icon ${
+                formData.password ? "active" : ""
+              }`}
+              onClick={toggleShowPassword}
+            />
+          </div>
         </div>
         <div className="form-group">
           <FontAwesomeIcon
