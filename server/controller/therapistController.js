@@ -241,45 +241,56 @@ const getTherapistById = async (req, res) => {
       return res.status(404).json({ message: 'Therapist not found' });
     }
 
-    // Count online and offline sessions
+    // Initialize session counts
     let onlineSessionCount = 0;
     let offlineSessionCount = 0;
 
     const therapistSessions = therapist.sessions || [];
     const currentDate = new Date(); // Get the current date and time
 
-    therapistSessions.forEach((session) => {
-      const sessionDate = new Date(session.date);
-
-      if (sessionDate.toDateString() === currentDate.toDateString() || sessionDate > currentDate) {
-        if (Array.isArray(session.timeSlots)) {
-          session.timeSlots.forEach((timeSlot) => {
-            const sessionStartTime = new Date(`${session.date}T${timeSlot.startTime}`);
-
-            if (sessionStartTime >= currentDate) {
-              // Check the session type (Online or Offline)
-              if (timeSlot.sessionType === 'online') {
-                onlineSessionCount++;
-              } else if (timeSlot.sessionType === 'offline' || timeSlot.sessionType === 'online/offline') {
-                offlineSessionCount++;
-              }
-            }
-          });
+    // Filter therapist sessions to exclude sessions with start times less than the current date
+    const filteredSessions = therapistSessions
+      .filter((session) => {
+        const sessionDate = new Date(session.date);
+        if (sessionDate.toDateString() === currentDate.toDateString() || sessionDate > currentDate) {
+          if (Array.isArray(session.timeSlots)) {
+            return session.timeSlots.some((timeSlot) => {
+              const sessionStartTime = new Date(`${session.date}T${timeSlot.startTime}`);
+              return sessionStartTime >= currentDate;
+            });
+          }
         }
-      }
+        return false;
+      });
+
+    // Count online and offline sessions for the filtered sessions
+    filteredSessions.forEach((session) => {
+      session.timeSlots.forEach((timeSlot) => {
+        const sessionStartTime = new Date(`${session.date}T${timeSlot.startTime}`);
+        if (sessionStartTime >= currentDate) {
+          if (timeSlot.sessionType === 'online') {
+            onlineSessionCount++;
+          } else if (timeSlot.sessionType === 'offline' || timeSlot.sessionType === 'online/offline') {
+            offlineSessionCount++;
+          }
+        }
+      });
     });
 
-    // Return the therapist data with session counts (without availability)
+    // Return the therapist data with session counts and filtered sessions
     res.status(200).json({
       ...therapist.toObject(),
+      sessions: filteredSessions,
       onlineSessionCount,
-      offlineSessionCount
+      offlineSessionCount,
     });
 
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve therapist', details: error.message });
   }
 };
+
+
 
 
 
@@ -592,6 +603,28 @@ const updateAddresses = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+async function updateAbout(req, res) {
+  const therapistId = req.params.id;
+  const { about } = req.body;
+
+  try {
+    const therapist = await Therapist.findByIdAndUpdate(
+      therapistId,
+      { about },
+      { new: true, select: 'about' }
+    );
+
+    if (!therapist) {
+      return res.status(404).json({ success: false, message: 'Therapist not found' });
+    }
+
+    const updatedAbout = therapist.about;
+
+    res.json({ success: true, about: updatedAbout });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+}
 
 const updateEducation = async (req, res) => {
   const therapistId = req.params.id;
@@ -891,6 +924,7 @@ getAllTherapistscorporate,
    updateContactDetails,
    
   updateAddresses,
+  updateAbout,
   updateEducation,
   updateAvailability,
   deleteTherapist,

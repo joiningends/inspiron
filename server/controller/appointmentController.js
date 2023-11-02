@@ -1792,30 +1792,28 @@ exports.extendSession = async (req, res) => {
   }
 };
 
+
+
 exports.updateUserSessionNotes = async (req, res) => {
   try {
-    const appointmentId = req.params.id; // Extract appointmentId from the route parameters
-    const updateData = req.body; // The data to update session notes
+    const appointmentId = req.params.id;
+    const updateData = req.body;
 
-    const appointment = await Appointment.findById(appointmentId);
+    const appointment = await Appointment.findById(appointmentId).populate('user');
 
     if (!appointment) {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
-    // Update the session notes for the appointment with the provided data
     appointment.sessionnotes.Summary = updateData.summary;
     appointment.sessionnotes.Growthcurvepoints = updateData.growthCurve;
-    appointment.sessionnotes.TherapeuticTechniquesused =
-      updateData.therapeuticTechniques;
+    appointment.sessionnotes.TherapeuticTechniquesused = updateData.therapeuticTechniques;
     appointment.sessionnotes.Homeworkgiven = updateData.homeworkGiven;
     appointment.sessionnotes.Nextsessionplan = updateData.nextSessionPlan;
     appointment.sessionnotes.sharedWithPatient = updateData.sharedWithPatient;
-    appointment.sessionnotes.sharedWithPsychiatrist =
-      updateData.sharedWithPsychiatrist;
+    appointment.sessionnotes.sharedWithPsychiatrist = updateData.sharedWithPsychiatrist;
     appointment.sessionnotes.generateReport = updateData.generateReport;
 
-    // Update the appointment's status based on session notes
     if (
       appointment.sessionnotes.Summary &&
       appointment.sessionnotes.Growthcurvepoints &&
@@ -1826,22 +1824,63 @@ exports.updateUserSessionNotes = async (req, res) => {
       appointment.sessionnotes.sharedWithPsychiatrist !== undefined &&
       appointment.sessionnotes.generateReport !== undefined
     ) {
-      appointment.sessionstatus = "Completed"; // Update the appointment's status
+      appointment.sessionstatus = "Completed";
     }
 
-    // Save the updated appointment
+    const userId = appointment.user;
+
+    if (updateData.sharedWithPsychiatrist === true) {
+      const positiveCoinBalance = await Coin.findOne({
+        user: userId,
+        coinBalance: { $gt: 0 },
+      });
+
+      if (positiveCoinBalance) {
+        const experiencelevel = positiveCoinBalance.experiencelevel;
+        if (experiencelevel) {
+          const level = experiencelevel.level;
+          const matchingTherapists = await Therapist.find({ level: level });
+
+          if (matchingTherapists.length > 0) {
+            const therapistTypes = matchingTherapists.map(therapist => therapist.therapisttype);
+
+            if (therapistTypes.includes("psychiatrist")) {
+              const psychiatristTherapistIds = matchingTherapists.map(therapist => therapist._id);
+
+              const psychiatristAppointments = await Appointment.find({
+                therapist: { $in: psychiatristTherapistIds },
+                user: userId,
+              });
+
+              if (psychiatristAppointments.length > 0) {
+                const sortedAppointments = psychiatristAppointments.sort((a, b) =>
+                  a.appointmentDate > b.appointmentDate ? 1 : -1
+                );
+
+                const latestAppointment = sortedAppointments[sortedAppointments.length - 1];
+
+                const therapistId = latestAppointment.therapist;
+                // Now, 'therapistId' contains the ID of the therapist associated with the latest appointment
+
+                // You can use 'therapistId' for further processing or response
+              }
+            }
+          }
+        }
+      }
+    }
+
     await appointment.save();
 
     res.json(appointment);
   } catch (error) {
     console.error("Error updating appointment session notes:", error);
-    res
-      .status(500)
-      .json({
-        error: "An error occurred while updating appointment session notes",
-      });
+    res.status(500).json({
+      error: "An error occurred while updating appointment session notes",
+    });
   }
 };
+
 
 exports.getAppointmentsByUser = async (req, res) => {
   try {
