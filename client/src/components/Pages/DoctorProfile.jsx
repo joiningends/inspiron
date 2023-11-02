@@ -18,47 +18,49 @@ import Paper from "@mui/material/Paper";
 import LanguageIcon from "@mui/icons-material/Language";
 import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
-import MonitorIcon from '@mui/icons-material/DesktopWindows';
+import MonitorIcon from "@mui/icons-material/DesktopWindows";
+
+import Button from "@material-ui/core/Button";
 
 import { fetchTherapist, fetchTherapists } from "../redux/Action";
 
 const containerStyle = {
-  display: 'flex',
-  justifyContent: 'space-around',
-  alignItems: 'center',
+  display: "flex",
+  justifyContent: "space-around",
+  alignItems: "center",
 };
 
 const infoBoxStyle = {
-  padding: '16px',
-  minWidth: '150px',
-  boxShadow: '0px 0px 10px rgba(0,0,0,0.2)',
-  borderRadius: '10px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: '#68B545', // Background color
-  color: 'white', // Text color
+  padding: "16px",
+  minWidth: "150px",
+  boxShadow: "0px 0px 10px rgba(0,0,0,0.2)",
+  borderRadius: "10px",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: "#68B545", // Background color
+  color: "white", // Text color
 };
 
 const titleStyle = {
-  fontSize: '1.2rem',
-  marginBottom: '10px',
+  fontSize: "1.2rem",
+  marginBottom: "10px",
 };
 
 const listStyle = {
-  listStyleType: 'none',
+  listStyleType: "none",
   padding: 0,
 };
 
 const listItemStyle = {
-  fontSize: '1rem',
-  margin: '5px 0',
+  fontSize: "1rem",
+  margin: "5px 0",
 };
 
 const iconStyle = {
-  fontSize: '2rem',
-}
+  fontSize: "2rem",
+};
 
 const DoctorProfile = () => {
   const { id } = useParams(); // Access the therapist ID from the URL parameter
@@ -67,6 +69,48 @@ const DoctorProfile = () => {
   const [imageUrl, setImageUrl] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
+
+  const cardStyle = {
+    display: "flex",
+    alignItems: "center",
+    padding: "10px",
+    borderRadius: "2rem",
+    backgroundColor: "#68B545",
+    height: "35vh",
+    width: "90vw",
+    marginLeft: "8vw",
+  };
+
+  const imgDivStyle = {
+    width: "10rem",
+    height: "12rem",
+    overflow: "hidden",
+    borderRadius: "2rem",
+  };
+
+  const doctorImgStyle = {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+  };
+
+  const aboutDivStyle = {
+    paddingLeft: "16px",
+  };
+
+  const headingStyle = {
+    fontWeight: "bold",
+  };
+
+  const designationStyle = {
+    color: "#777", // You can adjust the color as needed
+  };
+
+  const bookNowButtonStyle = {
+    color: "white",
+    textDecoration: "none",
+    borderRadius: "3rem",
+  };
 
   useEffect(() => {
     const fetchTherapistData = async () => {
@@ -80,7 +124,6 @@ const DoctorProfile = () => {
   useEffect(() => {
     setImageUrl(therapist?.image);
   }, [therapist]);
-
 
   const [showOfferings, setShowOfferings] = useState(true);
 
@@ -98,34 +141,35 @@ const DoctorProfile = () => {
 
   return (
     <>
-      <div className="container1">
-        <div
-          className="imgDiv"
-          style={{ width: "10rem", height: "12rem", overflow: "hidden" }}
-        >
-          <img src={imageUrl} className="doctorImg" alt="Rounded" />
+      <Paper style={cardStyle}>
+        <div style={imgDivStyle}>
+          <img src={imageUrl} style={doctorImgStyle} alt="Therapist" />
         </div>
-
-        <div className="aboutDiv">
-          <h5 className="heading">{therapist?.name}</h5>
-          <span className="designation">{therapist?.designation}</span>
-          <p className="aboutDoctor">{therapist?.about}</p>
-        </div>
-        <div className="profile-div2">
-          <Link
-            to={`/bookaslot/${therapist?._id}`}
-            className="therapist-know-more-button"
-            style={{
-              background: "linear-gradient(90deg, #D67449 10.9%, #5179BD 100%)",
-              color: "white",
-              textDecoration: "none",
-              borderRadius: "3rem",
-            }}
-          >
-            BOOK NOW
+        <div style={aboutDivStyle}>
+          <Typography variant="h5" style={headingStyle}>
+            {therapist?.name}
+          </Typography>
+          <Typography variant="body2" style={designationStyle}>
+            {therapist?.designation}
+          </Typography>
+          <Typography variant="body2">{therapist?.about}</Typography>
+          <Link to={`/bookaslot/${therapist?._id}`} style={bookNowButtonStyle}>
+            <Button
+              variant="contained"
+              color="primary"
+              style={{
+                background:
+                  "linear-gradient(90deg, #D67449 0.88%, #5179BD 100%)",
+                color: "white",
+                textDecoration: "none",
+                borderRadius: "3rem",
+              }}
+            >
+              BOOK NOW
+            </Button>
           </Link>
         </div>
-      </div>
+      </Paper>
       <div className="container2">
         <Education className="education" educationData={therapist?.education} />
         <div className="profileDetails">
@@ -142,7 +186,9 @@ const DoctorProfile = () => {
             <img src={thubmsup} className="profileIcons" alt="Thumbs Up" />
           </span>
           <span>
-            <h3 className="subDetails">{therapist?.usersRecommended?.length}</h3>
+            <h3 className="subDetails">
+              {therapist?.usersRecommended?.length}
+            </h3>
           </span>
           <span className="lastUserDetailRow">User Recommended</span>
         </div>
@@ -177,9 +223,10 @@ const DoctorProfile = () => {
       </div>
       <div
         className={`offering ${showOfferings ? "active" : ""}`}
+        style={{ width: "90vw" }}
         onClick={toggleOfferings}
       >
-        <span className="offeringtext">Ashutosh's offerings</span>
+        <span className="offeringtext">{therapist?.name}'s offerings</span>
         <span>
           <img
             className="addMinusimg"
@@ -189,56 +236,71 @@ const DoctorProfile = () => {
         </span>
       </div>
 
-      <div className={`allOfferings ${showOfferings ? "show" : ""}`}>
-      <Grid container spacing={2} style={containerStyle}>
-      <Grid item xs={4}>
-        <Paper style={infoBoxStyle}>
-          <LanguageIcon style={iconStyle} />
-          <Typography variant="h6" style={titleStyle}>
-            Languages Known
-          </Typography>
-          <ul style={listStyle}>
-            {therapist.languages.map((language, index) => (
-              <li key={index} style={listItemStyle}>
-                {language}
-              </li>
-            ))}
-          </ul>
-        </Paper>
-      </Grid>
-      <Grid item xs={4}>
-        <Paper style={infoBoxStyle}>
-          <EmojiObjectsIcon style={iconStyle} />
-          <Typography variant="h6" style={titleStyle}>
-            Expertise
-          </Typography>
-          <ul style={listStyle}>
-            {therapist.expertise.map((expertise, index) => (
-              <li key={index} style={listItemStyle}>
-                {expertise.type.join(', ')}
-              </li>
-            ))}
-          </ul>
-        </Paper>
-      </Grid>
-      <Grid item xs={4}>
-        <Paper style={infoBoxStyle}>
-          <MonitorIcon style={iconStyle} />
-          <Typography variant="h6" style={titleStyle}>
-            Mode Of Session
-          </Typography>
-          <ul style={listStyle}>
-            {therapist.modeOfSession.map((mode, index) => (
-              <li key={index} style={listItemStyle}>
-                {mode}
-              </li>
-            ))}
-          </ul>
-        </Paper>
-      </Grid>
-    </Grid>
+      <div
+        className={`allOfferings ${showOfferings ? "show" : ""}`}
+        style={{
+          width: "90vw",
+          display: "grid",
+          placeItems: "center",
+          marginLeft: "7vw",
+        }}
+      >
+        <Grid
+          container
+          spacing={2}
+          style={{ ...containerStyle, margin: "auto" }}
+        >
+          <Grid item xs={4}>
+            <Paper style={infoBoxStyle}>
+              <LanguageIcon style={iconStyle} />
+              <Typography variant="h6" style={titleStyle}>
+                Languages Known
+              </Typography>
+              <ul style={listStyle}>
+                {therapist.languages.map((language, index) => (
+                  <li key={index} style={listItemStyle}>
+                    {language}
+                  </li>
+                ))}
+              </ul>
+            </Paper>
+          </Grid>
+          <Grid item xs={4}>
+            <Paper style={infoBoxStyle}>
+              <EmojiObjectsIcon style={iconStyle} />
+              <Typography variant="h6" style={titleStyle}>
+                Expertise
+              </Typography>
+              <ul style={listStyle}>
+                {therapist.expertise.map((expertise, index) => (
+                  <li key={index} style={listItemStyle}>
+                    {expertise.type.join(", ")}
+                  </li>
+                ))}
+              </ul>
+            </Paper>
+          </Grid>
+          <Grid item xs={4}>
+            <Paper style={infoBoxStyle}>
+              <MonitorIcon style={iconStyle} />
+              <Typography variant="h6" style={titleStyle}>
+                Mode Of Session
+              </Typography>
+              <ul style={listStyle}>
+                {therapist.modeOfSession.map((mode, index) => (
+                  <li key={index} style={listItemStyle}>
+                    {mode}
+                  </li>
+                ))}
+              </ul>
+            </Paper>
+          </Grid>
+        </Grid>
       </div>
-      <div className="booknowBtnLayout" style={{ marginTop: "3rem" }}>
+      <div
+        className="booknowBtnLayout"
+        style={{ marginTop: "3rem", width: "90vw" }}
+      >
         <div className="booknowBtnLayout1">
           <h3 className="booknowBtnLayouttextheading">
             Connect with all parts of yourself & start new life

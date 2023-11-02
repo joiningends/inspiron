@@ -16,23 +16,28 @@ function AssessmentCreatePage() {
       name: "",
       minScore: "",
       maxScore: "",
-      expertiseList: [], // Initialize an empty array to store selected expertise
+      expertiseList: [],
+      result: "",
+      description: "",
     },
     {
       name: "",
       minScore: "",
       maxScore: "",
-      expertiseList: [], // Initialize an empty array to store selected expertise
+      expertiseList: [],
+      result: "",
+      description: "",
     },
     {
       name: "",
       minScore: "",
       maxScore: "",
-      expertiseList: [], // Initialize an empty array to store selected expertise
+      expertiseList: [],
+      result: "",
+      description: "",
     },
   ]);
   const [expertiseList, setExpertiseList] = useState([]);
-  console.log(expertiseList);
 
   useEffect(() => {
     axios
@@ -43,7 +48,7 @@ function AssessmentCreatePage() {
       .catch(error => {
         console.error("Error fetching expertise list:", error);
       });
-  }, []); // Empty dependency array to fetch data only once when the component mounts
+  }, []);
 
   const handleAssessmentNameChange = event => {
     setAssessmentName(event.target.value);
@@ -111,15 +116,12 @@ function AssessmentCreatePage() {
     setSeverities(prevSeverities => {
       const updatedSeverities = prevSeverities.map((severity, index) => {
         if (index === severityIndex) {
-          // If the current severity is being updated
           if (checked && !severity.expertiseList.includes(expertiseId)) {
-            // If the expertise is not already selected for this level, add it
             return {
               ...severity,
               expertiseList: [...severity.expertiseList, expertiseId],
             };
           } else if (!checked) {
-            // If the expertise is already selected for this level, remove it
             return {
               ...severity,
               expertiseList: severity.expertiseList.filter(
@@ -142,11 +144,10 @@ function AssessmentCreatePage() {
         question: question.question,
         options: question.options.map(option => ({
           text: option.text,
-          points: parseInt(option.points), // Ensure points are parsed as integers
+          points: parseInt(option.points),
         })),
       }));
 
-      // Get low, medium, and high severities data
       const assessmentData = {
         assessment_name: assessmentName,
         summary: assessmentSummary,
@@ -157,22 +158,29 @@ function AssessmentCreatePage() {
           max: parseInt(severities[2].maxScore),
           expertise: severities[2].expertiseList,
           serverityname: ["Severe"],
+          result: severities[2].result,
+          description: severities[2].description,
         },
         low: {
           min: parseInt(severities[0].minScore),
           max: parseInt(severities[0].maxScore),
           expertise: severities[0].expertiseList,
           serverityname: ["Severe"],
+          result: severities[0].result,
+          description: severities[0].description,
         },
         medium: {
           min: parseInt(severities[1].minScore),
           max: parseInt(severities[1].maxScore),
           expertise: severities[1].expertiseList,
           serverityname: ["Severe"],
+          result: severities[1].result,
+          description: severities[1].description,
         },
       };
+
       console.log(assessmentData);
-      // Send assessment data to the backend API
+
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_URL}/assessments`,
         assessmentData
@@ -180,37 +188,25 @@ function AssessmentCreatePage() {
 
       const formData = new FormData();
       formData.append("image", image);
-      const updateResponse = await axios.put(
+       console.log(response.data)
+      await axios.put(
         `${process.env.REACT_APP_SERVER_URL}/assessments/${response.data.assessment._id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formData
       );
 
-      console.log(image);
-      console.log(updateResponse);
-
-      console.log("Assessment created:", response.data.assessment._id);
-
-      toast.success("Assessment Added Successfully", {
+      toast.success("Assessment Added Successfully!", {
         style: {
-          fontSize: "14px", // Adjust the font size here
+          fontSize: "14px",
         },
       });
-
       setTimeout(() => {
         window.location.href = "/admin-Create-Assessment";
       }, 3000);
-      // Optionally, you can navigate to another page upon successful assessment creation
-      window.location.href = "/admin-Create-Assessment";
     } catch (error) {
       console.error("Error creating assessment:", error);
       toast.error("Failed to Add Assessment", {
         style: {
-          fontSize: "14px", // Adjust the font size here
+          fontSize: "14px",
         },
       });
       setTimeout(() => {
@@ -548,43 +544,107 @@ function AssessmentCreatePage() {
                   />
                 </div>
               </div>
-            </div>
-            <div style={{ marginBottom: "20px" }}>
-              <label
-                htmlFor={`expertise-${severityIndex}`}
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "14px",
-                  color: "#555555",
-                }}
-              >
-                Expertise:
-              </label>
-              <div style={{ display: "flex", flexWrap: "wrap" }}>
-                {Array.isArray(expertiseList) &&
-                  expertiseList.map(expertise => (
-                    <label
-                      key={expertise._id}
-                      htmlFor={`expertise-option-${expertise._id}-${severityIndex}`}
-                      style={{ fontSize: "1rem", margin: "0.5rem" }}
-                    >
-                      <input
-                        type="checkbox"
-                        id={`expertise-option-${expertise._id}-${severityIndex}`}
-                        value={expertise._id}
-                        checked={severity.expertiseList.includes(expertise._id)}
-                        onChange={event =>
-                          handleExpertiseChange(
-                            event,
-                            severityIndex,
-                            event.target.value
-                          )
-                        }
-                        style={{ marginRight: "5px" }}
-                      />
-                      {expertise.type[0]}
-                    </label>
-                  ))}
+              <div style={{ marginBottom: "20px" }}>
+                <label
+                  htmlFor={`expertise-${severityIndex}`}
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                    color: "#555555",
+                  }}
+                >
+                  Expertise:
+                </label>
+                <div style={{ display: "flex", flexWrap: "wrap" }}>
+                  {Array.isArray(expertiseList) &&
+                    expertiseList.map(expertise => (
+                      <label
+                        key={expertise._id}
+                        htmlFor={`expertise-option-${expertise._id}-${severityIndex}`}
+                        style={{ fontSize: "1rem", margin: "0.5rem" }}
+                      >
+                        <input
+                          type="checkbox"
+                          id={`expertise-option-${expertise._id}-${severityIndex}`}
+                          value={expertise._id}
+                          checked={severity.expertiseList.includes(
+                            expertise._id
+                          )}
+                          onChange={event =>
+                            handleExpertiseChange(
+                              event,
+                              severityIndex,
+                              event.target.value
+                            )
+                          }
+                          style={{ marginRight: "5px" }}
+                        />
+                        {expertise.type[0]}
+                      </label>
+                    ))}
+                </div>
+              </div>
+              <div style={{ marginBottom: "20px" }}>
+                <label
+                  htmlFor={`result-${severityIndex}`}
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                    color: "#555555",
+                    width:"40vw"
+                  }}
+                >
+                  Result:
+                </label>
+                <input
+                  type="text"
+                  id={`result-${severityIndex}`}
+                  name="result"
+                  value={severity.result}
+                  onChange={event =>
+                    handleSeverityChange(event, severityIndex, "result")
+                  }
+                  required
+                  style={{
+                    padding: "10px",
+                    borderRadius: "5px",
+                    border: "1px solid #D67449",
+                    fontSize: "14px",
+                    color: "#555555",
+                    transition: "all 0.3s ease-out",
+                  }}
+                />
+              </div>
+              <div style={{ marginBottom: "20px" }}>
+                <label
+                  htmlFor={`description-${severityIndex}`}
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "14px",
+                    color: "#555555",
+                    width:"40vw"
+                  }}
+                >
+                  Description:
+                </label>
+                <input
+                  type="text"
+                  id={`description-${severityIndex}`}
+                  name="description"
+                  value={severity.description}
+                  onChange={event =>
+                    handleSeverityChange(event, severityIndex, "description")
+                  }
+                  required
+                  style={{
+                    padding: "10px",
+                    borderRadius: "5px",
+                    border: "1px solid #D67449",
+                    fontSize: "14px",
+                    color: "#555555",
+                    transition: "all 0.3s ease-out",
+                  }}
+                />
               </div>
             </div>
           </div>

@@ -4,12 +4,14 @@ import "./Dashboard.css";
 import { useDispatch } from "react-redux";
 import createTherapistimg from "./intermediary.png";
 import rightSideArrow from "./right-arrow.png";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 function Dashboard() {
   const dispatch = useDispatch();
   const [profession, setProfession] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState();
   const [mobile, setPhoneNumebr] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -36,6 +38,7 @@ function Dashboard() {
   }, []);
 
   const [availableAddress, setAvailableAddress] = React.useState(null);
+  console.log(availableAddress);
 
   React.useEffect(() => {
     axios
@@ -59,7 +62,31 @@ function Dashboard() {
   };
 
   const handleFormSubmit = e => {
+    console.log({
+      mobile,
+      name,
+      email,
+      availability: [
+        {
+          location: address,
+          day: "Monday",
+        },
+      ],
+      therapisttype: profession,
+    });
     e.preventDefault();
+    console.log({
+      mobile,
+      name,
+      email,
+      availability: [
+        {
+          location: address,
+          day: "Monday",
+        },
+      ],
+      therapisttype: profession,
+    });
     axios
       .post(`${process.env.REACT_APP_SERVER_URL}/therapists`, {
         mobile,
@@ -80,6 +107,38 @@ function Dashboard() {
       .catch(function (error) {
         console.log(error);
       });
+  };
+
+  const handleDeleteWithConfirmation = therapistId => {
+    confirmAlert({
+      title: "Confirm Delete",
+      message: "Do you want to delete this therapist?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => {
+            // Implement the logic to delete the therapist after confirmation.
+            axios
+              .delete(
+                `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}`
+              )
+              .then(response => {
+                // Handle the successful deletion here, e.g., by refreshing the therapist list.
+                window.location.reload();
+              })
+              .catch(error => {
+                console.log("Error deleting therapist:", error);
+              });
+          },
+        },
+        {
+          label: "No",
+          onClick: () => {
+            // Do nothing if the user cancels the delete action.
+          },
+        },
+      ],
+    });
   };
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -188,7 +247,7 @@ function Dashboard() {
                   Patients
                 </th>
                 <th style={{ padding: "0.3rem", textAlign: "left" }}>Status</th>
-                <th></th>
+                <th style={{ padding: "0.3rem", textAlign: "left" }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -240,10 +299,23 @@ function Dashboard() {
                     <button
                       onClick={() => handleDetails(therapist?._id)}
                       className="detailsButton"
-                      style={{ padding: "0.2rem 0.5rem", fontSize: "0.75rem" }}
+                      style={{
+                        padding: "0.5rem 1rem",
+                        fontSize: "0.75rem",
+                        backgroundColor: "#D67449",
+                        color: "white",
+                      }}
                     >
                       Details
                     </button>
+                    <span
+                      onClick={() =>
+                        handleDeleteWithConfirmation(therapist?._id)
+                      }
+                      style={{ cursor: "pointer", marginLeft: "10px" }}
+                    >
+                      🗑️
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -311,6 +383,9 @@ function Dashboard() {
                 onChange={e => setAddress(e.target.value)}
                 required
               >
+                <option value="" disabled selected>
+                  Select a Location
+                </option>
                 {optionItems}
               </select>
             </label>
@@ -333,10 +408,9 @@ function Dashboard() {
                   border: "1px solid #D67449",
                   borderRadius: "1rem",
                   marginBottom: "10px",
-                  display: "inline-flex", // Ensure proper inline display
-                  alignItems: "center", // Center vertically
-
-                  justifyContent: "center", // Center horizontally
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 Cancel
@@ -350,9 +424,9 @@ function Dashboard() {
                   borderRadius: "1rem",
                   height: "2rem",
                   marginBottom: "10px",
-                  display: "inline-flex", // Ensure proper inline display
-                  alignItems: "center", // Center vertically
-                  justifyContent: "center", // Center horizontally
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   marginTop: "0.5rem",
                 }}
               >

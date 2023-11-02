@@ -13,7 +13,26 @@ function CreateAssessment() {
   }, [dispatch]);
 
   const handleDelete = assessmentId => {
-    console.log("Delete clicked for assessment ID:", assessmentId);
+    // Make a DELETE request to the server
+    console.log(assessmentId._id);
+    console.log(
+      `${process.env.REACT_APP_SERVER_URL}/assessments/${assessmentId._id}`
+    );
+    fetch(
+      `${process.env.REACT_APP_SERVER_URL}/assessments/${assessmentId._id}`,
+      {
+        method: "DELETE",
+      }
+    )
+      .then(response => {
+        // Successfully deleted, update your local state or re-fetch assessments
+        dispatch(fetchAssessments());
+        window.location.reload();
+      })
+      .catch(error => {
+        console.error("Error while deleting assessment:", error);
+        window.location.reload()
+      });
   };
 
   const handleCreateAssessment = () => {
@@ -41,7 +60,7 @@ function CreateAssessment() {
                 <td>
                   <button
                     className="action-button"
-                    onClick={() => handleDelete(assessment.hostId)}
+                    onClick={() => handleDelete(assessment)}
                   >
                     <RiDeleteBin2Line className="action-icon delete-icon" />
                   </button>

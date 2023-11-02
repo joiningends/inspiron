@@ -7,6 +7,10 @@
   max-height: 300vh; /* Set a fixed maximum height for the container */
 }
 
+.therapist-expertList{
+  height: 2rem;
+}
+
 
 .therapistImage {
   min-height: 10rem;

@@ -12,19 +12,19 @@ function Therapist({ therapist }) {
     year: "numeric",
   });
 
-  // Format the time in HH:mm format
   const formattedTime = nextAvailableDateTime.toLocaleTimeString("en-IN", {
     hour: "2-digit",
     minute: "2-digit",
   });
 
-  console.log(therapist);
+  // Check if there are more than 2 expertise areas
+  const showAllExpertise = therapist.expertise.length <= 2;
+
   return (
     <div className="therapist-container">
       <div className="therapist-card">
         <div className="therapist-image-container">
           <img src={therapist?.image} alt="Rounded" />
-
           <img src={inspiron} alt="Watermark" className="watermark" />
         </div>
         <div className="therapist-content-container">
@@ -32,13 +32,16 @@ function Therapist({ therapist }) {
           <span className="therapist-desig">{therapist?.designation}</span>
           <div className="therapist-expertise">
             <span className="therapist-exp">Expertise:</span>
-            <ul className="therapist-ulExp">
+            <ul className={`therapist-ulExp${showAllExpertise ? "" : " show-more"}`}>
               <div className="therapist-elements">
-                {therapist?.expertise.map((area, index) => (
-                  <li className="therapist-expertList" key={index}>
-                    {area?.type[0]}
-                  </li>
+                {therapist.expertise.map((area, index) => (
+                  (showAllExpertise || index < 2) && (
+                    <li className="therapist-expertList" key={index}>
+                      {area?.type[0]}
+                    </li>
+                  )
                 ))}
+                {!showAllExpertise && <li>...</li>}
               </div>
             </ul>
           </div>
