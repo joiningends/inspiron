@@ -3,7 +3,7 @@ let sentMessageCount = 0;
 
 const sendWhatsAppMessage = (recipientNumber, message) => {
   // Define your Hisocial WhatsApp integration credentials
-  const hisocialInstanceID = '64FC162FAA398';
+  const hisocialInstanceID = '652E927F5E8C0';
   const hisocialAccessToken = '64da53e6c44e5';
 
   // Replace this with the actual endpoint and request format for Hisocial WhatsApp integration
