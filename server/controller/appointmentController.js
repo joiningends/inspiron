@@ -2136,7 +2136,7 @@ exports.getUniqueUserNamesForTherapist = async (req, res) => {
     // Find all appointments for the specific therapist and populate the "user" field
     const appointments = await Appointment.find({
       therapist: therapistId,
-    }).populate("user", "name");
+    }).populate("user", "name", "firstsession");
 
     // Create a Set to store unique user IDs and a Map to associate IDs with names
     const uniqueUsers = new Map();

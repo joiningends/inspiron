@@ -553,7 +553,7 @@ const updateStatusBasedOnDataendthesession = async (req, res) => {
 
       // Set user.israting to false
       user.israting = false;
-
+      user.firstsession = 'completed';
       await foundAppointment.save();
       await user.save();
 
