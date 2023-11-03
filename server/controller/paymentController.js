@@ -10,12 +10,13 @@ const Price = require("../models/prices");
 const nodemailer = require("nodemailer");
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
-
 const {
-  sendWhatsAppMessage,
+  sendWhatsAppMessage,sendWhatsAppMessageMedia,
   getSentMessageCount,
   getSentMessages,
+  
 } = require("../controller/whatsappcontrooler");
+
 const ExperienceLevel = require("../models/exprience");
 
 const createOrder = async (req, res) => {
@@ -304,7 +305,7 @@ const verifyPayment = async (req, res) => {
       // Send the email (you need to implement this function)
       sendEmail(user.email, "Appointment Confirmation", emailMessage);
 
-      const invoiceNumber = "INSPIRON" + Date.now();
+      const invoiceNumber = "INSPIRON" + Date.now() + user.mobile ;
 
       const invoiceData = {
         invoiceNumber: invoiceNumber,
@@ -318,6 +319,11 @@ const verifyPayment = async (req, res) => {
       
       const invoicePath = "invoice.pdf";
       generateInvoicePDF(invoiceData, invoicePath);
+      media_url='http://13.126.59.21/invoice.pdf'
+sendWhatsAppMessageMedia(user.mobile,
+`Thank you for your payment. Please find the attached invoice.
+`
+  , media_url);
       const subject = 'Invoice for Your Payment';
       const message = `Thank you for your payment. Please find the attached invoice.`;
       sendInvoiceByEmail(user.email, subject, message, invoicePath);
@@ -451,10 +457,10 @@ const verifyPaymentoverall = async (req, res) => {
           console.error("Update Error:", error);
         });
         const user = await User.findById(userid).select(
-          "name "
+          "name mobile "
         );
       // Auto-generate an invoice number based on a prefix and timestamp
-      const invoiceNumber = 'INSPIRION' + Date.now();
+      const invoiceNumber = "INSPIRON" + Date.now() + user.mobile;
 
       const invoiceData = {
         invoiceNumber: invoiceNumber,
@@ -463,6 +469,11 @@ const verifyPaymentoverall = async (req, res) => {
       };
       const invoicePath = 'invoice.pdf';
       generateInvoicePDF(invoiceData, invoicePath);
+      media_url='http://13.126.59.21/invoice.pdf'
+sendWhatsAppMessageMedia(user.mobile,
+`Thank you for your payment. Please find the attached invoice.
+`
+  , media_url);
 
       const subject = 'Invoice for Your Payment';
       const message = `Thank you for your payment. Please find the attached invoice.`;
