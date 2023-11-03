@@ -467,9 +467,9 @@ const verifyPaymentoverall = async (req, res) => {
         billedTo: user.name,
         amount: amount,
       };
-      const invoicePath = 'invoice.pdf';
+      const invoicePath = 'public/uploads/invoice.pdf';
       generateInvoicePDF(invoiceData, invoicePath);
-      media_url='http://13.126.59.21/invoice.pdf'
+      media_url='http://13.126.59.21/public/uploads/invoice.pdf'
 sendWhatsAppMessageMedia(user.mobile,
 `Thank you for your payment. Please find the attached invoice.
 `
