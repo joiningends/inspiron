@@ -34,7 +34,9 @@ type:String
   sessionPrice:{
     type:Number
   },
-
+  discountPrice:{
+    type:Number
+  },
   gender: {
     type: String,
     require: false,
