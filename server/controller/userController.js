@@ -550,21 +550,27 @@ const updateStatusBasedOnDataendthesession = async (req, res) => {
     if (isEnded) {
       foundAppointment.status = 'ended';
       foundAppointment.firstsession = 'completed';
-    } else {
+
+      // Set user.israting to false
+      user.israting = false;
+
+      await foundAppointment.save();
+      await user.save();
+
+      const updatedAppointment = foundAppointment.toObject();
       
+      // Include user.israting in the response
+      res.json({ appointment: updatedAppointment, israting: user.israting });
+    } else {
       foundAppointment.firstsession = 'pending';
       return res.status(400).json({ message: 'Please fill in the first session note before ending the session' });
     }
-
-    await foundAppointment.save();
-
-    const updatedAppointment = foundAppointment.toObject();
-    res.json({ appointment: updatedAppointment });
   } catch (error) {
     console.error('Error updating appointment status:', error);
     res.status(500).json({ error: 'An error occurred while updating status' });
   }
 };
+
 
 
 const updateUserTypes = async (req, res) => {
@@ -831,6 +837,24 @@ const deleteAllTherapists = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while deleting therapists' });
   }
 };
+
+const updateUserIsRating =  async (req, res) => {
+  try {
+    const userId = req.params.id;
+   
+    const user = await User.findByIdAndUpdate(userId, { israting: true }, { new: true });
+
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+
+    return { success: true, message: 'User israting updated successfully', user };
+  } catch (error) {
+    console.error('Error updating user israting:', error);
+    return { success: false, message: 'Internal Server Error' };
+  }
+};
+
 module.exports = {
   getUsers,
   getUserById,
@@ -851,6 +875,6 @@ module.exports = {
   forgotPassword, 
   resetPassword,
   updateUserProfile,
-  deleteAllTherapists
-
+  deleteAllTherapists,
+  updateUserIsRating
 };

@@ -179,11 +179,11 @@ type:String
       user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User", // Reference to the "User" model
-        required: true,
+        
       },
       rating: {
         type: Number,
-        required: true,
+        
       },
     },
   ],

@@ -137,6 +137,10 @@ type:Number,
       verificationToken:{
         type:String
       },
+      israting:{
+        type: Boolean,
+        default: false,
+      }
 });
 
 

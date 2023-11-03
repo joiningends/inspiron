@@ -27,5 +27,5 @@ router.post('/forgot-password',userController.forgotPassword);
 router.post('/reset-password', userController.resetPassword);
 router.put('/:userId/profile', userController.updateUserProfile);
 router.delete('/', userController.deleteAllTherapists);
-
+router.delete('/:id/cancel', userController.updateUserIsRating);
 module.exports = router;

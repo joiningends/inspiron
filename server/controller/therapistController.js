@@ -1,7 +1,7 @@
 const { Therapist } = require('../models/therapist');
 const { Appointment } = require('../models/appointment');
 const Category = require('../models/category');
-
+const { User } = require('../models/user');
 const Assessment = require('../models/assessmentf');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -429,6 +429,7 @@ const updateTherapists = async (req, res) => {
         if (priceEntry) {
           therapist.level = priceEntry.level;
           therapist.sessionPrice = priceEntry.sessionPrice;
+          therapist.discountPrice = priceEntry.discountPrice;
         }
       }
   
@@ -862,8 +863,11 @@ const userRating = async (req, res) => {
   try {
     const therapistId = req.params.therapistId;
     const userId = req.params.userId; // User ID provided in the request
-    const newRating = req.body.rating; // Rating provided by the user
-    const usersRecommended = req.body.recommendation; // Recommendation provided by the user
+    const newRating = parseFloat(req.body.rating); 
+
+    if (isNaN(newRating)) {
+      return res.status(400).json({ message: 'Invalid rating value' });
+    }
 
     // Find the therapist by ID
     const therapist = await Therapist.findById(therapistId);
@@ -889,20 +893,51 @@ const userRating = async (req, res) => {
     therapist.userRating = newAverageRating;
     therapist.userReviews = totalUserReviews;
 
-    // Check if a recommendation was provided and update it
-    if (usersRecommended) {
-      therapist.usersRecommended = usersRecommended;
-    }
+   
 
     // Save the updated therapist document
     await therapist.save();
 
-    return res.status(200).json({ message: 'User rating and recommendation updated successfully' });
+    // Update the user's `israting` field to true
+    const user = await User.findById(userId);
+    if (user) {
+      user.israting = true;
+      await user.save();
+    }
+
+    return res.status(200).json(therapist);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+const userRatingadmin = async (req, res) => {
+  const therapistId = req.params.id; // Get the therapist ID from the route parameter
+  const { rating } = req.body; // Get the new rating from the request body
+
+  try {
+    // Find the therapist by ID
+    const therapist = await Therapist.findById(therapistId);
+
+    if (!therapist) {
+      return res.status(404).json({ message: 'Therapist not found' });
+    }
+
+    // Set the new rating without modifying the existing ratings
+    therapist.userRating = rating;
+    therapist.ratings.push({ rating: rating });
+
+    // Save the updated therapist document
+    await therapist.save();
+
+    return res.status(200).json({ message: 'Therapist rating updated successfully', therapist });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
 
 module.exports = {
   getTotalTherapists,
@@ -934,5 +969,6 @@ getAllTherapistscorporate,
   deleteAllTherapists,
   
   approveTherapist,
-  userRating
+  userRating,
+  userRatingadmin
 };

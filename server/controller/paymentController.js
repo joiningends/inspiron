@@ -307,14 +307,16 @@ const verifyPayment = async (req, res) => {
 
       const invoiceNumber = "INSPIRON" + Date.now() + user.mobile ;
 
-      const invoiceData = {
-        invoiceNumber: invoiceNumber,
-        order_id:razorpay_order_id,
-        billedTo: username,
-        email: user.email, 
-        mobile: user.mobile, 
-        amount: amount,
-        totalAmount: amount,
+      
+        const pack = discountPrice / amount;
+        const invoiceData = {
+          invoiceNumber: invoiceNumber,
+          packag : pack ,
+          billedTo: username,
+          email: user.email, 
+          mobile: user.mobile, 
+          amount: amount,
+          totalAmount: amount,
       };
       
       const invoicePath = "invoice.pdf";
@@ -433,7 +435,9 @@ const verifyPaymentoverall = async (req, res) => {
         existingCoin.coinBalance = 0;
         await existingCoin.save();
       }
+      const therapist = await Therapist.findOne({ experiencelevel }).populate('discountPrice');
 
+      
       await Appointment.updateMany(
         {
           user: userid,
@@ -461,11 +465,15 @@ const verifyPaymentoverall = async (req, res) => {
         );
       // Auto-generate an invoice number based on a prefix and timestamp
       const invoiceNumber = "INSPIRON" + Date.now() + user.mobile;
-
+    const pack = therapist.discountPrice / amount;
       const invoiceData = {
         invoiceNumber: invoiceNumber,
-        billedTo: user.name,
+        packag : pack ,
+        billedTo: username,
+        email: user.email, 
+        mobile: user.mobile, 
         amount: amount,
+        totalAmount: amount,
       };
       const invoicePath = 'public/uploads/invoice.pdf';
       generateInvoicePDF(invoiceData, invoicePath);
@@ -514,13 +522,13 @@ const generateInvoicePDF = (invoiceData, outputPath) => {
   doc.fontSize(12);
 
   // Values for Order ID and Amount
-  const orderID = invoiceData.order_id;
+  const packag = invoiceData.pack;
   const amount = `${invoiceData.amount} INR`;
 
   // Add a table-like layout for Order ID and Amount
-  doc.text('Order ID', 50, doc.y + 40);
+  doc.text('Package', 50, doc.y + 40);
   doc.text('Amount', 400, doc.y + 1);
-  doc.text(orderID, 50, doc.y + 40);
+  doc.text(packag, 50, doc.y + 40);
   doc.text(amount, 400, doc.y + 1);
   
   // Add a line below the headings
