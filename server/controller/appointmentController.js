@@ -1795,62 +1795,68 @@ exports.extendSession = async (req, res) => {
 
 
 
-
 function generateAndSavePDF(updateData) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument();
     const content = [];
-    doc.image('public/uploads/logo.png', 50, 50, { width: 100 }); // Add your logo image here
+    doc.image("public/uploads/logo.png", 50, 50, { width: 100 }); // Add your logo image here
     doc.moveDown(2);
-    // Function to add a section to the content array
-    function addSection(header, text, color = 'green') {
+
+    // Function to add a section with a box around the text
+    function addSectionWithBox(header, text) {
       if (text) {
-        content.push({ text: header, color });
-        content.push('   ' + text);
+        const padding = { left: 20, right: 20, top: 20, bottom: 20 }; // Increase padding
+        const textWidth = 500 - padding.left - padding.right;
+        const textHeight = doc.heightOfString(text, { width: textWidth });
+        const boxHeight = textHeight + padding.top + padding.bottom;
+
+        if (doc.y + boxHeight > doc.page.height) {
+          doc.addPage(); // Start a new page if the content won't fit on the current page
+        }
+
+        content.push({ header, text });
+        doc.text(header, { width: 500 });
         doc.moveDown(0.5);
+        const boxX = 50 + padding.left;
+        const boxY = doc.y;
+        doc.rect(boxX, boxY, textWidth, boxHeight).stroke(); // Draw a box with increased padding
+        doc.text(text, boxX + 10, boxY + padding.top, { width: textWidth }); // Add space from the left side
+        doc.moveDown(2); // Adjust the line spacing
       }
     }
 
-    addSection('Summary:', updateData.summary);
-    addSection('Growth Curve Points:', updateData.growthCurve);
-    addSection('Therapeutic Techniques Used:', updateData.therapeuticTechniques);
-    addSection('Homework Given:', updateData.homeworkGiven);
-    addSection('Next Session Plan:', updateData.nextSessionPlan);
+    addSectionWithBox("Summary:", updateData.summary);
+    addSectionWithBox("Growth Curve Points:", updateData.growthCurve);
+    addSectionWithBox("Therapeutic Techniques Used:", updateData.therapeuticTechniques);
+    addSectionWithBox("Homework Given:", updateData.homeworkGiven);
+    addSectionWithBox("Next Session Plan:", updateData.nextSessionPlan);
 
-    doc.font('Helvetica').fontSize(12);
-
-    content.forEach((item) => {
-      if (typeof item === 'string') {
-        doc.text(item, { width: 500, align: 'left' });
-      } else {
-        doc.fillColor(item.color).text(item.text, { width: 500, align: 'left' }).fillColor('black');
-      }
-    });
+    doc.font("Helvetica").fontSize(12);
 
     const buffers = [];
-    doc.on('data', (buffer) => buffers.push(buffer));
-    doc.on('end', () => {
+    doc.on("data", (buffer) => buffers.push(buffer));
+    doc.on("end", () => {
       const pdfBuffer = Buffer.concat(buffers);
       resolve(pdfBuffer);
     });
 
     // You can customize the file path as needed
-    const pdfFilePath = 'public/uploads/session_summary.pdf';
+    const pdfFilePath = "public/uploads/session_summary.pdf";
     const writeStream = fs.createWriteStream(pdfFilePath);
 
     doc.pipe(writeStream);
     doc.end();
 
-    writeStream.on('finish', () => {
+    writeStream.on("finish", () => {
       // The PDF has been saved locally
-      console.log('PDF saved locally:', pdfFilePath);
+      console.log("PDF saved locally:", pdfFilePath);
     });
 
-    writeStream.on('error', (err) => {
+    writeStream.on("error", (err) => {
       reject(err);
     });
   });
-} 
+}
 
 
 exports.updateUserSessionNotes = async (req, res) => {
