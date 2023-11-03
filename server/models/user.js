@@ -120,7 +120,8 @@ type:Number,
         type: Date,
       },
       firstsession:{
-        type:String
+        type:String,
+        default:'pending'
       },
       desises:{
         type:String
@@ -140,8 +141,11 @@ type:Number,
       israting:{
         type: Boolean,
         default: false,
+      },
+      lasttherapist: {
+        type: mongoose.Schema.Types.ObjectId,
       }
-});
+      });
 
 
 

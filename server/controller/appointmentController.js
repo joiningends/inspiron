@@ -2136,25 +2136,27 @@ exports.getUniqueUserNamesForTherapist = async (req, res) => {
     // Find all appointments for the specific therapist and populate the "user" field
     const appointments = await Appointment.find({
       therapist: therapistId,
-    }).populate("user", "name", "firstsession");
+    }).populate("user", ["name", "firstsession"]);
 
-    // Create a Set to store unique user IDs and a Map to associate IDs with names
+    // Create a Set to store unique user IDs and a Map to associate IDs with names and firstsession
     const uniqueUsers = new Map();
 
     // Iterate through the appointments and filter out duplicates
-    appointments.forEach(appointment => {
+    appointments.forEach((appointment) => {
       const userId = appointment.user._id.toString(); // Convert ObjectId to string
       const userName = appointment.user.name;
+      const firstSession = appointment.user.firstsession;
 
       if (!uniqueUsers.has(userId)) {
-        uniqueUsers.set(userId, userName);
+        uniqueUsers.set(userId, { userName, firstSession });
       }
     });
 
-    // Convert the Map to an array of objects with user ID and name
-    const uniqueUsersArray = Array.from(uniqueUsers, ([userId, userName]) => ({
+    // Convert the Map to an array of objects with user ID, name, and firstsession
+    const uniqueUsersArray = Array.from(uniqueUsers, ([userId, { userName, firstSession }]) => ({
       userId,
       userName,
+      firstSession,
     }));
 
     res.status(200).json(uniqueUsersArray);
@@ -2163,6 +2165,7 @@ exports.getUniqueUserNamesForTherapist = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 exports.getUpcomingAppointmentsByTherapistForUser = async (req, res) => {
   const userId = req.params.userId; // Extract the user ID from the request parameters
 
