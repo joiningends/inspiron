@@ -10,11 +10,12 @@ const fs = require("fs");
 const util = require("util");
 const writeFile = util.promisify(fs.writeFile);
 const cron = require("node-cron");
-
+const PDFDocument = require('pdfkit');
 const {
-  sendWhatsAppMessage,
+  sendWhatsAppMessage,sendWhatsAppMessageMedia,
   getSentMessageCount,
   getSentMessages,
+  
 } = require("../controller/whatsappcontrooler");
 
 // Function to update the Sessionnumber for the user
@@ -1794,6 +1795,64 @@ exports.extendSession = async (req, res) => {
 
 
 
+
+function generateAndSavePDF(updateData) {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument();
+    const content = [];
+    doc.image('public/uploads/logo.png', 50, 50, { width: 100 }); // Add your logo image here
+    doc.moveDown(2);
+    // Function to add a section to the content array
+    function addSection(header, text, color = 'green') {
+      if (text) {
+        content.push({ text: header, color });
+        content.push('   ' + text);
+        doc.moveDown(0.5);
+      }
+    }
+
+    addSection('Summary:', updateData.summary);
+    addSection('Growth Curve Points:', updateData.growthCurve);
+    addSection('Therapeutic Techniques Used:', updateData.therapeuticTechniques);
+    addSection('Homework Given:', updateData.homeworkGiven);
+    addSection('Next Session Plan:', updateData.nextSessionPlan);
+
+    doc.font('Helvetica').fontSize(12);
+
+    content.forEach((item) => {
+      if (typeof item === 'string') {
+        doc.text(item, { width: 500, align: 'left' });
+      } else {
+        doc.fillColor(item.color).text(item.text, { width: 500, align: 'left' }).fillColor('black');
+      }
+    });
+
+    const buffers = [];
+    doc.on('data', (buffer) => buffers.push(buffer));
+    doc.on('end', () => {
+      const pdfBuffer = Buffer.concat(buffers);
+      resolve(pdfBuffer);
+    });
+
+    // You can customize the file path as needed
+    const pdfFilePath = 'public/uploads/session_summary.pdf';
+    const writeStream = fs.createWriteStream(pdfFilePath);
+
+    doc.pipe(writeStream);
+    doc.end();
+
+    writeStream.on('finish', () => {
+      // The PDF has been saved locally
+      console.log('PDF saved locally:', pdfFilePath);
+    });
+
+    writeStream.on('error', (err) => {
+      reject(err);
+    });
+  });
+} 
+
+
 exports.updateUserSessionNotes = async (req, res) => {
   try {
     const appointmentId = req.params.id;
@@ -1836,7 +1895,7 @@ exports.updateUserSessionNotes = async (req, res) => {
       });
 
       if (positiveCoinBalance) {
-        const experiencelevel = positiveCoinBalance.experiencelevel;
+        const experiencelevel = positiveCoinBalance.expriencelevel;
         if (experiencelevel) {
           const level = experiencelevel.level;
           const matchingTherapists = await Therapist.find({ level: level });
@@ -1870,6 +1929,58 @@ exports.updateUserSessionNotes = async (req, res) => {
       }
     }
 
+   
+    if (updateData.sharedWithPatient === true) {
+      const user = await User.findById(userId);
+      const userEmail = user.email;
+      const Mobile = user.mobile;
+
+      const pdfBuffer = await generateAndSavePDF(updateData);
+      const pdfFilePath = 'public/uploads/session_summary.pdf';
+      media_url='http://13.126.59.21/public/uploads/session_summary.pdf'
+      sendWhatsAppMessageMedia(Mobile,
+   `Attached is your session summary PDF
+        Thanks,
+      Team Inspiron
+      `
+        ,  media_url);
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
+        requireTLS: true,
+        auth: {
+          user: "inspiron434580@gmail.com",
+          pass: "rogiprjtijqxyedm",
+        },
+      });
+
+      const mailOptions = {
+        from: "inspiron434580@gmail.com",
+        to: userEmail,
+        subject: 'Session Summary PDF',
+        text: 'Attached is your session summary PDF',
+        attachments: [
+          {
+            filename: 'session_summary.pdf',
+            path: pdfFilePath,
+          },
+        ],
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+    }
+
+    if (updateData.generateReport === true) {
+      // Your code to handle generating a report, if needed
+    }
+
     await appointment.save();
 
     res.json(appointment);
@@ -1880,6 +1991,9 @@ exports.updateUserSessionNotes = async (req, res) => {
     });
   }
 };
+
+
+
 
 
 exports.getAppointmentsByUser = async (req, res) => {
