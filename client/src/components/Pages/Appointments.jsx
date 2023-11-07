@@ -29,6 +29,13 @@ import {
   PlayArrow as PlayArrowIcon,
 } from "@mui/icons-material";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import "./Home.css";
+import groupHomePage from "./GroupHomeImage.png";
+
+import jwtDecode from "jwt-decode";
+
+import Rating from "./Rating";
 
 import { TransitionProps } from "@mui/material/transitions";
 
@@ -92,106 +99,110 @@ function SessionNotesPopup({ sessionNotes, onClose }) {
   };
 
   return (
-    <Dialog
-      open={!!sessionNotes}
-      onClose={onClose}
-      maxWidth="md"
-      TransitionComponent={Transition}
-    >
-      <DialogTitle>Session Notes</DialogTitle>
-      <DialogContent>
-        {sessionNotes ? (
-          <Container ref={scrollContainerRef}>
-            <Paper elevation={3} style={{ padding: "16px" }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <div style={boxStyle}>
-                    <Typography style={labelStyle}>
-                      Growth Curve Points:
-                    </Typography>
-                    <TextareaAutosize
-                      minRows={3}
-                      readOnly
-                      value={sessionNotes.Growthcurvepoints}
-                      style={textAreaStyle}
-                    />
-                  </div>
+    <>
+      <Dialog
+        open={!!sessionNotes}
+        onClose={onClose}
+        maxWidth="md"
+        TransitionComponent={Transition}
+      >
+        <DialogTitle>Session Notes</DialogTitle>
+        <DialogContent>
+          {sessionNotes ? (
+            <Container ref={scrollContainerRef}>
+              <Paper elevation={3} style={{ padding: "16px" }}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <div style={boxStyle}>
+                      <Typography style={labelStyle}>
+                        Growth Curve Points:
+                      </Typography>
+                      <TextareaAutosize
+                        minRows={3}
+                        readOnly
+                        value={sessionNotes.Growthcurvepoints}
+                        style={textAreaStyle}
+                      />
+                    </div>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <div style={boxStyle}>
+                      <Typography style={labelStyle}>
+                        Homework Given:
+                      </Typography>
+                      <TextareaAutosize
+                        minRows={3}
+                        readOnly
+                        value={sessionNotes.Homeworkgiven}
+                        style={textAreaStyle}
+                      />
+                    </div>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <div style={boxStyle}>
+                      <Typography style={labelStyle}>
+                        Next Session Plan:
+                      </Typography>
+                      <TextareaAutosize
+                        minRows={3}
+                        readOnly
+                        value={sessionNotes.Nextsessionplan}
+                        style={textAreaStyle}
+                      />
+                    </div>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <div style={boxStyle}>
+                      <Typography style={labelStyle}>Summary:</Typography>
+                      <TextareaAutosize
+                        minRows={3}
+                        readOnly
+                        value={sessionNotes.Summary}
+                        style={textAreaStyle}
+                      />
+                    </div>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <div style={boxStyle}>
+                      <Typography style={labelStyle}>
+                        Therapeutic Techniques Used:
+                      </Typography>
+                      <TextareaAutosize
+                        minRows={3}
+                        readOnly
+                        value={sessionNotes.TherapeuticTechniquesused}
+                        style={textAreaStyle}
+                      />
+                    </div>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <div style={boxStyle}>
-                    <Typography style={labelStyle}>Homework Given:</Typography>
-                    <TextareaAutosize
-                      minRows={3}
-                      readOnly
-                      value={sessionNotes.Homeworkgiven}
-                      style={textAreaStyle}
-                    />
-                  </div>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <div style={boxStyle}>
-                    <Typography style={labelStyle}>
-                      Next Session Plan:
-                    </Typography>
-                    <TextareaAutosize
-                      minRows={3}
-                      readOnly
-                      value={sessionNotes.Nextsessionplan}
-                      style={textAreaStyle}
-                    />
-                  </div>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <div style={boxStyle}>
-                    <Typography style={labelStyle}>Summary:</Typography>
-                    <TextareaAutosize
-                      minRows={3}
-                      readOnly
-                      value={sessionNotes.Summary}
-                      style={textAreaStyle}
-                    />
-                  </div>
-                </Grid>
-                <Grid item xs={12}>
-                  <div style={boxStyle}>
-                    <Typography style={labelStyle}>
-                      Therapeutic Techniques Used:
-                    </Typography>
-                    <TextareaAutosize
-                      minRows={3}
-                      readOnly
-                      value={sessionNotes.TherapeuticTechniquesused}
-                      style={textAreaStyle}
-                    />
-                  </div>
-                </Grid>
-              </Grid>
-            </Paper>
-            {showScrollIndicator && (
-              <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                py={1}
-              >
-                <Typography variant="caption">Scroll for more</Typography>
-              </Box>
-            )}
-          </Container>
-        ) : (
-          "Session notes not available."
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={onClose}
-          color="primary"
-          style={{ backgroundColor: "#D67449", color: "white" }}
-        >
-          Close
-        </Button>
-      </DialogActions>
-    </Dialog>
+              </Paper>
+              {showScrollIndicator && (
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  py={1}
+                >
+                  <Typography variant="caption">Scroll for more</Typography>
+                </Box>
+              )}
+            </Container>
+          ) : (
+            "Session notes not available."
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={onClose}
+            color="primary"
+            style={{ backgroundColor: "#D67449", color: "white" }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
 
@@ -203,6 +214,42 @@ function Appointments() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sessionNotes, setSessionNotes] = useState(null);
+  const [tokenInfo, setTokenInfo] = useState(null);
+  console.log(tokenInfo);
+
+  const [userInfo, setUserInfo] = useState();
+  const [user, setUser] = useState(null);
+  console.log(user);
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_SERVER_URL}/users/${userInfo}`)
+      .then(response => {
+        // Handle the successful response here, and set the user data to state
+        setUser(response.data);
+      })
+      .catch(error => {
+        // Handle any errors here
+        console.error("Error fetching user data:", error);
+      });
+  }, [userInfo]);
+
+  console.log(userInfo);
+
+  useEffect(() => {
+    // Retrieve the JWT token from localStorage
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // Decode the JWT token using jwt-decode
+      const decoded = jwtDecode(token);
+
+      // Store the decoded information in the component's state
+      console.log(decoded);
+      setTokenInfo(decoded);
+      setUserInfo(decoded?.userId);
+    }
+  }, []);
 
   const handleStartAppointment = meetlink => {
     window.open(meetlink, "_blank");
@@ -284,178 +331,185 @@ function Appointments() {
   };
 
   return (
-    <div>
-      <Button
-        variant={showPastAppointments ? "outlined" : "contained"}
-        onClick={handleShowUpcomingAppointments}
-      >
-        Upcoming Appointments
-      </Button>
-      <Button
-        variant={showPastAppointments ? "contained" : "outlined"}
-        onClick={handleShowPastAppointments}
-        style={{ marginLeft: "1rem" }}
-      >
-        Past Appointments
-      </Button>
+    <>
+      {user?.israting === true && (
+        <Rating userId={user?._id} lastTherapist={user?.lasttherapist} />
+      )}
+      <div>
+        <Button
+          variant={showPastAppointments ? "outlined" : "contained"}
+          onClick={handleShowUpcomingAppointments}
+        >
+          Upcoming Appointments
+        </Button>
+        <Button
+          variant={showPastAppointments ? "contained" : "outlined"}
+          onClick={handleShowPastAppointments}
+          style={{ marginLeft: "1rem" }}
+        >
+          Past Appointments
+        </Button>
 
-      <Box mt={3}>
-        {showPastAppointments ? (
-          <animated.div style={fadeProps}>
-            {pastAppointments.length === 0 ? (
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                p={2}
-              >
-                <InfoIcon fontSize="large" color="disabled" />
-                <p style={{ color: "grey" }}>No past appointments available.</p>
-              </Box>
-            ) : (
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Therapist Name</TableCell>
-                      <TableCell>Start Time</TableCell>
-                      <TableCell>Date</TableCell>
-                      <TableCell>Action</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {sortedAppointments
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map(appointment => (
-                        <TableRow key={appointment._id}>
-                          <TableCell>{appointment.therapistName}</TableCell>
-                          <TableCell>{appointment.startTime}</TableCell>
-                          <TableCell>
-                            {formatDateTime(appointment.dateTime)}
-                          </TableCell>
-                          <TableCell>
-                            {appointment.sessionnotes?.sharedWithPatient ===
-                            true ? (
-                              <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={() =>
-                                  handleSeeSessionNote(appointment._id)
-                                }
-                              >
-                                Session History
-                              </Button>
-                            ) : (
-                              <span>No Details are Available!</span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  component="div"
-                  count={sortedAppointments.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-              </TableContainer>
-            )}
-          </animated.div>
-        ) : (
-          <animated.div style={fadeProps}>
-            {upcomingAppointments.length === 0 ? (
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                p={2}
-              >
-                <InfoIcon fontSize="large" color="disabled" />
-                <p style={{ color: "grey" }}>
-                  No upcoming appointments available.
-                </p>
-              </Box>
-            ) : (
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Therapist Name</TableCell>
-                      <TableCell>Start Time</TableCell>
-                      <TableCell>Date</TableCell>
-                      <TableCell>Action</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {sortedAppointments
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map(appointment => (
-                        <TableRow key={appointment._id}>
-                          <TableCell>{appointment.therapist.name}</TableCell>
-                          <TableCell>{appointment.startTime}</TableCell>
-                          <TableCell>
-                            {formatDateTime(appointment.dateTime)}
-                          </TableCell>
-                          <TableCell>
-                            {appointment.status === "started" ? (
-                              <Button
-                                variant="contained"
-                                style={{
-                                  backgroundColor: "#D67449",
-                                  color: "white",
-                                }}
-                                startIcon={<PlayArrowIcon />}
-                                onClick={() =>
-                                  handleStartAppointment(appointment.meetlink)
-                                }
-                              >
-                                Start
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="contained"
-                                disabled
-                                startIcon={<PlayArrowIcon />}
-                              >
-                                Start
-                              </Button>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  component="div"
-                  count={sortedAppointments.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-              </TableContainer>
-            )}
-          </animated.div>
-        )}
-      </Box>
+        <Box mt={3}>
+          {showPastAppointments ? (
+            <animated.div style={fadeProps}>
+              {pastAppointments.length === 0 ? (
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  p={2}
+                >
+                  <InfoIcon fontSize="large" color="disabled" />
+                  <p style={{ color: "grey" }}>
+                    No past appointments available.
+                  </p>
+                </Box>
+              ) : (
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Therapist Name</TableCell>
+                        <TableCell>Start Time</TableCell>
+                        <TableCell>Date</TableCell>
+                        <TableCell>Action</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {sortedAppointments
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map(appointment => (
+                          <TableRow key={appointment._id}>
+                            <TableCell>{appointment.therapistName}</TableCell>
+                            <TableCell>{appointment.startTime}</TableCell>
+                            <TableCell>
+                              {formatDateTime(appointment.dateTime)}
+                            </TableCell>
+                            <TableCell>
+                              {appointment.sessionnotes?.sharedWithPatient ===
+                              true ? (
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  onClick={() =>
+                                    handleSeeSessionNote(appointment._id)
+                                  }
+                                >
+                                  Session History
+                                </Button>
+                              ) : (
+                                <span>No Details are Available!</span>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={sortedAppointments.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
+                </TableContainer>
+              )}
+            </animated.div>
+          ) : (
+            <animated.div style={fadeProps}>
+              {upcomingAppointments.length === 0 ? (
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  p={2}
+                >
+                  <InfoIcon fontSize="large" color="disabled" />
+                  <p style={{ color: "grey" }}>
+                    No upcoming appointments available.
+                  </p>
+                </Box>
+              ) : (
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Therapist Name</TableCell>
+                        <TableCell>Start Time</TableCell>
+                        <TableCell>Date</TableCell>
+                        <TableCell>Action</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {sortedAppointments
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map(appointment => (
+                          <TableRow key={appointment._id}>
+                            <TableCell>{appointment.therapist.name}</TableCell>
+                            <TableCell>{appointment.startTime}</TableCell>
+                            <TableCell>
+                              {formatDateTime(appointment.dateTime)}
+                            </TableCell>
+                            <TableCell>
+                              {appointment.status === "started" ? (
+                                <Button
+                                  variant="contained"
+                                  style={{
+                                    backgroundColor: "#D67449",
+                                    color: "white",
+                                  }}
+                                  startIcon={<PlayArrowIcon />}
+                                  onClick={() =>
+                                    handleStartAppointment(appointment.meetlink)
+                                  }
+                                >
+                                  Start
+                                </Button>
+                              ) : (
+                                <Button
+                                  variant="contained"
+                                  disabled
+                                  startIcon={<PlayArrowIcon />}
+                                >
+                                  Start
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={sortedAppointments.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
+                </TableContainer>
+              )}
+            </animated.div>
+          )}
+        </Box>
 
-      {/* Session Notes Popup */}
-      <SessionNotesPopup
-        sessionNotes={sessionNotes}
-        onClose={() => setSessionNotes(null)}
-      />
-    </div>
+        {/* Session Notes Popup */}
+        <SessionNotesPopup
+          sessionNotes={sessionNotes}
+          onClose={() => setSessionNotes(null)}
+        />
+      </div>
+    </>
   );
 }
 

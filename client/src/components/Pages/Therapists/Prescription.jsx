@@ -20,12 +20,16 @@ import {
 import _ from "lodash";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import TherapistDetails from "../Admin/TherapistDetails";
 
 function Prescription() {
   const { id } = useParams();
+  const { therapistId } = useParams();
   const [editMode, setEditMode] = useState(true);
   const [showPdfButton, setShowPdfButton] = useState(false);
   const [appointmentData, setAppointmentData] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
+  const [userId,setUserId] = useState()
   const [userData, setUserData] = useState({
     name: "--",
     age: "--",
@@ -45,6 +49,26 @@ function Prescription() {
   const [labTestList, setLabTestList] = useState([]);
   const [selectedLabTest, setSelectedLabTest] = useState("");
   const [selectedLabTests, setSelectedLabTests] = useState([]);
+  const [therapistData, setTherapistData] = useState(null);
+  console.log(therapistData);
+
+  useEffect(() => {
+    const fetchTherapistData = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}`
+        );
+        setTherapistData(response.data);
+      } catch (error) {
+        console.error("Error fetching therapist data:", error);
+      }
+    };
+
+    fetchTherapistData();
+  }, [therapistId]);
+
+  const storedUserId = localStorage.getItem("userId");
+  console.log(storedUserId);
 
   useEffect(() => {
     const fetchAppointmentData = async () => {
@@ -56,11 +80,13 @@ function Prescription() {
 
         const userId = response.data?.user?._id;
 
+        setUserId(userId);
         if (userId) {
           const userResponse = await axios.get(
             `${process.env.REACT_APP_SERVER_URL}/users/${userId}`
           );
           setUserData(userResponse.data);
+          setUserEmail(userResponse.data.email);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -104,23 +130,49 @@ function Prescription() {
     setEditMode(false);
     setShowPdfButton(true);
   };
+  console.log(therapistData?.education);
+
+  let educationLevel = "";
+  if (therapistData?.education?.length > 0) {
+    const lastItem =
+      therapistData?.education[therapistData?.education?.length - 1];
+    educationLevel = lastItem.educationLevel;
+    console.log("Education Level of the last element: " + educationLevel);
+  } else {
+    educationLevel = "-";
+    console.log(therapistData?.education);
+  }
 
   const handleProvidePdf = () => {
-    const doc = new jsPDF();
-  
-    // Define the margins and page width
+    console.log("hi");
+    const dataToSend = {
+      diagnosis: diagnosis,
+      description: description,
+      medicineData: medicineData,
+      selectedLabTest: selectedLabTest
+    };
+
+    console.log(diagnosis, description, selectedLabTest);
+
+    const doc = new jsPDF({
+      compress: true, // Enable PDF compression
+    });
     const margin = 10;
     let currentY = margin;
-  
-    // Set the title and headers
+
+    doc.setFontSize(12);
+    doc.text(`Psychiatrist Name: ${therapistData?.name}`, margin, currentY);
+    currentY += 10;
+    doc.text(`Education Level: ${educationLevel}`, margin, currentY);
+    currentY += 10;
+
     doc.setFontSize(18);
     doc.text("Medical Prescription", 105, currentY);
-    currentY += 10; // Add space between title and content
+    currentY += 10;
+
     doc.setFontSize(14);
-  
-    // User Information
     doc.text("User Information", margin, currentY);
-    currentY += 10; // Add space between section header and content
+    currentY += 10;
     const userTableData = [
       ["Name:", userData.name],
       ["Age:", userData.age],
@@ -131,35 +183,30 @@ function Prescription() {
       startY: currentY,
       body: userTableData,
       theme: "grid",
-      styles: { cellPadding: 2, fontSize: 12, columnWidth: 'auto' },
+      styles: { cellPadding: 2, fontSize: 12, cellWidth: "auto" },
     });
-  
-    // Diagnosis
-    currentY += doc.autoTable.previous.finalY + 5; // Reduce the gap between sections
+
+    currentY += doc.autoTable.previous.finalY - 25;
     doc.setFontSize(14);
     doc.text("Diagnosis", margin, currentY);
-    currentY += 5; // Add space between section header and content
+    currentY += 5;
     doc.setFontSize(12);
-  
-    // Custom function to split text into multiple lines
+
     const splitText = doc.splitTextToSize(diagnosis, 190);
     doc.text(splitText, margin, currentY);
-  
-    currentY += doc.getTextDimensions(splitText).h + 10; // Add space after diagnosis
-  
-    // Description
+
+    currentY += doc.getTextDimensions(splitText).h + 10;
+
     doc.setFontSize(14);
     doc.text("Description", margin, currentY);
-    currentY += 5; // Add space between section header and content
+    currentY += 5;
     doc.setFontSize(12);
-  
-    // Custom function to split text into multiple lines
+
     const splitDescription = doc.splitTextToSize(description, 190);
     doc.text(splitDescription, margin, currentY);
-  
-    currentY += doc.getTextDimensions(splitDescription).h + 10; // Add space after description
-  
-    // Medicine List
+
+    currentY += doc.getTextDimensions(splitDescription).h + 10;
+
     doc.setFontSize(14);
     doc.text("Medicine List", margin, currentY);
     const medicineTableData = medicineData.map((medicine, index) => [
@@ -170,37 +217,83 @@ function Prescription() {
       medicine.instructions,
     ]);
     doc.autoTable({
-      startY: currentY + 10, // Add space between section header and content
+      startY: currentY + 10,
       body: medicineTableData,
       theme: "striped",
-      styles: { cellPadding: 2, fontSize: 12, columnWidth: 'auto' },
+      styles: { cellPadding: 2, fontSize: 12, cellWidth: "auto" },
       head: [["#", "Name", "Dosage", "Frequency", "Instructions"]],
     });
-  
-    // Lab Tests
-    
-    currentY += doc.autoTable.previous.finalY + 5; // Reduce the gap between sections
+
+    currentY += doc.autoTable.previous.finalY + 5;
     doc.setFontSize(14);
     doc.text("Lab Tests", margin, currentY);
-    const labTestTableData = selectedLabTests.map((labTest, index) => [labTest]);
+    const labTestTableData = selectedLabTests.map((labTest, index) => [
+      labTest,
+    ]);
     doc.autoTable({
-      startY: currentY + 5, // Add space between section header and content
+      startY: currentY + 5,
       body: labTestTableData,
       theme: "striped",
-      styles: { cellPadding: 2, fontSize: 12, columnWidth: 'auto' },
+      styles: { cellPadding: 2, fontSize: 12, cellWidth: "auto" },
       head: [["Lab Test Name"]],
     });
-  
-    // Save the PDF
-    const fileName = `prescription_${new Date().toISOString()}.pdf`;
-    doc.save(fileName);
+
+    currentY += doc.autoTable.previous.finalY + 5;
+
+    const watermarkWidth = 40;
+    const watermarkHeight = 40;
+    const watermarkXCoordinate = watermarkWidth - 10;
+    const watermarkYCoordinate = 90 + watermarkHeight - 10;
+    doc.addImage(
+      therapistData?.sign,
+      "PNG",
+      watermarkXCoordinate,
+      watermarkYCoordinate,
+      watermarkWidth,
+      watermarkHeight,
+      "", // Image format
+      "FAST", // Image compression: try "SLOW" for higher quality
+      72 // DPI (dots per inch): lower DPI can reduce file size
+    );
+
+    const pdfData = doc.output("datauristring");
+
+    // Create a link to download the PDF locally
+    const downloadLink = document.createElement("a");
+    downloadLink.href = pdfData;
+    downloadLink.download = "medical_prescription.pdf";
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+
+    // Trigger the download link and remove it
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+
+    fetch(
+      `${process.env.REACT_APP_SERVER_URL}/eprescriptions/${therapistId}/${userId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      }
+    )
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Data sent successfully:", data);
+        // Handle the response data as needed
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        // Handle any errors that occurred during the fetch
+      });
   };
-  
-  
-  
-  
-  
-  
 
   const tableCellStyle = {
     borderBottom: "none",

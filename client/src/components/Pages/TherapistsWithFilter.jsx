@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Therapist from "./Therapist";
 import "./TherapistsWithFilter.css";
 import axios from "axios";
+import jwtDecode from "jwt-decode";
 
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -15,6 +16,7 @@ import {
 
 import { fetchTherapists } from "../redux/Action";
 import SearchIcon from "@mui/icons-material/Search";
+import Rating from "./Rating";
 
 export const TherapistsWithFilter = () => {
   const [therapyOptions, setTherapyOptions] = useState([]);
@@ -48,6 +50,43 @@ export const TherapistsWithFilter = () => {
     indexOfFirstTherapist,
     indexOfLastTherapist
   );
+
+  const [tokenInfo, setTokenInfo] = useState(null);
+  console.log(tokenInfo);
+
+  const [userInfo, setUserInfo] = useState();
+  const [user, setUser] = useState(null);
+  console.log(user);
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_SERVER_URL}/users/${userInfo}`)
+      .then(response => {
+        // Handle the successful response here, and set the user data to state
+        setUser(response.data);
+      })
+      .catch(error => {
+        // Handle any errors here
+        console.error("Error fetching user data:", error);
+      });
+  }, [userInfo]);
+
+  console.log(userInfo);
+
+  useEffect(() => {
+    // Retrieve the JWT token from localStorage
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // Decode the JWT token using jwt-decode
+      const decoded = jwtDecode(token);
+
+      // Store the decoded information in the component's state
+      console.log(decoded);
+      setTokenInfo(decoded);
+      setUserInfo(decoded?.userId);
+    }
+  }, []);
 
   // Function to handle page change
   const handlePageChange = newPage => {
@@ -394,6 +433,10 @@ export const TherapistsWithFilter = () => {
   return (
     <>
       {/* Button to toggle the visibility of filters */}
+      {user?.israting === true && (
+        <Rating userId={user?._id} lastTherapist={user?.lasttherapist} />
+      )}
+
       <Button
         className="toggle-filters-btn"
         style={{

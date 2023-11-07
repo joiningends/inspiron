@@ -139,15 +139,17 @@ function PatientPage() {
                   <TableCell>{patient.clientName}</TableCell>
                   <TableCell>
                     <Tooltip title="Details" arrow>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() =>
-                          handleDetailsClick(patient._id, patient.user)
-                        }
-                      >
-                        <VisibilityIcon />
-                      </Button>
+                      {patient?.firstsession !== "pending" && (
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() =>
+                            handleDetailsClick(patient._id, patient.user)
+                          }
+                        >
+                          <VisibilityIcon />
+                        </Button>
+                      )}
                     </Tooltip>
                     <Tooltip title="View/Download" arrow>
                       <Button

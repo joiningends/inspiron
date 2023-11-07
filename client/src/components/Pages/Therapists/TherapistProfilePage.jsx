@@ -17,6 +17,7 @@ import axios from "axios";
 import "./TherapistProfilePage.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import TextField from "@mui/material/TextField";
 import {
   FormControl,
   InputLabel,
@@ -80,31 +81,60 @@ function TherapistProfilePage() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
 
+  const [isAboutEditing, setIsAboutEditing] = useState(false);
+  const [aboutTextContent, setAboutTextContent] = useState(therapist?.about);
+
+  const startAboutEditing = () => {
+    setIsAboutEditing(true);
+  };
+
+  const saveAboutChanges = async () => {
+    try {
+      // Make a PUT request to update the therapist's about information
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}/about`,
+        { about: aboutTextContent }
+      );
+
+      console.log(therapist?.about);
+      setIsAboutEditing(false);
+    } catch (error) {
+      console.error("Error updating therapist information:", error);
+    }
+  };
+
+  const cancelAboutEditing = () => {
+    setIsAboutEditing(false);
+  };
+
+  const handleAboutTextContentChange = event => {
+    setAboutTextContent(event.target.value);
+  };
+
+  const updatedAboutTextContent = aboutTextContent;
+
   const containerStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    maxWidth: '120vw',
-    margin: '0 auto',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    maxWidth: "120vw",
+    margin: "0 auto",
   };
-  
+
   const dropzoneStyle = {
-    border: '2px dashed #3498db',
-    borderRadius: '4px',
-    padding: '20px',
-    textAlign: 'center',
-    cursor: 'pointer',
-    backgroundColor: '#f0f0f0',
-    transition: 'border 0.3s ease',
+    border: "2px dashed #3498db",
+    borderRadius: "4px",
+    padding: "20px",
+    textAlign: "center",
+    cursor: "pointer",
+    backgroundColor: "#f0f0f0",
+    transition: "border 0.3s ease",
   };
-  
+
   const errorStyle = {
-    color: 'red',
-    marginTop: '10px',
+    color: "red",
+    marginTop: "10px",
   };
-  
-  
-  
 
   // Define the sign update URL here based on your server code
   const signUpdateURL = `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}/sign`;
@@ -204,6 +234,8 @@ function TherapistProfilePage() {
         newCheckboxValues.Offline = true;
       }
     });
+
+    setAboutTextContent(therapist?.about);
     setCheckboxValues(newCheckboxValues);
   }, [therapist]);
 
@@ -528,7 +560,7 @@ function TherapistProfilePage() {
     dispatch(
       updateTherapist(therapistId, {
         email: email,
-        mobile: mobile,
+        mobile: `91${mobile}`, // Add "91" in front of the mobile number
         emergencymobile: emergencyContact,
       })
     );
@@ -982,6 +1014,71 @@ function TherapistProfilePage() {
         </div>
       </Modal>
 
+      <div
+        style={{
+          border: "1px solid black",
+          width: "43vw",
+          margin: "0 auto",
+          textAlign: "center",
+          marginBottom: "8vh",
+        }}
+      >
+        <h2>About yourself</h2>
+        {isAboutEditing ? (
+          <TextField
+            label="About"
+            variant="outlined"
+            multiline
+            rows={4}
+            fullWidth
+            value={updatedAboutTextContent}
+            onChange={handleAboutTextContentChange}
+            style={{ width: "43vw" }}
+          />
+        ) : (
+          <p style={{ width: "43vw", margin: "0 auto", textAlign: "center" }}>
+            {aboutTextContent}
+          </p>
+        )}
+
+        {isAboutEditing ? (
+          <div>
+            <Button
+              onClick={saveAboutChanges}
+              variant="contained"
+              color="primary"
+              style={{
+                color: "white",
+                backgroundColor: "#68B545",
+                marginRight: "2vw",
+              }}
+            >
+              Save
+            </Button>
+            <Button
+              onClick={cancelAboutEditing}
+              variant="contained"
+              color="secondary"
+            >
+              Cancel
+            </Button>
+          </div>
+        ) : (
+          <Button
+            onClick={startAboutEditing}
+            variant="contained"
+            color="primary"
+            style={{
+              color: "white",
+              backgroundColor: "#68B545",
+              marginRight: "2vw",
+            }}
+          >
+            Edit
+          </Button>
+        )}
+      </div>
+
       {showEducationForm && (
         <Modal
           isOpen={showEducationForm}
@@ -1156,7 +1253,52 @@ function TherapistProfilePage() {
             <MenuItem value="English">English</MenuItem>
             <MenuItem value="Hindi">Hindi</MenuItem>
             <MenuItem value="Telugu">Telugu</MenuItem>
-            {/* Add more language options */}
+            <MenuItem value="Bengali">Bengali</MenuItem>
+            <MenuItem value="Marathi">Marathi</MenuItem>
+            <MenuItem value="Tamil">Tamil</MenuItem>
+            <MenuItem value="Urdu">Urdu</MenuItem>
+            <MenuItem value="Gujarati">Gujarati</MenuItem>
+            <MenuItem value="Kannada">Kannada</MenuItem>
+            <MenuItem value="Odia">Odia</MenuItem>
+            <MenuItem value="Punjabi">Punjabi</MenuItem>
+            <MenuItem value="Malayalam">Malayalam</MenuItem>
+            <MenuItem value="Assamese">Assamese</MenuItem>
+            <MenuItem value="Maithili">Maithili</MenuItem>
+            <MenuItem value="Santali">Santali</MenuItem>
+            <MenuItem value="Kashmiri">Kashmiri</MenuItem>
+            <MenuItem value="Nepali">Nepali</MenuItem>
+            <MenuItem value="Konkani">Konkani</MenuItem>
+            <MenuItem value="Sindhi">Sindhi</MenuItem>
+            <MenuItem value="Dogri">Dogri</MenuItem>
+            <MenuItem value="Manipuri">Manipuri</MenuItem>
+            <MenuItem value="Bodo">Bodo</MenuItem>
+            <MenuItem value="Sanskrit">Sanskrit</MenuItem>
+            <MenuItem value="Kurukh">Kurukh</MenuItem>
+            <MenuItem value="Khasi">Khasi</MenuItem>
+            <MenuItem value="Gondi">Gondi</MenuItem>
+            <MenuItem value="Angika">Angika</MenuItem>
+            <MenuItem value="Rajasthani">Rajasthani</MenuItem>
+            <MenuItem value="Konkani">Konkani</MenuItem>
+            <MenuItem value="Tulu">Tulu</MenuItem>
+            <MenuItem value="Kokborok">Kokborok</MenuItem>
+            <MenuItem value="Mundari">Mundari</MenuItem>
+            <MenuItem value="Kurux">Kurux</MenuItem>
+            <MenuItem value="Bhili">Bhili</MenuItem>
+            <MenuItem value="Khasi">Khasi</MenuItem>
+            <MenuItem value="Nagpuri">Nagpuri</MenuItem>
+            <MenuItem value="Pahari">Pahari</MenuItem>
+            <MenuItem value="Savara">Savara</MenuItem>
+            <MenuItem value="Korku">Korku</MenuItem>
+            <MenuItem value="Khasi">Khasi</MenuItem>
+            <MenuItem value="Bhili">Bhili</MenuItem>
+            <MenuItem value="Kurukh">Kurukh</MenuItem>
+            <MenuItem value="Kutchi">Kutchi</MenuItem>
+            <MenuItem value="Chhattisgarhi">Chhattisgarhi</MenuItem>
+            <MenuItem value="Lepcha">Lepcha</MenuItem>
+            <MenuItem value="Lushai">Lushai</MenuItem>
+            <MenuItem value="Tharu">Tharu</MenuItem>
+            <MenuItem value="Bodo">Bodo</MenuItem>
+            <MenuItem value="Nepali">Nepali</MenuItem>
           </Select>
         </FormControl>
         <Button
@@ -1297,27 +1439,27 @@ function TherapistProfilePage() {
       )}
 
       <div style={containerStyle}>
-      <div {...getRootProps()} style={dropzoneStyle}>
-        <input {...getInputProps()} />
-        {selectedFile ? (
-          <p>Selected File: {selectedFile.name}</p>
+        <div {...getRootProps()} style={dropzoneStyle}>
+          <input {...getInputProps()} />
+          {selectedFile ? (
+            <p>Selected File: {selectedFile.name}</p>
+          ) : (
+            <p>Drag & drop or click to select a sign image</p>
+          )}
+        </div>
+        {uploadError && <p style={errorStyle}>{uploadError}</p>}
+        {isUploading ? (
+          <p>Uploading...</p>
         ) : (
-          <p>Drag & drop or click to select a sign image</p>
+          <button
+            onClick={handleUpload}
+            disabled={!selectedFile}
+            className="buttonStyle" // Apply the CSS class
+          >
+            Upload Sign
+          </button>
         )}
       </div>
-      {uploadError && <p style={errorStyle}>{uploadError}</p>}
-      {isUploading ? (
-        <p>Uploading...</p>
-      ) : (
-        <button
-          onClick={handleUpload}
-          disabled={!selectedFile}
-          className="buttonStyle" // Apply the CSS class
-        >
-          Upload Sign
-        </button>
-      )}
-    </div>
 
       <div className="TimeSlots">
         <h1>Time Slots</h1>

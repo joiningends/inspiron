@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTherapist, updateTherapist } from "../../redux/Action";
+import TextField from "@mui/material/TextField";
 import { FaEdit } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa";
 import Modal from "react-modal";
@@ -9,13 +10,11 @@ import "../Therapists/TherapistProfilePage.css";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
+import { Box, Rating, Typography, Button, Paper } from "@mui/material";
 import {
   Checkbox,
   FormControlLabel,
-  Box,
-  Typography,
   Container,
-  Button,
   Select,
   MenuItem,
   FormControl,
@@ -26,7 +25,7 @@ function TherapistDetails() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const therapistId = id;
-  console.log(therapistId)
+  console.log(therapistId);
   const therapist = useSelector(state => state.therapist);
   console.log(therapist);
   const [showEditForm, setShowEditForm] = useState(false);
@@ -48,6 +47,112 @@ function TherapistDetails() {
 
   const [expertisesData, setExpertisesData] = useState([]);
   const [selectedExpertises, setSelectedExpertises] = useState([]);
+
+  const [isAboutEditing, setIsAboutEditing] = useState(false);
+  const [aboutTextContent, setAboutTextContent] = useState(therapist?.about);
+
+  const [rating, setRating] = useState(0);
+  const [tempRating, setTempRating] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    setTempRating(rating);
+  }, [rating]);
+
+  const handleRatingChange = (event, newValue) => {
+    setTempRating(newValue);
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveRating = () => {
+    fetch(
+      `http://localhost:5001/api/v1/therapists/${therapistId}/adminrating`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          rating: tempRating, // Use the tempRating as the selected rating
+        }),
+      }
+    )
+      .then(response => {
+        if (response.ok) {
+          // Handle successful response (if needed)
+          // Maybe show a success message to the user
+          console.log("Rating successfully submitted!");
+        } else {
+          // Handle error scenarios (if needed)
+          console.error("Error submitting rating");
+        }
+      })
+      .catch(error => {
+        // Handle fetch error (if needed)
+        console.error("Fetch error:", error);
+      });
+
+    setRating(tempRating); // Update the displayed rating with the new value
+    setIsEditing(false); // Set editing state to false
+  };
+
+  const handleCancel = () => {
+    setTempRating(rating);
+    setIsEditing(false);
+  };
+
+  const containerStyle = {
+    padding: "16px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "43vw",
+    margin: "0 auto", // Center horizontally
+    marginBottom: "4vh",
+  };
+
+  const ratingContainerStyle = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  };
+
+  const buttonContainerStyle = {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: "16px",
+  };
+
+  const startAboutEditing = () => {
+    setIsAboutEditing(true);
+  };
+
+  const saveAboutChanges = async () => {
+    try {
+      // Make a PUT request to update the therapist's about information
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}/about`,
+        { about: aboutTextContent }
+      );
+      console.log(therapist?.about);
+      setIsAboutEditing(false);
+    } catch (error) {
+      console.error("Error updating therapist information:", error);
+    }
+  };
+
+  const cancelAboutEditing = () => {
+    setIsAboutEditing(false);
+  };
+
+  const handleAboutTextContentChange = event => {
+    setAboutTextContent(event.target.value);
+  };
+
+  const updatedAboutTextContent = aboutTextContent;
 
   useEffect(() => {
     const fetchExpertises = async () => {
@@ -75,6 +180,9 @@ function TherapistDetails() {
     });
 
     setSelectedExpertises(therapistExpertises?.filter(exp => exp !== null));
+    setAboutTextContent(therapist?.about);
+    setRating(therapist?.userRating);
+    setTempRating(therapist?.userRating);
   }, [therapist?.expertise, expertisesData]);
 
   const handleSubmit = () => {
@@ -446,7 +554,7 @@ function TherapistDetails() {
     dispatch(
       updateTherapist(therapistId, {
         email: email,
-        mobile: mobile,
+        mobile: `91${mobile}`, // Add "91" in front of the mobile number
         emergencymobile: emergencyContact,
       })
     );
@@ -1187,12 +1295,56 @@ function TherapistDetails() {
             value={selectedLanguages}
             onChange={handleLanguageChange}
             label="Select Language"
-            // style={{ backgroundColor: "rgba(104, 181, 69, 0.25)" }} // Dropdown background color
           >
             <MenuItem value="English">English</MenuItem>
             <MenuItem value="Hindi">Hindi</MenuItem>
             <MenuItem value="Telugu">Telugu</MenuItem>
-            {/* Add more language options */}
+            <MenuItem value="Bengali">Bengali</MenuItem>
+            <MenuItem value="Marathi">Marathi</MenuItem>
+            <MenuItem value="Tamil">Tamil</MenuItem>
+            <MenuItem value="Urdu">Urdu</MenuItem>
+            <MenuItem value="Gujarati">Gujarati</MenuItem>
+            <MenuItem value="Kannada">Kannada</MenuItem>
+            <MenuItem value="Odia">Odia</MenuItem>
+            <MenuItem value="Punjabi">Punjabi</MenuItem>
+            <MenuItem value="Malayalam">Malayalam</MenuItem>
+            <MenuItem value="Assamese">Assamese</MenuItem>
+            <MenuItem value="Maithili">Maithili</MenuItem>
+            <MenuItem value="Santali">Santali</MenuItem>
+            <MenuItem value="Kashmiri">Kashmiri</MenuItem>
+            <MenuItem value="Nepali">Nepali</MenuItem>
+            <MenuItem value="Konkani">Konkani</MenuItem>
+            <MenuItem value="Sindhi">Sindhi</MenuItem>
+            <MenuItem value="Dogri">Dogri</MenuItem>
+            <MenuItem value="Manipuri">Manipuri</MenuItem>
+            <MenuItem value="Bodo">Bodo</MenuItem>
+            <MenuItem value="Sanskrit">Sanskrit</MenuItem>
+            <MenuItem value="Kurukh">Kurukh</MenuItem>
+            <MenuItem value="Khasi">Khasi</MenuItem>
+            <MenuItem value="Gondi">Gondi</MenuItem>
+            <MenuItem value="Angika">Angika</MenuItem>
+            <MenuItem value="Rajasthani">Rajasthani</MenuItem>
+            <MenuItem value="Konkani">Konkani</MenuItem>
+            <MenuItem value="Tulu">Tulu</MenuItem>
+            <MenuItem value="Kokborok">Kokborok</MenuItem>
+            <MenuItem value="Mundari">Mundari</MenuItem>
+            <MenuItem value="Kurux">Kurux</MenuItem>
+            <MenuItem value="Bhili">Bhili</MenuItem>
+            <MenuItem value="Khasi">Khasi</MenuItem>
+            <MenuItem value="Nagpuri">Nagpuri</MenuItem>
+            <MenuItem value="Pahari">Pahari</MenuItem>
+            <MenuItem value="Savara">Savara</MenuItem>
+            <MenuItem value="Korku">Korku</MenuItem>
+            <MenuItem value="Khasi">Khasi</MenuItem>
+            <MenuItem value="Bhili">Bhili</MenuItem>
+            <MenuItem value="Kurukh">Kurukh</MenuItem>
+            <MenuItem value="Kutchi">Kutchi</MenuItem>
+            <MenuItem value="Chhattisgarhi">Chhattisgarhi</MenuItem>
+            <MenuItem value="Lepcha">Lepcha</MenuItem>
+            <MenuItem value="Lushai">Lushai</MenuItem>
+            <MenuItem value="Tharu">Tharu</MenuItem>
+            <MenuItem value="Bodo">Bodo</MenuItem>
+            <MenuItem value="Nepali">Nepali</MenuItem>
           </Select>
         </FormControl>
         <Button
@@ -1209,6 +1361,133 @@ function TherapistDetails() {
           Save
         </Button>
       </div>
+
+      <div
+        style={{
+          border: "1px solid black",
+          width: "43vw",
+          margin: "0 auto",
+          textAlign: "center",
+          marginBottom: "8vh",
+        }}
+      >
+        <h2>About yourself</h2>
+        {isAboutEditing ? (
+          <TextField
+            label="About"
+            variant="outlined"
+            multiline
+            rows={4}
+            fullWidth
+            value={updatedAboutTextContent}
+            onChange={handleAboutTextContentChange}
+            style={{ width: "43vw" }}
+          />
+        ) : (
+          <p style={{ width: "43vw", margin: "0 auto", textAlign: "center" }}>
+            {aboutTextContent}
+          </p>
+        )}
+
+        {isAboutEditing ? (
+          <div>
+            <Button
+              onClick={saveAboutChanges}
+              variant="contained"
+              color="primary"
+              style={{
+                color: "white",
+                backgroundColor: "#68B545",
+                marginRight: "2vw",
+              }}
+            >
+              Save
+            </Button>
+            <Button
+              onClick={cancelAboutEditing}
+              variant="contained"
+              color="secondary"
+            >
+              Cancel
+            </Button>
+          </div>
+        ) : (
+          <Button
+            onClick={startAboutEditing}
+            variant="contained"
+            color="primary"
+            style={{
+              color: "white",
+              backgroundColor: "#68B545",
+              marginRight: "2vw",
+            }}
+          >
+            Edit
+          </Button>
+        )}
+      </div>
+
+      <Paper style={containerStyle}>
+        <Typography variant="h5">Give Rating to this threapist:</Typography>
+        <div style={ratingContainerStyle}>
+          {isEditing ? (
+            <>
+              <Box component="fieldset" borderColor="transparent">
+                <Rating
+                  name="rating"
+                  value={tempRating}
+                  precision={0.5} // Allow half-star ratings (0.5, 1, 1.5, etc.)
+                  onChange={handleRatingChange}
+                />
+              </Box>
+              <div style={buttonContainerStyle}>
+                <Button
+                  onClick={handleSaveRating}
+                  variant="contained"
+                  color="primary"
+                  style={{
+                    backgroundColor: "#68B545",
+                    color: "white",
+                    marginRight: "1rem",
+                  }}
+                >
+                  Save
+                </Button>
+                <Button
+                  onClick={handleCancel}
+                  variant="contained"
+                  color="secondary"
+                  style={{
+                    backgroundColor: "#D67449",
+                    color: "white",
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Box component="fieldset" borderColor="transparent">
+                <Rating name="rating" value={rating} readOnly precision={0.5} />
+              </Box>
+              <div style={buttonContainerStyle}>
+                <Button
+                  onClick={handleEdit}
+                  variant="contained"
+                  color="primary"
+                  style={{ backgroundColor: "#68B545", color: "white" }}
+                >
+                  Edit
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+        <Typography variant="h6">
+          You rated this therapist: {rating} stars
+        </Typography>
+      </Paper>
 
       <div
         style={{
@@ -1280,13 +1559,13 @@ function TherapistDetails() {
             <button
               style={{
                 padding: "0.5rem 1rem",
-                backgroundColor: "#ccc",
-                color: "#fff",
                 border: "none",
                 borderRadius: "4px",
                 cursor: "pointer",
                 marginLeft: "1rem",
                 fontSize: "1rem",
+                backgroundColor: "#D67449",
+                color: "white",
               }}
               onClick={handleMeetLinkCancel}
             >
@@ -1367,7 +1646,11 @@ function TherapistDetails() {
               onClick={handleCancelClick}
               variant="contained"
               color="secondary"
-              style={{ fontSize: "1rem" }}
+              style={{
+                fontSize: "1rem",
+                backgroundColor: "#D67449",
+                color: "white",
+              }}
             >
               Cancel
             </Button>

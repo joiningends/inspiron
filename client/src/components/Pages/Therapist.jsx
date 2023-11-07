@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Therapist.css";
 import inspiron from "./inspironWheel.png";
 import { Link } from "react-router-dom";
@@ -19,7 +19,40 @@ function Therapist({ therapist }) {
 
   // Check if there are more than 2 expertise areas
   const showAllExpertise = therapist.expertise.length <= 2;
+  console.log(therapist);
 
+  const [earliestDate, setEarliestDate] = useState(""); // Initialize with an empty string
+  const [earliestStartTime, setEarliestStartTime] = useState("");
+
+  useEffect(() => {
+    if (therapist?.sessions && therapist.sessions.length > 0) {
+      let earliestDate = therapist.sessions[0].date;
+      let earliestStartTime = therapist.sessions[0].timeSlots[0].startTime;
+
+      therapist.sessions.forEach(session => {
+        const sessionDate = new Date(session.date);
+        const earliestDateObj = new Date(earliestDate);
+
+        if (sessionDate < earliestDateObj) {
+          earliestDate = session.date;
+          earliestStartTime = session.timeSlots[0].startTime;
+        }
+      });
+
+      // Format the earliest date to "dd-MM-YYYY"
+      const formattedEarliestDate = new Date(earliestDate).toLocaleDateString(
+        "en-GB",
+        {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }
+      );
+
+      setEarliestDate(formattedEarliestDate);
+      setEarliestStartTime(earliestStartTime);
+    }
+  }, [therapist]);
   return (
     <div className="therapist-container">
       <div className="therapist-card">
@@ -32,16 +65,23 @@ function Therapist({ therapist }) {
           <span className="therapist-desig">{therapist?.designation}</span>
           <div className="therapist-expertise">
             <span className="therapist-exp">Expertise:</span>
-            <ul className={`therapist-ulExp${showAllExpertise ? "" : " show-more"}`}>
+            <ul
+              className={`therapist-ulExp${
+                showAllExpertise ? "" : " show-more"
+              }`}
+            >
               <div className="therapist-elements">
-                {therapist.expertise.map((area, index) => (
-                  (showAllExpertise || index < 2) && (
-                    <li className="therapist-expertList" key={index}>
-                      {area?.type[0]}
-                    </li>
-                  )
-                ))}
-                {!showAllExpertise && <li>...</li>}
+                {therapist.expertise.map(
+                  (area, index) =>
+                    (showAllExpertise || index < 2) && (
+                      <li className="therapist-expertList" key={index}>
+                        {area?.type[0]}
+                      </li>
+                    )
+                )}
+                {!showAllExpertise && (
+                  <li style={{ fontSize: "16px" }}>....</li>
+                )}
               </div>
             </ul>
           </div>
@@ -65,7 +105,7 @@ function Therapist({ therapist }) {
             </span>
           </div>
           <span className="therapist-available">
-            Next Available Date and Time: {formattedDate} - {formattedTime}
+            Next Available Date and Time: {earliestDate} - {earliestStartTime}
           </span>
           <div className="therapist-buttons-container">
             <Link

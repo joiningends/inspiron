@@ -50,6 +50,8 @@ import ResetPasswordPage from "./components/Pages/ResetPasswordPassPage";
 import Thankyou from "./components/Pages/Thankyou";
 import CompletePayment from "./components/Pages/CompletePayment";
 import PaymentConfirm from "./components/Pages/PaymentConfirm";
+import { Rating } from "@mui/material";
+import RatingSystem from "./components/Pages/Rating";
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -105,6 +107,7 @@ function App() {
                   path="/paymentConfirm/:amount"
                   element={<PaymentConfirm />}
                 />
+                <Route path="/rating" element={<RatingSystem />} />
                 <Route
                   path="/PendingPayments"
                   element={
@@ -145,7 +148,10 @@ function App() {
                   path="/openFirstSessionNotes/:userId"
                   element={<OpenFirstSessionNotes />}
                 />
-                <Route path="/prescription/:id" element={<Prescription />} />
+                <Route
+                  path="/prescription/:id/:therapistId"
+                  element={<Prescription />}
+                />
               </>
             )}
 
