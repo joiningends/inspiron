@@ -159,10 +159,35 @@ function SettingPage() {
     }
   };
 
-  const handleLabTestListUpload = e => {
+  const handleLabTestListUpload = async e => {
     const file = e.target.files[0];
+    console.log(file);
     if (file) {
-      setLabTestListFile(file);
+      // Create a new FormData object
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        // Make a POST request to your backend API endpoint for uploading medicine lists
+        const response = await axios.post(
+          `${process.env.REACT_APP_SERVER_URL}/labtests`,
+          formData
+        );
+
+        if (response.status === 201) {
+          // Handle a successful response, e.g., show a success message
+          alert("Lab test List uploaded successfully");
+        } else {
+          // Handle other response statuses, e.g., display an error message
+          alert("Error uploading Medicine List");
+        }
+
+        console.log(response);
+      } catch (error) {
+        // Handle any errors, e.g., display an error message
+        console.error("Error uploading Medicine List:", error);
+        alert("Error uploading Medicine List");
+      }
     }
   };
 

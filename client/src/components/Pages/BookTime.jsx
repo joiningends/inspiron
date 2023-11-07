@@ -17,6 +17,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
+import { FaHeart, FaThumbsUp, FaClock, FaSmile } from "react-icons/fa";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 const Popup = ({
@@ -174,11 +175,13 @@ function BookTime() {
 
   const storedUserId = localStorage.getItem("userId");
   const cleanUserId = storedUserId.replace(/"/g, "");
- 
+
   const [userData, setUserData] = useState(null);
   const [coinData, setCoinData] = useState([]);
 
   const [therapistData, setTherapistData] = useState(null);
+  const [availableSession, setAvailableSession] = useState("");
+
   const paginationButtonStyle = {
     backgroundColor: "#5179BD",
     color: "white",
@@ -255,7 +258,6 @@ function BookTime() {
   const [isBalanceGreaterThanZero, setIsBalanceGreaterThanZero] =
     useState(false);
 
-
   // Your therapist and coin data
 
   const coinDataArray = coinData; // Replace with your coinData
@@ -270,7 +272,6 @@ function BookTime() {
       const matchingCoinData = coinDataArray.find(
         coin => coin.expriencelevel[0] === therapistLevel.level
       );
-
 
       if (matchingCoinData) {
         // Check if the coinBalance is greater than 0
@@ -516,6 +517,9 @@ function BookTime() {
     if (therapist !== null) {
       setIsLoading(false);
     }
+    setAvailableSession(
+      therapist?.onlineSessionCount + therapist?.offlineSessionCount
+    );
   }, [therapist]);
 
   if (isLoading) {
@@ -527,7 +531,6 @@ function BookTime() {
   }
 
   const sessions = therapist?.sessions; // Add the sessions data from the therapist object
-
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -595,7 +598,6 @@ function BookTime() {
           window.open(`/sessionIsBookedCorp/${response.data._id}`, "_self");
         })
         .catch(err => {
-
           toast.error(
             "There was a problem while booking your appointment. Please try again later.",
             "Error"
@@ -639,62 +641,55 @@ function BookTime() {
           <div className="booktime-containerr2">
             <div className="booktime-profileDetails">
               <span>
-                <img
-                  src={favorite}
-                  className="booktime-profileIcons"
-                  alt="Favorite"
-                />
+                <FaHeart className="profileIcons" />
               </span>
-              <span className="booktime-subDetails">
-                <h3>{therapist.userRating}/5</h3>
+              <span>
+                <h3 className="subDetails">{availableSession}</h3>
               </span>
-              <span className="booktime-lastUserDetailRow">User Rating</span>
+              <span
+                className="lastUserDetailRow"
+                style={{ textAlign: "center" }}
+              >
+                Total Available Sessions
+              </span>
             </div>
             <div className="booktime-profileDetails">
               <span>
-                <img
-                  src={thubmsup}
-                  className="booktime-profileIcons"
-                  alt="Thumbs Up"
-                />
+                <FaHeart className="profileIcons" />
               </span>
               <span>
                 <h3 className="subDetails">
-                  {therapist?.usersRecommended?.length}
+                  {therapist?.userRating.toFixed(1)}/5
                 </h3>
               </span>
               <span
                 className="lastUserDetailRow"
                 style={{ textAlign: "center" }}
               >
-                User Recommended
+                User Rating
               </span>
             </div>
             <div className="booktime-profileDetails">
               <span>
-                <img
-                  src={clock}
-                  className="booktime-profileIcons"
-                  alt="Clock"
-                />
+                <FaClock className="profileIcons" />
               </span>
               <span>
-                <h3 className="subDetails">{therapist?.availableSessions}</h3>
+                <h3 className="subDetails">{therapist?.offlineSessionCount}</h3>
               </span>
-              <span className="lastUserDetailRow">Available Sessions</span>
+              <span className="lastUserDetailRow">
+                Available Offline Session
+              </span>
             </div>
-            <div className="booktime-profileDetails">
+            <div className="booktime-profileDetails" style={{height:"35vh"}}>
               <span>
-                <img
-                  src={happy}
-                  className="booktime-profileIcons"
-                  alt="Happy"
-                />
+                <FaClock className="profileIcons" />
               </span>
               <span>
-                <h3 className="subDetails">{therapist?.userReviews?.length}</h3>
+                <h3 className="subDetails">{therapist?.onlineSessionCount}</h3>
               </span>
-              <span className="lastUserDetailRow1">User Reviews</span>
+              <span className="lastUserDetailRow1">
+                Available Online Sessions
+              </span>
             </div>
           </div>
         </div>

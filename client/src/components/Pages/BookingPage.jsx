@@ -93,6 +93,8 @@ function BookingPage() {
           .then(data => {
             // Handle the API response as needed
 
+            console.log(data)
+
             // After successful payment and API processing, open a new page
             window.open(`/sessionIsBooked/${appointmentId}`, "_self"); // "_self" opens it in the same tab
           })

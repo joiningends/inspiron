@@ -1,11 +1,55 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 import groupHomePage from "./GroupHomeImage.png";
 
+import axios from "axios";
+import jwtDecode from "jwt-decode";
+
+import Rating from "./Rating";
+
 export const Home = () => {
+  const [tokenInfo, setTokenInfo] = useState(null);
+  console.log(tokenInfo);
+
+  const [userInfo, setUserInfo] = useState();
+  const [user, setUser] = useState(null);
+  console.log(user);
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_SERVER_URL}/users/${userInfo}`)
+      .then(response => {
+        // Handle the successful response here, and set the user data to state
+        setUser(response.data);
+      })
+      .catch(error => {
+        // Handle any errors here
+        console.error("Error fetching user data:", error);
+      });
+  }, [userInfo]);
+
+  console.log(userInfo);
+
+  useEffect(() => {
+    // Retrieve the JWT token from localStorage
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // Decode the JWT token using jwt-decode
+      const decoded = jwtDecode(token);
+
+      // Store the decoded information in the component's state
+      console.log(decoded);
+      setTokenInfo(decoded);
+      setUserInfo(decoded?.userId);
+    }
+  }, []);
   return (
     <>
+      {user?.israting === true && (
+        <Rating userId={user?._id} lastTherapist={user?.lasttherapist} />
+      )}
       <div className="homepageBanner">
         <div className="homepageBannerButtonsandtext">
           <div>

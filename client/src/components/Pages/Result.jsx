@@ -226,6 +226,8 @@ function Result() {
     );
 
     doc.save("report.pdf");
+
+    console.log()
   };
 
   useEffect(() => {

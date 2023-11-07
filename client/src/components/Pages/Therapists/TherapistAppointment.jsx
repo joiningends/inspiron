@@ -38,7 +38,7 @@ function TherapistAppointment() {
   };
 
   const handleFillPrescriptionClick = patientId => {
-    window.open(`/prescription/${patientId}`, "_blank");
+    window.open(`/prescription/${patientId}/${therapistId}`, "_blank");
   };
 
   useEffect(() => {

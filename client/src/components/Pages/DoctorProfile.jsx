@@ -19,6 +19,7 @@ import LanguageIcon from "@mui/icons-material/Language";
 import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import MonitorIcon from "@mui/icons-material/DesktopWindows";
+import { FaHeart, FaThumbsUp, FaClock, FaSmile } from 'react-icons/fa';
 
 import Button from "@material-ui/core/Button";
 
@@ -69,6 +70,10 @@ const DoctorProfile = () => {
   const [imageUrl, setImageUrl] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
+
+  const [availableSession, setAvailableSession] = useState("");
+
+  console.log(therapist);
 
   const cardStyle = {
     display: "flex",
@@ -123,6 +128,9 @@ const DoctorProfile = () => {
 
   useEffect(() => {
     setImageUrl(therapist?.image);
+    setAvailableSession(
+      therapist?.onlineSessionCount + therapist?.offlineSessionCount
+    );
   }, [therapist]);
 
   const [showOfferings, setShowOfferings] = useState(true);
@@ -174,41 +182,39 @@ const DoctorProfile = () => {
         <Education className="education" educationData={therapist?.education} />
         <div className="profileDetails">
           <span>
-            <img src={favorite} className="profileIcons" alt="Favorite" />
+            <FaHeart className="profileIcons" />
           </span>
           <span className="subDetails">
-            <h3>{therapist?.userRating}/5</h3>
+            <h3>{therapist?.userRating.toFixed(1)}/5</h3>
           </span>
           <span className="lastUserDetailRow">User Rating</span>
         </div>
         <div className="profileDetails">
           <span>
-            <img src={thubmsup} className="profileIcons" alt="Thumbs Up" />
+          <FaClock className="profileIcons" />
           </span>
           <span>
-            <h3 className="subDetails">
-              {therapist?.usersRecommended?.length}
-            </h3>
+            <h3 className="subDetails">{therapist?.offlineSessionCount}</h3>
           </span>
-          <span className="lastUserDetailRow">User Recommended</span>
+          <span className="lastUserDetailRow">Available Offline Session</span>
         </div>
         <div className="profileDetails">
           <span>
-            <img src={clock} className="profileIcons" alt="Clock" />
+            <FaClock className="profileIcons" />
           </span>
           <span>
-            <h3 className="subDetails">{therapist?.availableSessions}</h3>
+            <h3 className="subDetails">{therapist?.onlineSessionCount}</h3>
           </span>
-          <span className="lastUserDetailRow">Available Sessions</span>
+          <span className="lastUserDetailRow">Available Online Sessions</span>
         </div>
         <div className="profileDetails">
           <span>
-            <img src={happy} className="profileIcons" alt="Happy" />
+          <FaClock className="profileIcons" />
           </span>
           <span>
-            <h3 className="subDetails">{therapist?.userReviews?.length}</h3>
+            <h3 className="subDetails">{availableSession}</h3>
           </span>
-          <span className="lastUserDetailRow">User Reviews</span>
+          <span className="lastUserDetailRow">Total Available Session</span>
         </div>
       </div>
       <div className="achievement-container">

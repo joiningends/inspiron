@@ -131,6 +131,7 @@ function PatientPage() {
                       onClick={() =>
                         handleOpenLatestAppointment(patient.userId)
                       }
+                      disabled={patient?.firstSession === "pending"}
                     >
                       Details
                     </Button>

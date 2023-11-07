@@ -326,14 +326,13 @@ function SociodemographicForm() {
         </label>
         <label>
           Duration of Stay with Patient:
-          <select
+          <input
+            type="text"
             value={durationOfStay}
             onChange={e => setDurationOfStay(e.target.value)}
             required
-          >
-            <option value="">Select Duration of Stay</option>
-            <option value="hindu">2 days</option>
-          </select>
+            placeholder="Enter Duration of Stay"
+          />
         </label>
         <label>
           Information:
@@ -1119,10 +1118,7 @@ const HistoryOfPresentingIllnessForm = () => {
             </Button>
           ) : (
             <Button
-              disabled={
-                currentQuestion.options.length > 0 &&
-                !selectedOptions[currentQuestion._id]?.length
-              }
+              
               onClick={handleNext}
               style={{
                 backgroundColor: "#D67449",

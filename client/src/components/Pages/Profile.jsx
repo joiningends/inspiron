@@ -15,7 +15,10 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"; // Import datepicker styles
+import jwtDecode from "jwt-decode";
+import axios from "axios";
 import "./Profile.css";
+import Rating from "./Rating";
 
 // Import icons for react-datepicker
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -90,6 +93,43 @@ function Profile() {
   const [mobileNumber, setMobileNumber] = useState("");
   const [email, setEmail] = useState("");
   const currentDate = new Date();
+
+  const [tokenInfo, setTokenInfo] = useState(null);
+  console.log(tokenInfo);
+
+  const [userInfo, setUserInfo] = useState();
+  const [user, setUser] = useState(null);
+  console.log(user);
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_SERVER_URL}/users/${userInfo}`)
+      .then(response => {
+        // Handle the successful response here, and set the user data to state
+        setUser(response.data);
+      })
+      .catch(error => {
+        // Handle any errors here
+        console.error("Error fetching user data:", error);
+      });
+  }, [userInfo]);
+
+  console.log(userInfo);
+
+  useEffect(() => {
+    // Retrieve the JWT token from localStorage
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      // Decode the JWT token using jwt-decode
+      const decoded = jwtDecode(token);
+
+      // Store the decoded information in the component's state
+      console.log(decoded);
+      setTokenInfo(decoded);
+      setUserInfo(decoded?.userId);
+    }
+  }, []);
 
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("userId"));
@@ -172,103 +212,110 @@ function Profile() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <ProfileContainer>
-        <Title variant="h4" style={{ color: "#D67449" }}>
-          Edit Profile
-        </Title>
-        <FieldContainer>
-          <InputLabel>Name:</InputLabel>
-          <DisabledInputField
-            variant="outlined"
-            fullWidth
-            value={name}
-            readOnly
-          />
-        </FieldContainer>
-        <FieldContainer>
-          <InputLabel style={{ marginTop: "1rem" }}>Date of Birth:</InputLabel>
-          <DatePicker
-            selected={dob}
-            onChange={date => setDob(date)}
-            dateFormat={dob ? "dd-MM-yyyy" : "dd-MM-yyyy"}
-            maxDate={currentDate}
-            disabled={!isEditing}
-            customInput={
+    <>
+      {user?.israting === true && (
+        <Rating userId={user?._id} lastTherapist={user?.lasttherapist} />
+      )}
+      <ThemeProvider theme={theme}>
+        <ProfileContainer>
+          <Title variant="h4" style={{ color: "#D67449" }}>
+            Edit Profile
+          </Title>
+          <FieldContainer>
+            <InputLabel>Name:</InputLabel>
+            <DisabledInputField
+              variant="outlined"
+              fullWidth
+              value={name}
+              readOnly
+            />
+          </FieldContainer>
+          <FieldContainer>
+            <InputLabel style={{ marginTop: "1rem" }}>
+              Date of Birth:
+            </InputLabel>
+            <DatePicker
+              selected={dob}
+              onChange={date => setDob(date)}
+              dateFormat={dob ? "dd-MM-yyyy" : "dd-MM-yyyy"}
+              maxDate={currentDate}
+              disabled={!isEditing}
+              customInput={
+                <InputField
+                  variant="outlined"
+                  fullWidth
+                  endAdornment={<CalendarTodayIcon />}
+                />
+              }
+            />
+          </FieldContainer>
+          <FieldContainer>
+            <InputLabel>Gender:</InputLabel>
+            <RadioGroup
+              row
+              aria-label="gender"
+              name="gender"
+              value={gender}
+              onChange={e => setGender(e.target.value)}
+              disabled={!isEditing}
+            >
+              <FormControlLabel
+                value="Male"
+                control={<Radio />}
+                label="Male"
+                disabled={!isEditing}
+              />
+              <FormControlLabel
+                value="Female"
+                control={<Radio />}
+                label="Female"
+                disabled={!isEditing}
+              />
+            </RadioGroup>
+          </FieldContainer>
+          <FieldContainer>
+            <InputLabel>Email:</InputLabel>
+            <DisabledInputField
+              variant="outlined"
+              fullWidth
+              value={email}
+              readOnly
+            />
+            <FieldContainer style={{ marginTop: "1rem" }}>
+              <InputLabel>Mobile Number:</InputLabel>
               <InputField
                 variant="outlined"
                 fullWidth
-                endAdornment={<CalendarTodayIcon />}
+                value={mobileNumber}
+                onChange={handleChangeMobileNumber}
+                disabled={!isEditing}
               />
-            }
-          />
-        </FieldContainer>
-        <FieldContainer>
-          <InputLabel>Gender:</InputLabel>
-          <RadioGroup
-            row
-            aria-label="gender"
-            name="gender"
-            value={gender}
-            onChange={e => setGender(e.target.value)}
-            disabled={!isEditing}
-          >
-            <FormControlLabel
-              value="Male"
-              control={<Radio />}
-              label="Male"
-              disabled={!isEditing}
-            />
-            <FormControlLabel
-              value="Female"
-              control={<Radio />}
-              label="Female"
-              disabled={!isEditing}
-            />
-          </RadioGroup>
-        </FieldContainer>
-        <FieldContainer>
-          <InputLabel>Email:</InputLabel>
-          <DisabledInputField
-            variant="outlined"
-            fullWidth
-            value={email}
-            readOnly
-          />
-          <FieldContainer style={{ marginTop: "1rem" }}>
-            <InputLabel>Mobile Number:</InputLabel>
-            <InputField
-              variant="outlined"
-              fullWidth
-              value={mobileNumber}
-              onChange={handleChangeMobileNumber}
-              disabled={!isEditing}
-            />
+            </FieldContainer>
           </FieldContainer>
-        </FieldContainer>
 
-        {isEditing && (
-          <Actions>
-            <Button
-              variant="contained"
-              onClick={handleUpdateClick}
-              style={{
-                backgroundColor: "#D67449",
-                color: "white",
-              }}
-            >
-              Update
-            </Button>
-          </Actions>
-        )}
-        <ToastContainer
-          autoClose={2000}
-          style={{
-            color: "white",
-          }}
-        />
-      </ProfileContainer>
-    </ThemeProvider>
+          {isEditing && (
+            <Actions>
+              <Button
+                variant="contained"
+                onClick={handleUpdateClick}
+                style={{
+                  backgroundColor: "#D67449",
+                  color: "white",
+                }}
+              >
+                Update
+              </Button>
+            </Actions>
+          )}
+          <ToastContainer
+            autoClose={2000}
+            style={{
+              color: "white",
+            }}
+          />
+        </ProfileContainer>
+      </ThemeProvider>
+    </>
   );
 }
 
