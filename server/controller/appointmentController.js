@@ -11,6 +11,7 @@ const util = require("util");
 const writeFile = util.promisify(fs.writeFile);
 const cron = require("node-cron");
 const PDFDocument = require('pdfkit');
+const moment = require("moment");
 const {
   sendWhatsAppMessage,sendWhatsAppMessageMedia,
   getSentMessageCount,
@@ -1840,8 +1841,8 @@ function generateAndSavePDF(updateData) {
       resolve(pdfBuffer);
     });
 
-    // You can customize the file path as needed
-    const pdfFilePath = "public/uploads/session_summary.pdf";
+    
+    const pdfFilePath = `public/uploads/session_summary_${moment().format("YYYYMMDD_HHmmss")}.pdf`;
     const writeStream = fs.createWriteStream(pdfFilePath);
 
     doc.pipe(writeStream);
@@ -1942,8 +1943,8 @@ exports.updateUserSessionNotes = async (req, res) => {
       const Mobile = user.mobile;
 
       const pdfBuffer = await generateAndSavePDF(updateData);
-      const pdfFilePath = 'public/uploads/session_summary.pdf';
-      media_url='http://13.126.59.21/public/uploads/session_summary.pdf'
+      const pdfFilePath = `public/uploads/session_summary_${moment().format("YYYYMMDD_HHmmss")}.pdf`;
+      media_url=`http://13.126.59.21/public/uploads/session_summary_${moment().format("YYYYMMDD_HHmmss")}.pdf`
       sendWhatsAppMessageMedia(Mobile,
    `Attached is your session summary PDF
         Thanks,

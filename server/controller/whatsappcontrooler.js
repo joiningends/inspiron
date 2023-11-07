@@ -3,7 +3,7 @@ let sentMessageCount = 0;
 
 const sendWhatsAppMessage = (recipientNumber, message) => {
   // Define your Hisocial WhatsApp integration credentials
-  const hisocialInstanceID = '652E927F5E8C0';
+  const hisocialInstanceID = '652E695A5015C';
   const hisocialAccessToken = '64da53e6c44e5';
 
   // Replace this with the actual endpoint and request format for Hisocial WhatsApp integration
@@ -79,7 +79,7 @@ const getSentWhatsAppMessages = async (req, res) => {
 
 const sendWhatsAppMessageMedia = (recipientNumber, message,media_url) => {
   // Define your Hisocial WhatsApp integration credentials
-  const hisocialInstanceID = '652E927F5E8C0';
+  const hisocialInstanceID = '652E695A5015C';
   const hisocialAccessToken = '64da53e6c44e5';
 
   // Replace this with the actual endpoint and request format for Hisocial WhatsApp integration

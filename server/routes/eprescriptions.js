@@ -18,5 +18,4 @@ router.put('/:id', eprescriptioncontroller.updateEPrescription);
 router.delete('/:id', eprescriptioncontroller.deleteEPrescription);
 
 
-
 module.exports = router;

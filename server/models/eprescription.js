@@ -6,6 +6,14 @@ const ePrescriptionSchema = new mongoose.Schema({
         type: String,
 
     },
+    therapisteducation:{
+      type: String,
+
+  },
+  therapistsign:{
+    type: String,
+
+},
     username:{
         type: String,
     },
@@ -18,46 +26,19 @@ const ePrescriptionSchema = new mongoose.Schema({
     mobile:{
         type: Number,
     },
-  diagnosis: {
-    type: String,
-  },
-  description: {
-    type: String,
-  },
-  medicene:[{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Medicene',
-    
-  }],
-  dose: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Dose',
-   
-  },
-  frequency:{
-type:String
-  },
-  instruction:{
-    type:String
-  },
-  drugAllergies: [
-    {
-      name: {
-        type: String,
-      },
-      // Add any other properties related to drug allergies here
-    },
-  ],
-  labTests: [
-    {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'LabTest',
-       
-      // Add any other properties related to lab tests here
-    },
-  ],
- 
-});
+    diagnosis: String,
+    description: String,
+    medicineData: [
+      {
+        name: String,
+        dosage: String,
+        frequency: String,
+        instructions: String
+      }
+    ],
+    selectedLabTests: [String]
+  });
+  
 
 // Create models for E-Prescription and Medication
 exports.EPrescription = mongoose.model('EPrescription', ePrescriptionSchema);

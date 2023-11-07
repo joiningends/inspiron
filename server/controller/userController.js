@@ -138,18 +138,17 @@ const sendVerificationEmail = (email, token, name) => {
   const verificationLink = `${process.env.CLIENT_URL}/thankyouForRegistering_teamInspiron/verify/${token}`;
 
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', // Replace with your SMTP server hostname
-    port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-    secure: false,
-    requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+    host: "smtppro.zoho.com",
+    port: 465,
+    secure: true,
     auth: {
-      user: 'inspiron434580@gmail.com', // Replace with your email address
-      pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+      user: "info@inspirononline.com",
+      pass: "zU0VjyrxHmFm",
     },
   });
 
   const mailOptions = {
-    from: 'inspiron434580@gmail.com',
+    from: "info@inspirononline.com",
     to: email,
     subject: 'Verify Your Email Address',
     html: `

@@ -279,7 +279,27 @@ const verifyPayment = async (req, res) => {
       // Extract the date part in YYYY-MM-DD format
       const appointmentDateonly = dateObject.toISOString().split("T")[0];
 
-      const totalPrice = packageAmount;
+      const totalPrice = amount;
+
+      const matchingAppointmentforpdf = user.priceHistory.find(
+        (appointment) => appointment.appointmentId === appointmentId
+      );
+      
+      let discountPriceamount;
+      let bookedsession;
+      
+      if (matchingAppointmentforpdf) {
+        // Extract discountPrice and session values
+        discountPriceamount = matchingAppointmentforpdf.discountPrice;
+        bookedsession = matchingAppointmentforpdf.session;
+      } else {
+        console.log("Appointment not found");
+      }
+      
+      // Now you can use discountPrice and bookedsession outside the if block
+      console.log("Discount Price:", discountPriceamount);
+      console.log("Booked Session:", bookedsession);
+      
 
       sendWhatsAppMessage(
         user.mobile,
@@ -297,31 +317,38 @@ const verifyPayment = async (req, res) => {
       emailMessage = `
           Hi ${username},\n
           Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}. Please log into the application 5 mins before the start of the session.\n
-          Your payment for Rs ${totalPrice} has been received.\n
+          Your payment for Rs ${discountPriceamount} has been received.\n
           Thanks,\n
           Team Inspiron
         `;
 
       // Send the email (you need to implement this function)
       sendEmail(user.email, "Appointment Confirmation", emailMessage);
+      
 
       const invoiceNumber = "INSPIRON" + Date.now() + user.mobile ;
 
       
-        const pack = discountPrice / amount;
+       
         const invoiceData = {
           invoiceNumber: invoiceNumber,
-          packag : pack ,
+          
           billedTo: username,
           email: user.email, 
           mobile: user.mobile, 
-          amount: amount,
-          totalAmount: amount,
+          pack:bookedsession,
+          amount: discountPriceamount,
+          totalAmount: discountPriceamount,
       };
       
-      const invoicePath = "invoice.pdf";
+      const invoicePath = `public/uploads/invoice_${Date.now()}.pdf`;
       generateInvoicePDF(invoiceData, invoicePath);
-      media_url='http://13.126.59.21/invoice.pdf'
+      media_url=`http://13.126.59.21/public/uploads/invoice_${Date.now()}.pdf`
+sendWhatsAppMessageMedia(user.mobile,
+`Thank you for your payment. Please find the attached invoice.
+`
+  , media_url);
+
 sendWhatsAppMessageMedia(user.mobile,
 `Thank you for your payment. Please find the attached invoice.
 `
@@ -435,7 +462,7 @@ const verifyPaymentoverall = async (req, res) => {
         existingCoin.coinBalance = 0;
         await existingCoin.save();
       }
-      const therapist = await Therapist.findOne({ experiencelevel }).populate('discountPrice');
+      const therapist = await Therapist.findOne({ experiencelevel });
 
       
       await Appointment.updateMany(
@@ -461,23 +488,24 @@ const verifyPaymentoverall = async (req, res) => {
           console.error("Update Error:", error);
         });
         const user = await User.findById(userid).select(
-          "name mobile "
+          "name mobile email"
         );
       // Auto-generate an invoice number based on a prefix and timestamp
       const invoiceNumber = "INSPIRON" + Date.now() + user.mobile;
-    const pack = therapist.discountPrice / amount;
+    const Packages = "Full payment"
       const invoiceData = {
         invoiceNumber: invoiceNumber,
-        packag : pack ,
-        billedTo: username,
+       
+        billedTo: user.name,
         email: user.email, 
-        mobile: user.mobile, 
+        mobile: user.mobile,
+         pack:Packages ,
         amount: amount,
         totalAmount: amount,
       };
-      const invoicePath = 'public/uploads/invoice.pdf';
+      const invoicePath = `public/uploads/invoice_${Date.now()}.pdf`;
       generateInvoicePDF(invoiceData, invoicePath);
-      media_url='http://13.126.59.21/public/uploads/invoice.pdf'
+      media_url=`http://13.126.59.21/public/uploads/invoice_${Date.now()}.pdf`
 sendWhatsAppMessageMedia(user.mobile,
 `Thank you for your payment. Please find the attached invoice.
 `
@@ -485,7 +513,7 @@ sendWhatsAppMessageMedia(user.mobile,
 
       const subject = 'Invoice for Your Payment';
       const message = `Thank you for your payment. Please find the attached invoice.`;
-      sendInvoiceByEmail(useremail, subject, message, invoicePath);
+      sendInvoiceByEmail(user.email, subject, message, invoicePath);
     }
 
     res.status(200).json({ message: `Payment status updated to ${paymentStatus}` });
@@ -499,9 +527,12 @@ sendWhatsAppMessageMedia(user.mobile,
 
 
 
-const generateInvoicePDF = (invoiceData, outputPath) => {
+const generateInvoicePDF = (invoiceData) => {
+  const outputPath = `public/uploads/invoice_${Date.now()}.pdf`; // Create a unique name
   const doc = new PDFDocument();
-  doc.pipe(fs.createWriteStream(outputPath)); 
+  const writeStream = fs.createWriteStream(outputPath);
+
+  doc.pipe(writeStream);
 
   doc.image('public/uploads/logo.png', 50, 50, { width: 100 }); // Add your logo image here
   doc.moveDown(3.5); // Reduce the gap
@@ -522,15 +553,17 @@ const generateInvoicePDF = (invoiceData, outputPath) => {
   doc.fontSize(12);
 
   // Values for Order ID and Amount
-  const packag = invoiceData.pack;
+  const packag = `${invoiceData.pack} `;
   const amount = `${invoiceData.amount} INR`;
+  doc.moveDown(3);
+  doc.text('Package', 150, doc.y );
+ 
+  doc.text(packag, 170, doc.y );
 
-  // Add a table-like layout for Order ID and Amount
-  doc.text('Package', 50, doc.y + 40);
-  doc.text('Amount', 400, doc.y + 1);
-  doc.text(packag, 50, doc.y + 40);
-  doc.text(amount, 400, doc.y + 1);
-  
+  doc.text('Amount', 400, doc.y);
+  doc.text(amount, 400, doc.y ); // Adjust the X-coordinate (e.g., 450) as needed to align with the data
+
+ 
   // Add a line below the headings
   doc.moveTo(50, doc.y + 40).lineTo(550, doc.y + 40).stroke();
 
@@ -541,6 +574,7 @@ const generateInvoicePDF = (invoiceData, outputPath) => {
 
   console.log(`Invoice PDF generated at ${outputPath}`);
 };
+
 
 
 
