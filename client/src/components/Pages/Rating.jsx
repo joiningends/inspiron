@@ -29,7 +29,7 @@ const RatingSystem = ({ userId, lastTherapist }) => {
 
     axios
       .put(
-        `http://localhost:5001/api/v1/therapists/${therapistId}/${userId}/update-rating`,
+        `${process.env.REACT_APP_SERVER_URL}/${therapistId}/${userId}/update-rating`,
         data
       )
       .then(response => {
@@ -47,7 +47,7 @@ const RatingSystem = ({ userId, lastTherapist }) => {
 
     axios
       .put(
-        `http://localhost:5001/api/v1/therapists/${therapistId}/${userId}/update-rating`
+        `${process.env.REACT_APP_SERVER_URL}/${therapistId}/${userId}/update-rating`
       )
       .then(response => {
         console.log("Rating canceled");
