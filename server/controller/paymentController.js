@@ -304,9 +304,9 @@ const verifyPayment = async (req, res) => {
       sendWhatsAppMessage(
         user.mobile,
         `
-  Hi ${username},
-  Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}.
-  Please log into the application 5 mins before the start of the session.
+Hi ${username},
+Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}.
+Please log into the application 5 mins before the start of the session.
   Thanks,
   Team Inspiron
       `
