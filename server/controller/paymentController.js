@@ -307,8 +307,8 @@ const verifyPayment = async (req, res) => {
 Hi ${username},
 Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}.
 Please log into the application 5 mins before the start of the session.
-  Thanks,
-  Team Inspiron
+Thanks,
+Team Inspiron
       `
       );
 
@@ -318,7 +318,7 @@ Please log into the application 5 mins before the start of the session.
     Hi ${username},\n
     Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}. Please log into the application 5 mins before the start of the session.\n
     Your payment for Rs ${discountPriceamount} has been received.\n
-          Thanks,\n
+        Thanks,\n
           Team Inspiron
         `;
 
@@ -500,10 +500,10 @@ const verifyPaymentoverall = async (req, res) => {
           amount: amount,
           totalAmount: amount,
         };
-        const invoicePath = `public/uploads/invoice_${Date.now()}.pdf`;
-        generateInvoicePDF(invoiceData, invoicePath); // You need to define this function
+        const pdfFilePath = `public/uploads/invoice_${Date.now()}.pdf`;
+        generateInvoicePDF(invoiceData, pdfFilePath,); // You need to define this function
 
-        media_url = `http://13.126.59.21/public/uploads/invoice_${Date.now()}.pdf`;
+        media_url = `http://13.126.59.21/${pdfFilePath}`;
         sendWhatsAppMessageMedia(
           user.mobile,
           `Thank you for your payment. Please find the attached invoice.`,
@@ -524,62 +524,61 @@ const verifyPaymentoverall = async (req, res) => {
 };
 
 
-const generateInvoicePDF = (invoiceData) => {
-  const outputPath = `public/uploads/invoice_${Date.now()}.pdf`; // Create a unique name
-  const doc = new PDFDocument();
-  const writeStream = fs.createWriteStream(outputPath);
+const generateInvoicePDF = (invoiceData, pdfFilePath) => {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument();
+    const writeStream = fs.createWriteStream(pdfFilePath);
 
-  doc.pipe(writeStream);
-  doc.image('public/uploads/logo.png', 50, 50, { width: 100 }); // Add your logo image here
-  doc.moveDown(3.5); // Reduce the gap
+    doc.pipe(writeStream);
 
-  doc.fontSize(16);
-  doc.text('Invoice', { align: 'center' });
-  doc.moveDown(0.5);
-  doc.fontSize(12);
-  doc.text(`Invoice Date: ${new Date().toLocaleDateString()}`);
-  doc.text(`Invoice Number: ${invoiceData.invoiceNumber}`);
-  doc.text(`Billed To: ${invoiceData.billedTo}`);
-  doc.text(`Email: ${invoiceData.email}`);
-  doc.text(`Mobile: ${invoiceData.mobile}`);
-  
-  // Add a small line
-  doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-  
-  doc.fontSize(12);
+    doc.image('public/uploads/logo.png', 50, 50, { width: 100 }); // Add your logo image here
+    doc.moveDown(3.5); // Reduce the gap
 
-  // Values for Order ID and Amount
-  const packag = `${invoiceData.pack} `;
-  const amount = `${invoiceData.amount} INR`;
-  doc.moveDown(3);
-  doc.text('Package', 150, doc.y );
- 
-  doc.text(packag, 170, doc.y );
+    doc.fontSize(16);
+    doc.text('Invoice', { align: 'center' });
+    doc.moveDown(0.5);
+    doc.fontSize(12);
+    doc.text(`Invoice Date: ${new Date().toLocaleDateString()}`);
+    doc.text(`Invoice Number: ${invoiceData.invoiceNumber}`);
+    doc.text(`Billed To: ${invoiceData.billedTo}`);
+    doc.text(`Email: ${invoiceData.email}`);
+    doc.text(`Mobile: ${invoiceData.mobile}`);
 
-  doc.text('Amount', 400, doc.y);
-  doc.text(amount, 400, doc.y ); // Adjust the X-coordinate (e.g., 450) as needed to align with the data
+    // Add a small line
+    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
 
- 
-  // Add a line below the headings
-  doc.moveTo(50, doc.y + 40).lineTo(550, doc.y + 40).stroke();
+    doc.fontSize(12);
 
-  // Total Amount
-  doc.text(`Total Amount: ${invoiceData.totalAmount} INR`, 400, doc.y + 50);
+    // Values for Package and Amount
+    const packag = `${invoiceData.pack} `;
+    const amount = `${invoiceData.amount} INR`;
+    doc.moveDown(3);
+    doc.text('Package', 150, doc.y);
+    doc.text(packag, 170, doc.y);
+    doc.text('Amount', 400, doc.y);
+    doc.text(amount, 400, doc.y); // Adjust the X-coordinate (e.g., 450) as needed to align with the data
 
-  writeStream.on("finish", () => {
-    // The PDF has been saved locally
-    console.log("PDF saved locally:", outputPath);
-  });
+    // Add a line below the headings
+    doc.moveTo(50, doc.y + 40).lineTo(550, doc.y + 40).stroke();
 
-  writeStream.on("error", (err) => {
-    // Handle the error
-    console.error("Error saving PDF:", err);
+    // Total Amount
+    doc.text(`Total Amount: ${invoiceData.totalAmount} INR`, 400, doc.y + 50);
+
+    doc.end();
+
+    writeStream.on("finish", () => {
+      // The PDF has been saved locally
+      console.log("PDF saved locally:", pdfFilePath);
+      resolve(pdfFilePath);
+    });
+
+    writeStream.on("error", (err) => {
+      // Handle the error
+      console.error("Error saving PDF:", err);
+      reject(err);
+    });
   });
 };
-
-
-
-
 
 
 
@@ -602,7 +601,7 @@ const sendInvoiceByEmail = (to, subject, message, invoicePath) => {
     attachments: [
       {
         filename: "invoice.pdf",
-        path: invoicePath,
+        path: pdfFilePath,
       },
     ],
   };
