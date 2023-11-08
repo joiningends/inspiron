@@ -561,7 +561,7 @@ function TherapistProfilePage() {
       updateTherapist(therapistId, {
         email: email,
         mobile: `91${mobile}`, // Add "91" in front of the mobile number
-        emergencymobile: emergencyContact,
+        emergencymobile: `91${emergencyContact}`,
       })
     );
     setShowContactForm(false);
