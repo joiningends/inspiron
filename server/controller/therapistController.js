@@ -338,16 +338,7 @@ const createTherapist = async (req, res) => {
       return res.status(400).json({ message: "Invalid email format" });
     }
 
-    // Check if the mobile number is provided and valid
-    if (!mobile) {
-      return res.status(400).json({ message: "Mobile number is required" });
-    }
-
-    const mobileRegex = /^\d{10}$/;
-    if (!mobileRegex.test(mobile)) {
-      return res.status(400).json({ message: "Invalid mobile number format" });
-    }
-    
+   
     // Generate a random password
     const randomPassword = createRandomPassword();
 
