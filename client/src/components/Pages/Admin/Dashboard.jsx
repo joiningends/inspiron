@@ -62,21 +62,19 @@ function Dashboard() {
   };
 
   const handleFormSubmit = e => {
-    console.log({
-      mobile,
-      name,
-      email,
-      availability: [
-        {
-          location: address,
-          day: "Monday",
-        },
-      ],
-      therapisttype: profession,
-    });
     e.preventDefault();
+
+    // Check if "91" is not already present at the beginning of the mobile number
+    const formattedMobile = mobile.startsWith("91") ? mobile : `91${mobile}`;
+
+    // Check if the formatted mobile number is exactly 12 digits
+    if (formattedMobile.length !== 12) {
+      alert('Mobile number should be 12 digits including "91".');
+      return; // Do not proceed with the submission
+    }
+
     console.log({
-      mobile,
+      mobile: formattedMobile, // Use the formatted mobile number
       name,
       email,
       availability: [
@@ -87,9 +85,10 @@ function Dashboard() {
       ],
       therapisttype: profession,
     });
+
     axios
       .post(`${process.env.REACT_APP_SERVER_URL}/therapists`, {
-        mobile,
+        mobile: formattedMobile, // Use the formatted mobile number
         name,
         email,
         availability: [
