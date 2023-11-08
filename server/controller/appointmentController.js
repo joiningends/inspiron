@@ -409,20 +409,18 @@ if (existingAppointment) {
 // Function to send an email
 const sendEmailfor = (to, subject, message) => {
   console.log("Recipient email:", to);
-
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    requireTLS: true,
+    host: "smtppro.zoho.com",
+    port: 465,
+    secure: true,
     auth: {
-      user: "inspiron434580@gmail.com",
-      pass: "rogiprjtijqxyedm",
+      user: "info@inspirononline.com",
+      pass: "zU0VjyrxHmFm",
     },
   });
 
   const mailOptions = {
-    from: "inspiron434580@gmail.com",
+    from: "info@inspirononline.com",
     to: to,
     subject: "Booking Confirmation",
     text: message,
@@ -976,18 +974,17 @@ const sendEmailfortherapistbook = (to, subject, message) => {
   console.log("Recipient email:", to);
 
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    requireTLS: true,
+    host: "smtppro.zoho.com",
+    port: 465,
+    secure: true,
     auth: {
-      user: "inspiron434580@gmail.com",
-      pass: "rogiprjtijqxyedm",
+      user: "info@inspirononline.com",
+      pass: "zU0VjyrxHmFm",
     },
   });
 
   const mailOptions = {
-    from: "inspiron434580@gmail.com",
+    from: "info@inspirononline.com",
     to: to,
     subject: "Booking Confirmation",
     text: message,
@@ -1455,8 +1452,8 @@ exports.updateAppointmentWithPayment = async (req, res) => {
     let emailMessage;
     if (paymentMethod === "Offline") {
       emailMessage = `
-        Hi ${username},\n
-        Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDate} at ${appointmentTime}. Please log into the application 5 mins before the start of the session.\n
+    Hi ${username},\n
+    Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDate} at ${appointmentTime}. Please log into the application 5 mins before the start of the session.\n
         Thanks,\n
         Team Inspiron
       `;
@@ -1465,10 +1462,10 @@ exports.updateAppointmentWithPayment = async (req, res) => {
         user.mobile,
         `
     Hi ${username},
-    Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}.
-    Please log into the application 5 mins before the start of the session.
-    Thanks,
-    Team Inspiron
+Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}.
+Please log into the application 5 mins before the start of the session.
+Thanks,
+Team Inspiron
     `
       );
     }
@@ -1488,20 +1485,18 @@ exports.updateAppointmentWithPayment = async (req, res) => {
 const sendEmail = (to, subject, message) => {
   console.log("Recipient email:", to); // Add this line for debugging
 
-  // Create a nodemailer transporter
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com", // Replace with your SMTP server hostname
-    port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-    secure: false,
-    requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+    host: "smtppro.zoho.com",
+    port: 465,
+    secure: true,
     auth: {
-      user: "inspiron434580@gmail.com", // Replace with your email address
-      pass: "rogiprjtijqxyedm", // Replace with your email password or application-specific password
+      user: "info@inspirononline.com",
+      pass: "zU0VjyrxHmFm",
     },
   });
 
   const mailOptions = {
-    from: "inspiron434580@gmail.com",
+    from: "info@inspirononline.com",
     to: to,
     subject: "Booking Confirmation",
     text: message,
@@ -1951,19 +1946,18 @@ exports.updateUserSessionNotes = async (req, res) => {
       Team Inspiron
       `
         ,  media_url);
-      const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
-        requireTLS: true,
-        auth: {
-          user: "inspiron434580@gmail.com",
-          pass: "rogiprjtijqxyedm",
-        },
-      });
-
-      const mailOptions = {
-        from: "inspiron434580@gmail.com",
+        const transporter = nodemailer.createTransport({
+          host: "smtppro.zoho.com",
+          port: 465,
+          secure: true,
+          auth: {
+            user: "info@inspirononline.com",
+            pass: "zU0VjyrxHmFm",
+          },
+        });
+      
+        const mailOptions = {
+          from: "info@inspirononline.com",
         to: userEmail,
         subject: 'Session Summary PDF',
         text: 'Attached is your session summary PDF',
@@ -2350,18 +2344,17 @@ async function generatePDFReport(appointment) {
 async function sendEmailToUser(userEmail, therapistName, dateTime) {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com", // Replace with your SMTP server hostname
-      port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-      secure: false,
-      requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+      host: "smtppro.zoho.com",
+      port: 465,
+      secure: true,
       auth: {
-        user: "inspiron434580@gmail.com", // Replace with your email address
-        pass: "rogiprjtijqxyedm", // Replace with your email password or application-specific password
+        user: "info@inspirononline.com",
+        pass: "zU0VjyrxHmFm",
       },
     });
-
+  
     const mailOptions = {
-      from: "inspiron434580@gmail.com",
+      from: "info@inspirononline.com",
       to: userEmail,
       subject: "Session Report",
       text: `Your therapist ${therapistName} has shared this attached Session Notes with you for your session on ${dateTime}. Here is your PDF report attached.`,
@@ -2822,18 +2815,17 @@ const sendEmailto = (to, subject, message) => {
 
   // Create a nodemailer transporter
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com", // Replace with your SMTP server hostname
-    port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-    secure: false,
-    requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+    host: "smtppro.zoho.com",
+    port: 465,
+    secure: true,
     auth: {
-      user: "inspiron434580@gmail.com", // Replace with your email address
-      pass: "rogiprjtijqxyedm", // Replace with your email password or application-specific password
+      user: "info@inspirononline.com",
+      pass: "zU0VjyrxHmFm",
     },
   });
 
   const mailOptions = {
-    from: "inspiron434580@gmail.com",
+    from: "info@inspirononline.com",
     to: to,
     subject: subject,
     text: message,
@@ -3014,18 +3006,17 @@ cron.schedule("* * * * *", async () => {
         sendWhatsAppMessage(recipientNumber, message);
 
         const transporter = nodemailer.createTransport({
-          host: "smtp.gmail.com", // Replace with your SMTP server hostname
-          port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-          secure: false,
-          requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+          host: "smtppro.zoho.com",
+          port: 465,
+          secure: true,
           auth: {
-            user: "inspiron434580@gmail.com", // Replace with your email address
-            pass: "rogiprjtijqxyedm", // Replace with your email password or application-specific password
+            user: "info@inspirononline.com",
+            pass: "zU0VjyrxHmFm",
           },
         });
-
+      
         const mailOptions = {
-          from: "inspiron434580@gmail.com",
+          from: "info@inspirononline.com",
           to: user.email,
           subject: "Appointment Reminder",
           text: `Your appointment with ${therapist.name} is in 5 minutes.`,
@@ -3174,18 +3165,17 @@ const sendEmailforpackage = (to, subject, message) => {
   console.log("Recipient email:", to);
 
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    requireTLS: true,
+    host: "smtppro.zoho.com",
+    port: 465,
+    secure: true,
     auth: {
-      user: "inspiron434580@gmail.com",
-      pass: "rogiprjtijqxyedm",
+      user: "info@inspirononline.com",
+      pass: "zU0VjyrxHmFm",
     },
   });
 
   const mailOptions = {
-    from: "inspiron434580@gmail.com",
+    from: "info@inspirononline.com",
     to: to,
     subject: "Booking Confirmation",
     text: message,

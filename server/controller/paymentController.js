@@ -304,20 +304,20 @@ const verifyPayment = async (req, res) => {
       sendWhatsAppMessage(
         user.mobile,
         `
-      Hi ${username},
-      Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}.
-      Please log into the application 5 mins before the start of the session.
-      Thanks,
-      Team Inspiron
+  Hi ${username},
+  Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}.
+  Please log into the application 5 mins before the start of the session.
+  Thanks,
+  Team Inspiron
       `
       );
 
       let emailMessage;
 
       emailMessage = `
-          Hi ${username},\n
-          Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}. Please log into the application 5 mins before the start of the session.\n
-          Your payment for Rs ${discountPriceamount} has been received.\n
+    Hi ${username},\n
+    Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}. Please log into the application 5 mins before the start of the session.\n
+    Your payment for Rs ${discountPriceamount} has been received.\n
           Thanks,\n
           Team Inspiron
         `;
@@ -392,18 +392,17 @@ const sendEmail = (to, subject, message) => {
 
   // Create a nodemailer transporter
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com", // Replace with your SMTP server hostname
-    port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-    secure: false,
-    requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+    host: "smtppro.zoho.com",
+    port: 465,
+    secure: true,
     auth: {
-      user: "inspiron434580@gmail.com", // Replace with your email address
-      pass: "rogiprjtijqxyedm", // Replace with your email password or application-specific password
+      user: "info@inspirononline.com",
+      pass: "zU0VjyrxHmFm",
     },
   });
 
   const mailOptions = {
-    from: "inspiron434580@gmail.com",
+    from: "info@inspirononline.com",
     to: to,
     subject: "Booking Conformation",
     text: message,
@@ -439,7 +438,7 @@ const verifyPaymentoverall = async (req, res) => {
       .update(sign.toString())
       .digest("hex");
 
-    if (razorpay_signature === expectedSign) {
+    if (expectedSign === razorpay_signature) {
       paymentStatus = 'Success';
 
       const paymentVerification = new Payment({
@@ -462,9 +461,9 @@ const verifyPaymentoverall = async (req, res) => {
         existingCoin.coinBalance = 0;
         await existingCoin.save();
       }
+
       const therapist = await Therapist.findOne({ experiencelevel });
 
-      
       await Appointment.updateMany(
         {
           user: userid,
@@ -487,33 +486,34 @@ const verifyPaymentoverall = async (req, res) => {
         .catch((error) => {
           console.error("Update Error:", error);
         });
-        const user = await User.findById(userid).select(
-          "name mobile email"
-        );
-      // Auto-generate an invoice number based on a prefix and timestamp
-      const invoiceNumber = "INSPIRON" + Date.now() + user.mobile;
-    const Packages = "Full payment"
-      const invoiceData = {
-        invoiceNumber: invoiceNumber,
-       
-        billedTo: user.name,
-        email: user.email, 
-        mobile: user.mobile,
-         pack:Packages ,
-        amount: amount,
-        totalAmount: amount,
-      };
-      const invoicePath = `public/uploads/invoice_${Date.now()}.pdf`;
-      generateInvoicePDF(invoiceData, invoicePath);
-      media_url=`http://13.126.59.21/public/uploads/invoice_${Date.now()}.pdf`
-sendWhatsAppMessageMedia(user.mobile,
-`Thank you for your payment. Please find the attached invoice.
-`
-  , media_url);
 
-      const subject = 'Invoice for Your Payment';
-      const message = `Thank you for your payment. Please find the attached invoice.`;
-      sendInvoiceByEmail(user.email, subject, message, invoicePath);
+      const user = await User.findById(userid).select("name mobile email");
+      if (paymentStatus === 'Success') {
+        const invoiceNumber = "INSPIRON" + Date.now() + user.mobile;
+        const Packages = "Full payment";
+        const invoiceData = {
+          invoiceNumber: invoiceNumber,
+          billedTo: user.name,
+          email: user.email,
+          mobile: user.mobile,
+          pack: Packages,
+          amount: amount,
+          totalAmount: amount,
+        };
+        const invoicePath = `public/uploads/invoice_${Date.now()}.pdf`;
+        generateInvoicePDF(invoiceData, invoicePath); // You need to define this function
+
+        media_url = `http://13.126.59.21/public/uploads/invoice_${Date.now()}.pdf`;
+        sendWhatsAppMessageMedia(
+          user.mobile,
+          `Thank you for your payment. Please find the attached invoice.`,
+          media_url
+        ); // You need to define this function
+
+        const subject = 'Invoice for Your Payment';
+        const message = `Thank you for your payment. Please find the attached invoice.`;
+        sendInvoiceByEmail(user.email, subject, message, invoicePath); // You need to define this function
+      }
     }
 
     res.status(200).json({ message: `Payment status updated to ${paymentStatus}` });
@@ -524,16 +524,12 @@ sendWhatsAppMessageMedia(user.mobile,
 };
 
 
-
-
-
 const generateInvoicePDF = (invoiceData) => {
   const outputPath = `public/uploads/invoice_${Date.now()}.pdf`; // Create a unique name
   const doc = new PDFDocument();
   const writeStream = fs.createWriteStream(outputPath);
 
   doc.pipe(writeStream);
-
   doc.image('public/uploads/logo.png', 50, 50, { width: 100 }); // Add your logo image here
   doc.moveDown(3.5); // Reduce the gap
 
@@ -570,11 +566,16 @@ const generateInvoicePDF = (invoiceData) => {
   // Total Amount
   doc.text(`Total Amount: ${invoiceData.totalAmount} INR`, 400, doc.y + 50);
 
-  doc.end();
+  writeStream.on("finish", () => {
+    // The PDF has been saved locally
+    console.log("PDF saved locally:", outputPath);
+  });
 
-  console.log(`Invoice PDF generated at ${outputPath}`);
+  writeStream.on("error", (err) => {
+    // Handle the error
+    console.error("Error saving PDF:", err);
+  });
 };
-
 
 
 
@@ -584,18 +585,17 @@ const generateInvoicePDF = (invoiceData) => {
 
 const sendInvoiceByEmail = (to, subject, message, invoicePath) => {
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com", // Replace with your SMTP server hostname
-    port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-    secure: false,
-    requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+    host: "smtppro.zoho.com",
+    port: 465,
+    secure: true,
     auth: {
-      user: "inspiron434580@gmail.com", // Replace with your email address
-      pass: "rogiprjtijqxyedm", // Replace with your email password or application-specific password
+      user: "info@inspirononline.com",
+      pass: "zU0VjyrxHmFm",
     },
   });
 
   const mailOptions = {
-    from: "inspiron434580@gmail.com",
+    from: "info@inspirononline.com",
     to: to,
     subject: subject,
     text: message,

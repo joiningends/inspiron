@@ -29,23 +29,18 @@ router.post('/', async (req, res) => {
 
     await passwordReset.save();
 
-    // Step 4: Send the password reset email to the user's email address, containing a link that includes the generated token
     const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com', // Replace with your SMTP server hostname
-        port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-        secure: false, 
-        requireTLS:true,// Set to true if your SMTP server requires a secure connection (TLS)
-        auth: {
-          user: 'abhipsakhandai11@gmail.com', // Replace with your email address
-          pass: '   rugncjtbikiadwvo', // Replace with your email password or application-specific password
-        },
-      
+      host: "smtppro.zoho.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "info@inspirononline.com",
+        pass: "zU0VjyrxHmFm",
+      },
     });
-
+  
     const mailOptions = {
-      from: 'abhipsakhandai11@gmail.com',
-      to: user.email,
-      subject: 'Password Reset',
+      from: "info@inspirononline.com",
       html: `
         <p>You requested a password reset.</p>
         <p>Click <a href="${api}/passwordresets/${resetToken}">here</a> to reset your password.</p>

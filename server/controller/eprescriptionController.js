@@ -107,18 +107,17 @@ function generateAndSavePDFeprescription(data) {
 
 function sendEmailWithAttachment(userEmail, pdfFilePath) {
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    requireTLS: true,
+    host: "smtppro.zoho.com",
+    port: 465,
+    secure: true,
     auth: {
-      user: "inspiron434580@gmail.com",
-      pass: "rogiprjtijqxyedm",
+      user: "info@inspirononline.com",
+      pass: "zU0VjyrxHmFm",
     },
   });
 
   const mailOptions = {
-    from: "inspiron434580@gmail.com",
+    from: "info@inspirononline.com",
     to: userEmail,
     subject: 'Medical Prescription PDF',
     text: 'Attached is your medical prescription PDF',

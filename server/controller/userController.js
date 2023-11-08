@@ -228,7 +228,7 @@ const loginUser = async (req, res) => {
 
   try {
     // Check if the user is the admin
-    if (email === 'admin@example.com' && password === 'adminpassword') {
+    if (email === 'info@inspirononline.com' && password === 'V6nEPQ3EnZx7K4Y') {
       const secret = process.env.secret;
       const token = jwt.sign(
         {
@@ -397,18 +397,17 @@ const registerUser = async (req, res) => {
     const verificationLink = `${process.env.CLIENT_URL}/thankyouForRegistering_teamInspiron/verify/${token}`;
   
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com', // Replace with your SMTP server hostname
-      port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-      secure: false,
-      requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+      host: "smtppro.zoho.com",
+      port: 465,
+      secure: true,
       auth: {
-        user: 'inspiron434580@gmail.com', // Replace with your email address
-        pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+        user: "info@inspirononline.com",
+        pass: "zU0VjyrxHmFm",
       },
     });
   
     const mailOptions = {
-      from: 'inspiron434580@gmail.com',
+      from: "info@inspirononline.com",
       to: email,
       subject: 'Verify Your Email Address',
       html: `
@@ -599,18 +598,17 @@ const updateUserTypes = async (req, res) => {
     if (isApproved) {
       // Create a nodemailer transporter
       const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com', // Replace with your SMTP server hostname
-        port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-        secure: false,
-        requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+        host: "smtppro.zoho.com",
+        port: 465,
+        secure: true,
         auth: {
-          user: 'inspiron434580@gmail.com', // Replace with your email address
-          pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+          user: "info@inspirononline.com",
+          pass: "zU0VjyrxHmFm",
         },
       });
-
+    
       const mailOptions = {
-        from: 'inspiron434580@gmail.com',
+        from: "info@inspirononline.com",
         to: updatedUser.email,
         subject: 'Profile Approved',
         html: `
@@ -628,20 +626,18 @@ const updateUserTypes = async (req, res) => {
         }
       });
     } else if (isDisapproved) {
-      // Create a nodemailer transporter
       const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com', // Replace with your SMTP server hostname
-        port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-        secure: false,
-        requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+        host: "smtppro.zoho.com",
+        port: 465,
+        secure: true,
         auth: {
-          user: 'inspiron434580@gmail.com', // Replace with your email address
-          pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+          user: "info@inspirononline.com",
+          pass: "zU0VjyrxHmFm",
         },
       });
-
+    
       const mailOptions = {
-        from: 'inspiron434580@gmail.com',
+        from: "info@inspirononline.com",
         to: updatedUser.email,
         subject: 'Profile Disapproved',
         html: `
@@ -692,18 +688,17 @@ const forgotPassword = async (req, res) => {
 
     // Create a nodemailer transporter
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com', // Replace with your SMTP server hostname
-      port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-      secure: false,
-      requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+      host: "smtppro.zoho.com",
+      port: 465,
+      secure: true,
       auth: {
-        user: 'inspiron434580@gmail.com', // Replace with your email address
-        pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+        user: "info@inspirononline.com",
+        pass: "zU0VjyrxHmFm",
       },
     });
-
+  
     const mailOptions = {
-      from: 'inspiron434580@gmail.com',
+      from: "info@inspirononline.com",
       to: user.email,
       subject: 'Password Reset Request',
       html: `
@@ -752,18 +747,17 @@ const resetPassword = async (req, res) => {
 
     // Create a nodemailer transporter
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com', // Replace with your SMTP server hostname
-      port: 587, // Replace with the SMTP server port (e.g., 587 for TLS)
-      secure: false,
-      requireTLS: true, // Set to true if your SMTP server requires a secure connection (TLS)
+      host: "smtppro.zoho.com",
+      port: 465,
+      secure: true,
       auth: {
-        user: 'inspiron434580@gmail.com', // Replace with your email address
-        pass: 'rogiprjtijqxyedm', // Replace with your email password or application-specific password
+        user: "info@inspirononline.com",
+        pass: "zU0VjyrxHmFm",
       },
     });
-
+  
     const mailOptions = {
-      from: 'inspiron434580@gmail.com',
+      from: "info@inspirononline.com",
       to: user.email,
       subject: 'Password Reset Confirmation',
       html: `
