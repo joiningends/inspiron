@@ -576,6 +576,7 @@ function TherapistDetails() {
 
   const handleCancelClick = () => {
     setShowEditForm(false);
+    window.location.reload();
   };
 
   const openEditForm = () => {
