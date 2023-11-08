@@ -96,7 +96,7 @@ function generateAndSavePDFeprescription(data) {
       addSectionInTable("", labTestInfo);
     })
 
-    doc.image(data.therapistsign, doc.page.width - 150, doc.y, { width: 100 });
+    
 
 
     doc.end();
