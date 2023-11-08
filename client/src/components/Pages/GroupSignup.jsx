@@ -20,11 +20,11 @@ const GroupSignUp = () => {
   const { groupId, company } = useParams();
   const [formData, setFormData] = useState({
     name: "",
-    mobile: "",
+    mobile: "91", // Prefix "91" to the phone number
     email: "",
     password: "",
     confirmPassword: "",
-    empid: "", // Add the new field
+    empid: "",
   });
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
@@ -32,12 +32,9 @@ const GroupSignUp = () => {
 
   const handleChange = e => {
     const { name, value } = e.target;
-
-    // Only update the state if the value is a digit
     if (name === "mobile" && isNaN(value)) {
-      return; // Ignore non-digit input
+      return;
     }
-
     setFormData(prevData => {
       const updatedData = {
         ...prevData,
@@ -67,8 +64,6 @@ const GroupSignUp = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-
-    // Check if all fields are completely filled
     if (
       !formData.name ||
       !formData.mobile ||
@@ -97,29 +92,30 @@ const GroupSignUp = () => {
       return;
     }
 
-    // Check if the phone number has exactly 10 digits
-    if (formData.mobile.length !== 10) {
-      toast.error("Please enter a valid 10-digit phone number.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        style: {
-          background: "#f44336",
-          color: "#fff",
-          fontSize: "14px",
-          borderRadius: "4px",
-          padding: "12px",
-          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-        },
-      });
+    if (formData.mobile.length !== 12) {
+      toast.error(
+        "Please enter a valid 12-digit phone number starting with '91'.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          style: {
+            background: "#f44336",
+            color: "#fff",
+            fontSize: "14px",
+            borderRadius: "4px",
+            padding: "12px",
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+          },
+        }
+      );
       return;
     }
 
-    // Check if the email is in the correct format
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(formData.email)) {
       toast.error("Please enter a valid email address.", {
@@ -143,7 +139,6 @@ const GroupSignUp = () => {
     }
 
     try {
-      // Send the registration data to the server
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_URL}/users/register/${groupId}`,
         {
@@ -155,17 +150,15 @@ const GroupSignUp = () => {
         }
       );
 
-      // Clear the form data
       setFormData({
         name: "",
-        mobile: "",
+        mobile: "91",
         email: "",
         password: "",
         confirmPassword: "",
         empid: "",
       });
 
-      // Show success message using toast
       toast.success("Please verify your mail ID.", {
         position: "top-right",
         autoClose: 3000,
@@ -206,35 +199,36 @@ const GroupSignUp = () => {
   };
 
   const isValidPhoneNumber = phone => {
-    // Basic validation: check if the phone number has exactly 10 digits
-    return /^\d{10}$/.test(phone);
+    return /^91\d{10}$/.test(phone);
   };
 
   const handlePhoneNumberBlur = () => {
     const validPhoneNumber = isValidPhoneNumber(formData.mobile);
     if (!validPhoneNumber) {
-      toast.error("Please enter a valid 10-digit phone number.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        style: {
-          background: "#f44336",
-          color: "#fff",
-          fontSize: "14px",
-          borderRadius: "4px",
-          padding: "12px",
-          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-        },
-      });
+      toast.error(
+        "Please enter a valid 12-digit phone number starting with '91'.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          style: {
+            background: "#f44336",
+            color: "#fff",
+            fontSize: "14px",
+            borderRadius: "4px",
+            padding: "12px",
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+          },
+        }
+      );
     }
   };
 
   const isValidEmail = email => {
-    // Regular expression for email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email);
   };
@@ -284,7 +278,7 @@ const GroupSignUp = () => {
         <div className="form-group">
           <FontAwesomeIcon
             icon={faPhoneAlt}
-            className={`icon ${formData.phoneNumber ? "active" : ""}`}
+            className={`icon ${formData.mobile ? "active" : ""}`}
           />
           <input
             type="tel"
@@ -295,6 +289,7 @@ const GroupSignUp = () => {
             onChange={handleChange}
             onBlur={handlePhoneNumberBlur}
             required
+            size={12}
           />
         </div>
         <div className="form-group">
@@ -368,7 +363,7 @@ const GroupSignUp = () => {
             type="text"
             id="empid"
             name="empid"
-            placeholder="Employee ID" // Change the placeholder to "Employee ID"
+            placeholder="Employee ID"
             value={formData.empid}
             onChange={handleChange}
             required
@@ -385,7 +380,7 @@ const GroupSignUp = () => {
             name="company"
             placeholder="Company Name"
             value={company}
-            readOnly // Set the input as readOnly to make it non-editable
+            readOnly
           />
         </div>
 
