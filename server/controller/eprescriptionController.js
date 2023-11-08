@@ -177,6 +177,7 @@ exports.createEPrescription = async (req, res) => {
       sendEmailWithAttachment(user.email, pdfFilePath);
       
       media_url=`http://13.126.59.21/public/uploads/${pdfFilePath}`
+      console.log(media_url)
       sendWhatsAppMessageMedia(user.mobile,
    `Attached is your prescription pdf
         Thanks,
