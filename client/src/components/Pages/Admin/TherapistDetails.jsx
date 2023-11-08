@@ -69,7 +69,7 @@ function TherapistDetails() {
 
   const handleSaveRating = () => {
     fetch(
-      `http://localhost:5001/api/v1/therapists/${therapistId}/adminrating`,
+      `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}/adminrating`,
       {
         method: "PUT",
         headers: {
