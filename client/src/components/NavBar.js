@@ -63,6 +63,24 @@ function NavBar() {
     };
   }, []);
 
+  const linkStyle = {
+    textDecoration: "none",
+    color: "white",
+    padding: "10px 20px",
+    backgroundColor: "#D67449",
+    borderRadius: "1rem",
+    transition: "background-color 0.3s, color 0.3s",
+    ":hover": {
+      backgroundColor: "#E0E0E0",
+      color: "#68B545",
+    },
+  };
+
+  const activeLinkStyle = {
+    backgroundColor: "#D67449",
+    color: "#68B545",
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }} style={{ marginBottom: "2rem" }}>
       <CssBaseline />
@@ -112,154 +130,66 @@ function NavBar() {
           >
             {isLoggedIn && userRole === "user" && (
               <>
-                <ListItemButton
-                  component={NavLink}
-                  to="/"
-                  sx={{
-                    color: "white",
-                    fontSize: "1rem",
-                    minWidth: "auto",
-                    width: "100px",
-                    height: "40px",
-                    backgroundColor: "#D67449",
-                    borderRadius: "1rem",
-                    "&:hover": {
-                      backgroundColor: "#E0E0E0",
-                    },
-                  }}
-                >
-                  <ListItemText
-                    primary="Home"
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      color: "white",
-                    }}
-                  />
-                </ListItemButton>
-
-                <ListItemButton
-                  component={NavLink}
-                  to="/assessment"
-                  sx={{
-                    color: "white",
-                    minWidth: "auto",
-                    width: "100px",
-                    height: "40px",
-                    backgroundColor: "#D67449",
-                    borderRadius: "1rem",
-                    "&:hover": {
-                      backgroundColor: "#E0E0E0",
-                    },
-                  }}
-                >
-                  <ListItemText
-                    primary="Assessment"
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      color: "white",
-                    }}
-                  />
-                </ListItemButton>
-
-                <ListItemButton
-                  component={NavLink}
-                  to="/FindTherapist"
-                  sx={{
-                    color: "white",
-                    minWidth: "auto",
-                    width: "200px",
-                    height: "40px",
-                    backgroundColor: "#D67449",
-                    borderRadius: "1rem",
-                    "&:hover": {
-                      backgroundColor: "#E0E0E0",
-                    },
-                  }}
-                >
-                  <ListItemText
-                    primary="Find Therapist"
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      whiteSpace: "nowrap",
-                      color: "white",
-                    }}
-                  />
-                </ListItemButton>
-
-                <ListItemButton
-                  component={NavLink}
-                  to="/Profile"
-                  sx={{
-                    color: "white",
-                    minWidth: "auto",
-                    width: "100px",
-                    height: "40px",
-                    backgroundColor: "#D67449",
-                    borderRadius: "1rem",
-                    "&:hover": {
-                      backgroundColor: "#E0E0E0",
-                    },
-                  }}
-                >
-                  <ListItemText
-                    primary="Profile"
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      color: "white",
-                    }}
-                  />
-                </ListItemButton>
-
-                <ListItemButton
-                  component={NavLink}
-                  to="/Appointments"
-                  sx={{
-                    color: "white",
-                    minWidth: "auto",
-                    width: "120px",
-                    height: "40px",
-                    backgroundColor: "#D67449",
-                    borderRadius: "1rem",
-                    "&:hover": {
-                      backgroundColor: "#E0E0E0",
-                    },
-                  }}
-                >
-                  <ListItemText
-                    primary="Appointments"
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      color: "white",
-                    }}
-                  />
-                </ListItemButton>
-
-                {shouldShowComponent && (
-                  <ListItemButton
-                    component={NavLink}
-                    to="/PendingPayments"
-                    sx={{
-                      color: "white",
-                      minWidth: "auto",
-                      width: "140px",
-                      height: "40px",
-                      backgroundColor: "#D67449",
-                      borderRadius: "1rem",
-                      "&:hover": {
-                        backgroundColor: "#E0E0E0",
-                      },
-                    }}
-                  >
-                    <ListItemText
-                      primary="Pending Payment"
-                      primaryTypographyProps={{
-                        variant: "body2",
-                        whiteSpace: "nowrap",
-                        color: "white",
-                      }}
-                    />
-                  </ListItemButton>
-                )}
+                <nav>
+                  <ul style={{ listStyle: "none", padding: 0 }}>
+                    <li style={{ display: "inline", marginRight: "10px" }}>
+                      <NavLink
+                        to="/"
+                        style={linkStyle}
+                        activeStyle={activeLinkStyle}
+                      >
+                        Home
+                      </NavLink>
+                    </li>
+                    <li style={{ display: "inline", marginRight: "10px" }}>
+                      <NavLink
+                        to="/assessment"
+                        style={linkStyle}
+                        activeStyle={activeLinkStyle}
+                      >
+                        Assessment
+                      </NavLink>
+                    </li>
+                    <li style={{ display: "inline", marginRight: "10px" }}>
+                      <NavLink
+                        to="/FindTherapist"
+                        style={linkStyle}
+                        activeStyle={activeLinkStyle}
+                      >
+                        Find Therapist
+                      </NavLink>
+                    </li>
+                    <li style={{ display: "inline", marginRight: "10px" }}>
+                      <NavLink
+                        to="/Profile"
+                        style={linkStyle}
+                        activeStyle={activeLinkStyle}
+                      >
+                        Profile
+                      </NavLink>
+                    </li>
+                    <li style={{ display: "inline", marginRight: "10px" }}>
+                      <NavLink
+                        to="/Appointments"
+                        style={linkStyle}
+                        activeStyle={activeLinkStyle}
+                      >
+                        Appointments
+                      </NavLink>
+                    </li>
+                    {shouldShowComponent && (
+                      <li style={{ display: "inline", marginRight: "10px" }}>
+                        <NavLink
+                          to="/PendingPayments"
+                          style={linkStyle}
+                          activeStyle={activeLinkStyle}
+                        >
+                          Pending Payment
+                        </NavLink>
+                      </li>
+                    )}
+                  </ul>
+                </nav>
               </>
             )}
             {isLoggedIn && userRole === "therapist" && (
