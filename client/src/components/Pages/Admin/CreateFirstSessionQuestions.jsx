@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./CreateFirstSessionQuestions.css";
+import Footer from "../Footer";
 
 function Questions() {
   const [questions, setQuestions] = useState([]);
@@ -130,111 +131,120 @@ function Questions() {
   };
 
   return (
-    <div className="questions-container">
-      <h1>Questions</h1>
-      <div className="questions-list">
-        {questions.map(question => (
-          <div key={question._id} className="question">
-            {editQuestion === question._id ? (
-              <div className="question-edit-form">
-                <input
-                  type="text"
-                  value={editedName}
-                  onChange={e => setEditedName(e.target.value)}
-                />
-                <div className="edit-buttons">
-                  <button className="save-button" onClick={handleSaveQuestion}>
-                    Save
-                  </button>
-                  <button className="cancel-button" onClick={handleCancelEdit}>
-                    Cancel
-                  </button>
+    <>
+      <div className="questions-container">
+        <h1>Questions</h1>
+        <div className="questions-list">
+          {questions.map(question => (
+            <div key={question._id} className="question">
+              {editQuestion === question._id ? (
+                <div className="question-edit-form">
+                  <input
+                    type="text"
+                    value={editedName}
+                    onChange={e => setEditedName(e.target.value)}
+                  />
+                  <div className="edit-buttons">
+                    <button
+                      className="save-button"
+                      onClick={handleSaveQuestion}
+                    >
+                      Save
+                    </button>
+                    <button
+                      className="cancel-button"
+                      onClick={handleCancelEdit}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="question-header">
-                <h2>{question.name}</h2>
-                <div className="question-icons">
-                  <button
-                    className="edit-button"
-                    onClick={() =>
-                      handleEditQuestion(question._id, question.name)
-                    }
-                  >
-                    <i className="fa fa-edit"></i> Edit
-                  </button>
+              ) : (
+                <div className="question-header">
+                  <h2>{question.name}</h2>
+                  <div className="question-icons">
+                    <button
+                      className="edit-button"
+                      onClick={() =>
+                        handleEditQuestion(question._id, question.name)
+                      }
+                    >
+                      <i className="fa fa-edit"></i> Edit
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-            <ul>
-              {question.options.map(option => (
-                <li key={`${question._id}-${option._id}`} className="option">
-                  {option.text}
-                  {editQuestion === question._id &&
-                    optionsEditMode[question._id] && (
-                      <button
-                        className="remove-option-button"
-                        onClick={() =>
-                          handleOptionAction(
-                            question._id,
-                            "delete",
-                            option.text
-                          )
-                        }
-                      >
-                        <i className="fa fa-times"></i> Remove
-                      </button>
-                    )}
-                </li>
-              ))}
-              {editQuestion === question._id &&
-                optionsEditMode[question._id] && (
-                  <li className="new-option">
-                    {newOptions[question._id] ? (
-                      <div className="new-option-input">
-                        <input
-                          type="text"
-                          value={newOptionText}
-                          onChange={e => setNewOptionText(e.target.value)}
-                        />
+              )}
+              <ul>
+                {question.options.map(option => (
+                  <li key={`${question._id}-${option._id}`} className="option">
+                    {option.text}
+                    {editQuestion === question._id &&
+                      optionsEditMode[question._id] && (
                         <button
-                          className="save-option-button"
-                          onClick={() => handleAddOption(question._id)}
+                          className="remove-option-button"
+                          onClick={() =>
+                            handleOptionAction(
+                              question._id,
+                              "delete",
+                              option.text
+                            )
+                          }
                         >
-                          Save
+                          <i className="fa fa-times"></i> Remove
                         </button>
+                      )}
+                  </li>
+                ))}
+                {editQuestion === question._id &&
+                  optionsEditMode[question._id] && (
+                    <li className="new-option">
+                      {newOptions[question._id] ? (
+                        <div className="new-option-input">
+                          <input
+                            type="text"
+                            value={newOptionText}
+                            onChange={e => setNewOptionText(e.target.value)}
+                          />
+                          <button
+                            className="save-option-button"
+                            onClick={() => handleAddOption(question._id)}
+                          >
+                            Save
+                          </button>
+                          <button
+                            className="cancel-option-button"
+                            onClick={() =>
+                              setNewOptions(prevNewOptions => ({
+                                ...prevNewOptions,
+                                [question._id]: false,
+                              }))
+                            }
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
                         <button
-                          className="cancel-option-button"
+                          className="add-option-button"
                           onClick={() =>
                             setNewOptions(prevNewOptions => ({
                               ...prevNewOptions,
-                              [question._id]: false,
+                              [question._id]: true,
                             }))
                           }
                         >
-                          Cancel
+                          + ADD
                         </button>
-                      </div>
-                    ) : (
-                      <button
-                        className="add-option-button"
-                        onClick={() =>
-                          setNewOptions(prevNewOptions => ({
-                            ...prevNewOptions,
-                            [question._id]: true,
-                          }))
-                        }
-                      >
-                        + ADD
-                      </button>
-                    )}
-                  </li>
-                )}
-            </ul>
-          </div>
-        ))}
+                      )}
+                    </li>
+                  )}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }
 

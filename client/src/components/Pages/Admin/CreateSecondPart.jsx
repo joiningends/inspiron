@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./CreateSecondPart.css";
+import Footer from "../Footer";
 
 function CreateSecondPart() {
   const [illnessesData, setIllnessesData] = useState([]);
@@ -118,77 +119,86 @@ function CreateSecondPart() {
   };
 
   return (
-    <div className="questions-container">
-      <h1 className="heading">Illnesses Data</h1>
-      <ul className="questions-list">
-        {illnessesData.map(illness => (
-          <li key={illness._id} className="question">
-            <div className="question-header">
-              {editMode && editedQuestionId === illness._id ? (
-                <input
-                  type="text"
-                  value={editedQuestion}
-                  onChange={e => setEditedQuestion(e.target.value)}
-                />
-              ) : (
-                <h2>{illness.name}</h2>
-              )}
-              <div className="question-icons">
+    <>
+      <div className="questions-container">
+        <h1 className="heading">Illnesses Data</h1>
+        <ul className="questions-list">
+          {illnessesData.map(illness => (
+            <li key={illness._id} className="question">
+              <div className="question-header">
                 {editMode && editedQuestionId === illness._id ? (
-                  <button
-                    className="save-button"
-                    onClick={() => handleSave(illness._id)}
-                  >
-                    Save
-                  </button>
+                  <input
+                    type="text"
+                    value={editedQuestion}
+                    onChange={e => setEditedQuestion(e.target.value)}
+                  />
                 ) : (
-                  <button
-                    className="edit-button"
-                    onClick={() => handleEdit(illness._id)}
-                    style={{ backgroundColor: "orange" }}
-                  >
-                    Edit
-                  </button>
+                  <h2>{illness.name}</h2>
                 )}
-              </div>
-            </div>
-            <ul className="options-list">
-              {illness.options.map(option => (
-                <li key={option._id} className="option">
-                  {option.text}
-                  {editMode && editedQuestionId === illness._id && (
+                <div className="question-icons">
+                  {editMode && editedQuestionId === illness._id ? (
                     <button
-                      className="remove-option-button"
-                      onClick={() =>
-                        handleDeleteOption(illness._id, option.text)
-                      }
+                      className="save-button"
+                      onClick={() => handleSave(illness._id)}
                     >
-                      X
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      className="edit-button"
+                      onClick={() => handleEdit(illness._id)}
+                      style={{ backgroundColor: "orange" }}
+                    >
+                      Edit
                     </button>
                   )}
-                </li>
-              ))}
-            </ul>
-            {editMode && editedQuestionId === illness._id && showAddOption && (
-              <div>
-                <input
-                  type="text"
-                  value={newOptionText}
-                  onChange={e => setNewOptionText(e.target.value)}
-                />
-                <button onClick={() => handleAddOption(illness._id)}>
-                  Save
-                </button>
-                <button onClick={() => setShowAddOption(false)}>Cancel</button>
+                </div>
               </div>
-            )}
-            {editMode && editedQuestionId === illness._id && !showAddOption && (
-              <button onClick={() => setShowAddOption(true)}>+</button>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+              <ul className="options-list">
+                {illness.options.map(option => (
+                  <li key={option._id} className="option">
+                    {option.text}
+                    {editMode && editedQuestionId === illness._id && (
+                      <button
+                        className="remove-option-button"
+                        onClick={() =>
+                          handleDeleteOption(illness._id, option.text)
+                        }
+                      >
+                        X
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              {editMode &&
+                editedQuestionId === illness._id &&
+                showAddOption && (
+                  <div>
+                    <input
+                      type="text"
+                      value={newOptionText}
+                      onChange={e => setNewOptionText(e.target.value)}
+                    />
+                    <button onClick={() => handleAddOption(illness._id)}>
+                      Save
+                    </button>
+                    <button onClick={() => setShowAddOption(false)}>
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              {editMode &&
+                editedQuestionId === illness._id &&
+                !showAddOption && (
+                  <button onClick={() => setShowAddOption(true)}>+</button>
+                )}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <Footer />
+    </>
   );
 }
 

@@ -19,6 +19,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import { FaHeart, FaThumbsUp, FaClock, FaSmile } from "react-icons/fa";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Footer from "./Footer";
 
 const Popup = ({
   selectedTimeSlot,
@@ -828,6 +829,7 @@ function BookTime() {
           onBookNowCorp={handleBookNowCorporate}
         />
       )}
+      <Footer/>
     </>
   );
 }

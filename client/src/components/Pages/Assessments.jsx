@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAssessments } from "../redux/Action";
 import { useEffect } from "react";
 import groupDiscuss from "./groupDiscuss.jpg";
+import Footer from "./Footer";
 
 function Assessments() {
   const dispatch = useDispatch();
@@ -56,6 +57,7 @@ function Assessments() {
           ))}
         </div>
       </div>
+      <Footer/>
     </>
   );
 }

@@ -15,6 +15,7 @@ import {
   Container,
   TablePagination,
 } from "@mui/material";
+import Footer from "../Footer";
 
 function PatientCoins() {
   const { patientId } = useParams();
@@ -91,102 +92,105 @@ function PatientCoins() {
   };
 
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        PatientCoins
-      </Typography>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <div>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Experience Level</TableCell>
-                  <TableCell>Coin Balance</TableCell>
-                  <TableCell>Average Price</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {coinData
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map(data => (
-                    <TableRow key={data._id}>
-                      <TableCell>{data.expriencelevel[0]}</TableCell>
-                      <TableCell>
-                        {editingId === data._id ? (
-                          <>
-                            <TextField
-                              value={editedValue}
-                              onChange={e => setEditedValue(e.target.value)}
-                            />
-                            <Button
-                              variant="outlined"
-                              color="primary"
-                              onClick={() => handleSaveClick(data._id)}
-                              style={{
-                                backgroundColor: "#D67449",
-                                color: "white",
-                                border: "none",
-                                marginRight: "1rem",
-                                marginLeft: "1rem",
-                              }}
-                            >
-                              Save
-                            </Button>
-                            <Button
-                              variant="outlined"
-                              color="secondary"
-                              onClick={handleCancelClick}
-                              style={{
-                                backgroundColor: "white",
-                                color: "#D67449",
-                                border: "1px solid #D67449",
-                              }}
-                            >
-                              Cancel
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            {data.coinBalance}
-                            <Button
-                              variant="outlined"
-                              color="primary"
-                              onClick={() =>
-                                handleEditClick(data._id, data.coinBalance)
-                              }
-                              style={{
-                                marginLeft: "1rem",
-                                backgroundColor: "#D67449",
-                                color: "white",
-                                border: "none",
-                              }}
-                            >
-                              Edit
-                            </Button>
-                          </>
-                        )}
-                      </TableCell>
-                      <TableCell>{data.avarage}</TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={coinData.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </div>
-      )}
-    </Container>
+    <>
+      <Container>
+        <Typography variant="h4" gutterBottom>
+          PatientCoins
+        </Typography>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <div>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Experience Level</TableCell>
+                    <TableCell>Coin Balance</TableCell>
+                    <TableCell>Average Price</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {coinData
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map(data => (
+                      <TableRow key={data._id}>
+                        <TableCell>{data.expriencelevel[0]}</TableCell>
+                        <TableCell>
+                          {editingId === data._id ? (
+                            <>
+                              <TextField
+                                value={editedValue}
+                                onChange={e => setEditedValue(e.target.value)}
+                              />
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => handleSaveClick(data._id)}
+                                style={{
+                                  backgroundColor: "#D67449",
+                                  color: "white",
+                                  border: "none",
+                                  marginRight: "1rem",
+                                  marginLeft: "1rem",
+                                }}
+                              >
+                                Save
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                color="secondary"
+                                onClick={handleCancelClick}
+                                style={{
+                                  backgroundColor: "white",
+                                  color: "#D67449",
+                                  border: "1px solid #D67449",
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              {data.coinBalance}
+                              <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() =>
+                                  handleEditClick(data._id, data.coinBalance)
+                                }
+                                style={{
+                                  marginLeft: "1rem",
+                                  backgroundColor: "#D67449",
+                                  color: "white",
+                                  border: "none",
+                                }}
+                              >
+                                Edit
+                              </Button>
+                            </>
+                          )}
+                        </TableCell>
+                        <TableCell>{data.avarage}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={coinData.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </div>
+        )}
+      </Container>
+      <Footer />
+    </>
   );
 }
 

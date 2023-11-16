@@ -7,6 +7,7 @@ import jsPDF from "jspdf";
 import "./Result.css";
 import logo from "./Artboard 2.png";
 import resultImg from "./resultImg.png";
+import Footer from "./Footer";
 
 const getTherapists = async assessmentScore => {
   let storedAssessment;
@@ -174,11 +175,7 @@ function Result() {
     // Set the font style for the result text
     doc.setFont("helvetica", "normal"); // Change the font style to "normal"
     doc.setFontSize(14);
-    doc.text(
-      textXCoordinate,
-      resultYCoordinate + 8,
-      userResult
-    );
+    doc.text(textXCoordinate, resultYCoordinate + 8, userResult);
 
     // Add the "Your Score Interpretation" heading with underline
     const interpretationYCoordinate = resultYCoordinate + 20; // Adjust the vertical position
@@ -227,7 +224,7 @@ function Result() {
 
     doc.save("report.pdf");
 
-    console.log()
+    console.log();
   };
 
   useEffect(() => {
@@ -237,62 +234,81 @@ function Result() {
   }, []);
 
   return (
-    <Container style={containerStyle}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
-          <Paper
-            elevation={3}
-            style={{
-              ...paperStyle,
-              background: "linear-gradient(90deg, #D67449 0.88%, #5179BD 100%)",
-            }}
-          >
-            <Typography variant="h4" style={headerStyle}>
-              To download the report
-            </Typography>
-            {isLoggedIn ? (
-              <Button
-                variant="contained"
-                color="primary"
-                style={buttonStyle}
-                onClick={() => generatePDF(assessmentScore)}
-              >
-                Download Report
-              </Button>
-            ) : (
-              <MUILink component={Link} to="/signin">
-                <Button variant="contained" color="primary" style={buttonStyle}>
-                  Sign Up / Sign In
+    <>
+      <Container style={containerStyle}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <Paper
+              elevation={3}
+              style={{
+                ...paperStyle,
+                background:
+                  "linear-gradient(90deg, #D67449 0.88%, #5179BD 100%)",
+              }}
+            >
+              <Typography variant="h4" style={headerStyle}>
+                To download the report
+              </Typography>
+              {isLoggedIn ? (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  style={buttonStyle}
+                  onClick={() => generatePDF(assessmentScore)}
+                >
+                  Download Report
                 </Button>
-              </MUILink>
-            )}
-          </Paper>
+              ) : (
+                <MUILink component={Link} to="/signin">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    style={buttonStyle}
+                  >
+                    Sign Up / Sign In
+                  </Button>
+                </MUILink>
+              )}
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Paper
+              elevation={3}
+              style={{ ...paperStyle, background: "#D67449" }}
+            >
+              <Typography variant="h4" style={headerStyle}>
+                Find your Therapist
+              </Typography>
+              <Typography variant="body1" style={headerStyle}>
+                Start Your Diagnosis Today
+              </Typography>
+              {isLoggedIn ? (
+                <MUILink component={Link} to="/FindTherapist">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    style={buttonStyle}
+                  >
+                    Get Started
+                  </Button>
+                </MUILink>
+              ) : (
+                <MUILink component={Link} to="/signin">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    style={buttonStyle}
+                  >
+                    Sign Up / Sign In
+                  </Button>
+                </MUILink>
+              )}
+            </Paper>
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <Paper elevation={3} style={{ ...paperStyle, background: "#D67449" }}>
-            <Typography variant="h4" style={headerStyle}>
-              Find your Therapist
-            </Typography>
-            <Typography variant="body1" style={headerStyle}>
-              Start Your Diagnosis Today
-            </Typography>
-            {isLoggedIn ? (
-              <MUILink component={Link} to="/FindTherapist">
-                <Button variant="contained" color="primary" style={buttonStyle}>
-                  Get Started
-                </Button>
-              </MUILink>
-            ) : (
-              <MUILink component={Link} to="/signin">
-                <Button variant="contained" color="primary" style={buttonStyle}>
-                  Sign Up / Sign In
-                </Button>
-              </MUILink>
-            )}
-          </Paper>
-        </Grid>
-      </Grid>
-    </Container>
+      </Container>
+      <Footer style={{ marginTop: "3rem" }} />
+    </>
   );
 }
 

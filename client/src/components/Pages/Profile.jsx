@@ -19,7 +19,7 @@ import jwtDecode from "jwt-decode";
 import axios from "axios";
 import "./Profile.css";
 import Rating from "./Rating";
-
+import Footer from "./Footer";
 // Import icons for react-datepicker
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
@@ -315,6 +315,7 @@ function Profile() {
           />
         </ProfileContainer>
       </ThemeProvider>
+      <Footer />
     </>
   );
 }

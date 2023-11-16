@@ -21,6 +21,7 @@ import { useParams } from "react-router-dom";
 import "./CustomerPayment.css";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
+import Footer from "../Footer";
 
 function formatDate(dateTimeString) {
   try {
@@ -228,6 +229,7 @@ function CustomerPayment() {
   };
 
   return (
+    <>
     <div>
       <h1 className="table-header">Customer Payments</h1>
       <TableContainer component={Paper} className="payment-table">
@@ -321,6 +323,8 @@ function CustomerPayment() {
         </Stack>
       </div>
     </div>
+  <Footer/>
+    </>
   );
 }
 

@@ -115,73 +115,147 @@ function NavBar() {
                 <ListItemButton
                   component={NavLink}
                   to="/"
-                  sx={{ color: "#D67449", fontSize:"1rem",minWidth: "auto", width: "80px" }}
+                  sx={{
+                    color: "white",
+                    fontSize: "1rem",
+                    minWidth: "auto",
+                    width: "100px",
+                    height: "40px",
+                    backgroundColor: "#D67449",
+                    borderRadius: "1rem",
+                    "&:hover": {
+                      backgroundColor: "#E0E0E0",
+                    },
+                  }}
                 >
                   <ListItemText
                     primary="Home"
-                    primaryTypographyProps={{ variant: "body2" }}
-                  />
-                </ListItemButton>
-                <ListItemButton
-                  component={NavLink}
-                  to="/assessment"
-                  sx={{ color: "#D67449", minWidth: "auto", width: "100px" }}
-                >
-                  <ListItemText
-                    primary="Assessment"
-                    primaryTypographyProps={{ variant: "body2" }}
-                  />
-                </ListItemButton>
-                <ListItemButton
-                  component={NavLink}
-                  to="/FindTherapist"
-                  sx={{ color: "#D67449", minWidth: "auto", width: "200px" }}
-                >
-                  <ListItemIcon>
-                    <SearchIcon
-                      fontSize="small"
-                      style={{ marginRight: "5px" }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Find&nbsp;Therapist"
                     primaryTypographyProps={{
                       variant: "body2",
-                      whiteSpace: "nowrap",
+                      color: "white",
                     }}
                   />
                 </ListItemButton>
+
+                <ListItemButton
+                  component={NavLink}
+                  to="/assessment"
+                  sx={{
+                    color: "white",
+                    minWidth: "auto",
+                    width: "100px",
+                    height: "40px",
+                    backgroundColor: "#D67449",
+                    borderRadius: "1rem",
+                    "&:hover": {
+                      backgroundColor: "#E0E0E0",
+                    },
+                  }}
+                >
+                  <ListItemText
+                    primary="Assessment"
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      color: "white",
+                    }}
+                  />
+                </ListItemButton>
+
+                <ListItemButton
+                  component={NavLink}
+                  to="/FindTherapist"
+                  sx={{
+                    color: "white",
+                    minWidth: "auto",
+                    width: "200px",
+                    height: "40px",
+                    backgroundColor: "#D67449",
+                    borderRadius: "1rem",
+                    "&:hover": {
+                      backgroundColor: "#E0E0E0",
+                    },
+                  }}
+                >
+                  <ListItemText
+                    primary="Find Therapist"
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "white",
+                    }}
+                  />
+                </ListItemButton>
+
                 <ListItemButton
                   component={NavLink}
                   to="/Profile"
-                  sx={{ color: "#D67449", minWidth: "auto", width: "100px" }}
+                  sx={{
+                    color: "white",
+                    minWidth: "auto",
+                    width: "100px",
+                    height: "40px",
+                    backgroundColor: "#D67449",
+                    borderRadius: "1rem",
+                    "&:hover": {
+                      backgroundColor: "#E0E0E0",
+                    },
+                  }}
                 >
                   <ListItemText
                     primary="Profile"
-                    primaryTypographyProps={{ variant: "body2" }}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      color: "white",
+                    }}
                   />
                 </ListItemButton>
+
                 <ListItemButton
                   component={NavLink}
                   to="/Appointments"
-                  sx={{ color: "#D67449", minWidth: "auto", width: "120px" }}
+                  sx={{
+                    color: "white",
+                    minWidth: "auto",
+                    width: "120px",
+                    height: "40px",
+                    backgroundColor: "#D67449",
+                    borderRadius: "1rem",
+                    "&:hover": {
+                      backgroundColor: "#E0E0E0",
+                    },
+                  }}
                 >
                   <ListItemText
                     primary="Appointments"
-                    primaryTypographyProps={{ variant: "body2" }}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      color: "white",
+                    }}
                   />
                 </ListItemButton>
+
                 {shouldShowComponent && (
                   <ListItemButton
                     component={NavLink}
                     to="/PendingPayments"
-                    sx={{ color: "#D67449", minWidth: "auto", width: "140px" }}
+                    sx={{
+                      color: "white",
+                      minWidth: "auto",
+                      width: "140px",
+                      height: "40px",
+                      backgroundColor: "#D67449",
+                      borderRadius: "1rem",
+                      "&:hover": {
+                        backgroundColor: "#E0E0E0",
+                      },
+                    }}
                   >
                     <ListItemText
-                      primary="Pending&nbsp;Payment"
+                      primary="Pending Payment"
                       primaryTypographyProps={{
                         variant: "body2",
                         whiteSpace: "nowrap",
+                        color: "white",
                       }}
                     />
                   </ListItemButton>
@@ -194,45 +268,73 @@ function NavBar() {
                   component={NavLink}
                   to="/appointment"
                   selected
-                  sx={{ "&.Mui-selected": { color: "#D67449" } }}
+                  sx={{ "&.Mui-selected": { color: "#68B545" } }}
                 >
                   <ListItemIcon>
                     <AssignmentIndIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Appointment" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Appointment"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
                   to="/profile"
                   selected
-                  sx={{ "&.Mui-selected": { color: "#D67449" } }}
+                  sx={{ "&.Mui-selected": { color: "#68B545" } }}
                 >
                   <ListItemIcon>
                     <PersonIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Profile" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Profile"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
                   to="/therapists"
                   selected
-                  sx={{ "&.Mui-selected": { color: "#D67449" } }}
+                  sx={{ "&.Mui-selected": { color: "#68B545" } }}
                 >
                   <ListItemIcon>
                     <DashboardIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Dashboard" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Dashboard"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
                   to="/patientPage"
                   selected
-                  sx={{ "&.Mui-selected": { color: "#D67449" } }}
+                  sx={{ "&.Mui-selected": { color: "#68B545" } }}
                 >
                   <ListItemIcon>
                     <AssignmentIndIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Patient Page" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Patient Page"
+                  />
                 </ListItemButton>
               </>
             )}
@@ -242,56 +344,91 @@ function NavBar() {
                   component={NavLink}
                   to="/admin-Create-Assessment"
                   selected
-                  sx={{ "&.Mui-selected": { color: "#D67449" } }}
+                  sx={{ "&.Mui-selected": { color: "#68B545" } }}
                 >
                   <ListItemIcon>
                     <AssignmentTurnedInIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Create Assessment" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Create Assessment"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
                   to="/admin-Dashboard"
                   selected
-                  sx={{ "&.Mui-selected": { color: "#D67449" } }}
+                  sx={{ "&.Mui-selected": { color: "#68B545" } }}
                 >
                   <ListItemIcon>
                     <DashboardIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Therapists" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Therapists"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
                   to="/admin-patient-details"
                   selected
-                  sx={{ "&.Mui-selected": { color: "#D67449" } }}
+                  sx={{ "&.Mui-selected": { color: "#68B545" } }}
                 >
                   <ListItemIcon>
                     <AssignmentIndIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Patient Page" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Patient Page"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
                   to="/Group"
                   selected
-                  sx={{ "&.Mui-selected": { color: "#D67449" } }}
+                  sx={{ "&.Mui-selected": { color: "#68B545" } }}
                 >
                   <ListItemIcon>
                     <GroupIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Group" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Group"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
                   to="/admin-setting"
                   selected
-                  sx={{ "&.Mui-selected": { color: "#D67449" } }}
+                  sx={{ "&.Mui-selected": { color: "#68B545" } }}
                 >
                   <ListItemIcon>
                     <SettingsIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Setting" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Setting"
+                  />
                 </ListItemButton>
               </>
             )}
@@ -312,7 +449,14 @@ function NavBar() {
               <ListItemIcon>
                 {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
               </ListItemIcon>
-              <ListItemText primary={isLoggedIn ? "Sign Out" : "Login"} />
+              <ListItemText
+                primaryTypographyProps={{
+                  variant: "body2",
+                  whiteSpace: "nowrap",
+                  color: "#68B545",
+                }}
+                primary={isLoggedIn ? "Sign Out" : "Login"}
+              />
             </ListItemButton>
           </List>
         </Toolbar>
@@ -338,7 +482,14 @@ function NavBar() {
                   <ListItemIcon>
                     <HomeIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Home" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Home"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
@@ -348,7 +499,14 @@ function NavBar() {
                   <ListItemIcon>
                     <AssessmentIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Assessment" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Assessment"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
@@ -358,7 +516,14 @@ function NavBar() {
                   <ListItemIcon>
                     <SearchIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Find Your Therapist" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Find Your Therapist"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
@@ -368,7 +533,14 @@ function NavBar() {
                   <ListItemIcon>
                     <PersonIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Profile" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Profile"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
@@ -378,7 +550,14 @@ function NavBar() {
                   <ListItemIcon>
                     <AssignmentIndIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Appointments" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Appointments"
+                  />
                 </ListItemButton>
                 {shouldShowComponent && (
                   <ListItemButton
@@ -389,7 +568,14 @@ function NavBar() {
                     <ListItemIcon>
                       <AssignmentIndIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Pending Payment" />
+                    <ListItemText
+                      primaryTypographyProps={{
+                        variant: "body2",
+                        whiteSpace: "nowrap",
+                        color: "#68B545",
+                      }}
+                      primary="Pending Payment"
+                    />
                   </ListItemButton>
                 )}
               </>
@@ -404,7 +590,14 @@ function NavBar() {
                   <ListItemIcon>
                     <AssignmentIndIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Appointment" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Appointment"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
@@ -414,7 +607,14 @@ function NavBar() {
                   <ListItemIcon>
                     <PersonIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Profile" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Profile"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
@@ -424,7 +624,14 @@ function NavBar() {
                   <ListItemIcon>
                     <DashboardIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Dashboard" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Dashboard"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
@@ -434,7 +641,14 @@ function NavBar() {
                   <ListItemIcon>
                     <AssignmentIndIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Patient Page" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Patient Page"
+                  />
                 </ListItemButton>
               </>
             )}
@@ -448,7 +662,14 @@ function NavBar() {
                   <ListItemIcon>
                     <AssignmentTurnedInIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Create Assessment" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Create Assessment"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
@@ -458,7 +679,14 @@ function NavBar() {
                   <ListItemIcon>
                     <DashboardIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Therapists" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Therapists"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
@@ -468,7 +696,15 @@ function NavBar() {
                   <ListItemIcon>
                     <AssignmentIndIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Patient Page" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#68B545",
+                    }}
+                    primary="Patient Page"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
@@ -478,7 +714,15 @@ function NavBar() {
                   <ListItemIcon>
                     <GroupIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Group" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "white",
+                      backgroundColor: "#68B545",
+                    }}
+                    primary="Group"
+                  />
                 </ListItemButton>
                 <ListItemButton
                   component={NavLink}
@@ -488,7 +732,14 @@ function NavBar() {
                   <ListItemIcon>
                     <SettingsIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Setting" />
+                  <ListItemText
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      whiteSpace: "nowrap",
+                      color: "#68B545",
+                    }}
+                    primary="Setting"
+                  />
                 </ListItemButton>
               </>
             )}
@@ -502,7 +753,14 @@ function NavBar() {
               <ListItemIcon>
                 {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
               </ListItemIcon>
-              <ListItemText primary={isLoggedIn ? "Sign Out" : "Login"} />
+              <ListItemText
+                primaryTypographyProps={{
+                  variant: "body2",
+                  whiteSpace: "nowrap",
+                  color: "#68B545",
+                }}
+                primary={isLoggedIn ? "Sign Out" : "Login"}
+              />
             </ListItemButton>
           </List>
         </Drawer>

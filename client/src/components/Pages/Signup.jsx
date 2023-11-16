@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Signup.css";
+import Footer from "./Footer";
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -236,7 +237,7 @@ const Signup = () => {
               onFocus={handleInputFocus}
               onBlur={handleInputBlur}
               required
-              style={{width:"15rem"}}
+              style={{ width: "15rem" }}
             />
             <FontAwesomeIcon
               icon={showPassword ? faEyeSlash : faEye}
@@ -277,6 +278,7 @@ const Signup = () => {
         </p>
       </div>
       <ToastContainer />
+      <Footer style={{ marginTop: "3rem" }} />
     </div>
   );
 };

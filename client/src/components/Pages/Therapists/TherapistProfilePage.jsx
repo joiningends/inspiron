@@ -18,6 +18,7 @@ import "./TherapistProfilePage.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import TextField from "@mui/material/TextField";
+import Footer from "../Footer";
 import {
   FormControl,
   InputLabel,
@@ -1755,6 +1756,7 @@ function TherapistProfilePage() {
           </form>
         </div>
       </div>
+    <Footer/>
     </>
   );
 }

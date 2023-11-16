@@ -4,12 +4,6 @@ import Education from "./Education";
 import achiv from "./achiv.png";
 import add from "./add.png";
 import minus from "./minus.png";
-import video from "./monitor.png";
-import arrow from "./arrow.png";
-import favorite from "./favorite.svg";
-import thubmsup from "./thumbs-up.png";
-import clock from "./clock.png";
-import happy from "./emoji-happy.png";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Grid from "@mui/material/Grid";
@@ -19,7 +13,8 @@ import LanguageIcon from "@mui/icons-material/Language";
 import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import MonitorIcon from "@mui/icons-material/DesktopWindows";
-import { FaHeart, FaThumbsUp, FaClock, FaSmile } from 'react-icons/fa';
+import { FaHeart, FaThumbsUp, FaClock, FaSmile } from "react-icons/fa";
+import Footer from "./Footer";
 
 import Button from "@material-ui/core/Button";
 
@@ -75,29 +70,41 @@ const DoctorProfile = () => {
 
   console.log(therapist);
 
+  const containerStyle = {
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "center",
+    maxWidth: "100%",
+    overflow: "hidden",
+
+  };
+  
   const cardStyle = {
     display: "flex",
     alignItems: "center",
     padding: "10px",
     borderRadius: "2rem",
     backgroundColor: "#68B545",
-    height: "35vh",
+    height: "auto",
     width: "90vw",
-    marginLeft: "8vw",
+    maxWidth: "80rem",
+    margin: "0 auto",
+    marginBottom: "20px",
   };
-
+  
   const imgDivStyle = {
-    width: "10rem",
-    height: "12rem",
+    width: "250px",
+    height: "250px",
     overflow: "hidden",
     borderRadius: "2rem",
   };
-
+  
   const doctorImgStyle = {
     width: "100%",
     height: "100%",
     objectFit: "cover",
   };
+  
 
   const aboutDivStyle = {
     paddingLeft: "16px",
@@ -150,8 +157,12 @@ const DoctorProfile = () => {
   return (
     <>
       <Paper style={cardStyle}>
-        <div style={imgDivStyle}>
-          <img src={imageUrl} style={doctorImgStyle} alt="Therapist" />
+        <div style={{ ...imgDivStyle, width: "40rem" }}>
+          <img
+            src={imageUrl}
+            style={{ ...doctorImgStyle}}
+            alt="Therapist"
+          />
         </div>
         <div style={aboutDivStyle}>
           <Typography variant="h5" style={headingStyle}>
@@ -191,7 +202,7 @@ const DoctorProfile = () => {
         </div>
         <div className="profileDetails">
           <span>
-          <FaClock className="profileIcons" />
+            <FaClock className="profileIcons" />
           </span>
           <span>
             <h3 className="subDetails">{therapist?.offlineSessionCount}</h3>
@@ -209,7 +220,7 @@ const DoctorProfile = () => {
         </div>
         <div className="profileDetails">
           <span>
-          <FaClock className="profileIcons" />
+            <FaClock className="profileIcons" />
           </span>
           <span>
             <h3 className="subDetails">{availableSession}</h3>
@@ -314,9 +325,14 @@ const DoctorProfile = () => {
         </div>
         <div className="booknowBtnLayout2">
           <p className="booknowBtnLayoutp">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore
-            perferendis deleniti illum necessitati voluptates ipsum, ratione
-            dolorum veritatis minus mollitia placeat.
+            Discovering the right therapist is key to your mental well-being
+            journey. Our service ensures a personalized match with experts
+            versed in scientific treatment protocols, including psychometric
+            screening and multi-modal psychotherapy. We prioritize your unique
+            goals, offering support through tailored self-help toolkits like
+            podcasts and articles. Trust us to connect you with a therapist who
+            understands and meets your individual needs, creating a
+            collaborative and effective path towards mental wellness.
           </p>
         </div>
         <div className="booknowBtnLayout3">
@@ -334,6 +350,7 @@ const DoctorProfile = () => {
           </Link>
         </div>
       </div>
+      <Footer style={{ marginTop: "3rem" }} />
     </>
   );
 };

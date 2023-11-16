@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAssessment, fetchAssessments } from "../redux/Action";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
+import Footer from "./Footer";
 
 const AssessmentPage = () => {
   const { id } = useParams();
@@ -97,6 +98,7 @@ const AssessmentPage = () => {
     ((currentQuestionIndex + 1) / assessment.questions.length) * 100;
 
   return (
+    <>
     <div className="assessment-container">
       <h1 className="assessment-title">{assessment.assessment_name}</h1>
 
@@ -174,11 +176,9 @@ const AssessmentPage = () => {
           </button>
         )}
       </div>
-
-      {isLastQuestion && (
-        <div className="total-score">Total Score: {totalScore}</div>
-      )}
     </div>
+    <Footer/>
+    </>
   );
 };
 

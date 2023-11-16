@@ -30,7 +30,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DetailsIcon from "@mui/icons-material/Details";
 import IconButton from "@mui/material/IconButton";
 import axios from "axios";
-
+import Footer from "../Footer";
 import "./SettingPage.css";
 
 function SettingPage() {
@@ -623,360 +623,577 @@ function SettingPage() {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Paper elevation={3} className="setting-paper">
-        <h2
-          style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
-        >
-          Center Settings
-        </h2>
-        <Grid container spacing={2}>
-          <Grid item xs={4} className="input-field">
-            <TextField
-              fullWidth
-              label="Center Name"
-              value={centerName}
-              onChange={e => setCenterName(e.target.value)}
-              disabled={!isCenterEditing}
-            />
+    <>
+      <Container maxWidth="lg">
+        <Paper elevation={3} className="setting-paper">
+          <h2
+            style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
+          >
+            Center Settings
+          </h2>
+          <Grid container spacing={2}>
+            <Grid item xs={4} className="input-field">
+              <TextField
+                fullWidth
+                label="Center Name"
+                value={centerName}
+                onChange={e => setCenterName(e.target.value)}
+                disabled={!isCenterEditing}
+              />
+            </Grid>
+            <Grid item xs={4} className="input-field">
+              <TextField
+                fullWidth
+                label="Center Address"
+                value={centerAddress}
+                onChange={e => setCenterAddress(e.target.value)}
+                disabled={!isCenterEditing}
+              />
+            </Grid>
+            <Grid item xs={4} className="input-field">
+              <TextField
+                fullWidth
+                label="Contact No"
+                value={contactNo}
+                onChange={e => setContactNo(e.target.value)}
+                disabled={!isCenterEditing}
+                error={!validateContactNo(contactNo)}
+                helperText={
+                  !validateContactNo(contactNo) ? "Invalid contact number" : ""
+                }
+              />
+            </Grid>
+            <Grid item xs={4} className="input-field">
+              <TextField
+                fullWidth
+                label="City"
+                value={centerCity}
+                onChange={e => setCenterCity(e.target.value)}
+                disabled={!isCenterEditing}
+              />
+            </Grid>
+            <Grid item xs={4} className="input-field">
+              <TextField
+                fullWidth
+                label="Pin Code"
+                value={centerPinCode}
+                onChange={e => setCenterPinCode(e.target.value)}
+                disabled={!isCenterEditing}
+                error={!validatePinCode(centerPinCode)}
+                helperText={
+                  !validatePinCode(centerPinCode) ? "Invalid pin code" : ""
+                }
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={4} className="input-field">
-            <TextField
-              fullWidth
-              label="Center Address"
-              value={centerAddress}
-              onChange={e => setCenterAddress(e.target.value)}
-              disabled={!isCenterEditing}
-            />
-          </Grid>
-          <Grid item xs={4} className="input-field">
-            <TextField
-              fullWidth
-              label="Contact No"
-              value={contactNo}
-              onChange={e => setContactNo(e.target.value)}
-              disabled={!isCenterEditing}
-              error={!validateContactNo(contactNo)}
-              helperText={
-                !validateContactNo(contactNo) ? "Invalid contact number" : ""
-              }
-            />
-          </Grid>
-          <Grid item xs={4} className="input-field">
-            <TextField
-              fullWidth
-              label="City"
-              value={centerCity}
-              onChange={e => setCenterCity(e.target.value)}
-              disabled={!isCenterEditing}
-            />
-          </Grid>
-          <Grid item xs={4} className="input-field">
-            <TextField
-              fullWidth
-              label="Pin Code"
-              value={centerPinCode}
-              onChange={e => setCenterPinCode(e.target.value)}
-              disabled={!isCenterEditing}
-              error={!validatePinCode(centerPinCode)}
-              helperText={
-                !validatePinCode(centerPinCode) ? "Invalid pin code" : ""
-              }
-            />
-          </Grid>
-        </Grid>
-        {isCenterEditing ? (
-          <div className="button-container">
+          {isCenterEditing ? (
+            <div className="button-container">
+              <Button
+                variant="contained"
+                startIcon={<SaveIcon />}
+                onClick={handleCreateCenterClick}
+                className="save-button"
+                disabled={
+                  !validateContactNo(contactNo) ||
+                  !validatePinCode(centerPinCode)
+                }
+                style={{ backgroundColor: "#D67449", color: "white" }}
+              >
+                Create
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={handleCancelCenterClick}
+                className="cancel-button"
+                style={{
+                  backgroundColor: "white",
+                  color: "#D67449",
+                  border: "1px solid #D67449",
+                  marginLeft: "1rem",
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          ) : (
             <Button
               variant="contained"
-              startIcon={<SaveIcon />}
-              onClick={handleCreateCenterClick}
-              className="save-button"
-              disabled={
-                !validateContactNo(contactNo) || !validatePinCode(centerPinCode)
-              }
-              style={{ backgroundColor: "#D67449", color: "white" }}
+              startIcon={<EditIcon />}
+              onClick={() => setIsCenterEditing(true)}
+              className="edit-button"
+              style={{ backgroundColor: "#D67449" }}
             >
-              Create
+              Add Center
             </Button>
-            <Button
-              variant="outlined"
-              onClick={handleCancelCenterClick}
-              className="cancel-button"
-              style={{
-                backgroundColor: "white",
-                color: "#D67449",
-                border: "1px solid #D67449",
-                marginLeft: "1rem",
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-        ) : (
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={() => setIsCenterEditing(true)}
-            className="edit-button"
-            style={{ backgroundColor: "#D67449" }}
-          >
-            Add Center
-          </Button>
-        )}
-        {centers.length > 0 && (
-          <div className="table-container">
-            <h2
-              style={{
-                fontSize: "1.5rem",
-                marginBottom: "1rem",
-                color: "black",
-              }}
-            >
-              Center List
-            </h2>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Center Name</TableCell>
-                    <TableCell>Center Address</TableCell>
-                    <TableCell>Contact No</TableCell>
-                    <TableCell>City</TableCell>
-                    <TableCell>Pin Code</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {centers.map((center, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{center.centerName}</TableCell>
-                      <TableCell>{center.centerAddress}</TableCell>
-                      <TableCell>{center.contactNo}</TableCell>
-                      <TableCell>{center.city}</TableCell>
-                      <TableCell>{center.pin}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outlined"
-                          startIcon={<DeleteIcon />}
-                          onClick={() => handleRemoveCenterClick(index)}
-                          style={{
-                            backgroundColor: "white",
-                            color: "#D67449",
-                            border: "1px solid #D67449",
-                            marginLeft: "1rem",
-                          }}
-                        >
-                          Remove
-                        </Button>
-                      </TableCell>
+          )}
+          {centers.length > 0 && (
+            <div className="table-container">
+              <h2
+                style={{
+                  fontSize: "1.5rem",
+                  marginBottom: "1rem",
+                  color: "black",
+                }}
+              >
+                Center List
+              </h2>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Center Name</TableCell>
+                      <TableCell>Center Address</TableCell>
+                      <TableCell>Contact No</TableCell>
+                      <TableCell>City</TableCell>
+                      <TableCell>Pin Code</TableCell>
+                      <TableCell>Actions</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-        )}
-      </Paper>
-      <Paper
-        elevation={3}
-        className="setting-paper"
-        style={{ marginTop: "2rem" }}
-      >
-        <h2
-          style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
+                  </TableHead>
+                  <TableBody>
+                    {centers.map((center, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{center.centerName}</TableCell>
+                        <TableCell>{center.centerAddress}</TableCell>
+                        <TableCell>{center.contactNo}</TableCell>
+                        <TableCell>{center.city}</TableCell>
+                        <TableCell>{center.pin}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outlined"
+                            startIcon={<DeleteIcon />}
+                            onClick={() => handleRemoveCenterClick(index)}
+                            style={{
+                              backgroundColor: "white",
+                              color: "#D67449",
+                              border: "1px solid #D67449",
+                              marginLeft: "1rem",
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          )}
+        </Paper>
+        <Paper
+          elevation={3}
+          className="setting-paper"
+          style={{ marginTop: "2rem" }}
         >
-          Session Settings
-        </h2>
-        <Grid container spacing={2}>
-          <Grid item xs={4} className="input-field">
-            <TextField
-              fullWidth
-              type="number"
-              value={sessionDuration}
-              onChange={e => setSessionDuration(e.target.value)}
-              disabled={!isSessionEditing}
-            />
+          <h2
+            style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
+          >
+            Session Settings
+          </h2>
+          <Grid container spacing={2}>
+            <Grid item xs={4} className="input-field">
+              <TextField
+                fullWidth
+                type="number"
+                value={sessionDuration}
+                onChange={e => setSessionDuration(e.target.value)}
+                disabled={!isSessionEditing}
+              />
+            </Grid>
+            <Grid item xs={4} className="input-field">
+              <TextField
+                fullWidth
+                type="number"
+                onChange={e => setSessionCoolOffTime(e.target.value)}
+                value={sessionCoolOffTime}
+                disabled={!isSessionEditing}
+              />
+            </Grid>
+            <Grid item xs={4} className="input-field">
+              <TextField
+                fullWidth
+                label="Session Extension Time (in min)"
+                type="number"
+                value={30}
+                disabled
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={4} className="input-field">
-            <TextField
-              fullWidth
-              type="number"
-              onChange={e => setSessionCoolOffTime(e.target.value)}
-              value={sessionCoolOffTime}
-              disabled={!isSessionEditing}
-            />
-          </Grid>
-          <Grid item xs={4} className="input-field">
-            <TextField
-              fullWidth
-              label="Session Extension Time (in min)"
-              type="number"
-              value={30}
-              disabled
-            />
-          </Grid>
-        </Grid>
-        {isSessionEditing ? (
-          <div className="button-container">
+          {isSessionEditing ? (
+            <div className="button-container">
+              <Button
+                variant="contained"
+                startIcon={<SaveIcon />}
+                onClick={handleSaveSessionClick}
+                className="save-button"
+                style={{ backgroundColor: "#D67449", color: "white" }}
+              >
+                Save Session Settings
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={handleCancelSessionClick}
+                className="cancel-button"
+                style={{
+                  backgroundColor: "white",
+                  color: "#D67449",
+                  border: "1px solid #D67449",
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          ) : (
             <Button
               variant="contained"
-              startIcon={<SaveIcon />}
-              onClick={handleSaveSessionClick}
-              className="save-button"
+              startIcon={<EditIcon />}
+              onClick={handleEditSessionClick}
+              className="edit-button"
               style={{ backgroundColor: "#D67449", color: "white" }}
             >
-              Save Session Settings
+              Edit Session Settings
             </Button>
-            <Button
-              variant="outlined"
-              onClick={handleCancelSessionClick}
-              className="cancel-button"
-              style={{
-                backgroundColor: "white",
-                color: "#D67449",
-                border: "1px solid #D67449",
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-        ) : (
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={handleEditSessionClick}
-            className="edit-button"
-            style={{ backgroundColor: "#D67449", color: "white" }}
-          >
-            Edit Session Settings
-          </Button>
-        )}
-      </Paper>
-      <Paper
-        elevation={3}
-        className="setting-paper"
-        style={{ marginTop: "2rem" }}
-      >
-        <h2
-          style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
+          )}
+        </Paper>
+        <Paper
+          elevation={3}
+          className="setting-paper"
+          style={{ marginTop: "2rem" }}
         >
-          Experience Levels
-        </h2>
-        {isExperienceFormVisible ? (
-          <Dialog
-            open={isExperienceFormVisible}
-            onClose={() => setIsExperienceFormVisible(false)}
-            fullWidth
-            maxWidth="sm"
+          <h2
+            style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
           >
-            <DialogTitle>Add Experience Level</DialogTitle>
-            <DialogContent>
-              <form onSubmit={handleExperienceFormSubmit}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} className="input-field">
-                    <TextField
-                      fullWidth
-                      label="Session Number"
-                      type="number"
-                      value={experienceFormData.sessionNumber}
-                      onChange={e =>
-                        setExperienceFormData({
-                          ...experienceFormData,
-                          sessionNumber: e.target.value,
-                        })
-                      }
-                      required
-                    />
+            Experience Levels
+          </h2>
+          {isExperienceFormVisible ? (
+            <Dialog
+              open={isExperienceFormVisible}
+              onClose={() => setIsExperienceFormVisible(false)}
+              fullWidth
+              maxWidth="sm"
+            >
+              <DialogTitle>Add Experience Level</DialogTitle>
+              <DialogContent>
+                <form onSubmit={handleExperienceFormSubmit}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} className="input-field">
+                      <TextField
+                        fullWidth
+                        label="Session Number"
+                        type="number"
+                        value={experienceFormData.sessionNumber}
+                        onChange={e =>
+                          setExperienceFormData({
+                            ...experienceFormData,
+                            sessionNumber: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </Grid>
+                    <Grid item xs={12} className="input-field">
+                      <TextField
+                        fullWidth
+                        label="Session Price"
+                        type="number"
+                        value={experienceFormData.sessionPrice}
+                        onChange={e =>
+                          setExperienceFormData({
+                            ...experienceFormData,
+                            sessionPrice: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </Grid>
+                    <Grid item xs={12} className="input-field">
+                      <TextField
+                        fullWidth
+                        label="Discount Session Price"
+                        type="number"
+                        value={experienceFormData.discountSessionPrice}
+                        onChange={e =>
+                          setExperienceFormData({
+                            ...experienceFormData,
+                            discountSessionPrice: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} className="input-field">
-                    <TextField
-                      fullWidth
-                      label="Session Price"
-                      type="number"
-                      value={experienceFormData.sessionPrice}
-                      onChange={e =>
-                        setExperienceFormData({
-                          ...experienceFormData,
-                          sessionPrice: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </Grid>
-                  <Grid item xs={12} className="input-field">
-                    <TextField
-                      fullWidth
-                      label="Discount Session Price"
-                      type="number"
-                      value={experienceFormData.discountSessionPrice}
-                      onChange={e =>
-                        setExperienceFormData({
-                          ...experienceFormData,
-                          discountSessionPrice: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </Grid>
-                </Grid>
-                <DialogActions>
+                  <DialogActions>
+                    <Button
+                      onClick={() => setIsExperienceFormVisible(false)}
+                      style={{ backgroundColor: "#D67449", color: "white" }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      style={{ backgroundColor: "#D67449", color: "white" }}
+                    >
+                      Add
+                    </Button>
+                  </DialogActions>
+                </form>
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <Grid container spacing={2}>
+              <Grid item xs={6} className="input-field">
+                <TextField
+                  fullWidth
+                  label="New Level"
+                  value={experienceLevelName}
+                  onChange={e => setExperienceLevelName(e.target.value)}
+                  disabled={!isExperienceEditing}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                {isExperienceEditing ? (
                   <Button
-                    onClick={() => setIsExperienceFormVisible(false)}
-                    style={{ backgroundColor: "#D67449", color: "white" }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
                     variant="contained"
-                    color="primary"
+                    onClick={handleAddExperienceLevel}
+                    className="add-button"
+                    disabled={experienceLevelName.trim() === ""}
                     style={{ backgroundColor: "#D67449", color: "white" }}
                   >
                     Add
                   </Button>
+                ) : (
+                  <Button
+                    variant="contained"
+                    startIcon={<EditIcon />}
+                    onClick={() => setIsExperienceEditing(true)}
+                    className="edit-button"
+                    style={{ backgroundColor: "#D67449", color: "white" }}
+                  >
+                    Edit Experience Levels
+                  </Button>
+                )}
+              </Grid>
+            </Grid>
+          )}
+          {experienceLevels.length > 0 && (
+            <div className="table-container">
+              <h2
+                style={{
+                  fontSize: "1.5rem",
+                  marginBottom: "1rem",
+                  color: "black",
+                }}
+              >
+                Experience Levels
+              </h2>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Level Name</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {experienceLevels.map((level, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{level.level}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outlined"
+                            startIcon={<EditIcon />}
+                            onClick={() =>
+                              handleEditExperienceLevel(index, level._id)
+                            }
+                            style={{
+                              backgroundColor: "#D67449",
+                              color: "white",
+                              border: "0px solid",
+                            }}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            startIcon={<DeleteIcon />}
+                            onClick={() =>
+                              handleRemoveExperienceLevel(0, level._id)
+                            }
+                            style={{
+                              backgroundColor: "white",
+                              color: "#D67449",
+                              border: "1px solid #D67449",
+                              marginLeft: "1rem",
+                            }}
+                          >
+                            Remove
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            startIcon={<DetailsIcon />}
+                            onClick={() => handleDetailsClick(index, level._id)}
+                            style={{
+                              backgroundColor: "white",
+                              color: "#D67449",
+                              border: "1px solid #D67449",
+                              marginLeft: "1rem",
+                            }}
+                          >
+                            Details
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
+          )}
+          <Dialog
+            open={detailsIndex !== null}
+            onClose={() => {
+              setDetailsIndex(null);
+              setSelectedExperienceDetails(null);
+            }}
+            fullWidth
+            maxWidth="md" // Increase the maximum width for better layout
+          >
+            {detailsIndex !== null && (
+              <>
+                <DialogTitle>Experience Level Details</DialogTitle>
+                <DialogContent>
+                  {selectedExperienceDetails && (
+                    <TableContainer>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Session Number</TableCell>
+                            <TableCell>Session Price</TableCell>
+                            <TableCell>Discount Session Price</TableCell>
+                            <TableCell>Action</TableCell>{" "}
+                            {/* New "Action" column */}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {selectedExperienceDetails.map((detail, index) => (
+                            <TableRow key={index}>
+                              <TableCell>{detail.session}</TableCell>
+                              <TableCell>{detail.sessionPrice}</TableCell>
+                              <TableCell>{detail.discountPrice}</TableCell>
+                              <TableCell>
+                                <button
+                                  onClick={() =>
+                                    handleExperinceDetailsRemove(detail._id)
+                                  }
+                                >
+                                  Remove
+                                </button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  )}
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setDetailsIndex(null)}>Close</Button>
                 </DialogActions>
-              </form>
-            </DialogContent>
+              </>
+            )}
           </Dialog>
-        ) : (
-          <Grid container spacing={2}>
-            <Grid item xs={6} className="input-field">
-              <TextField
-                fullWidth
-                label="New Level"
-                value={experienceLevelName}
-                onChange={e => setExperienceLevelName(e.target.value)}
-                disabled={!isExperienceEditing}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              {isExperienceEditing ? (
-                <Button
-                  variant="contained"
-                  onClick={handleAddExperienceLevel}
-                  className="add-button"
-                  disabled={experienceLevelName.trim() === ""}
-                  style={{ backgroundColor: "#D67449", color: "white" }}
-                >
-                  Add
-                </Button>
-              ) : (
-                <Button
-                  variant="contained"
-                  startIcon={<EditIcon />}
-                  onClick={() => setIsExperienceEditing(true)}
-                  className="edit-button"
-                  style={{ backgroundColor: "#D67449", color: "white" }}
-                >
-                  Edit Experience Levels
-                </Button>
-              )}
-            </Grid>
-          </Grid>
-        )}
-        {experienceLevels.length > 0 && (
-          <div className="table-container">
+        </Paper>
+
+        <Container maxWidth="lg" style={{ marginTop: "2rem" }}>
+          <Paper
+            elevation={3}
+            style={{ padding: "16px", marginBottom: "16px" }}
+          >
+            <h1 style={{ textAlign: "center", marginBottom: "16px" }}>
+              Add Expertise
+            </h1>
+            <TextField
+              label="Expertise"
+              variant="outlined"
+              value={expertise}
+              onChange={handleExpertiseChange}
+              fullWidth
+              style={{ marginBottom: "16px" }}
+            />
+            <Button
+              variant="contained"
+              onClick={handleAddExpertise}
+              fullWidth
+              style={{
+                color: "white",
+                backgroundColor: "#D67449",
+              }}
+            >
+              Add
+            </Button>
+          </Paper>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={2} style={{ textAlign: "center" }}>
+                      Loading...
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  expertiseList.map(item => (
+                    <TableRow key={item.id}>
+                      <TableCell>{item.type}</TableCell>
+                      <TableCell>
+                        <IconButton
+                          aria-label="delete"
+                          onClick={() => handleRemoveExpertise(item.id)}
+                        >
+                          <DeleteIcon style={{ color: "red" }} />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Container>
+
+        <Box
+          boxShadow={3}
+          p={3}
+          style={{ marginTop: "3rem", width: "95%", marginLeft: "1.5rem" }}
+        >
+          <h2>Edit First Session Note</h2>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleEditChiefNote}
+            style={{ marginRight: "1rem" }}
+          >
+            Edit Chief-First Session Note
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleEditIllnessNote}
+          >
+            Edit Illness-First Session Note
+          </Button>
+        </Box>
+
+        <Container maxWidth="md" style={{ marginTop: "3rem" }}>
+          <Paper elevation={3} style={{ padding: "20px" }}>
             <h2
               style={{
                 fontSize: "1.5rem",
@@ -984,358 +1201,152 @@ function SettingPage() {
                 color: "black",
               }}
             >
-              Experience Levels
+              Upload Files
             </h2>
+            <Grid container spacing={3} alignItems="center">
+              <Grid item xs={12} sm={6}>
+                <InputLabel htmlFor="uploadMedicineList">
+                  <input
+                    type="file"
+                    accept=".xlsx"
+                    id="uploadMedicineList"
+                    style={{ display: "none" }}
+                    onChange={handleMedicineListUpload}
+                  />
+                  <Button
+                    variant="contained"
+                    component="span"
+                    style={{
+                      color: "white",
+                      backgroundColor: "#D67449",
+                    }}
+                    startIcon={<CloudUploadIcon />}
+                  >
+                    Upload Medicine List
+                  </Button>
+                </InputLabel>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Button
+                  variant="contained"
+                  onClick={viewMedicineList}
+                  startIcon={<DescriptionIcon />}
+                  style={{
+                    color: "white",
+                    backgroundColor: "#D67449",
+                  }}
+                >
+                  View Medicine List
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <InputLabel htmlFor="uploadLabTestList">
+                  <input
+                    type="file"
+                    accept=".xlsx"
+                    id="uploadLabTestList"
+                    style={{ display: "none" }}
+                    onChange={handleLabTestListUpload}
+                  />
+                  <Button
+                    variant="contained"
+                    component="span"
+                    startIcon={<CloudUploadIcon />}
+                    style={{
+                      color: "white",
+                      backgroundColor: "#D67449",
+                    }}
+                  >
+                    Upload Lab Test List
+                  </Button>
+                </InputLabel>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Button
+                  variant="contained"
+                  onClick={viewLabTestList}
+                  startIcon={<DescriptionIcon />}
+                  style={{
+                    color: "white",
+                    backgroundColor: "#D67449",
+                  }}
+                >
+                  View Lab Test List
+                </Button>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Container>
+
+        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md">
+          <DialogTitle>Medicine List</DialogTitle>
+          <DialogContent>
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Level Name</TableCell>
-                    <TableCell>Actions</TableCell>
+                    <TableCell>S.No.</TableCell>
+                    <TableCell>Name</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {experienceLevels.map((level, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{level.level}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outlined"
-                          startIcon={<EditIcon />}
-                          onClick={() =>
-                            handleEditExperienceLevel(index, level._id)
-                          }
-                          style={{
-                            backgroundColor: "#D67449",
-                            color: "white",
-                            border: "0px solid",
-                          }}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          startIcon={<DeleteIcon />}
-                          onClick={() =>
-                            handleRemoveExperienceLevel(0, level._id)
-                          }
-                          style={{
-                            backgroundColor: "white",
-                            color: "#D67449",
-                            border: "1px solid #D67449",
-                            marginLeft: "1rem",
-                          }}
-                        >
-                          Remove
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          startIcon={<DetailsIcon />}
-                          onClick={() => handleDetailsClick(index, level._id)}
-                          style={{
-                            backgroundColor: "white",
-                            color: "#D67449",
-                            border: "1px solid #D67449",
-                            marginLeft: "1rem",
-                          }}
-                        >
-                          Details
-                        </Button>
-                      </TableCell>
+                  {/* Loop through the medicineList state and display the data in table rows */}
+                  {medicineList.map((medicine, index) => (
+                    <TableRow key={medicine._id}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{medicine.name}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </TableContainer>
-          </div>
-        )}
-        <Dialog
-          open={detailsIndex !== null}
-          onClose={() => {
-            setDetailsIndex(null);
-            setSelectedExperienceDetails(null);
-          }}
-          fullWidth
-          maxWidth="md" // Increase the maximum width for better layout
-        >
-          {detailsIndex !== null && (
-            <>
-              <DialogTitle>Experience Level Details</DialogTitle>
-              <DialogContent>
-                {selectedExperienceDetails && (
-                  <TableContainer>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Session Number</TableCell>
-                          <TableCell>Session Price</TableCell>
-                          <TableCell>Discount Session Price</TableCell>
-                          <TableCell>Action</TableCell>{" "}
-                          {/* New "Action" column */}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {selectedExperienceDetails.map((detail, index) => (
-                          <TableRow key={index}>
-                            <TableCell>{detail.session}</TableCell>
-                            <TableCell>{detail.sessionPrice}</TableCell>
-                            <TableCell>{detail.discountPrice}</TableCell>
-                            <TableCell>
-                              <button
-                                onClick={() =>
-                                  handleExperinceDetailsRemove(detail._id)
-                                }
-                              >
-                                Remove
-                              </button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                )}
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setDetailsIndex(null)}>Close</Button>
-              </DialogActions>
-            </>
-          )}
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleCloseDialog}
+              color="primary"
+              style={{ backgroundColor: "#D67449", color: "white" }}
+            >
+              Close
+            </Button>
+          </DialogActions>
         </Dialog>
-      </Paper>
-
-      <Container maxWidth="lg" style={{ marginTop: "2rem" }}>
-        <Paper elevation={3} style={{ padding: "16px", marginBottom: "16px" }}>
-          <h1 style={{ textAlign: "center", marginBottom: "16px" }}>
-            Add Expertise
-          </h1>
-          <TextField
-            label="Expertise"
-            variant="outlined"
-            value={expertise}
-            onChange={handleExpertiseChange}
-            fullWidth
-            style={{ marginBottom: "16px" }}
-          />
-          <Button
-            variant="contained"
-            onClick={handleAddExpertise}
-            fullWidth
-            style={{
-              color: "white",
-              backgroundColor: "#D67449",
-            }}
-          >
-            Add
-          </Button>
-        </Paper>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Type</TableCell>
-                <TableCell>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={2} style={{ textAlign: "center" }}>
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : (
-                expertiseList.map(item => (
-                  <TableRow key={item.id}>
-                    <TableCell>{item.type}</TableCell>
-                    <TableCell>
-                      <IconButton
-                        aria-label="delete"
-                        onClick={() => handleRemoveExpertise(item.id)}
-                      >
-                        <DeleteIcon style={{ color: "red" }} />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Container>
-
-      <Box
-        boxShadow={3}
-        p={3}
-        style={{ marginTop: "3rem", width: "95%", marginLeft: "1.5rem" }}
-      >
-        <h2>Edit First Session Note</h2>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleEditChiefNote}
-          style={{ marginRight: "1rem" }}
+        <Dialog
+          open={openLabTestDialog}
+          onClose={handleCloseLabTestDialog}
+          maxWidth="md"
         >
-          Edit Chief-First Session Note
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleEditIllnessNote}
-        >
-          Edit Illness-First Session Note
-        </Button>
-      </Box>
-
-      <Container maxWidth="md" style={{ marginTop: "3rem" }}>
-        <Paper elevation={3} style={{ padding: "20px" }}>
-          <h2
-            style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
-          >
-            Upload Files
-          </h2>
-          <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} sm={6}>
-              <InputLabel htmlFor="uploadMedicineList">
-                <input
-                  type="file"
-                  accept=".xlsx"
-                  id="uploadMedicineList"
-                  style={{ display: "none" }}
-                  onChange={handleMedicineListUpload}
-                />
-                <Button
-                  variant="contained"
-                  component="span"
-                  style={{
-                    color: "white",
-                    backgroundColor: "#D67449",
-                  }}
-                  startIcon={<CloudUploadIcon />}
-                >
-                  Upload Medicine List
-                </Button>
-              </InputLabel>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Button
-                variant="contained"
-                onClick={viewMedicineList}
-                startIcon={<DescriptionIcon />}
-                style={{
-                  color: "white",
-                  backgroundColor: "#D67449",
-                }}
-              >
-                View Medicine List
-              </Button>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <InputLabel htmlFor="uploadLabTestList">
-                <input
-                  type="file"
-                  accept=".xlsx"
-                  id="uploadLabTestList"
-                  style={{ display: "none" }}
-                  onChange={handleLabTestListUpload}
-                />
-                <Button
-                  variant="contained"
-                  component="span"
-                  startIcon={<CloudUploadIcon />}
-                  style={{
-                    color: "white",
-                    backgroundColor: "#D67449",
-                  }}
-                >
-                  Upload Lab Test List
-                </Button>
-              </InputLabel>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Button
-                variant="contained"
-                onClick={viewLabTestList}
-                startIcon={<DescriptionIcon />}
-                style={{
-                  color: "white",
-                  backgroundColor: "#D67449",
-                }}
-              >
-                View Lab Test List
-              </Button>
-            </Grid>
-          </Grid>
-        </Paper>
+          <DialogTitle>Lab Test List</DialogTitle>
+          <DialogContent>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>S.No.</TableCell>
+                    <TableCell>Name</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* Loop through the labTestList state and display the data in table rows */}
+                  {labTestList?.map((labTest, index) => (
+                    <TableRow key={labTest._id}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{labTest.name}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseLabTestDialog} color="primary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Container>
-
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md">
-        <DialogTitle>Medicine List</DialogTitle>
-        <DialogContent>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>S.No.</TableCell>
-                  <TableCell>Name</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {/* Loop through the medicineList state and display the data in table rows */}
-                {medicineList.map((medicine, index) => (
-                  <TableRow key={medicine._id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{medicine.name}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleCloseDialog}
-            color="primary"
-            style={{ backgroundColor: "#D67449", color: "white" }}
-          >
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
-        open={openLabTestDialog}
-        onClose={handleCloseLabTestDialog}
-        maxWidth="md"
-      >
-        <DialogTitle>Lab Test List</DialogTitle>
-        <DialogContent>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>S.No.</TableCell>
-                  <TableCell>Name</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {/* Loop through the labTestList state and display the data in table rows */}
-                {labTestList?.map((labTest, index) => (
-                  <TableRow key={labTest._id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{labTest.name}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseLabTestDialog} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+      <Footer />
+    </>
   );
 }
 

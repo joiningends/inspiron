@@ -6,6 +6,7 @@ import createTherapistimg from "./intermediary.png";
 import rightSideArrow from "./right-arrow.png";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
+import Footer from "../Footer";
 
 function Dashboard() {
   const dispatch = useDispatch();
@@ -435,6 +436,7 @@ function Dashboard() {
           </form>
         </div>
       )}
+      <Footer />
     </>
   );
 }

@@ -6,6 +6,7 @@ import {
   updateTherapist,
   updateTherapistImage,
 } from "../../redux/Action";
+import Footer from "../Footer";
 import {
   Container,
   Typography,
@@ -90,67 +91,70 @@ function PatientPage() {
   };
 
   return (
-    <div>
-      <h1>Patient List</h1>
-      {/* Style the SearchInput to match the previous design */}
-      <TextField
-        className="search-input"
-        variant="outlined"
-        label="Search by name"
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-        style={{ width: "89%" }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          ),
-        }}
-        fullWidth
-        margin="normal"
-      />
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name of Patient</TableCell>
-              <TableCell>Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filterPatients()
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map(patient => (
-                <TableRow key={patient.userId}>
-                  <TableCell>{patient.userName}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={() =>
-                        handleOpenLatestAppointment(patient.userId)
-                      }
-                      disabled={patient?.firstSession === "pending"}
-                    >
-                      Details
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        component="div"
-        rowsPerPageOptions={[5, 10, 25]}
-        count={filterPatients()?.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </div>
+    <>
+      <div>
+        <h1>Patient List</h1>
+        {/* Style the SearchInput to match the previous design */}
+        <TextField
+          className="search-input"
+          variant="outlined"
+          label="Search by name"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          style={{ width: "89%" }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          fullWidth
+          margin="normal"
+        />
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Name of Patient</TableCell>
+                <TableCell>Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filterPatients()
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map(patient => (
+                  <TableRow key={patient.userId}>
+                    <TableCell>{patient.userName}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={() =>
+                          handleOpenLatestAppointment(patient.userId)
+                        }
+                        disabled={patient?.firstSession === "pending"}
+                      >
+                        Details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          component="div"
+          rowsPerPageOptions={[5, 10, 25]}
+          count={filterPatients()?.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </div>
+      <Footer />
+    </>
   );
 }
 

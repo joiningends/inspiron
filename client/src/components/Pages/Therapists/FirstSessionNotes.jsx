@@ -20,6 +20,7 @@ import {
 } from "@material-ui/core";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Footer from "../Footer";
 
 function SociodemographicForm() {
   const [fullName, setFullName] = useState("");
@@ -1118,7 +1119,6 @@ const HistoryOfPresentingIllnessForm = () => {
             </Button>
           ) : (
             <Button
-              
               onClick={handleNext}
               style={{
                 backgroundColor: "#D67449",
@@ -1155,42 +1155,45 @@ function FirstSessionNotes() {
   };
 
   return (
-    <div>
-      <h2>First Session Notes</h2>
-      <div className="button-container">
-        <button
-          onClick={() => openForm("sociodemographic")}
-          className={
-            activeForm === "sociodemographic"
-              ? "active-session-button"
-              : "session-button"
-          }
-        >
-          Sociodemographic Details
-        </button>
-        <button
-          onClick={() => openForm("chiefComplaints")}
-          className={
-            activeForm === "chiefComplaints"
-              ? "active-session-button"
-              : "session-button"
-          }
-        >
-          Chief Complaints
-        </button>
-        <button
-          onClick={() => openForm("historyOfPresentingIllness")}
-          className={
-            activeForm === "historyOfPresentingIllness"
-              ? "active-session-button"
-              : "session-button"
-          }
-        >
-          History of Presenting Illness
-        </button>
+    <>
+      <div>
+        <h2>First Session Notes</h2>
+        <div className="button-container">
+          <button
+            onClick={() => openForm("sociodemographic")}
+            className={
+              activeForm === "sociodemographic"
+                ? "active-session-button"
+                : "session-button"
+            }
+          >
+            Sociodemographic Details
+          </button>
+          <button
+            onClick={() => openForm("chiefComplaints")}
+            className={
+              activeForm === "chiefComplaints"
+                ? "active-session-button"
+                : "session-button"
+            }
+          >
+            Chief Complaints
+          </button>
+          <button
+            onClick={() => openForm("historyOfPresentingIllness")}
+            className={
+              activeForm === "historyOfPresentingIllness"
+                ? "active-session-button"
+                : "session-button"
+            }
+          >
+            History of Presenting Illness
+          </button>
+        </div>
+        {renderForm()}
       </div>
-      {renderForm()}
-    </div>
+      <Footer />
+    </>
   );
 }
 

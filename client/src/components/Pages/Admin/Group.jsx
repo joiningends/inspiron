@@ -12,6 +12,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { toast, ToastContainer } from "react-toastify";
 import Snackbar from "@mui/material/Snackbar";
+import Footer from "../Footer";
 
 function Groups() {
   const [data, setData] = useState([]);
@@ -327,6 +328,7 @@ function Groups() {
           message={errorMessage}
         />
       </div>
+      <Footer />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./AvailableAssessmentCard.css";
 import { Link } from "react-router-dom";
+import Footer from "./Footer";
 
 const AssessmentCard = ({
   assessmentImage,
@@ -21,6 +22,7 @@ const AssessmentCard = ({
 
   const imageUrl = assessmentImage;
   return (
+    <>
     <div className={`AssessmentCard ${loaded ? "loaded" : ""}`}>
       <div className="image-container">
         <img src={imageUrl} alt="Assessment" />
@@ -35,6 +37,8 @@ const AssessmentCard = ({
         </div>
       </div>
     </div>
+
+    </>
   );
 };
 

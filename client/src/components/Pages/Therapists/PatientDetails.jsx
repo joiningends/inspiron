@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
+import Footer from "../Footer";
 function PatientDetails() {
   const [appointmentDetails, setAppointmentDetails] = useState(null);
   const [therapistDetails, setTherapistDetails] = useState(null);
@@ -601,6 +602,7 @@ function PatientDetails() {
           </Container>
         </>
       )}
+      <Footer />
     </>
   );
 }

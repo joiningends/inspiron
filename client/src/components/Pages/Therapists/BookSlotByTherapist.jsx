@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
+import Footer from "../Footer";
 
 const formatDate = date => {
   const options = { day: "2-digit", month: "2-digit", year: "numeric" };
@@ -318,6 +319,7 @@ function BookSlotByTherapist() {
           </div>
         </div>
       )}
+      <Footer/>
     </>
   );
 }

@@ -3,6 +3,7 @@ import Therapist from "./Therapist";
 import "./TherapistsWithFilter.css";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
+import Footer from "./Footer";
 
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -564,7 +565,7 @@ export const TherapistsWithFilter = () => {
         ))}
       </Paper>
       {/* Therapists list */}
-      <div className="therapist-grandParent">
+
         <div className="therapist-containerr">
           {currentTherapists?.map(therapist => (
             <Therapist
@@ -574,7 +575,7 @@ export const TherapistsWithFilter = () => {
             />
           ))}
         </div>
-      </div>
+
 
       {/* Pagination controls */}
       {/* Enhanced Pagination controls */}
@@ -599,6 +600,7 @@ export const TherapistsWithFilter = () => {
           </ul>
         )}
       </div>
+      <Footer />
     </>
   );
 };

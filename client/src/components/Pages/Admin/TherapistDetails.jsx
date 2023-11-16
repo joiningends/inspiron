@@ -20,6 +20,7 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
+import Footer from "../Footer";
 
 function TherapistDetails() {
   const dispatch = useDispatch();
@@ -1845,6 +1846,7 @@ function TherapistDetails() {
           Approve
         </button>
       </div>
+      <Footer />
     </>
   );
 }

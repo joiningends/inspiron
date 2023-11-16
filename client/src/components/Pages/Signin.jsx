@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import "./Signin.css";
+import Footer from "./Footer";
 
 const Signin = () => {
   const dispatch = useDispatch();
@@ -233,6 +234,7 @@ const Signin = () => {
         </p>
       </div>
       <ToastContainer />
+      <Footer />
     </div>
   );
 };

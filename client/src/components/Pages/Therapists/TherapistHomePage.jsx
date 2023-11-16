@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import inspironWheel from "../inspironwhitewheel.png";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
+import Footer from "../Footer";
 
 const TherapistHomePage = () => {
   const dispatch = useDispatch();
@@ -232,6 +233,7 @@ const TherapistHomePage = () => {
           </tbody>
         </table>
       </div>
+      <Footer />
     </>
   );
 };

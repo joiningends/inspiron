@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import "./OnePatientDetails.css";
 import { useParams } from "react-router-dom";
+import Footer from "../Footer";
 
 function OnePatientDetails() {
   const [patientDetails, setPatientDetails] = useState([]);
@@ -89,181 +90,190 @@ function OnePatientDetails() {
   }, [userId, therapistId]);
 
   return (
-    <Grid container style={{ padding: "20px" }}>
-      <Grid
-        item
-        xs={12}
-        style={{
-          marginBottom: "20px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h4">{patientDetails?.user} Details</Typography>
-      </Grid>
-      <Grid item xs={12} style={{ marginBottom: "20px" }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            // Construct the URL you want to open in a new window or tab.
-            const url = `/openFirstSessionNotes/${userId}`;
-
-            // Open the URL in a new window or tab.
-            window.open(url, "_blank");
+    <>
+      <Grid container style={{ padding: "20px" }}>
+        <Grid
+          item
+          xs={12}
+          style={{
+            marginBottom: "20px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
-          First Session Notes
-        </Button>
-      </Grid>
-      <Grid item xs={12} style={{ marginBottom: "20px" }}>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>SNo</TableCell>
-                <TableCell>Appointment Date</TableCell>
-                <TableCell>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {patientDetails?.appointments?.map((appointment, index) => (
-                <TableRow key={appointment._id}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{formatDate(appointment?.dateTime)}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => handleSessionHistoryClick(appointment._id)}
-                    >
-                      Session History
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          component={Box}
-          rowsPerPageOptions={[5, 10, 25]}
-          count={patientDetails?.appointments?.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Grid>
+          <Typography variant="h4">{patientDetails?.user} Details</Typography>
+        </Grid>
+        <Grid item xs={12} style={{ marginBottom: "20px" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              // Construct the URL you want to open in a new window or tab.
+              const url = `/openFirstSessionNotes/${userId}`;
 
-      <Dialog
-        open={sessionHistoryDialogOpen}
-        onClose={handleCloseSessionHistoryDialog}
-        fullWidth
-        maxWidth="md"
-      >
-        <DialogTitle>Session History Data</DialogTitle>
-        <DialogContent>
-          {sessionHistoryData && (
-            <form>
-              <div>
-                <label htmlFor="Growthcurvepoints">Growth Curve Points:</label>
-                <input
-                  type="text"
-                  id="Growthcurvepoints"
-                  name="Growthcurvepoints"
-                  value={sessionHistoryData.Growthcurvepoints}
-                  readOnly
-                />
-              </div>
-              <div>
-                <label htmlFor="Homeworkgiven">Homework Given:</label>
-                <input
-                  type="text"
-                  id="Homeworkgiven"
-                  name="Homeworkgiven"
-                  value={sessionHistoryData.Homeworkgiven}
-                  readOnly
-                />
-              </div>
-              <div>
-                <label htmlFor="Nextsessionplan">Next Session Plan:</label>
-                <input
-                  type="text"
-                  id="Nextsessionplan"
-                  name="Nextsessionplan"
-                  value={sessionHistoryData.Nextsessionplan}
-                  readOnly
-                />
-              </div>
-              <div>
-                <label htmlFor="Summary">Summary:</label>
-                <input
-                  type="text"
-                  id="Summary"
-                  name="Summary"
-                  value={sessionHistoryData.Summary}
-                  readOnly
-                />
-              </div>
-              <div>
-                <label htmlFor="TherapeuticTechniquesused">
-                  Therapeutic Techniques Used:
-                </label>
-                <input
-                  type="text"
-                  id="TherapeuticTechniquesused"
-                  name="TherapeuticTechniquesused"
-                  value={sessionHistoryData.TherapeuticTechniquesused}
-                  style={{ userSelect: "none" }}
-                  readOnly
-                />
-              </div>
-              <div>
-                <label htmlFor="sharedWithPatient">Shared with Patient:</label>
-                <input
-                  type="text"
-                  id="sharedWithPatient"
-                  name="sharedWithPatient"
-                  value={sessionHistoryData.sharedWithPatient ? "Yes" : "No"}
-                  readOnly
-                />
-              </div>
-              <div>
-                <label htmlFor="sharedWithPsychiatrist">
-                  Shared with Psychiatrist:
-                </label>
-                <input
-                  type="text"
-                  id="sharedWithPsychiatrist"
-                  name="sharedWithPsychiatrist"
-                  value={
-                    sessionHistoryData.sharedWithPsychiatrist ? "Yes" : "No"
-                  }
-                  readOnly
-                />
-              </div>
-              <div>
-                <label htmlFor="generateReport">Generate Report:</label>
-                <input
-                  type="text"
-                  id="generateReport"
-                  name="generateReport"
-                  value={sessionHistoryData.generateReport ? "Yes" : "No"}
-                  readOnly
-                />
-              </div>
-            </form>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseSessionHistoryDialog} color="primary">
-            Close
+              // Open the URL in a new window or tab.
+              window.open(url, "_blank");
+            }}
+          >
+            First Session Notes
           </Button>
-        </DialogActions>
-      </Dialog>
-    </Grid>
+        </Grid>
+        <Grid item xs={12} style={{ marginBottom: "20px" }}>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>SNo</TableCell>
+                  <TableCell>Appointment Date</TableCell>
+                  <TableCell>Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {patientDetails?.appointments?.map((appointment, index) => (
+                  <TableRow key={appointment._id}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{formatDate(appointment?.dateTime)}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={() =>
+                          handleSessionHistoryClick(appointment._id)
+                        }
+                      >
+                        Session History
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            component={Box}
+            rowsPerPageOptions={[5, 10, 25]}
+            count={patientDetails?.appointments?.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Grid>
+
+        <Dialog
+          open={sessionHistoryDialogOpen}
+          onClose={handleCloseSessionHistoryDialog}
+          fullWidth
+          maxWidth="md"
+        >
+          <DialogTitle>Session History Data</DialogTitle>
+          <DialogContent>
+            {sessionHistoryData && (
+              <form>
+                <div>
+                  <label htmlFor="Growthcurvepoints">
+                    Growth Curve Points:
+                  </label>
+                  <input
+                    type="text"
+                    id="Growthcurvepoints"
+                    name="Growthcurvepoints"
+                    value={sessionHistoryData.Growthcurvepoints}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label htmlFor="Homeworkgiven">Homework Given:</label>
+                  <input
+                    type="text"
+                    id="Homeworkgiven"
+                    name="Homeworkgiven"
+                    value={sessionHistoryData.Homeworkgiven}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label htmlFor="Nextsessionplan">Next Session Plan:</label>
+                  <input
+                    type="text"
+                    id="Nextsessionplan"
+                    name="Nextsessionplan"
+                    value={sessionHistoryData.Nextsessionplan}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label htmlFor="Summary">Summary:</label>
+                  <input
+                    type="text"
+                    id="Summary"
+                    name="Summary"
+                    value={sessionHistoryData.Summary}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label htmlFor="TherapeuticTechniquesused">
+                    Therapeutic Techniques Used:
+                  </label>
+                  <input
+                    type="text"
+                    id="TherapeuticTechniquesused"
+                    name="TherapeuticTechniquesused"
+                    value={sessionHistoryData.TherapeuticTechniquesused}
+                    style={{ userSelect: "none" }}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label htmlFor="sharedWithPatient">
+                    Shared with Patient:
+                  </label>
+                  <input
+                    type="text"
+                    id="sharedWithPatient"
+                    name="sharedWithPatient"
+                    value={sessionHistoryData.sharedWithPatient ? "Yes" : "No"}
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label htmlFor="sharedWithPsychiatrist">
+                    Shared with Psychiatrist:
+                  </label>
+                  <input
+                    type="text"
+                    id="sharedWithPsychiatrist"
+                    name="sharedWithPsychiatrist"
+                    value={
+                      sessionHistoryData.sharedWithPsychiatrist ? "Yes" : "No"
+                    }
+                    readOnly
+                  />
+                </div>
+                <div>
+                  <label htmlFor="generateReport">Generate Report:</label>
+                  <input
+                    type="text"
+                    id="generateReport"
+                    name="generateReport"
+                    value={sessionHistoryData.generateReport ? "Yes" : "No"}
+                    readOnly
+                  />
+                </div>
+              </form>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseSessionHistoryDialog} color="primary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Grid>
+      <Footer />
+    </>
   );
 }
 

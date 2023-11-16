@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 import groupHomePage from "./GroupHomeImage.png";
+import footer from "./Footer";
+import Footer from "./Footer";
 
 import axios from "axios";
 import jwtDecode from "jwt-decode";
@@ -58,10 +60,14 @@ export const Home = () => {
             </h2>
           </div>
           <p className="homePageBannerParagraph">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book.
+            Discovering the right therapist is key to your mental well-being
+            journey. Our service ensures a personalized match with experts
+            versed in scientific treatment protocols, including psychometric
+            screening and multi-modal psychotherapy. We prioritize your unique
+            goals, offering support through tailored self-help toolkits like
+            podcasts and articles. Trust us to connect you with a therapist who
+            understands and meets your individual needs, creating a
+            collaborative and effective path towards mental wellness.
           </p>
           <span>
             <Link to={`/FindTherapist`} className="linkButton primary">
@@ -78,6 +84,7 @@ export const Home = () => {
           <img src={groupHomePage} alt="homepageBackgroundImage" />
         </div>
       </div>
+      <Footer />
     </>
   );
 };

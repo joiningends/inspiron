@@ -21,6 +21,7 @@ import {
 } from "@material-ui/core";
 import PaymentIcon from "@material-ui/icons/Payment";
 import moment from "moment";
+import Footer from "./Footer";
 
 const styles = theme => ({});
 
@@ -101,115 +102,122 @@ function PendingPayments(props) {
   };
 
   return (
-    <div>
-      <Typography variant="h5" gutterBottom>
-        Pending Payments
-      </Typography>
-      {loading && <Typography>Loading...</Typography>}
-      {error && <Typography>Error: {error.message}</Typography>}
-      {!loading && !error && (
-        <div>
-          <TableContainer component={Paper} className={classes.tableContainer}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy === "therapist.name"}
-                      direction={orderBy === "therapist.name" ? order : "asc"}
-                      onClick={() => handleSort("therapist.name")}
-                    >
-                      Therapist Name
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy === "dateTime"}
-                      direction={orderBy === "dateTime" ? order : "asc"}
-                      onClick={() => handleSort("dateTime")}
-                    >
-                      Appointment Date
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>
-                    <TableSortLabel
-                      active={orderBy === "startTime"}
-                      direction={orderBy === "startTime" ? order : "asc"}
-                      onClick={() => handleSort("startTime")}
-                    >
-                      Appointment Time
-                    </TableSortLabel>
-                  </TableCell>
-                  <TableCell>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .sort((a, b) => {
-                    const isAsc = order === "asc";
-                    return isAsc
-                      ? a[orderBy]?.localeCompare(b[orderBy])
-                      : b[orderBy]?.localeCompare(a[orderBy]);
-                  })
-                  .map(payment => (
-                    <TableRow key={payment._id}>
-                      <TableCell>{payment.therapist.name}</TableCell>
-                      <TableCell>{formatDate(payment.dateTime)}</TableCell>
-                      <TableCell>{payment.startTime} </TableCell>
-                      <TableCell>
-                        <IconButton
-                          color="primary"
-                          aria-label="Make Payment"
-                          onClick={() => handleMakePaymentClick(payment)}
-                        >
-                          <PaymentIcon />
-                        </IconButton>
-                        <span>Make Payment</span>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={data.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={handlePageChange}
-            onChangeRowsPerPage={handleRowsPerPageChange}
-          />
-          <Dialog
-            open={openPaymentDialog}
-            onClose={() => setOpenPaymentDialog(false)}
-            aria-labelledby="payment-dialog-title"
-          >
-            <DialogTitle id="payment-dialog-title">Confirm Payment</DialogTitle>
-            <DialogContent>
-              {selectedPayment && (
-                <Typography>
-                  Confirm payment for {selectedPayment.therapist.name} on{" "}
-                  {selectedPayment.dateTime} at {selectedPayment.startTime}?
-                </Typography>
-              )}
-            </DialogContent>
-            <DialogActions>
-              <Button
-                onClick={() => setOpenPaymentDialog(false)}
-                color="primary"
-              >
-                Cancel
-              </Button>
-              <Button onClick={handlePaymentConfirm} color="primary">
-                Confirm
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </div>
-      )}
-    </div>
+    <>
+      <div>
+        <Typography variant="h5" gutterBottom>
+          Pending Payments
+        </Typography>
+        {loading && <Typography>Loading...</Typography>}
+        {error && <Typography>Error: {error.message}</Typography>}
+        {!loading && !error && (
+          <div>
+            <TableContainer
+              component={Paper}
+              className={classes.tableContainer}
+            >
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === "therapist.name"}
+                        direction={orderBy === "therapist.name" ? order : "asc"}
+                        onClick={() => handleSort("therapist.name")}
+                      >
+                        Therapist Name
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === "dateTime"}
+                        direction={orderBy === "dateTime" ? order : "asc"}
+                        onClick={() => handleSort("dateTime")}
+                      >
+                        Appointment Date
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>
+                      <TableSortLabel
+                        active={orderBy === "startTime"}
+                        direction={orderBy === "startTime" ? order : "asc"}
+                        onClick={() => handleSort("startTime")}
+                      >
+                        Appointment Time
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {data
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .sort((a, b) => {
+                      const isAsc = order === "asc";
+                      return isAsc
+                        ? a[orderBy]?.localeCompare(b[orderBy])
+                        : b[orderBy]?.localeCompare(a[orderBy]);
+                    })
+                    .map(payment => (
+                      <TableRow key={payment._id}>
+                        <TableCell>{payment.therapist.name}</TableCell>
+                        <TableCell>{formatDate(payment.dateTime)}</TableCell>
+                        <TableCell>{payment.startTime} </TableCell>
+                        <TableCell>
+                          <IconButton
+                            color="primary"
+                            aria-label="Make Payment"
+                            onClick={() => handleMakePaymentClick(payment)}
+                          >
+                            <PaymentIcon />
+                          </IconButton>
+                          <span>Make Payment</span>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={data.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onChangePage={handlePageChange}
+              onChangeRowsPerPage={handleRowsPerPageChange}
+            />
+            <Dialog
+              open={openPaymentDialog}
+              onClose={() => setOpenPaymentDialog(false)}
+              aria-labelledby="payment-dialog-title"
+            >
+              <DialogTitle id="payment-dialog-title">
+                Confirm Payment
+              </DialogTitle>
+              <DialogContent>
+                {selectedPayment && (
+                  <Typography>
+                    Confirm payment for {selectedPayment.therapist.name} on{" "}
+                    {selectedPayment.dateTime} at {selectedPayment.startTime}?
+                  </Typography>
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={() => setOpenPaymentDialog(false)}
+                  color="primary"
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handlePaymentConfirm} color="primary">
+                  Confirm
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 

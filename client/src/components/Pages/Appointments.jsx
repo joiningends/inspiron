@@ -32,6 +32,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import "./Home.css";
 import groupHomePage from "./GroupHomeImage.png";
+import Footer from "./Footer";
 
 import jwtDecode from "jwt-decode";
 

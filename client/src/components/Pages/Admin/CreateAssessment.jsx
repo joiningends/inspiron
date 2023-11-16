@@ -3,6 +3,7 @@ import { RiDeleteBin2Line, RiAddLine } from "react-icons/ri";
 import "./CreateAssessment.css";
 import { fetchAssessments } from "../../redux/Action";
 import { useSelector, useDispatch } from "react-redux";
+import Footer from "../Footer";
 
 function CreateAssessment() {
   const dispatch = useDispatch();
@@ -31,7 +32,7 @@ function CreateAssessment() {
       })
       .catch(error => {
         console.error("Error while deleting assessment:", error);
-        window.location.reload()
+        window.location.reload();
       });
   };
 
@@ -41,43 +42,46 @@ function CreateAssessment() {
   };
 
   return (
-    <div>
-      <h2>Assessments</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Assessment Name</th>
-            <th>No of Questions</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.isArray(assessments) &&
-            assessments.map(assessment => (
-              <tr key={assessment.hostId}>
-                <td>{assessment.assessment_name}</td>
-                <td>{assessment.questions.length}</td>
-                <td>
-                  <button
-                    className="action-button"
-                    onClick={() => handleDelete(assessment)}
-                  >
-                    <RiDeleteBin2Line className="action-icon delete-icon" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      <button
-        className="create-assessment-button"
-        onClick={handleCreateAssessment}
-        style={{ marginLeft: "5rem" }}
-      >
-        Create Assessment
-        <RiAddLine className="create-assessment-icon" />
-      </button>
-    </div>
+    <>
+      <div>
+        <h2>Assessments</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Assessment Name</th>
+              <th>No of Questions</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.isArray(assessments) &&
+              assessments.map(assessment => (
+                <tr key={assessment.hostId}>
+                  <td>{assessment.assessment_name}</td>
+                  <td>{assessment.questions.length}</td>
+                  <td>
+                    <button
+                      className="action-button"
+                      onClick={() => handleDelete(assessment)}
+                    >
+                      <RiDeleteBin2Line className="action-icon delete-icon" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+        <button
+          className="create-assessment-button"
+          onClick={handleCreateAssessment}
+          style={{ marginLeft: "5rem" }}
+        >
+          Create Assessment
+          <RiAddLine className="create-assessment-icon" />
+        </button>
+      </div>
+      <Footer />
+    </>
   );
 }
 
