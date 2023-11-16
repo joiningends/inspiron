@@ -234,7 +234,6 @@ const Signin = () => {
         </p>
       </div>
       <ToastContainer />
-      <Footer />
     </div>
   );
 };

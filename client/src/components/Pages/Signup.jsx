@@ -278,7 +278,6 @@ const Signup = () => {
         </p>
       </div>
       <ToastContainer />
-      <Footer style={{ marginTop: "3rem" }} />
     </div>
   );
 };
