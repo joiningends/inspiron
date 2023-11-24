@@ -1,11 +1,12 @@
-.signup-container {
+.signin-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background: linear-gradient(to bottom, #68B545 50%, #ffffff 50%);
+  margin-top: -2rem;
+  position: relative;
 }
-
 
 .signup-form {
   width: 300px;
@@ -37,7 +38,6 @@
   flex-grow: 1;
   padding: 10px;
   border: none;
-  border-bottom: 1.42424px solid #e7e7e7;
   border-radius: 0;
   background-color: transparent;
 }

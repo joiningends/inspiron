@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import {
   faUser,
   faPhoneAlt,
@@ -8,13 +9,28 @@ import {
   faEye,
   faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Link,
+  Grid,
+  FormControl,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import { createUser } from "../redux/Action";
 import { useDispatch } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Signup.css";
-import Footer from "./Footer";
-
+import wheel from "./inspironwhitewheel.png";
+import wheell from "./inspironwhitewheel2.png";
+import telePhone from "./telephoneForSignUppage.png";
+import lock from "./padlockForSignUpPage.png";
+import email from "./emailForSignUpPage.png";
+import user from "./userIconsforsignup.png";
 const Signup = () => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
@@ -171,114 +187,242 @@ const Signup = () => {
   };
 
   return (
-    <div className="signup-container">
-      <div className="signup-form">
-        <h2>Sign Up</h2>
-        <div className="form-group">
-          <FontAwesomeIcon
-            icon={faUser}
-            className={`icon ${formData.name ? "active" : ""}`}
-          />
-          <input
-            type="text"
-            id="name"
-            name="name"
-            placeholder="Name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <FontAwesomeIcon
-            icon={faPhoneAlt}
-            className={`icon ${formData.mobile ? "active" : ""}`}
-          />
-          <input
-            type="tel"
-            id="phoneNumber"
-            name="mobile"
-            placeholder="Phone Number"
-            value={formData.mobile}
-            onChange={handleChange}
-            onBlur={handleInputBlur}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <FontAwesomeIcon
-            icon={faEnvelope}
-            className={`icon ${formData.email ? "active" : ""}`}
-          />
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            onBlur={handleEmailBlur}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <FontAwesomeIcon
-            icon={faLock}
-            className={`icon ${formData.password ? "active" : ""}`}
-          />
-          <div className="password-input">
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
+    <Container
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        minWidth: "100vw",
+        background: "linear-gradient(to bottom, #68B545 70%, #ffffff 50%)",
+        fontFamily: "Poppins, sans-serif",
+        marginTop: "-2rem",
+        position: "relative",
+      }}
+    >
+      <img
+        src={wheel}
+        alt="wheel"
+        className="star-icon"
+        style={{
+          width: "8vw",
+          height: "25vh",
+          position: "absolute",
+          top: 0,
+          left: -10,
+          margin: "10px",
+        }}
+      />
+      <img
+        src={wheell}
+        alt="wheel"
+        className="star-icon"
+        style={{
+          width: "14vw",
+          height: "14vh",
+          position: "absolute",
+          top: -10,
+          right: -10,
+          margin: "10px",
+        }}
+      />
+      <Grid container justifyContent="center">
+        <Grid item xs={12} sm={8} md={6} style={{ height: "30rem" }}>
+          <FormControl
+            style={{
+              padding: "30px",
+              backgroundColor: "#fff",
+              borderRadius: "8px",
+              boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.1)",
+              width: "60%",
+              marginTop: "4rem",
+            }}
+          >
+            <Typography
+              variant="h5"
+              style={{
+                textAlign: "center",
+                marginBottom: "30px",
+                color: "#333",
+                fontFamily: "Poppins, sans-serif",
+                fontWeight: "bold",
+              }}
+            >
+              Sign Up
+            </Typography>
+            <TextField
+              className="form-group"
+              variant="standard"
+              fullWidth
+              style={{ marginBottom: "10px", borderBottom: "none" }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <img
+                      src={user}
+                      alt="user"
+                      style={{ height: "1.2em", marginRight: "8px" }}
+                    />
+                  </InputAdornment>
+                ),
+                disableUnderline: true,
+                style: {
+                  fontFamily: "Poppins, sans-serif",
+                  marginBottom: "10px",
+                },
+              }}
+              label="Name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+            <TextField
+              className="form-group"
+              variant="standard"
+              fullWidth
+              style={{ marginBottom: "10px" }}
+              InputLabelProps={{
+                shrink: true,
+                style: { fontFamily: "Poppins, sans-serif", color: "#D67449" },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <img
+                      src={telePhone}
+                      alt="telephone"
+                      style={{ height: "1.2em", marginRight: "8px" }}
+                    />
+                  </InputAdornment>
+                ),
+                disableUnderline: true,
+                style: {
+                  fontFamily: "Poppins, sans-serif",
+                  borderBottom: "none",
+                  marginBottom: "10px",
+                },
+              }}
+              label="Please enter WhatsApp number here"
+              name="mobile"
+              value={formData.mobile}
+              onChange={handleChange}
+              required
+            />
+            <TextField
+              className="form-group"
+              variant="standard"
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <img
+                      src={email}
+                      alt="email"
+                      style={{ height: "1.2em", marginRight: "8px" }}
+                    />
+                  </InputAdornment>
+                ),
+                disableUnderline: true,
+                style: { fontFamily: "Poppins, sans-serif" },
+              }}
+              label="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              style={{ marginBottom: "10px" }}
+              required
+            />
+            <TextField
+              className="form-group"
+              variant="standard"
+              fullWidth
+              style={{ marginBottom: "10px" }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <img
+                      src={lock}
+                      alt="lock"
+                      style={{ height: "1.2em", marginRight: "8px" }}
+                    />
+                  </InputAdornment>
+                ),
+                disableUnderline: true,
+                style: {
+                  fontFamily: "Poppins, sans-serif",
+                },
+              }}
+              label="Password"
+              type="password"
               name="password"
-              placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              onFocus={handleInputFocus}
-              onBlur={handleInputBlur}
               required
-              style={{ width: "15rem" }}
             />
-            <FontAwesomeIcon
-              icon={showPassword ? faEyeSlash : faEye}
-              className={`toggle-password-icon ${
-                formData.password ? "active" : ""
-              }`}
-              onClick={toggleShowPassword}
+            <TextField
+              className="form-group"
+              variant="standard"
+              fullWidth
+              style={{ marginBottom: "10px" }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <img
+                      src={lock}
+                      alt="lock"
+                      style={{ height: "1.2em", marginRight: "8px" }}
+                    />
+                  </InputAdornment>
+                ),
+                disableUnderline: true,
+                style: { fontFamily: "Poppins, sans-serif" },
+              }}
+              label="Confirm Password"
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
             />
-          </div>
-        </div>
-        <div className="form-group">
-          <FontAwesomeIcon
-            icon={faLock}
-            className={`icon ${formData.confirmPassword ? "active" : ""}`}
-          />
-          <input
-            type={showPassword ? "text" : "password"}
-            id="confirmPassword"
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            style={{
-              borderBottomColor:
-                confirmPasswordTouched && !passwordMatch ? "red" : "#e7e7e7",
-            }}
-            required
-          />
-          {!passwordMatch && <p className="error">Passwords do not match</p>}
-        </div>
-        <button type="submit" onClick={handleSubmit}>
-          Sign Up
-        </button>
-        <p>
-          Already have an account? <a href="/signin">Sign In</a>
-        </p>
-      </div>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              style={{
+                marginTop: "20px",
+                backgroundColor: "#ff7f50",
+                color: "white",
+                borderRadius: "6px",
+              }}
+              onClick={handleSubmit}
+            >
+              Sign Up
+            </Button>
+            <p
+              style={{
+                textAlign: "center",
+                marginTop: "15px",
+                fontSize: "14px",
+              }}
+            >
+              Already have an account?{" "}
+              <Link
+                href="/signin"
+                style={{
+                  color: "#ff7f50",
+                  fontWeight: "bold",
+                  textDecoration: "none",
+                }}
+              >
+                Sign In
+              </Link>
+            </p>
+          </FormControl>
+        </Grid>
+      </Grid>
       <ToastContainer />
-    </div>
+    </Container>
   );
 };
 

@@ -7,7 +7,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
 import "./Signin.css";
+import wheel from "./inspironwhitewheel.png";
+import wheell from "./inspironwhitewheel2.png";
 import Footer from "./Footer";
+import lock from "./padlockForSignUpPage.png";
+import email from "./emailForSignUpPage.png";
 
 const Signin = () => {
   const dispatch = useDispatch();
@@ -182,11 +186,38 @@ const Signin = () => {
 
   return (
     <div className="signin-container">
+      <img
+        src={wheel}
+        alt="wheel"
+        className="star-icon"
+        style={{
+          width: "10vw",
+          height: "25vh",
+          position: "absolute",
+          top: 0,
+          left: -10,
+          margin: "10px",
+        }}
+      />
+      <img
+        src={wheell}
+        alt="wheel"
+        className="star-icon"
+        style={{
+          width: "14vw",
+          height: "14vh",
+          position: "absolute",
+          top: -10,
+          right: -10,
+          margin: "10px",
+        }}
+      />
       <div className="signin-form">
         <h2>Sign In</h2>
         <div className="form-group">
-          <FontAwesomeIcon
-            icon={faEnvelope}
+          <img
+            src={email}
+            alt="email"
             className={`icon ${formData.email ? "active" : ""}`}
           />
           <input
@@ -201,8 +232,9 @@ const Signin = () => {
           />
         </div>
         <div className="form-group">
-          <FontAwesomeIcon
-            icon={faLock}
+          <img
+            src={lock}
+            alt="lock"
             className={`icon ${formData.password ? "active" : ""}`}
           />
           <input
@@ -216,11 +248,12 @@ const Signin = () => {
             onBlur={handleInputBlur}
             required
           />
-          <FontAwesomeIcon
+          <img
             className={`toggle-password-icon ${
               formData.password ? "active" : ""
             }`}
             onClick={toggleShowPassword}
+            // Add appropriate icon here for toggling password visibility
           />
         </div>
         <button type="submit" onClick={handleSubmit}>

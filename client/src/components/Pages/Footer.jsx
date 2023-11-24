@@ -195,23 +195,26 @@ export default function Footer() {
               </Typography>
             </Typography>
           </Grid>
-        </Grid>
 
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          align="center"
-          style={{ marginTop: "2rem", color: "white" }}
-        >
-          © 2023 Copyright:
-          <Link
-            color="inherit"
-            variant="body2"
-            style={{ fontWeight: "bold", color: "white" }}
-          >
-            Inspiron
-          </Link>
-        </Typography>
+          <Grid item xs={12}>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              align="center"
+              style={{ marginTop: "2rem", color: "white" }}
+            >
+              © 2023 Copyright Inspiron:
+              <Link
+                color="inherit"
+                variant="body2"
+                style={{ fontWeight: "bold", color: "white" }}
+                href="https://www.joiningends.in/"
+              >
+                Designed and Developed by JoiningEnds
+              </Link>
+            </Typography>
+          </Grid>
+        </Grid>
       </Container>
     </Paper>
   );

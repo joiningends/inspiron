@@ -99,85 +99,91 @@ const AssessmentPage = () => {
 
   return (
     <>
-    <div className="assessment-container">
-      <h1 className="assessment-title">{assessment.assessment_name}</h1>
+      <div className="assessment-container">
+        <h1 className="assessment-title">{assessment.assessment_name}</h1>
 
-      {/* Progress Bar */}
-      <div className="progress-bar">
-        <div className="progress" style={{ width: `${progress}%` }}></div>
-      </div>
+        {/* Progress Bar */}
+        <div className="progress-bar">
+          <div className="progress" style={{ width: `${progress}%` }}></div>
+        </div>
 
-      <h2 className="question-number">{currentQuestionIndex + 1}</h2>
-      <p className="question">{currentQuestion && currentQuestion.question}</p>
-      <div className="options">
-        {currentQuestion &&
-          currentQuestion.options.map(option => (
-            <div
-              key={option._id}
-              className={`option ${
-                selectedOption === option._id ? "selected" : ""
-              }`}
-              onClick={() => handleOptionSelect(option._id)}
+        <h2 className="question-number">{currentQuestionIndex + 1}</h2>
+        <p className="question">
+          {currentQuestion && currentQuestion.question}
+        </p>
+        <div className="options">
+          {currentQuestion &&
+            currentQuestion.options.map(option => (
+              <div
+                key={option._id}
+                className={`option ${
+                  selectedOption === option._id ? "selected" : ""
+                }`}
+                onClick={() => handleOptionSelect(option._id)}
+                style={{
+                  backgroundColor:
+                    selectedOption === option._id
+                      ? "#68B545"
+                      : "rgba(104, 181, 69, 0.15)",
+                  height: "50px", // Adjust the height as needed
+                  padding: "10px", // Adjust the padding as needed
+                }}
+              >
+                {option.text}
+              </div>
+            ))}
+        </div>
+
+        <div className="navigation-buttons">
+          {currentQuestionIndex !== 0 && (
+            <button
+              className="previous-button"
+              onClick={handlePreviousQuestion}
               style={{
-                backgroundColor:
-                  selectedOption === option._id
-                    ? "#68B545"
-                    : "rgba(104, 181, 69, 0.15)",
+                border: "1.5px solid #D67449",
+                color: "#D67449",
+                backgroundColor: "#FFFFFF",
+                width: "7rem",
               }}
             >
-              {option.text}
-            </div>
-          ))}
-      </div>
-      <div className="navigation-buttons">
-        {currentQuestionIndex !== 0 && (
-          <button
-            className="previous-button"
-            onClick={handlePreviousQuestion}
-            style={{
-              border: "1.5px solid #D67449",
-              color: "#D67449",
-              backgroundColor: "#FFFFFF",
-              width: "7rem",
-            }}
-          >
-            Previous
-          </button>
-        )}
-        {!isLastQuestion && (
-          <button
-            disabled={!selectedOption}
-            onClick={handleNextQuestion}
-            style={{
-              background: "linear-gradient(90deg, #D67449 10.9%, #5179BD 100%)",
-              color: "#FFFFFF",
-              width: "7rem",
-              border: "none",
-            }}
-          >
-            Next
-          </button>
-        )}
-        {isLastQuestion && selectedOption && (
-          <button
-            className="finish-button"
-            onClick={handleFinish}
-            style={{
-              background: "#D67449",
-              width: "7rem",
-            }}
-          >
-            <Link
-              to={`/result`}
-              style={{ color: "#ffffff", textDecoration: "none" }}
+              Previous
+            </button>
+          )}
+          {!isLastQuestion && (
+            <button
+              disabled={!selectedOption}
+              onClick={handleNextQuestion}
+              style={{
+                background:
+                  "linear-gradient(90deg, #D67449 10.9%, #5179BD 100%)",
+                color: "#FFFFFF",
+                width: "7rem",
+                border: "none",
+              }}
             >
-              Finish
-            </Link>
-          </button>
-        )}
+              Next
+            </button>
+          )}
+          {isLastQuestion && selectedOption && (
+            <button
+              className="finish-button"
+              onClick={handleFinish}
+              style={{
+                background: "#D67449",
+                width: "7rem",
+              }}
+            >
+              <Link
+                to={`/result`}
+                style={{ color: "#ffffff", textDecoration: "none" }}
+              >
+                Finish
+              </Link>
+            </button>
+          )}
+        </div>
       </div>
-    </div>
-    <Footer/>
+      <Footer />
     </>
   );
 };

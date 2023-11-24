@@ -4,16 +4,18 @@ import "./TherapistsWithFilter.css";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import Footer from "./Footer";
+import {
+  Typography,
+  Grid,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Chip,
+} from "@material-ui/core";
+import groupDiscuss from "./groupDiscuss.jpg";
 
 import { useSelector, useDispatch } from "react-redux";
-import {
-  Button,
-  Paper,
-  Box,
-  Typography,
-  Checkbox,
-  InputBase,
-} from "@mui/material";
 
 import { fetchTherapists } from "../redux/Action";
 import SearchIcon from "@mui/icons-material/Search";
@@ -53,11 +55,9 @@ export const TherapistsWithFilter = () => {
   );
 
   const [tokenInfo, setTokenInfo] = useState(null);
-  console.log(tokenInfo);
 
   const [userInfo, setUserInfo] = useState();
   const [user, setUser] = useState(null);
-  console.log(user);
 
   useEffect(() => {
     axios
@@ -72,8 +72,6 @@ export const TherapistsWithFilter = () => {
       });
   }, [userInfo]);
 
-  console.log(userInfo);
-
   useEffect(() => {
     // Retrieve the JWT token from localStorage
     const token = localStorage.getItem("token");
@@ -83,7 +81,6 @@ export const TherapistsWithFilter = () => {
       const decoded = jwtDecode(token);
 
       // Store the decoded information in the component's state
-      console.log(decoded);
       setTokenInfo(decoded);
       setUserInfo(decoded?.userId);
     }
@@ -104,7 +101,6 @@ export const TherapistsWithFilter = () => {
       .then(response => {
         // Handle the response data here and update the state
         const data = response.data;
-        console.log(data);
         setPrices(data);
       })
       .catch(error => {
@@ -112,14 +108,6 @@ export const TherapistsWithFilter = () => {
         console.error("Error:", error);
       });
   }, []); // The empty dependency array ensures that this effect runs only once on page load
-
-  const handleToggleFilters = () => {
-    setShowFilters(prevState => !prevState);
-  };
-
-  const handleFilterLabelClick = label => {
-    setActiveFilter(activeFilter === label ? null : label);
-  };
 
   useEffect(() => {
     // Define the API endpoint
@@ -142,20 +130,16 @@ export const TherapistsWithFilter = () => {
   useEffect(() => {
     const groupId = localStorage.getItem("groupid"); // Make sure you have 'groupid' stored in localStorage
     const cleanGroupId = groupId.replace(/"/g, "");
-    console.log("hello1");
-    console.log(groupId);
-    console.log(cleanGroupId);
+
     if (groupId !== "null") {
       // Construct the URL
       const url = `${process.env.REACT_APP_SERVER_URL}/therapists/group/${cleanGroupId}`;
-      console.log(url);
       // Make the GET request using Axios
       axios
         .get(url)
         .then(response => {
           // Handle the response data here
           setTherapits(response.data);
-          console.log(response.data);
         })
         .catch(error => {
           // Handle errors here
@@ -164,14 +148,12 @@ export const TherapistsWithFilter = () => {
     } else {
       // If groupid doesn't exist, dispatch the fetchTherapists action
       const url = `${process.env.REACT_APP_SERVER_URL}/therapists/all`;
-      console.log(url);
       // Make the GET request using Axios
       axios
         .get(url)
         .then(response => {
           // Handle the response data here
           setTherapits(response.data);
-          console.log(response.data);
         })
         .catch(error => {
           // Handle errors here
@@ -194,14 +176,11 @@ export const TherapistsWithFilter = () => {
   }, []);
 
   useEffect(() => {
-    console.log("hello3");
-    console.log(therapists);
     setFilteredTherapists(therapists);
   }, [load]);
 
   useEffect(() => {
     if (therapists.length !== 0) {
-      console.log(therapists.length);
       setLoad(true);
     }
   }, [therapists]);
@@ -267,25 +246,15 @@ export const TherapistsWithFilter = () => {
     }
   };
 
-  const renderOptions = (label, options) => {
-    return (
-      <div className="options-container">
-        <div className="checkbox-group">
-          {options.map(option => (
-            <label key={option} className="checkbox-label">
-              <input
-                type="checkbox"
-                name={label}
-                value={option}
-                onChange={event => handleOptionChange(event, label)}
-              />
-              {option}
-            </label>
-          ))}
-        </div>
-      </div>
-    );
-  };
+  console.log(prices);
+  console.log(
+    prices.map(price => ({
+      label: `Level ${price.level}`,
+      value: price.level, // Store the level value
+      discountedPrice: price.discountPrice, // Store the discounted price
+      id: price._id,
+    }))
+  );
 
   const expertiseTypes = expertises?.map(expertise => expertise.type[0]);
 
@@ -301,9 +270,10 @@ export const TherapistsWithFilter = () => {
     {
       label: "Session Price",
       options: prices.map(price => ({
-        label: `Level ${price.level}`,
+        label: `${price.level}`,
         value: price.level, // Store the level value
         discountedPrice: price.discountPrice, // Store the discounted price
+        id: price._id,
       })),
     },
     {
@@ -315,81 +285,6 @@ export const TherapistsWithFilter = () => {
     //   options: ["18-25", "26-35", "36-45", "46-above"],
     // },
   ];
-
-  const handleApplyFilters = () => {
-    // Filter therapists based on selected options for each field
-    console.log("Hello");
-    console.log(sessionPriceOptions);
-    let filteredTherapistsCopy = therapists;
-    console.log(filteredTherapistsCopy);
-    const filteredTherapist = filteredTherapistsCopy?.therapists?.filter(
-      therapist => {
-        console.log(therapist);
-        const expertiseMatched =
-          therapyOptions.length === 0 ||
-          therapyOptions.every(option => {
-            return therapist.expertise.some(expertise =>
-              expertise.type.includes(option)
-            );
-          });
-
-        console.log(expertiseMatched);
-
-        const sessionModeMatched =
-          sessionModeOptions.length === 0 ||
-          sessionModeOptions.every(mode =>
-            therapist.modeOfSession.includes(mode)
-          );
-
-        const concernMatched =
-          concernOptions.length === 0 ||
-          concernOptions.every(concern => therapist.concern.includes(concern));
-
-        // const experienceLevelMatched =
-        //   experienceLevelOptions.length === 0 ||
-        //   experienceLevelOptions.every(level =>
-        //     therapist.experienceLevel.includes(level)
-        //   );
-
-        const selectedPriceMatched =
-          sessionPriceOptions.length === 0 ||
-          sessionPriceOptions.some(level => {
-            if (therapist.level === level) return true;
-          });
-
-        const sexMatched =
-          sexOptions.length === 0 ||
-          sexOptions.every(sex => therapist.gender === sex);
-
-        const ageMatched =
-          ageOptions.length === 0 ||
-          ageOptions?.some(ageOption => {
-            if (ageOption === "46-above") {
-              return therapist.age >= 46;
-            } else if (typeof ageOption === "string") {
-              // Check if ageOption is a string
-              const [min, max] = ageOption.split("-").map(Number);
-              return therapist.age >= min && therapist.age <= max;
-            }
-            return false; // Handle invalid ageOption
-          });
-
-        // Return true if all filter conditions match
-        return (
-          expertiseMatched &&
-          sessionModeMatched &&
-          concernMatched &&
-          selectedPriceMatched &&
-          sexMatched &&
-          ageMatched
-        );
-      }
-    );
-
-    // Update the filteredTherapists state
-    const therapist = { therapists: filteredTherapist };
-    setFilteredTherapists(therapist);
-  };
 
   // Retrieve the assessment score from localStorage
   let storedAssessment;
@@ -404,19 +299,15 @@ export const TherapistsWithFilter = () => {
 
   // Filter therapists based on assessment score or show all therapists if no score available
   useEffect(() => {
-    console.log(storedAssessment);
-    console.log(score);
     if (storedAssessment && score) {
       const savedData = JSON.parse(localStorage.getItem("therapistsData"));
 
-      console.log("Hello this is ");
       const groupId = localStorage.getItem("groupid");
       const cleanGroupId = groupId.replace(/"/g, "");
       if (cleanGroupId === "null") {
         const therapists = savedData;
         const therapist = { therapists };
         setFilteredTherapists(therapist);
-        console.log(therapist);
       } else {
         setFilteredTherapists(savedData);
       }
@@ -425,157 +316,282 @@ export const TherapistsWithFilter = () => {
     }
   }, [storedAssessment, score]);
 
-  console.log(filteredTherapists);
-  const handleRemoveFilters = () => {
-    // Refresh the page
-    window.location.reload();
+  const [selectedLabel, setSelectedLabel] = useState("");
+  const [selectedFilters, setSelectedFilters] = useState({});
+
+  const handleLabelClick = label => {
+    setSelectedLabel(label);
+  };
+
+  const handleOptionClick = (option, label) => {
+    if (label === "Session Price") {
+      const updatedSessionPriceFilters = selectedFilters[label] || [];
+      const updatedFilters = {
+        ...selectedFilters,
+        [label]: [...updatedSessionPriceFilters, option.label],
+      };
+
+      setSelectedFilters(updatedFilters);
+      handleApplyFilters(updatedFilters); // Call apply filters function specifically for 'Session Price'
+    } else {
+      // Handle other label options where you store array of options
+      const updatedSelectedFilters = { ...selectedFilters };
+      if (!updatedSelectedFilters[label]) {
+        updatedSelectedFilters[label] = [option];
+      } else {
+        const index = updatedSelectedFilters[label].indexOf(option);
+        if (index === -1) {
+          updatedSelectedFilters[label].push(option);
+        } else {
+          updatedSelectedFilters[label].splice(index, 1);
+        }
+      }
+      setSelectedFilters(updatedSelectedFilters);
+      handleApplyFilters(updatedSelectedFilters); // Call apply filters function for other labels
+    }
+  };
+
+  const handleRemoveFilter = (option, label) => {
+    const updatedSelectedFilters = { ...selectedFilters };
+    updatedSelectedFilters[label] = (
+      updatedSelectedFilters[label] || []
+    ).filter(item => item !== option);
+    setSelectedFilters(updatedSelectedFilters);
+    handleApplyFilters(updatedSelectedFilters); // Call apply filters function
+  };
+
+  console.log(therapists);
+
+  const handleApplyFilters = updatedSelectedFilters => {
+    const selectedExpertise = updatedSelectedFilters["Experties"] || [];
+    const selectedSessionMode = updatedSelectedFilters["Session Mode"] || [];
+    const selectedGender = updatedSelectedFilters["Gender"] || [];
+    const sessionPrice = updatedSelectedFilters["Session Price"] || [];
+
+    console.log(updatedSelectedFilters);
+    console.log(sessionPrice);
+
+    const filteredTherapists = therapists.therapists.filter(therapist => {
+      const expertiseMatched =
+        selectedExpertise.length === 0 ||
+        selectedExpertise.some(expertise =>
+          therapist.expertise.some(item => item.type.includes(expertise))
+        );
+
+      const sessionModeMatched =
+        selectedSessionMode.length === 0 ||
+        selectedSessionMode.some(mode =>
+          therapist.modeOfSession.some(item => item.includes(mode))
+        );
+      console.log(sessionModeMatched);
+
+      const genderMatched =
+        selectedGender.length === 0 ||
+        selectedGender.includes(therapist.gender);
+
+      const selectedPriceMatched =
+        sessionPrice.length === 0 ||
+        sessionPrice.some(level => {
+          if (therapist.level === level) return true;
+        });
+
+      return (
+        expertiseMatched &&
+        sessionModeMatched &&
+        genderMatched &&
+        selectedPriceMatched
+      );
+      // Add other filter conditions similarly
+    });
+    console.log(filteredTherapists);
+    const therapist = { therapists: filteredTherapists };
+    setFilteredTherapists(therapist);
   };
 
   return (
     <>
       {/* Button to toggle the visibility of filters */}
+      <div
+        className="assessmentintroPage"
+        style={{
+          backgroundImage: `url(${groupDiscuss})`,
+          backgroundSize: "cover",
+          backgroundPosition: "top center",
+          backgroundRepeat: "no-repeat",
+          height: "15rem",
+          width: "100vw",
+          marginTop: "-2rem",
+        }}
+      >
+        <h1 style={{ color: "white", fontSize: "2rem", fontWeight: 700 }}>
+          Find a Therapist thatmeets your needs
+        </h1>
+        <p style={{ color: "white" }}>
+          Our platform is built by psychiatrists, therapists and mental health
+          experts with immense global experience.
+        </p>
+      </div>
       {user?.israting === true && (
         <Rating userId={user?._id} lastTherapist={user?.lasttherapist} />
       )}
 
-      <Button
-        className="toggle-filters-btn"
-        style={{
-          position: "fixed",
-          top: "15%",
-          left: "10px",
-          transform: "translateY(-50%)",
-          zIndex: "9999",
-          padding: "10px",
-          backgroundColor: "#ffffff",
-          border: "1px solid #ccc",
-          borderRadius: "4px",
-          cursor: "pointer",
-        }}
-        onClick={handleToggleFilters}
-      >
-        {showFilters ? "Hide Filters" : "Show Filters"}
-      </Button>
-
-      <Paper
-        elevation={3}
-        className="filter-container"
-        style={{
-          backgroundColor: "#5179BD",
-          position: "fixed",
-          top: "0",
-          left: showFilters ? "0" : "-100%",
-          width: "25%",
-          height: "calc(100% - 4.3rem)", // Fixed height, subtracting the top margin
-          zIndex: "9998",
-          marginTop: "4.3rem",
-          padding: "20px",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          transition: "left 0.3s",
-          overflowY: "auto", // Enable vertical scrollbar
-        }}
-      >
-        <Button
-          className="apply-btn"
-          onClick={handleApplyFilters}
-          style={{
-            backgroundColor: "#68B545",
-            color: "white",
-            marginBottom: "1rem",
-            marginTop: "20%",
-          }}
-        >
-          Apply
-        </Button>
-        <Button
-          className="remove-filters-btn"
-          onClick={handleRemoveFilters}
-          style={{
-            backgroundColor: "#FF0000",
-            color: "white",
-            marginBottom: "1rem",
-            marginLeft: "1rem",
-            marginTop: "20%",
-          }}
-        >
-          Remove Filters
-        </Button>
-
-        {optionsData.map(data => (
-          <Box
-            className="filter-field"
-            key={data.label}
+      <Grid container spacing={2} style={{ marginTop: "-1.1rem" }}>
+        {/* Merged Part for Labels, Options, and Selected Filters */}
+        <Grid item xs={12}>
+          <Paper
+            elevation={3}
             style={{
-              marginTop: "2rem",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
+              background: "#5179BD",
+              color: "white",
+              fontFamily: "Poppins, sans-serif",
+              padding: 5,
             }}
           >
-            <Box
-              className="field-label"
-              style={{
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                fontSize: "1rem",
-              }}
-              onClick={() => handleFilterLabelClick(data.label)}
-            >
-              <Typography>
-                {data.label}:
-                {activeFilter === data.label ? (
-                  <span style={{ marginLeft: "5px", fontSize: "10px" }}>▼</span>
-                ) : (
-                  <span style={{ marginLeft: "5px", fontSize: "10px" }}>▶</span>
-                )}
-              </Typography>
-            </Box>
-            {activeFilter === data.label && (
-              <Box className="filter-options" style={{ margin: "0.5rem 0" }}>
-                {data.label === "Session Price"
-                  ? data.options.map(option => (
-                      <label key={option.label} className="checkbox-label">
-                        <Checkbox
-                          name={data.label}
-                          value={option.value}
-                          onChange={event =>
-                            handleOptionChange(event, data.label)
+            {/* Displaying Labels */}
+            <Grid container >
+              {/* Apply Filters label */}
+              <span
+                style={{
+                  fontFamily: "Poppins",
+                  fontSize: "1rem",
+                  marginTop: "0.5rem",
+                  marginRight: "1rem",
+                  fontStyle: "normal",
+                  fontWeight: 700,
+                  color: "white",
+                }}
+              >
+                Apply Filters:
+              </span>
+
+              {/* Rendering labels */}
+              {optionsData.map(option => (
+                <Grid item key={option.label}>
+                  <Paper
+                    component={ListItem}
+                    button
+                    onClick={() => handleLabelClick(option.label)}
+                    selected={selectedLabel === option.label}
+                    style={{
+                      borderRadius: 20,
+                      margin: 1,
+                      marginRight: "0.5rem",
+                      padding: 10,
+                      background:
+                        selectedLabel === option.label
+                          ? "#e0e0e0"
+                          : "transparent",
+                      color: "white !important",
+                      borderColor: "white",
+                    }}
+                  >
+                    <ListItemText
+                      primary={
+                        selectedLabel === "Session Price"
+                          ? option.label
+                          : option.label
+                      }
+                      style={{
+                        fontSize: 14,
+                        margin: "-0.1rem",
+                        color: "white !important",
+                      }}
+                    />
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+
+            {/* Conditionally render remaining sections after label selection */}
+            {selectedLabel && (
+              <>
+                {/* Horizontal line */}
+                <hr
+                  style={{ borderTop: "0.1px solid white", margin: "1rem 0" }}
+                />
+
+                {/* Displaying Selected and Available Options along with Selected Filters */}
+                <Grid container>
+                  {/* Rendering options based on selected label */}
+                  {(
+                    optionsData.find(option => option.label === selectedLabel)
+                      ?.options || []
+                  ).map(option => (
+                    <Grid item key={option.label || option}>
+                      <Paper
+                        component={ListItem}
+                        button
+                        onClick={() => handleOptionClick(option, selectedLabel)}
+                        style={{
+                          borderRadius: 20,
+                          margin: 5,
+                          padding: 10,
+                          background: selectedFilters[selectedLabel]?.includes(
+                            option
+                          )
+                            ? "#e0e0e0"
+                            : "transparent",
+                          color: "white",
+                          borderColor: "white",
+                        }}
+                      >
+                        <ListItemText
+                          style={{
+                            fontSize: 14,
+                            margin: "-0.3rem",
+                            color: "white",
+                          }}
+                          primary={
+                            selectedLabel === "Session Price"
+                              ? `Discounted Price: ${option.discountedPrice}`
+                              : option.label || option
                           }
                         />
-                        {option.discountedPrice}
-                      </label>
+                      </Paper>
+                    </Grid>
+                  ))}
+                  {!selectedLabel && (
+                    <Typography align="center" variant="body1">
+                      Select a label to view options
+                    </Typography>
+                  )}
+                </Grid>
+
+                {/* Horizontal line */}
+                <hr
+                  style={{ borderTop: "0.1px solid white", margin: "1rem 0" }}
+                />
+
+                {/* Displaying Selected Filters */}
+                <Grid container>
+                  {/* Rendering selected filters */}
+                  {Object.keys(selectedFilters).map(label =>
+                    selectedFilters[label].map((filter, index) => (
+                      <Grid item key={`${label}-${filter}-${index}`}>
+                        <Chip
+                          label={filter}
+                          onDelete={() => handleRemoveFilter(filter, label)}
+                          style={{ margin: 5 }}
+                        />
+                      </Grid>
                     ))
-                  : // Render other options (Expertise, Gender, Age, etc.) as before
-                    data.options.map(option => (
-                      <label key={option} className="checkbox-label">
-                        <Checkbox
-                          name={data.label}
-                          value={option}
-                          onChange={event =>
-                            handleOptionChange(event, data.label)
-                          }
-                        />
-                        {option}
-                      </label>
-                    ))}
-              </Box>
+                  )}
+                </Grid>
+              </>
             )}
-          </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      <div className="therapist-containerr">
+        {filteredTherapists?.therapists?.map(therapist => (
+          <Therapist
+            key={therapist.id}
+            therapist={therapist}
+            className="therapist-box"
+          />
         ))}
-      </Paper>
-      {/* Therapists list */}
-
-        <div className="therapist-containerr">
-          {currentTherapists?.map(therapist => (
-            <Therapist
-              key={therapist.id}
-              therapist={therapist}
-              className="therapist-box"
-            />
-          ))}
-        </div>
-
+      </div>
 
       {/* Pagination controls */}
       {/* Enhanced Pagination controls */}

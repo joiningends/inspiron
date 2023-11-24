@@ -1,77 +1,134 @@
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Update Signin.css */
+
 .signin-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background: linear-gradient(to bottom, #68B545 50%, #ffffff 50%);
+  margin-top: -2rem;
+  position: relative;
 }
+
+.wheel-img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px; /* Adjust the width as needed */
+  height: auto; /* Maintain aspect ratio */
+  z-index: 4; /* Set a higher z-index to ensure it's above other elements */
+}
+
 
 .signin-form {
-  width: 300px;
-  padding: 20px;
+  width: 400px;
+  padding: 40px;
   background-color: #ffffff;
-  border-radius: 4px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 }
 
-.signin-form h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.form-group {
+.signin-form .form-group {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
 }
 
-.form-group .icon {
-  width: 16px;
-  height: 16px;
-  margin-right: 10px;
+.signin-form .form-group .icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 15px;
   color: #ff7f50;
 }
 
-.form-group input {
+.signin-form input {
   flex-grow: 1;
-  padding: 10px;
+  height: 40px;
+  padding: 12px;
   border: none;
-  border-bottom: 1.42424px solid #e7e7e7;
   border-radius: 0;
   background-color: transparent;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.5;
 }
 
-button[type="submit"] {
+.signin-form button[type="submit"] {
   display: block;
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background-color: #ff7f50;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 25px;
+  font-family: 'Poppins', sans-serif;
 }
 
-button[type="submit"]:hover {
+.signin-form button[type="submit"]:hover {
   background-color: #ff6347;
 }
 
-p {
-  text-align: center;
-  margin-top: 10px;
+.signin-form a {
+  color: #ff7f50;
+  text-decoration: none;
 }
 
-a {
-  color: #ff7f50;
+.signin-form a:hover {
+  text-decoration: underline;
 }
 
 .toggle-password-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #68b545;
-  font-size: 14px; /* Adjust the font size as needed */
+  height: 20px;
+  width: 20px;
 }
+
+/* Existing styles */
+
+/* Mobile responsive styles */
+@media screen and (max-width: 768px) {
+  .signin-container {
+    height: auto;
+    background: #68B545; /* Change background color for smaller screens */
+    margin-top: 0;
+    padding: 20px; /* Add padding for better spacing */
+  }
+
+  .signin-form {
+    width: 100%;
+    max-width: 350px; /* Limit the form width */
+    margin: 0 auto; /* Center the form horizontally */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Adjust form input styles */
+  .signin-form .form-group {
+    margin-bottom: 20px;
+  }
+
+  .signin-form input {
+    height: 40px;
+    padding: 12px;
+    border-bottom: 2px solid #e7e7e7;
+  }
+
+  .signin-form button[type="submit"] {
+    margin-top: 20px;
+    padding: 12px;
+    border-radius: 5px;
+  }
+
+  /* Hide the wheel image on smaller screens */
+  .wheel-img {
+    display: none;
+  }
+}
+

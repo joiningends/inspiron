@@ -66,7 +66,7 @@ function Therapist({ therapist }) {
           height: "20px",
           position: "absolute",
           top: 0,
-          right: 0,
+          right: "7px",
           margin: "10px",
         }}
       />
@@ -75,7 +75,7 @@ function Therapist({ therapist }) {
         style={{
           position: "absolute",
           top: 0,
-          right: "35px",
+          right: "40px",
           fontSize: "20px",
           color: "gold",
           fontWeight: "bold",

@@ -9,7 +9,7 @@
 
 .therapist-expertList{
   height: 1.5rem;
-  font-size: 0.3rem;
+  font-size: 1px;
 }
 
 
@@ -66,7 +66,7 @@
 }
 
 .therapistName {
-  font-size: 1rem;
+  font-size: 0.9rem;
   align-self: stretch;
   text-align: left;
   color: #000000;
@@ -76,7 +76,7 @@
 }
 
 .therapist-desig {
-  font-size: 0.9rem;
+  font-size: 0.6rem;
   align-self: stretch;
   font-family: 'Poppins';
   text-align: left;
@@ -100,7 +100,7 @@ ul {
 }
 
 .therapist-expertList {
-  font-size: 0.9rem;
+  font-size: 0.6rem;
   border: 1px solid #000000;
   border-radius: 0.5rem;
   padding: 0.15rem;
@@ -110,12 +110,12 @@ ul {
 
 .therapist-exp {
   font-size: 0.9rem;
-  margin-right: 0.3rem;
+  margin-right: 0.2rem;
   color: #000000;
 }
 
 .modeOfSession {
-  height: 1rem;
+  height: 0.8rem;
   margin-left: -3rem;
   text-align: left;
   background-color: #000000;
@@ -123,7 +123,7 @@ ul {
 
 .mode {
   color: #000000;
-  font-size: 0.9rem;
+  font-size: 0.6rem;
   margin-right: 1.8rem;
   padding-left: 3rem;
   width: 1rem;
@@ -131,7 +131,7 @@ ul {
 
 .modes {
   color: #000000;
-  font-size: 0.9rem;
+  font-size: 0.6rem;
   font-weight: 400;
   width: 10rem;
 }
@@ -141,20 +141,20 @@ ul {
 }
 
 .therapist-language {
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   color: #000000;
   margin: 0.5rem 0.3rem 0.5rem 0;
 }
 
 .therapist-lang {
   color: #000000;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   margin: 0.5rem 0.5rem 0.5rem 0;
 }
 
 .therapist-sessionPrice {
   display: flex;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   color: #000000;
 }
 
@@ -164,7 +164,7 @@ ul {
 }
 
 .therapist-available {
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   color: #000000;
   text-align: left;
 }

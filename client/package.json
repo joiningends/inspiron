@@ -56,9 +56,10 @@
     "react-tooltip": "^5.21.6",
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2",
-    "styled-components": "^6.0.8",
+    "styled-components": "^6.1.1",
     "web-vitals": "^3.1.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "lucid-icons": "^0.3.0"
   },
   "scripts": {
     "preinstall": "npm config set legacy-peer-deps true",
