@@ -176,7 +176,7 @@ const DoctorProfile = () => {
       <Paper
         elevation={3}
         style={{
-          marginTop:"-2rem",
+          marginTop: "-2rem",
           padding: 20,
           backgroundColor: "#68B545",
           marginBottom: 20,
@@ -249,7 +249,7 @@ const DoctorProfile = () => {
               variant="contained"
               color="primary"
               href={therapist.meetLink}
-              to={`/bookaslot/${therapist._id}`}
+              to={`/bookaslot/${therapist?._id}`}
               target="_blank"
               style={{
                 width: "40%",
@@ -614,6 +614,7 @@ const DoctorProfile = () => {
           </Typography>
         </Box>
         <Button
+          to={`/bookaslot/${therapist._id}`}
           variant="contained"
           style={{
             ...buttonStyle,

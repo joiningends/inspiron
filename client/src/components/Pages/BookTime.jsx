@@ -20,6 +20,11 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import { FaHeart, FaThumbsUp, FaClock, FaSmile } from "react-icons/fa";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Footer from "./Footer";
+import TotalSessionIcon from "./interactionsForKnowMorePage.png";
+import OfflineIcon from "./meetingImageForKnowMorepage.png";
+import ModeOfMeetingIcon from "./meetingForKnowMorePage.png";
+import ExpertiseIcon from "./experienceForKnowMorePage.png";
+import LanguagesIcon from "./languageforKnowMorePage.png";
 
 const Popup = ({
   selectedTimeSlot,
@@ -640,7 +645,10 @@ function BookTime() {
         </div>
         <div className="booktime-aboutDiv">
           <div className="booktime-containerr2">
-            <div className="booktime-profileDetails">
+            <div
+              className="booktime-profileDetails"
+              style={{ fontSize: "1rem" }}
+            >
               <span>
                 <FaHeart className="profileIcons" />
               </span>
@@ -681,7 +689,7 @@ function BookTime() {
                 Available Offline Session
               </span>
             </div>
-            <div className="booktime-profileDetails" style={{height:"35vh"}}>
+            <div className="booktime-profileDetails" style={{ height: "35vh" }}>
               <span>
                 <FaClock className="profileIcons" />
               </span>
@@ -829,7 +837,7 @@ function BookTime() {
           onBookNowCorp={handleBookNowCorporate}
         />
       )}
-      <Footer/>
+      <Footer />
     </>
   );
 }
