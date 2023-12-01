@@ -248,8 +248,7 @@ const DoctorProfile = () => {
             <Button
               variant="contained"
               color="primary"
-              href={therapist.meetLink}
-              to={`/bookaslot/${therapist?._id}`}
+              href={`/bookaslot/${therapist?._id}`}
               target="_blank"
               style={{
                 width: "40%",
@@ -614,7 +613,7 @@ const DoctorProfile = () => {
           </Typography>
         </Box>
         <Button
-          to={`/bookaslot/${therapist._id}`}
+          href={`/bookaslot/${therapist?._id}`}
           variant="contained"
           style={{
             ...buttonStyle,
