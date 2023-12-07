@@ -239,7 +239,7 @@ const loginUser = async (req, res) => {
           empid: null,   // No empid for admin
         },
         secret,
-        { expiresIn: '30d' }
+        { expiresIn: '1d' }
       );
 
       return res.status(200).send({ user: email, role: 'admin', token: token, groupid: null, empid: null });
@@ -259,7 +259,7 @@ const loginUser = async (req, res) => {
             empid: therapist.empid || null, // Return therapist's empid if present, otherwise null
           },
           secret,
-          { expiresIn: '30d' }
+          { expiresIn: '1d' }
         );
 
         return res.status(200).send({ user: therapist.email, role: 'therapist', token: token, groupid: null, empid: therapist.empid || null });
@@ -304,7 +304,7 @@ const loginUser = async (req, res) => {
           empid: empid,
         },
         secret,
-        { expiresIn: '30d' }
+        { expiresIn: '1d' }
       );
 
       return res.status(200).send({ userId: user.id, user: user.email, role: role, token: token, groupid: groupid, empid: empid });
