@@ -144,6 +144,10 @@ type:Number,
       },
       lasttherapist: {
         type: mongoose.Schema.Types.ObjectId,
+      },
+      isaccept:{
+        type: Boolean,
+        default: false,
       }
       });
 
