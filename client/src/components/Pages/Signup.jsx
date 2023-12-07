@@ -1,14 +1,9 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import {
-  faUser,
-  faPhoneAlt,
-  faEnvelope,
-  faLock,
-  faEye,
-  faEyeSlash,
-} from "@fortawesome/free-solid-svg-icons";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+
 import {
   Container,
   Typography,
@@ -19,6 +14,8 @@ import {
   FormControl,
   InputAdornment,
   IconButton,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import { createUser } from "../redux/Action";
 import { useDispatch } from "react-redux";
@@ -39,10 +36,12 @@ const Signup = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    isAccept: true,
   });
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isTermsAccepted, setTermsAccepted] = useState(false);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -68,41 +67,6 @@ const Signup = () => {
     }
     if (name === "confirmPassword") {
       setConfirmPasswordTouched(true);
-    }
-  };
-
-  const toggleShowPassword = () => {
-    setShowPassword(prevShowPassword => !prevShowPassword);
-  };
-
-  const handleInputFocus = () => {
-    setShowPassword(true);
-  };
-
-  const handleInputBlur = () => {
-    setShowPassword(false);
-  };
-
-  const handleEmailBlur = () => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(formData.email)) {
-      toast.error("Please enter a valid email address.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        style: {
-          background: "#f44336",
-          color: "#fff",
-          fontSize: "14px",
-          borderRadius: "4px",
-          padding: "12px",
-          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-        },
-      });
     }
   };
 
@@ -250,6 +214,7 @@ const Signup = () => {
             >
               Sign Up
             </Typography>
+
             <TextField
               className="form-group"
               variant="standard"
@@ -277,6 +242,7 @@ const Signup = () => {
               onChange={handleChange}
               required
             />
+
             <TextField
               className="form-group"
               variant="standard"
@@ -309,6 +275,7 @@ const Signup = () => {
               onChange={handleChange}
               required
             />
+
             <TextField
               className="form-group"
               variant="standard"
@@ -333,11 +300,12 @@ const Signup = () => {
               style={{ marginBottom: "10px" }}
               required
             />
+
             <TextField
               className="form-group"
               variant="standard"
               fullWidth
-              style={{ marginBottom: "10px" }}
+              style={{ marginBottom: "10px", width: "25vw" }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -346,6 +314,23 @@ const Signup = () => {
                       alt="lock"
                       style={{ height: "1.2em", marginRight: "8px" }}
                     />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment
+                    position="end"
+                    style={{
+                      border: "1px solid #E7E7E7",
+                      height: "10rem",
+                      padding: "1.2rem 0",
+                    }}
+                  >
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
                   </InputAdornment>
                 ),
                 disableUnderline: true,
@@ -354,12 +339,13 @@ const Signup = () => {
                 },
               }}
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
               required
             />
+
             <TextField
               className="form-group"
               variant="standard"
@@ -375,16 +361,65 @@ const Signup = () => {
                     />
                   </InputAdornment>
                 ),
+                endAdornment: (
+                  <InputAdornment
+                    position="end"
+                    style={{
+                      border: "1px solid #E7E7E7",
+                      height: "10rem",
+                      padding: "1.2rem 0",
+                    }}
+                  >
+                    <IconButton
+                      aria-label="toggle confirm password visibility"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
                 disableUnderline: true,
                 style: { fontFamily: "Poppins, sans-serif" },
               }}
               label="Confirm Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
               required
             />
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isTermsAccepted}
+                  onChange={e => setTermsAccepted(e.target.checked)}
+                  color="primary"
+                />
+              }
+              label={
+                <Typography
+                  style={{
+                    fontFamily: "Poppins, sans-serif",
+                    fontSize: "14px",
+                  }}
+                >
+                  I accept the{" "}
+                  <Link
+                    href="https://www.inspirononline.com/terms/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "#333",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    terms and conditions
+                  </Link>
+                </Typography>
+              }
+            />
+
             <Button
               type="submit"
               variant="contained"
@@ -396,9 +431,11 @@ const Signup = () => {
                 borderRadius: "6px",
               }}
               onClick={handleSubmit}
+              disabled={!isTermsAccepted}
             >
               Sign Up
             </Button>
+
             <p
               style={{
                 textAlign: "center",

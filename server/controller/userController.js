@@ -93,7 +93,7 @@ const generateRandomToken = () => {
 
 const registernormalUser = async (req, res) => {
   try {
-    const { name, mobile, email, password, isaccept } = req.body;
+    const { name, mobile, email, password } = req.body;
 
     const passwordHash = await bcrypt.hash(password, 10);
 
@@ -106,8 +106,7 @@ const registernormalUser = async (req, res) => {
       email,
       passwordHash,
       verificationToken, // Save the token in the user object
-      isVerified: false,
-      isaccept // Set the initial verification status to false
+      isVerified: false, // Set the initial verification status to false
     });
 
     const savedUser = await user.save();
@@ -239,7 +238,7 @@ const loginUser = async (req, res) => {
           empid: null,   // No empid for admin
         },
         secret,
-        { expiresIn: '1d' }
+        { expiresIn: '30d' }
       );
 
       return res.status(200).send({ user: email, role: 'admin', token: token, groupid: null, empid: null });
@@ -259,7 +258,7 @@ const loginUser = async (req, res) => {
             empid: therapist.empid || null, // Return therapist's empid if present, otherwise null
           },
           secret,
-          { expiresIn: '1d' }
+          { expiresIn: '30d' }
         );
 
         return res.status(200).send({ user: therapist.email, role: 'therapist', token: token, groupid: null, empid: therapist.empid || null });
@@ -304,7 +303,7 @@ const loginUser = async (req, res) => {
           empid: empid,
         },
         secret,
-        { expiresIn: '1d' }
+        { expiresIn: '30d' }
       );
 
       return res.status(200).send({ userId: user.id, user: user.email, role: role, token: token, groupid: groupid, empid: empid });
@@ -330,7 +329,6 @@ const registerUser = async (req, res) => {
         email,
         password,
         empid,
-        isaccept
       } = req.body;
   
       const generatedGroupId = req.params.generatedGroupId;
@@ -364,7 +362,6 @@ const registerUser = async (req, res) => {
         empid,
         verificationToken,
         isVerified: false,
-        isaccept,
         groupid: generatedGroupId,
         corporate: matchingClient.name,
       });

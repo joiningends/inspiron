@@ -9,7 +9,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   background: linear-gradient(to bottom, #68B545 50%, #ffffff 50%);
   margin-top: -2rem;
   position: relative;

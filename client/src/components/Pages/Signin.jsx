@@ -11,6 +11,8 @@ import wheel from "./inspironwhitewheel.png";
 import wheell from "./inspironwhitewheel2.png";
 import Footer from "./Footer";
 import lock from "./padlockForSignUpPage.png";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+
 import email from "./emailForSignUpPage.png";
 
 const Signin = () => {
@@ -27,6 +29,10 @@ const Signin = () => {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const toggleShowPassword = () => {
@@ -237,24 +243,40 @@ const Signin = () => {
             alt="lock"
             className={`icon ${formData.password ? "active" : ""}`}
           />
-          <input
-            type={showPassword ? "text" : "password"}
-            id="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            onFocus={handleInputFocus}
-            onBlur={handleInputBlur}
-            required
-          />
-          <img
-            className={`toggle-password-icon ${
-              formData.password ? "active" : ""
-            }`}
-            onClick={toggleShowPassword}
-            // Add appropriate icon here for toggling password visibility
-          />
+          <div style={{ position: "relative", width: "80vw" }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
+              required
+              style={{ width: "100%", paddingRight: "2.5rem" }}
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              style={{
+                position: "absolute",
+                top: "50%",
+                right: "8px",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "0.8 rem", // Adjust the font size based on viewport width
+              }}
+            >
+              {showPassword ? (
+                <FontAwesomeIcon icon={faEyeSlash} />
+              ) : (
+                <FontAwesomeIcon icon={faEye} />
+              )}
+            </button>
+          </div>
         </div>
         <button type="submit" onClick={handleSubmit}>
           Sign In

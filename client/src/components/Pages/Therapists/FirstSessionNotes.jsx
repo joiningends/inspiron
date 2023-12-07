@@ -223,7 +223,6 @@ function SociodemographicForm() {
             type="text"
             value={height}
             onChange={e => setHeight(e.target.value)}
-            required
           />
         </label>
         <label>
@@ -232,7 +231,6 @@ function SociodemographicForm() {
             type="text"
             value={weight}
             onChange={e => setWeight(e.target.value)}
-            required
           />
         </label>
         <label>

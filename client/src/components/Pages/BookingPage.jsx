@@ -13,6 +13,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  Checkbox,
   DialogActions,
 } from "@mui/material";
 import axios from "axios";
@@ -60,7 +61,7 @@ function BookingPage() {
   const [apiResponse, setApiResponse] = useState(null);
   const [appointmentData, setAppointmentData] = useState(null);
   const [error, setError] = useState(null);
-
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const [razorpayOptions, setRazorpayOptions] = useState({
     key: "rzp_test_9RNyyq8jjMD11V",
@@ -71,29 +72,31 @@ function BookingPage() {
     image: "https://your-therapy-center.com/logo.png",
     order_id: "",
     handler: response => {
-
       // Check if the payment was successful
       if (response.razorpay_payment_id) {
         alert("Payment successful!");
 
         // Continue with the API request and other logic as needed
-        fetch(`${process.env.REACT_APP_SERVER_URL}/payments/verify/${appointmentId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // You can add other headers as needed
-          },
-          body: JSON.stringify({
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_signature: response.razorpay_signature,
-          }),
-        })
+        fetch(
+          `${process.env.REACT_APP_SERVER_URL}/payments/verify/${appointmentId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              // You can add other headers as needed
+            },
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            }),
+          }
+        )
           .then(apiResponse => apiResponse.json())
           .then(data => {
             // Handle the API response as needed
 
-            console.log(data)
+            console.log(data);
 
             // After successful payment and API processing, open a new page
             window.open(`/sessionIsBooked/${appointmentId}`, "_self"); // "_self" opens it in the same tab
@@ -128,6 +131,10 @@ function BookingPage() {
       }
     },
   });
+
+  const handleCheckboxChange = event => {
+    setTermsAccepted(event.target.checked);
+  };
 
   useEffect(() => {
     const therapistApiUrl = `${process.env.REACT_APP_SERVER_URL}/therapists/${therapistId}`;
@@ -187,13 +194,16 @@ function BookingPage() {
         priceId: selectedOptionId,
       };
 
-      fetch(`${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}/price`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      })
+      fetch(
+        `${process.env.REACT_APP_SERVER_URL}/appointments/${appointmentId}/price`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      )
         .then(response => response.json())
         .then(responseData => {
           setApiResponse(responseData);
@@ -224,7 +234,6 @@ function BookingPage() {
       })
         .then(response => response.json())
         .then(data => {
-
           // Customize the appearance of the Razorpay payment form
           const razorpayOptionsWithTheme = {
             ...razorpayOptions,
@@ -319,7 +328,6 @@ function BookingPage() {
       })
         .then(response => response.json())
         .then(data => {
-
           // Handle the verification response as needed
         })
         .catch(error => {
@@ -473,6 +481,29 @@ function BookingPage() {
           </FormControl>
         </DialogContent>
         <DialogActions style={{ padding: "10px 20px" }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={termsAccepted}
+                onChange={handleCheckboxChange}
+                color="primary"
+                style={{ transform: "scale(0.75)" }}
+              />
+            }
+            label={
+              <span style={{ fontSize: "0.85rem" }}>
+                I accept the{" "}
+                <a
+                  href="https://www.inspirononline.com/terms/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none", color: "#2196F3" }}
+                >
+                  Terms and Conditions
+                </a>
+              </span>
+            }
+          />
           <Button
             onClick={handleCancelClick}
             color="primary"
@@ -489,18 +520,20 @@ function BookingPage() {
           >
             Cancel
           </Button>
+
           <Button
             onClick={handlePaymentDialogClose}
             color="primary"
             style={{
-              backgroundColor: "#68B545",
+              backgroundColor: termsAccepted ? "#68B545" : "#A9A9A9", // Change to grey if terms are not accepted
               color: "#fff",
               borderRadius: "5px",
               transition: "background 0.3s ease-in-out",
               "&:hover": {
-                backgroundColor: "#4C9141",
+                backgroundColor: termsAccepted ? "#4C9141" : "#A9A9A9",
               },
             }}
+            disabled={!termsAccepted}
           >
             Confirm
           </Button>
