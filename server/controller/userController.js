@@ -93,7 +93,7 @@ const generateRandomToken = () => {
 
 const registernormalUser = async (req, res) => {
   try {
-    const { name, mobile, email, password } = req.body;
+    const { name, mobile, email, password, isaccept } = req.body;
 
     const passwordHash = await bcrypt.hash(password, 10);
 
@@ -106,7 +106,8 @@ const registernormalUser = async (req, res) => {
       email,
       passwordHash,
       verificationToken, // Save the token in the user object
-      isVerified: false, // Set the initial verification status to false
+      isVerified: false,
+      isaccept // Set the initial verification status to false
     });
 
     const savedUser = await user.save();
@@ -329,6 +330,7 @@ const registerUser = async (req, res) => {
         email,
         password,
         empid,
+        isaccept
       } = req.body;
   
       const generatedGroupId = req.params.generatedGroupId;
@@ -362,6 +364,7 @@ const registerUser = async (req, res) => {
         empid,
         verificationToken,
         isVerified: false,
+        isaccept,
         groupid: generatedGroupId,
         corporate: matchingClient.name,
       });
