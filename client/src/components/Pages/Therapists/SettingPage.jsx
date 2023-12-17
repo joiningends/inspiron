@@ -43,11 +43,18 @@ function SettingPage() {
   const [sessionDuration, setSessionDuration] = useState(
     sessionInfo?.categories[0]?.sessionDuration
   );
+  const [sessionDurationPsych, setSessionDurationPsych] = useState(
+    sessionInfo?.categories[1]?.sessionDuration
+  );
   const [sessionCoolOffTime, setSessionCoolOffTime] = useState(
     sessionInfo?.categories[0]?.timeBetweenSessions
   );
+  const [sessionCoolOffTimePsych, setSessionCoolOffTimePsych] = useState(
+    sessionInfo?.categories[1]?.timeBetweenSessions
+  );
   const [isCenterEditing, setIsCenterEditing] = useState(false);
   const [isSessionEditing, setIsSessionEditing] = useState(false);
+  const [isSessionEditingPsych, setIsSessionEditingPsych] = useState(false);
   const [isExperienceEditing, setIsExperienceEditing] = useState(false);
   const [isExperienceFormVisible, setIsExperienceFormVisible] = useState(false);
   const [centers, setCenters] = useState([]);
@@ -283,6 +290,8 @@ function SettingPage() {
         setSessionInfo(data);
         setSessionDuration(data?.categories[0]?.sessionDuration);
         setSessionCoolOffTime(data?.categories[0]?.timeBetweenSessions);
+        setSessionCoolOffTimePsych(data?.categories[1]?.timeBetweenSessions);
+        setSessionDurationPsych(data?.categories[1]?.sessionDuration);
         setLoading(false);
         setError(null);
       })
@@ -436,6 +445,10 @@ function SettingPage() {
     setIsSessionEditing(true);
   };
 
+  const handleEditSessionClickPsych = () => {
+    setIsSessionEditingPsych(true);
+  };
+
   const handleSaveSessionClick = async id => {
     // const updateData = async () => {
     //   try {
@@ -478,8 +491,54 @@ function SettingPage() {
     }
   };
 
+  const handleSaveSessionClickPsych = async id => {
+    // const updateData = async () => {
+    //   try {
+    //     const response = await axios.put('${process.env.REACT_APP_SERVER_URL}/categories/session/info', dataToUpdate);
+    //     console.log('PUT request successful:', response.data);
+    //     // Handle success or perform any necessary actions here
+    //   } catch (error) {
+    //     console.error('Error making PUT request:', error);
+    //     // Handle error or display an error message here
+    //   }
+    // };
+
+    const sessionSettingsData = {
+      sessionDurationPsych,
+      timeBetweenSessions: sessionCoolOffTimePsych,
+      extendsession: 30,
+    };
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_SERVER_URL}/categories/update-session/65742d64c3d4e5e731131b2a`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(sessionSettingsData),
+        }
+      );
+
+      if (response.ok) {
+        // Handle successful response
+        console.log("Session settings saved successfully!");
+      } else {
+        // Handle error response
+        console.error("Error saving session settings");
+      }
+    } catch (error) {
+      console.error("An error occurred", error);
+    }
+  };
+
   const handleCancelSessionClick = () => {
     setIsSessionEditing(false);
+  };
+
+  const handleCancelSessionClickPsych = () => {
+    setIsSessionEditingPsych(false);
   };
 
   const handleExperienceFormSubmit = async e => {
@@ -788,22 +847,36 @@ function SettingPage() {
           <h2
             style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
           >
-            Session Settings
+            Therapist Session Settings
           </h2>
           <Grid container spacing={2}>
             <Grid item xs={4} className="input-field">
+              <InputLabel
+                htmlFor="therapist-session-duration"
+                style={{ marginBottom: "0.5rem" }}
+              >
+                Session Duration
+              </InputLabel>
               <TextField
                 fullWidth
                 type="number"
+                id="therapist-session-duration"
                 value={sessionDuration}
                 onChange={e => setSessionDuration(e.target.value)}
                 disabled={!isSessionEditing}
               />
             </Grid>
             <Grid item xs={4} className="input-field">
+              <InputLabel
+                htmlFor="therapist-cool-off-time"
+                style={{ marginBottom: "0.5rem" }}
+              >
+                Session Cool Off Time
+              </InputLabel>
               <TextField
                 fullWidth
                 type="number"
+                id="therapist-cool-off-time"
                 onChange={e => setSessionCoolOffTime(e.target.value)}
                 value={sessionCoolOffTime}
                 disabled={!isSessionEditing}
@@ -816,6 +889,7 @@ function SettingPage() {
                 type="number"
                 value={30}
                 disabled
+                style={{ marginTop: "1.8rem" }}
               />
             </Grid>
           </Grid>
@@ -855,6 +929,98 @@ function SettingPage() {
             </Button>
           )}
         </Paper>
+
+        <Paper
+          elevation={3}
+          className="setting-paper"
+          style={{ marginTop: "2rem" }}
+        >
+          <h2
+            style={{ fontSize: "1.5rem", marginBottom: "1rem", color: "black" }}
+          >
+            Psychiatrist Session Settings
+          </h2>
+          <Grid container spacing={2}>
+            <Grid item xs={4} className="input-field">
+              <InputLabel
+                htmlFor="session-duration"
+                style={{ marginBottom: "0.5rem" }}
+              >
+                Session Duration
+              </InputLabel>
+              <TextField
+                fullWidth
+                type="number"
+                id="session-duration"
+                value={sessionDurationPsych}
+                onChange={e => setSessionDurationPsych(e.target.value)}
+                disabled={!isSessionEditingPsych}
+              />
+            </Grid>
+            <Grid item xs={4} className="input-field">
+              <InputLabel
+                htmlFor="cool-off-time"
+                style={{ marginBottom: "0.5rem" }}
+              >
+                Session Cool Off Time
+              </InputLabel>
+              <TextField
+                fullWidth
+                type="number"
+                id="cool-off-time"
+                onChange={e => setSessionCoolOffTimePsych(e.target.value)}
+                value={sessionCoolOffTimePsych}
+                disabled={!isSessionEditingPsych}
+              />
+            </Grid>
+            <Grid item xs={4} className="input-field">
+              <TextField
+                fullWidth
+                label="Session Extension Time (in min)"
+                type="number"
+                value={30}
+                disabled
+                style={{ marginTop: "1.8rem" }}
+              />
+            </Grid>
+          </Grid>
+          {isSessionEditingPsych ? (
+            <div className="button-container">
+              <Button
+                variant="contained"
+                startIcon={<SaveIcon />}
+                onClick={handleSaveSessionClickPsych}
+                className="save-button"
+                style={{ backgroundColor: "#D67449", color: "white" }}
+              >
+                Save Session Settings
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={handleCancelSessionClickPsych}
+                className="cancel-button"
+                style={{
+                  backgroundColor: "white",
+                  color: "#D67449",
+                  border: "1px solid #D67449",
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="contained"
+              startIcon={<EditIcon />}
+              onClick={handleEditSessionClickPsych}
+              className="edit-button"
+              style={{ backgroundColor: "#D67449", color: "white" }}
+            >
+              Edit Session Settings
+            </Button>
+          )}
+        </Paper>
+
         <Paper
           elevation={3}
           className="setting-paper"

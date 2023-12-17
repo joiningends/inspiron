@@ -222,6 +222,9 @@ function App() {
               path="/thankyouForRegistering_teamInspiron/verify/:token"
               element={<Thankyou />}
             />
+            <Route path="/assessment" element={<Assessments />} />
+            <Route path="/assessment/:id" element={<Assessment />} />
+            <Route path="/result" element={<Result />} />
           </Routes>
         </div>
       </Router>
