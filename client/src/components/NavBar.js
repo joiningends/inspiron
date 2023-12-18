@@ -377,8 +377,8 @@ function NavBar() {
           >
             <ListItemButton
               component={isLoggedIn ? NavLink : "div"}
-              to={isLoggedIn ? "/login" : null}
-              onClick={isLoggedIn ? handleSignOut : null}
+              to={isLoggedIn ? "/login" : "/signin"}
+              onClick={isLoggedIn ? handleSignOut : handleSignIn}
             >
               <ListItemIcon>
                 {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
