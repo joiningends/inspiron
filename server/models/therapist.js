@@ -22,12 +22,12 @@ const therapistSchema = new mongoose.Schema({
   age: {
     type: Number,
   },
-  expriencelevel:[
+  expriencelevel:
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Price",
       },
-    ],
+    
   level:{
 type:String
   },

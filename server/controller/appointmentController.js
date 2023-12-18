@@ -100,6 +100,7 @@ exports.createAppointment = async (req, res) => {
         // Update the appointment's price, sessions, and discounted price
 
         const currentSessionDetails = {
+          appointmentId: newAppointment._id,
           priceId: priceId,
           level: priceDetails.level,
           session: priceDetails.session,
@@ -311,8 +312,14 @@ exports.createAppointment = async (req, res) => {
         return res.status(201).json(populatedAppointment);
       }
     } else {
-     
+      
+      const priceDetails = await Price.findById(priceId).select(
+        "level session sessionPrice discountPrice"
+      );
 
+      if (!priceDetails) {
+        throw new Error("Price details not found");
+      }
       const negativeCoinBalance = await Coin.findOne({
         user: userId,
         coinBalance: { $lt: 0, $ne: 0 }, 
@@ -358,8 +365,87 @@ if (existingAppointment) {
         sessionMode,
       });
 
+      const currentSessionDetails = {
+        appointmentId: newAppointment._id,
+        priceId: priceId,
+        level: priceDetails.level,
+        session: priceDetails.session,
+        sessionPrice: priceDetails.sessionPrice,
+        discountPrice: priceDetails.discountPrice,
+      };
+      user.priceHistory.push(currentSessionDetails);
+      await user.save();
+     
+      let calculatedAverage;
+      let totalSessions;
+      let totalDiscountPriceIncludingAppointment = 0;
+      let packageAmount;
+
+      const therapistLevel = therapist.level
+        ? therapist.level.toString()
+        : null;
+
+      const userPriceHistory = user.priceHistory.filter(priceDetails => {
+        const level = priceDetails.level
+          ? priceDetails.level.toString()
+          : null;
+
+        if (therapistLevel && level) {
+          return level === therapistLevel;
+        }
+
+        return false;
+      });
+
+      console.log(
+        "User Price History Matching Therapist Level:",
+        userPriceHistory
+      );
+
+      const totalDiscountPrice = userPriceHistory.reduce(
+        (sum, priceDetails) => {
+          if (priceDetails.discountPrice) {
+            return sum + priceDetails.discountPrice;
+          }
+          return sum;
+        },
+        0
+      );
+
+      console.log("Total Discount Price:", totalDiscountPrice);
+
+      totalDiscountPriceIncludingAppointment = totalDiscountPrice;
+      console.log(
+        "Total Discount Price Including Appointment:",
+        totalDiscountPriceIncludingAppointment
+      );
+
+      const totalSessionsInPriceHistory = userPriceHistory.reduce(
+        (sum, priceDetails) => {
+          if (priceDetails.session) {
+            return sum + priceDetails.session;
+          }
+          return sum;
+        },
+        0
+      );
+
+      totalSessions = totalSessionsInPriceHistory;
+      console.log("Total Sessions:", totalSessions);
+      // Calculate the average price
+      calculatedAverage =
+        Math.round(
+          (totalDiscountPriceIncludingAppointment / totalSessions) * 100
+        ) / 100;
+
+      // Save the updated appointment
+
       const savedAppointment = await newAppointment.save();
       await updateSessionNumber(userId, therapistId);
+
+      
+      await user.save();
+      
 
       // Check if the user has a coin balance for this level
       const existingCoin = await Coin.findOne({
@@ -377,6 +463,7 @@ if (existingAppointment) {
       if (existingCoin) {
         // Update the existing coin balance
         existingCoin.coinBalance = existingCoin.coinBalance - 1;
+        existingCoin.avarage = calculatedAverage;
         await existingCoin.save();
       } else {
         const coinEntry = new Coin({
@@ -504,6 +591,7 @@ exports.createAppointmentbytherapist = async (req, res) => {
         // Update the appointment's price, sessions, and discounted price
 
         const currentSessionDetails = {
+          appointmentId: newAppointment._id,
           priceId: priceId,
           level: priceDetails.level,
           session: priceDetails.session,
@@ -767,6 +855,7 @@ exports.createAppointmentbytherapist = async (req, res) => {
     // Update the appointment's price, sessions, and discounted price
 
     const currentSessionDetails = {
+      appointmentId: newAppointment._id,
       priceId: priceId,
       level: priceDetails.level,
       session: priceDetails.session,
@@ -1524,7 +1613,9 @@ exports.updateAppointmentPrice = async (req, res) => {
 
     const userId = appointment.user;
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select(
+      " priceHistory "
+    );
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -1538,11 +1629,16 @@ exports.updateAppointmentPrice = async (req, res) => {
       return res.status(404).json({ error: "Price details not found" });
     }
 
-    // Find the index of the existing price history entry based on the appointment ID
-    const appointmentIndex = user.priceHistory.findIndex(
-      entry => entry.appointmentId === appointmentId.toString()
-    );
+    console.log(user.priceHistory);
+    const mongoose = require('mongoose');
 
+const appointmentIndex = user.priceHistory.findIndex(
+  entry => entry.appointmentId.toString() === appointmentId
+);
+console.log(appointmentIndex);
+
+    console.log(appointmentIndex);
+    
     if (appointmentIndex !== -1) {
       // Update the existing price history entry with the new price information
       user.priceHistory[appointmentIndex] = {
