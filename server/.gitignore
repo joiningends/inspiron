@@ -4135,7 +4135,7 @@ server/inspiron/node_modules/promise/src/index.js
 server/inspiron/node_modules/promise/src/node-extensions.js
 server/inspiron/node_modules/promise/src/rejection-tracking.js
 server/inspiron/node_modules/promise/src/synchronous.js
-server/inspiron/node_modules/psl/.env
+#server/inspiron/node_modules/psl/.env
 server/inspiron/node_modules/psl/browserstack-logo.svg
 server/inspiron/node_modules/psl/index.js
 server/inspiron/node_modules/psl/LICENSE
@@ -8091,7 +8091,7 @@ server/node_modules/proxy-addr/index.js
 server/node_modules/proxy-addr/LICENSE
 server/node_modules/proxy-addr/package.json
 server/node_modules/proxy-addr/README.md
-server/node_modules/psl/.env
+#server/node_modules/psl/.env
 server/node_modules/psl/browserstack-logo.svg
 server/node_modules/psl/index.js
 server/node_modules/psl/LICENSE
