@@ -48,6 +48,10 @@ function NavBar() {
     navigate("/login");
   };
 
+  const handleSignIn = () => {
+    navigate("/signin");
+  };
+
   const empid = JSON.parse(localStorage.getItem("empid"));
   const shouldShowComponent = empid === null;
 
@@ -677,8 +681,8 @@ function NavBar() {
           <List>
             <ListItemButton
               component={isLoggedIn ? NavLink : "div"}
-              to={isLoggedIn ? "/login" : null}
-              onClick={isLoggedIn ? handleSignOut : null}
+              to={isLoggedIn ? "/login" : "/signin"}
+              onClick={isLoggedIn ? handleSignOut : handleSignIn}
             >
               <ListItemIcon>
                 {isLoggedIn ? <LogoutIcon /> : <LoginIcon />}
