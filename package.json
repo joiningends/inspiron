@@ -1,0 +1,19 @@
+{
+  "name": "inspiron",
+  "version": "1.0.0",
+  "description": "Inspiron E-Commerce",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "cd server && npm install --silent",
+    "postinstall": "cd client && npm install --silent",
+    "client" : "cd client && npm start ",
+    "server": "cd server && npm start",
+    "start": "concurrently \"SET PORT=3001 && npm run client\" \"npm run server\""
+  },
+  "keywords": [],
+  "author": "Joining Ends",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
