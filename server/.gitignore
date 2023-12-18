@@ -3229,8 +3229,6 @@ server/inspiron/node_modules/xtend/package.json
 server/inspiron/node_modules/xtend/README.md
 server/inspiron/node_modules/xtend/test.js
 server/inspiron/yarn.lock
-server/inspiron/.env
-
 server/inspiron/package.json
 server/inspiron/node_modules/.bin/sshpk-conv
 server/inspiron/node_modules/.bin/sshpk-conv.cmd
