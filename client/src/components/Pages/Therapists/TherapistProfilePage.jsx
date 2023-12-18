@@ -71,12 +71,9 @@ function TherapistProfilePage() {
   });
 
   const [sessionInfo, setSessionInfo] = useState(null);
-  const [sessionDuration, setSessionDuration] = useState(
-    sessionInfo?.categories[0]?.sessionDuration
-  );
-  const [sessionCoolOffTime, setSessionCoolOffTime] = useState(
-    sessionInfo?.categories[0]?.timeBetweenSessions
-  );
+
+  const [sessionDuration, setSessionDuration] = useState(null);
+  const [sessionCoolOffTime, setSessionCoolOffTime] = useState(null);
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -182,16 +179,25 @@ function TherapistProfilePage() {
       .then(response => response.json())
       .then(data => {
         // Update state with the fetched data and set loading to false
+        console.log("Helllooosdofosdafo");
+        console.log(data);
+        console.log(therapist);
         setSessionInfo(data);
-        setSessionDuration(data?.categories[0]?.sessionDuration);
-        setSessionCoolOffTime(data?.categories[0]?.timeBetweenSessions);
-        console.log(data.categories[0]?.timeBetweenSessions);
+        if (therapist?.therapisttype === "Psychiatrist") {
+          setSessionDuration(data?.categories[1]?.sessionDuration);
+          setSessionCoolOffTime(data?.categories[1]?.timeBetweenSessions);
+          console.log(data?.categories[1]?.sessionDuration);
+          console.log(data?.categories[1]?.timeBetweenSessions);
+        } else {
+          setSessionDuration(data?.categories[0]?.sessionDuration);
+          setSessionCoolOffTime(data?.categories[0]?.timeBetweenSessions);
+        }
       })
       .catch(error => {
         // Handle any errors that occurred during the fetch and update error state
         setSessionInfo(null);
       });
-  }, []);
+  }, [therapist]);
 
   const handleSessionModeCheckboxChange = option => {
     const newCheckboxValues = {
@@ -1756,7 +1762,7 @@ function TherapistProfilePage() {
           </form>
         </div>
       </div>
-    <Footer/>
+      <Footer />
     </>
   );
 }

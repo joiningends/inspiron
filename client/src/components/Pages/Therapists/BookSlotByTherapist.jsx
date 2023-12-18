@@ -103,7 +103,6 @@ function BookSlotByTherapist() {
       return; // If no time slot is selected, do nothing
     }
 
-    console.log("hu");
 
     const { mode } = selectedTimeSlot;
     // Prepare the data for the API request

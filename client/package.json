@@ -58,8 +58,8 @@
     "redux-thunk": "^2.4.2",
     "styled-components": "^6.1.1",
     "web-vitals": "^3.1.1",
-    "xlsx": "^0.18.5",
-    "lucid-icons": "^0.3.0"
+    "xlsx": "^0.18.5"
+   
   },
   "scripts": {
     "preinstall": "npm config set legacy-peer-deps true",

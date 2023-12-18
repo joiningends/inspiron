@@ -187,10 +187,7 @@ export default function Footer() {
                 color="textSecondary"
                 style={{ color: "white" }}
               >
-                <Link href="#" color="inherit">
-                  Indiranagar #72, 4th Main Road, Domlur, 2nd Stage,
-                  Indiranagar, Bangalore, Karnataka, India 560 071 +91
-                  9845140442
+                <Link href="#" color="inherit"> +91 9845140442
                 </Link>
               </Typography>
             </Typography>

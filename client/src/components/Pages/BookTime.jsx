@@ -20,12 +20,14 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import { FaHeart, FaThumbsUp, FaClock, FaSmile } from "react-icons/fa";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Footer from "./Footer";
+
+import RatingIcon from "./starForKnowMorePage.png";
+import OnlineIcon from "./online-meetingForKnowMorePage.png";
 import TotalSessionIcon from "./interactionsForKnowMorePage.png";
 import OfflineIcon from "./meetingImageForKnowMorepage.png";
 import ModeOfMeetingIcon from "./meetingForKnowMorePage.png";
 import ExpertiseIcon from "./experienceForKnowMorePage.png";
 import LanguagesIcon from "./languageforKnowMorePage.png";
-
 const Popup = ({
   selectedTimeSlot,
   selectedDate,
@@ -645,12 +647,13 @@ function BookTime() {
         </div>
         <div className="booktime-aboutDiv">
           <div className="booktime-containerr2">
-            <div
-              className="booktime-profileDetails"
-              style={{ fontSize: "1rem" }}
-            >
+            <div className="booktime-profileDetails">
               <span>
-                <FaHeart className="profileIcons" />
+                <img
+                  src={TotalSessionIcon}
+                  alt="Expertise Icon"
+                  style={{ height: "50px", width: "50px" }}
+                />
               </span>
               <span>
                 <h3 className="subDetails">{availableSession}</h3>
@@ -664,7 +667,11 @@ function BookTime() {
             </div>
             <div className="booktime-profileDetails">
               <span>
-                <FaHeart className="profileIcons" />
+                <img
+                  src={RatingIcon}
+                  alt="Expertise Icon"
+                  style={{ height: "50px", width: "50px" }}
+                />
               </span>
               <span>
                 <h3 className="subDetails">
@@ -680,7 +687,11 @@ function BookTime() {
             </div>
             <div className="booktime-profileDetails">
               <span>
-                <FaClock className="profileIcons" />
+                <img
+                  src={OfflineIcon}
+                  alt="Expertise Icon"
+                  style={{ height: "50px", width: "50px" }}
+                />
               </span>
               <span>
                 <h3 className="subDetails">{therapist?.offlineSessionCount}</h3>
@@ -691,7 +702,11 @@ function BookTime() {
             </div>
             <div className="booktime-profileDetails" style={{ height: "35vh" }}>
               <span>
-                <FaClock className="profileIcons" />
+                <img
+                  src={OnlineIcon}
+                  alt="Online session"
+                  style={{ height: "50px", width: "50px" }}
+                />
               </span>
               <span>
                 <h3 className="subDetails">{therapist?.onlineSessionCount}</h3>

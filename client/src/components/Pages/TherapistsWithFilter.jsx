@@ -408,6 +408,14 @@ export const TherapistsWithFilter = () => {
     setFilteredTherapists(therapist);
   };
 
+  const displayTherapists = currentTherapists?.map(therapist => (
+    <Therapist
+      key={therapist.id}
+      therapist={therapist}
+      className="therapist-box"
+    />
+  ));
+
   return (
     <>
       {/* Button to toggle the visibility of filters */}
@@ -448,7 +456,7 @@ export const TherapistsWithFilter = () => {
             }}
           >
             {/* Displaying Labels */}
-            <Grid container >
+            <Grid container>
               {/* Apply Filters label */}
               <span
                 style={{
@@ -583,18 +591,9 @@ export const TherapistsWithFilter = () => {
         </Grid>
       </Grid>
 
-      <div className="therapist-containerr">
-        {filteredTherapists?.therapists?.map(therapist => (
-          <Therapist
-            key={therapist.id}
-            therapist={therapist}
-            className="therapist-box"
-          />
-        ))}
-      </div>
+      <div className="therapist-containerr">{displayTherapists}</div>
 
       {/* Pagination controls */}
-      {/* Enhanced Pagination controls */}
       <div className="pagination">
         {filteredTherapists?.therapists && (
           <ul>
