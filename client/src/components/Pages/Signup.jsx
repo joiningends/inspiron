@@ -40,7 +40,7 @@ const Signup = () => {
   });
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
   const [isTermsAccepted, setTermsAccepted] = useState(false);
 
   const handleChange = e => {
