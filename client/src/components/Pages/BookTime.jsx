@@ -274,7 +274,9 @@ function BookTime() {
     // Check if therapist and coinData are available
     if (therapist && coinDataArray.length > 0) {
       // Get the therapist's level from experiencelevel[0]
-      const therapistLevel = therapist.expriencelevel[0];
+     
+      const therapistLevel = therapist.expriencelevel;
+
 
       // Find the corresponding coinData for the therapist's level
       const matchingCoinData = coinDataArray.find(
