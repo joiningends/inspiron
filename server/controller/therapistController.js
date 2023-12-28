@@ -751,10 +751,11 @@ const approveTherapist = async (req, res) => {
     }
 
     // Check if the therapist meets the approval conditions
-    const isApproved = therapist.expertise.length > 0 &&
-      therapist.expriencelevel.length > 0 &&
+     const isApproved = therapist.expertise.length > 0 &&
+      therapist.expriencelevel  &&
       therapist.group.length > 0 &&
       therapist.meetLink !== "";
+
 
     if (isApproved) {
       therapist.status = 'Approved';
