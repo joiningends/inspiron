@@ -10,13 +10,13 @@ const fs = require("fs");
 const util = require("util");
 const writeFile = util.promisify(fs.writeFile);
 const cron = require("node-cron");
-const PDFDocument = require('pdfkit');
+const PDFDocument = require("pdfkit");
 const moment = require("moment");
 const {
-  sendWhatsAppMessage,sendWhatsAppMessageMedia,
+  sendWhatsAppMessage,
+  sendWhatsAppMessageMedia,
   getSentMessageCount,
   getSentMessages,
-  
 } = require("../controller/whatsappcontrooler");
 
 // Function to update the Sessionnumber for the user
@@ -312,7 +312,6 @@ exports.createAppointment = async (req, res) => {
         return res.status(201).json(populatedAppointment);
       }
     } else {
-      
       const priceDetails = await Price.findById(priceId).select(
         "level session sessionPrice discountPrice"
       );
@@ -322,38 +321,35 @@ exports.createAppointment = async (req, res) => {
       }
       const negativeCoinBalance = await Coin.findOne({
         user: userId,
-        coinBalance: { $lt: 0, $ne: 0 }, 
+        coinBalance: { $lt: 0, $ne: 0 },
       });
-      
-  
 
+      if (negativeCoinBalance) {
+        const { coinBalance, avarage, expriencelevel } = negativeCoinBalance;
 
-if (negativeCoinBalance) {
-  const { coinBalance, avarage, expriencelevel } = negativeCoinBalance;
+        const product = -coinBalance * avarage;
 
-  
-  const product = (-coinBalance) * avarage;
+        return res.status(400).json({
+          message: `Dear customer, please pay the amount: ${product}`,
+          userId: userId,
+          expriencelevel: expriencelevel,
+        });
+      }
 
-  return res.status(400).json({
-    message: `Dear customer, please pay the amount: ${product}`,
-    userId: userId,
-    expriencelevel: expriencelevel,
-  });
-}
+      // Continue with booking logic for users without groupid and without company payment
+      // Check if the appointment slot is available
+      const existingAppointment = await Appointment.findOne({
+        therapist: therapistId,
+        dateTime,
+        startTime: { $lte: endTime },
+        endTime: { $gte: startTime },
+      });
 
-// Continue with booking logic for users without groupid and without company payment
-// Check if the appointment slot is available
-const existingAppointment = await Appointment.findOne({
-  therapist: therapistId,
-  dateTime,
-  startTime: { $lte: endTime },
-  endTime: { $gte: startTime },
-});
-
-if (existingAppointment) {
-  return res.status(409).json({ error: 'The requested time slot is already booked' });
-}
-
+      if (existingAppointment) {
+        return res
+          .status(409)
+          .json({ error: "The requested time slot is already booked" });
+      }
 
       const newAppointment = new Appointment({
         therapist: therapistId,
@@ -375,7 +371,7 @@ if (existingAppointment) {
       };
       user.priceHistory.push(currentSessionDetails);
       await user.save();
-     
+
       let calculatedAverage;
       let totalSessions;
       let totalDiscountPriceIncludingAppointment = 0;
@@ -386,9 +382,7 @@ if (existingAppointment) {
         : null;
 
       const userPriceHistory = user.priceHistory.filter(priceDetails => {
-        const level = priceDetails.level
-          ? priceDetails.level.toString()
-          : null;
+        const level = priceDetails.level ? priceDetails.level.toString() : null;
 
         if (therapistLevel && level) {
           return level === therapistLevel;
@@ -443,9 +437,7 @@ if (existingAppointment) {
       const savedAppointment = await newAppointment.save();
       await updateSessionNumber(userId, therapistId);
 
-      
       await user.save();
-      
 
       // Check if the user has a coin balance for this level
       const existingCoin = await Coin.findOne({
@@ -1169,11 +1161,9 @@ exports.getTodayAppointmentsByTherapist = async (req, res) => {
     });
   } catch (error) {
     console.error("Error retrieving today's appointments:", error);
-    res
-      .status(500)
-      .json({
-        error: "An error occurred while retrieving today's appointments",
-      });
+    res.status(500).json({
+      error: "An error occurred while retrieving today's appointments",
+    });
   }
 };
 
@@ -1343,11 +1333,9 @@ exports.getAppointmentsByTherapistWithEndedMeetCall = async (req, res) => {
       "Failed to retrieve appointments with ended Google Meet calls:",
       error
     );
-    res
-      .status(500)
-      .json({
-        error: "Failed to retrieve appointments with ended Google Meet calls",
-      });
+    res.status(500).json({
+      error: "Failed to retrieve appointments with ended Google Meet calls",
+    });
   }
 };
 exports.retrieveAppointments = (req, res) => {
@@ -1613,9 +1601,7 @@ exports.updateAppointmentPrice = async (req, res) => {
 
     const userId = appointment.user;
 
-    const user = await User.findById(userId).select(
-      " priceHistory "
-    );
+    const user = await User.findById(userId).select(" priceHistory ");
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -1630,15 +1616,15 @@ exports.updateAppointmentPrice = async (req, res) => {
     }
 
     console.log(user.priceHistory);
-    const mongoose = require('mongoose');
+    const mongoose = require("mongoose");
 
-const appointmentIndex = user.priceHistory.findIndex(
-  entry => entry.appointmentId.toString() === appointmentId
-);
-console.log(appointmentIndex);
+    const appointmentIndex = user.priceHistory.findIndex(
+      entry => entry.appointmentId.toString() === appointmentId
+    );
+    console.log(appointmentIndex);
 
     console.log(appointmentIndex);
-    
+
     if (appointmentIndex !== -1) {
       // Update the existing price history entry with the new price information
       user.priceHistory[appointmentIndex] = {
@@ -1692,7 +1678,7 @@ exports.extendSession = async (req, res) => {
     const userId = originalAppointment.user;
     const therapistId = originalAppointment.therapist;
 
-    const user = await User.findById(userId).select("name email priceHistory");
+    const user = await User.findById(userId).select("name email priceHistory groupid credits");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -1807,7 +1793,21 @@ exports.extendSession = async (req, res) => {
           ) / 100;
 
         console.log("Calculated Average Price:", calculatedAverage);
+        if (user.groupid) {
+          user.credits = user.credits + 0.5;
+          await user.save();
+        }
 
+        // Update the client's credit count if user has groupid
+        if (user.groupid) {
+          const client = await Client.findOne({
+            groupid: user.groupid,
+          }).select("credit");
+          if (client) {
+            client.credit = client.credit + 0.5;
+            await client.save();
+          }
+        }
         if (originalAppointment.discountPrice !== 0.0) {
           originalAppointment.extensionprice =
             Math.round(
@@ -1850,21 +1850,7 @@ exports.extendSession = async (req, res) => {
             // Handle the error or set a default value for the average
           }
 
-          if (user.groupid) {
-            user.credits = user.credits + -0.5;
-            await user.save();
-          }
-
-          // Update the client's credit count if user has groupid
-          if (user.groupid) {
-            const client = await Client.findOne({
-              groupid: user.groupid,
-            }).select("credit");
-            if (client) {
-              client.credit = client.credit + -0.5;
-              await client.save();
-            }
-          }
+         
         } else {
           console.log("User coin entry not found or level mismatch.");
         }
@@ -1884,8 +1870,6 @@ exports.extendSession = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
 
 function generateAndSavePDF(updateData) {
   return new Promise((resolve, reject) => {
@@ -1919,21 +1903,25 @@ function generateAndSavePDF(updateData) {
 
     addSectionWithBox("Summary:", updateData.summary);
     addSectionWithBox("Growth Curve Points:", updateData.growthCurve);
-    addSectionWithBox("Therapeutic Techniques Used:", updateData.therapeuticTechniques);
+    addSectionWithBox(
+      "Therapeutic Techniques Used:",
+      updateData.therapeuticTechniques
+    );
     addSectionWithBox("Homework Given:", updateData.homeworkGiven);
     addSectionWithBox("Next Session Plan:", updateData.nextSessionPlan);
 
     doc.font("Helvetica").fontSize(12);
 
     const buffers = [];
-    doc.on("data", (buffer) => buffers.push(buffer));
+    doc.on("data", buffer => buffers.push(buffer));
     doc.on("end", () => {
       const pdfBuffer = Buffer.concat(buffers);
       resolve(pdfBuffer);
     });
 
-    
-    const pdfFilePath = `public/uploads/session_summary_${moment().format("YYYYMMDD_HHmmss")}.pdf`;
+    const pdfFilePath = `public/uploads/session_summary_${moment().format(
+      "YYYYMMDD_HHmmss"
+    )}.pdf`;
     const writeStream = fs.createWriteStream(pdfFilePath);
 
     doc.pipe(writeStream);
@@ -1944,19 +1932,20 @@ function generateAndSavePDF(updateData) {
       console.log("PDF saved locally:", pdfFilePath);
     });
 
-    writeStream.on("error", (err) => {
+    writeStream.on("error", err => {
       reject(err);
     });
   });
 }
-
 
 exports.updateUserSessionNotes = async (req, res) => {
   try {
     const appointmentId = req.params.id;
     const updateData = req.body;
 
-    const appointment = await Appointment.findById(appointmentId).populate('user');
+    const appointment = await Appointment.findById(appointmentId).populate(
+      "user"
+    );
 
     if (!appointment) {
       return res.status(404).json({ message: "Appointment not found" });
@@ -1964,11 +1953,13 @@ exports.updateUserSessionNotes = async (req, res) => {
 
     appointment.sessionnotes.Summary = updateData.summary;
     appointment.sessionnotes.Growthcurvepoints = updateData.growthCurve;
-    appointment.sessionnotes.TherapeuticTechniquesused = updateData.therapeuticTechniques;
+    appointment.sessionnotes.TherapeuticTechniquesused =
+      updateData.therapeuticTechniques;
     appointment.sessionnotes.Homeworkgiven = updateData.homeworkGiven;
     appointment.sessionnotes.Nextsessionplan = updateData.nextSessionPlan;
     appointment.sessionnotes.sharedWithPatient = updateData.sharedWithPatient;
-    appointment.sessionnotes.sharedWithPsychiatrist = updateData.sharedWithPsychiatrist;
+    appointment.sessionnotes.sharedWithPsychiatrist =
+      updateData.sharedWithPsychiatrist;
     appointment.sessionnotes.generateReport = updateData.generateReport;
 
     if (
@@ -1999,10 +1990,14 @@ exports.updateUserSessionNotes = async (req, res) => {
           const matchingTherapists = await Therapist.find({ level: level });
 
           if (matchingTherapists.length > 0) {
-            const therapistTypes = matchingTherapists.map(therapist => therapist.therapisttype);
+            const therapistTypes = matchingTherapists.map(
+              therapist => therapist.therapisttype
+            );
 
             if (therapistTypes.includes("psychiatrist")) {
-              const psychiatristTherapistIds = matchingTherapists.map(therapist => therapist._id);
+              const psychiatristTherapistIds = matchingTherapists.map(
+                therapist => therapist._id
+              );
 
               const psychiatristAppointments = await Appointment.find({
                 therapist: { $in: psychiatristTherapistIds },
@@ -2010,11 +2005,12 @@ exports.updateUserSessionNotes = async (req, res) => {
               });
 
               if (psychiatristAppointments.length > 0) {
-                const sortedAppointments = psychiatristAppointments.sort((a, b) =>
-                  a.appointmentDate > b.appointmentDate ? 1 : -1
+                const sortedAppointments = psychiatristAppointments.sort(
+                  (a, b) => (a.appointmentDate > b.appointmentDate ? 1 : -1)
                 );
 
-                const latestAppointment = sortedAppointments[sortedAppointments.length - 1];
+                const latestAppointment =
+                  sortedAppointments[sortedAppointments.length - 1];
 
                 const therapistId = latestAppointment.therapist;
                 // Now, 'therapistId' contains the ID of the therapist associated with the latest appointment
@@ -2027,39 +2023,44 @@ exports.updateUserSessionNotes = async (req, res) => {
       }
     }
 
-   
     if (updateData.sharedWithPatient === true) {
       const user = await User.findById(userId);
       const userEmail = user.email;
       const Mobile = user.mobile;
 
       const pdfBuffer = await generateAndSavePDF(updateData);
-      const pdfFilePath = `public/uploads/session_summary_${moment().format("YYYYMMDD_HHmmss")}.pdf`;
-      media_url=`http://13.126.59.21/public/uploads/session_summary_${moment().format("YYYYMMDD_HHmmss")}.pdf`
-      sendWhatsAppMessageMedia(Mobile,
-   `Attached is your session summary PDF
+      const pdfFilePath = `public/uploads/session_summary_${moment().format(
+        "YYYYMMDD_HHmmss"
+      )}.pdf`;
+      media_url = `http://13.126.59.21/public/uploads/session_summary_${moment().format(
+        "YYYYMMDD_HHmmss"
+      )}.pdf`;
+      sendWhatsAppMessageMedia(
+        Mobile,
+        `Attached is your session summary PDF
         Thanks,
       Team Inspiron
-      `
-        ,  media_url);
-        const transporter = nodemailer.createTransport({
-          host: "smtppro.zoho.com",
-          port: 465,
-          secure: true,
-          auth: {
-            user: "info@inspirononline.com",
-            pass: "zU0VjyrxHmFm",
-          },
-        });
-      
-        const mailOptions = {
-          from: "info@inspirononline.com",
+      `,
+        media_url
+      );
+      const transporter = nodemailer.createTransport({
+        host: "smtppro.zoho.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: "info@inspirononline.com",
+          pass: "zU0VjyrxHmFm",
+        },
+      });
+
+      const mailOptions = {
+        from: "info@inspirononline.com",
         to: userEmail,
-        subject: 'Session Summary PDF',
-        text: 'Attached is your session summary PDF',
+        subject: "Session Summary PDF",
+        text: "Attached is your session summary PDF",
         attachments: [
           {
-            filename: 'session_summary.pdf',
+            filename: "session_summary.pdf",
             path: pdfFilePath,
           },
         ],
@@ -2067,9 +2068,9 @@ exports.updateUserSessionNotes = async (req, res) => {
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.error('Error sending email:', error);
+          console.error("Error sending email:", error);
         } else {
-          console.log('Email sent: ' + info.response);
+          console.log("Email sent: " + info.response);
         }
       });
     }
@@ -2088,10 +2089,6 @@ exports.updateUserSessionNotes = async (req, res) => {
     });
   }
 };
-
-
-
-
 
 exports.getAppointmentsByUser = async (req, res) => {
   try {
@@ -2233,7 +2230,7 @@ exports.getUniqueUserNamesForTherapist = async (req, res) => {
     const uniqueUsers = new Map();
 
     // Iterate through the appointments and filter out duplicates
-    appointments.forEach((appointment) => {
+    appointments.forEach(appointment => {
       const userId = appointment.user._id.toString(); // Convert ObjectId to string
       const userName = appointment.user.name;
       const firstSession = appointment.user.firstsession;
@@ -2244,11 +2241,14 @@ exports.getUniqueUserNamesForTherapist = async (req, res) => {
     });
 
     // Convert the Map to an array of objects with user ID, name, and firstsession
-    const uniqueUsersArray = Array.from(uniqueUsers, ([userId, { userName, firstSession }]) => ({
-      userId,
-      userName,
-      firstSession,
-    }));
+    const uniqueUsersArray = Array.from(
+      uniqueUsers,
+      ([userId, { userName, firstSession }]) => ({
+        userId,
+        userName,
+        firstSession,
+      })
+    );
 
     res.status(200).json(uniqueUsersArray);
   } catch (error) {
@@ -2402,11 +2402,9 @@ exports.updateUserSessionNotesemail = async (req, res) => {
     res.json({ message: "Appointment updated." });
   } catch (error) {
     console.error("Error updating appointment session notes:", error);
-    res
-      .status(500)
-      .json({
-        error: "An error occurred while updating appointment session notes",
-      });
+    res.status(500).json({
+      error: "An error occurred while updating appointment session notes",
+    });
   }
 };
 
@@ -2448,7 +2446,7 @@ async function sendEmailToUser(userEmail, therapistName, dateTime) {
         pass: "zU0VjyrxHmFm",
       },
     });
-  
+
     const mailOptions = {
       from: "info@inspirononline.com",
       to: userEmail,
@@ -2483,11 +2481,9 @@ exports.payment = async (req, res) => {
     res.status(200).json(appointments);
   } catch (error) {
     console.error("Error:", error);
-    res
-      .status(500)
-      .json({
-        error: "An error occurred while fetching appointments by user.",
-      });
+    res.status(500).json({
+      error: "An error occurred while fetching appointments by user.",
+    });
   }
 };
 
@@ -2513,11 +2509,9 @@ exports.paymentpending = async (req, res) => {
     res.status(200).json(appointments);
   } catch (error) {
     console.error("Error:", error);
-    res
-      .status(500)
-      .json({
-        error: "An error occurred while fetching appointments by user.",
-      });
+    res.status(500).json({
+      error: "An error occurred while fetching appointments by user.",
+    });
   }
 };
 
@@ -3110,7 +3104,7 @@ cron.schedule("* * * * *", async () => {
             pass: "zU0VjyrxHmFm",
           },
         });
-      
+
         const mailOptions = {
           from: "info@inspirononline.com",
           to: user.email,
@@ -3135,8 +3129,6 @@ cron.schedule("* * * * *", async () => {
     console.error("Error checking for upcoming appointments:", error);
   }
 });
-
-
 
 exports.updatePackage = async (req, res) => {
   try {
