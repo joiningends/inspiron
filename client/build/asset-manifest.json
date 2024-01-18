@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.23c1f2eb.css",
-    "main.js": "/static/js/main.a6c539d7.js",
+    "main.js": "/static/js/main.49198450.js",
     "static/js/498.0b0fa6be.chunk.js": "/static/js/498.0b0fa6be.chunk.js",
     "static/js/703.0aaf99f1.chunk.js": "/static/js/703.0aaf99f1.chunk.js",
     "static/js/513.e0bc6825.chunk.js": "/static/js/513.e0bc6825.chunk.js",
@@ -10,7 +10,6 @@
     "static/media/groupDiscuss.jpg": "/static/media/groupDiscuss.06ff81f56fc7a57734ba.jpg",
     "static/media/inspironWheel.png": "/static/media/inspironWheel.68a29855a490196aaf15.png",
     "static/media/GroupHomeImage.png": "/static/media/GroupHomeImage.0063e316e2a61f8a510b.png",
-    "static/media/myimg.jpg": "/static/media/myimg.f102b9164bfdea5a75a6.jpg",
     "static/media/inspironBackgroundImage.png": "/static/media/inspironBackgroundImage.f2ab6c8c243a1ead079c.png",
     "static/media/telephoneForSignUppage.png": "/static/media/telephoneForSignUppage.ade7805a8f1c60c46a7e.png",
     "static/media/userIconsforsignup.png": "/static/media/userIconsforsignup.e51bee0900cc39915a7c.png",
@@ -30,13 +29,13 @@
     "static/media/online-meetingForKnowMorePage.png": "/static/media/online-meetingForKnowMorePage.be3a43b8c091f57c0601.png",
     "index.html": "/index.html",
     "main.23c1f2eb.css.map": "/static/css/main.23c1f2eb.css.map",
-    "main.a6c539d7.js.map": "/static/js/main.a6c539d7.js.map",
+    "main.49198450.js.map": "/static/js/main.49198450.js.map",
     "498.0b0fa6be.chunk.js.map": "/static/js/498.0b0fa6be.chunk.js.map",
     "703.0aaf99f1.chunk.js.map": "/static/js/703.0aaf99f1.chunk.js.map",
     "513.e0bc6825.chunk.js.map": "/static/js/513.e0bc6825.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.23c1f2eb.css",
-    "static/js/main.a6c539d7.js"
+    "static/js/main.49198450.js"
   ]
 }

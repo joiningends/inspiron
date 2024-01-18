@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./BookTime.css";
-import MyImg from "./myimg.jpg";
-import favorite from "./white-star.png";
-import thubmsup from "./like-white.png";
-import clock from "./white-clock.png";
-import happy from "./white-happy.png";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTherapist } from "../redux/Action";
@@ -25,9 +20,6 @@ import RatingIcon from "./starForKnowMorePage.png";
 import OnlineIcon from "./online-meetingForKnowMorePage.png";
 import TotalSessionIcon from "./interactionsForKnowMorePage.png";
 import OfflineIcon from "./meetingImageForKnowMorepage.png";
-import ModeOfMeetingIcon from "./meetingForKnowMorePage.png";
-import ExpertiseIcon from "./experienceForKnowMorePage.png";
-import LanguagesIcon from "./languageforKnowMorePage.png";
 const Popup = ({
   selectedTimeSlot,
   selectedDate,
@@ -170,6 +162,7 @@ function BookTime() {
   const { id } = useParams(); // Access the therapist ID from the URL parameter
   const dispatch = useDispatch();
   const therapist = useSelector(state => state.therapist);
+  console.log(therapist)
   const [currentPage, setCurrentPage] = useState(1);
 
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
