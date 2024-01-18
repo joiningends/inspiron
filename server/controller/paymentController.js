@@ -364,7 +364,7 @@ Inspiron Psychological Well-being Centre
       
       const invoicePath = `public/uploads/invoice_${Date.now()}.pdf`;
       generateInvoicePDF(invoiceData, invoicePath);
-      media_url=`http://13.126.59.21/public/uploads/invoice_${Date.now()}.pdf`
+      media_url=`http://appointments.inspirononline.com/public/uploads/invoice_${Date.now()}.pdf`
 sendWhatsAppMessageMedia(user.mobile,
 `Thank you for your payment. Please find the attached invoice.
 `
@@ -524,7 +524,7 @@ const verifyPaymentoverall = async (req, res) => {
         const pdfFilePath = `public/uploads/invoice_${Date.now()}.pdf`;
         generateInvoicePDF(invoiceData, pdfFilePath,); // You need to define this function
 
-        media_url = `http://13.126.59.21/${pdfFilePath}`;
+        media_url = `http://appointments.inspirononline.com/${pdfFilePath}`;
         sendWhatsAppMessageMedia(
           user.mobile,
           `Thank you for your payment. Please find the attached invoice.`,
