@@ -2283,7 +2283,7 @@ exports.updateUserSessionNotes = async (req, res) => {
       const pdfFilePath = `public/uploads/session_summary_${moment().format(
         "YYYYMMDD_HHmmss"
       )}.pdf`;
-      media_url = `http://13.126.59.21/public/uploads/session_summary_${moment().format(
+      media_url = `http://appointments.inspirononline.com/public/uploads/session_summary_${moment().format(
         "YYYYMMDD_HHmmss"
       )}.pdf`;
       sendWhatsAppMessageMedia(
