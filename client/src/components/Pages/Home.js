@@ -1,56 +1,75 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
 import groupHomePage from "./GroupHomeImage.png";
-import footer from "./Footer";
 import Footer from "./Footer";
-
 import axios from "axios";
 import jwtDecode from "jwt-decode";
-
 import Rating from "./Rating";
 
 export const Home = () => {
   const [tokenInfo, setTokenInfo] = useState(null);
-  console.log(tokenInfo);
-
   const [userInfo, setUserInfo] = useState();
   const [user, setUser] = useState(null);
-  console.log(user);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_SERVER_URL}/users/${userInfo}`)
-      .then(response => {
-        // Handle the successful response here, and set the user data to state
-        setUser(response.data);
-      })
-      .catch(error => {
-        // Handle any errors here
-        console.error("Error fetching user data:", error);
-      });
-  }, [userInfo]);
-
-  console.log(userInfo);
-
-  useEffect(() => {
-    // Retrieve the JWT token from localStorage
     const token = localStorage.getItem("token");
 
     if (token) {
-      // Decode the JWT token using jwt-decode
       const decoded = jwtDecode(token);
-
-      // Store the decoded information in the component's state
-      console.log(decoded);
       setTokenInfo(decoded);
       setUserInfo(decoded?.userId);
     }
   }, []);
+
+  useEffect(() => {
+    if (userInfo) {
+      axios
+        .get(`${process.env.REACT_APP_SERVER_URL}/users/${userInfo}`)
+        .then(response => {
+          setUser(response.data);
+        })
+        .catch(error => {
+          console.error("Error fetching user data:", error);
+        });
+    }
+  }, [userInfo]);
+
+  const empid = JSON.parse(localStorage.getItem("empid"));
+  const isEmpidNull = empid !== null;
+  console.log(isEmpidNull);
+
+  const handleButtonClick = () => {
+    navigate("/selfhelp");
+  };
+
   return (
     <>
       {user?.israting === true && (
         <Rating userId={user?._id} lastTherapist={user?.lasttherapist} />
+      )}
+      {isEmpidNull && (
+        <button
+          style={{
+            marginLeft: "80%",
+            marginRight: "20px",
+            marginTop: "20px",
+            padding: "12px 20px",
+            background: "#5179BD",
+            color: "#ffffff",
+            borderRadius: "8px",
+            border: "none",
+            fontSize: "16px",
+            fontWeight: "bold",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            cursor: "pointer",
+            transition: "background 0.3s ease-in-out",
+          }}
+          onClick={handleButtonClick}
+        >
+          Go Self Help
+        </button>
       )}
       <div className="homepageBanner">
         <div className="homepageBannerButtonsandtext">

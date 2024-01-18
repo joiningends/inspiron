@@ -1,8 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import Select from "react-select";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import * as isoCountries from "i18n-iso-countries";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+
+import Flag from "react-country-flag";
 
 import {
   Container,
@@ -16,6 +21,7 @@ import {
   IconButton,
   Checkbox,
   FormControlLabel,
+  InputLabel,
 } from "@mui/material";
 import { createUser } from "../redux/Action";
 import { useDispatch } from "react-redux";
@@ -42,40 +48,41 @@ const Signup = () => {
   const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
   const [isTermsAccepted, setTermsAccepted] = useState(false);
+  const [selectedCountryCode, setSelectedCountryCode] = useState(null);
+  const [countryOptions, setCountryOptions] = useState([]);
+  const [phoneNumber, setPhoneNumber] = useState();
 
   const handleChange = e => {
     const { name, value } = e.target;
-    let updatedValue = value;
-
-    if (name === "mobile") {
-      // Remove any non-digit characters
-      updatedValue = updatedValue.replace(/\D/g, "");
-
-      // Add "91" in front of the phone number if it doesn't start with it
-      if (!updatedValue.startsWith("91")) {
-        updatedValue = `91${updatedValue}`;
-      }
-    }
-
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: updatedValue,
-    }));
 
     if (name === "password" || name === "confirmPassword") {
-      setPasswordMatch(formData.password === formData.confirmPassword);
-    }
-    if (name === "confirmPassword") {
-      setConfirmPasswordTouched(true);
+      setPasswordMatch(
+        name === "password" && value === formData.confirmPassword
+      );
+
+      setFormData(prevData => ({
+        ...prevData,
+        [name]: value,
+      }));
+
+      if (name === "confirmPassword") {
+        setConfirmPasswordTouched(true);
+      }
+    } else if (name === "mobile" || name === "email" || name === "name") {
+      setFormData(prevData => ({
+        ...prevData,
+        [name]: value,
+      }));
     }
   };
 
   const handleSubmit = e => {
     e.preventDefault();
 
+    // Check for required fields and valid phone number length
     if (
       !formData.name ||
-      !formData.mobile ||
+      !phoneNumber ||
       !formData.email ||
       !formData.password ||
       !formData.confirmPassword
@@ -100,29 +107,19 @@ const Signup = () => {
       return;
     }
 
-    if (formData.mobile.length !== 12) {
-      toast.error("Please enter a valid 12-digit phone number.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        style: {
-          background: "#f44336",
-          color: "#fff",
-          fontSize: "14px",
-          borderRadius: "4px",
-          padding: "12px",
-          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-        },
-      });
-      return;
-    }
+    // Remove non-numeric characters from the phone number
+    const formattedPhoneNumber = phoneNumber.replace(/\D/g, "");
 
-    dispatch(createUser(formData));
+    console.log(formattedPhoneNumber)
 
+    dispatch(
+      createUser({
+        ...formData,
+        mobile: formattedPhoneNumber,
+      })
+    );
+
+    // Clear form data after submission
     setFormData({
       name: "",
       mobile: "",
@@ -131,6 +128,9 @@ const Signup = () => {
       confirmPassword: "",
     });
 
+    setPhoneNumber();
+
+    // Show success message or perform other actions after submission
     toast.success("Please verify your mail ID.", {
       position: "top-right",
       autoClose: 3000,
@@ -243,39 +243,54 @@ const Signup = () => {
               required
             />
 
-            <TextField
-              className="form-group"
-              variant="standard"
-              fullWidth
-              style={{ marginBottom: "10px" }}
-              InputLabelProps={{
-                shrink: true,
-                style: { fontFamily: "Poppins, sans-serif", color: "#D67449" },
+            <Typography
+              variant="subtitle1"
+              gutterBottom
+              style={{
+                color: " rgba(0, 0, 0, 0.6)",
+                fontSize: "0.76rem",
+                marginRight: "17.4rem",
+                whiteSpace: "nowrap",
               }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <img
-                      src={telePhone}
-                      alt="telephone"
-                      style={{ height: "1.2em", marginRight: "8px" }}
-                    />
-                  </InputAdornment>
-                ),
-                disableUnderline: true,
-                style: {
-                  fontFamily: "Poppins, sans-serif",
-                  borderBottom: "none",
-                  marginBottom: "10px",
-                },
-              }}
-              label="Please enter WhatsApp number here"
-              name="mobile"
-              value={formData.mobile}
-              onChange={handleChange}
-              required
-            />
-
+            >
+              Please enter WhatsApp number here*
+            </Typography>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <img
+                src={telePhone}
+                alt="phone icon"
+                style={{
+                  height: "1.5rem",
+                  width: "1.5rem",
+                  marginRight: "8px",
+                  marginBottom: "8px",
+                }}
+              />
+              <PhoneInput
+                international
+                defaultCountry="IN"
+                value={phoneNumber}
+                onChange={setPhoneNumber}
+                placeholder="Enter WhatsApp number here (Country Name)"
+                style={{
+                  height: "40px", // Fixed height
+                  width: "calc(100% - 32px)", // Adjusted width to accommodate icon and margin
+                  fontSize: "16px",
+                  border: "1px solid #E7E7E7",
+                  borderRadius: "4px",
+                  padding: "10px",
+                  marginBottom: "16px", // Add space below
+                }}
+                inputProps={{
+                  name: "phone",
+                  required: true,
+                  style: { fontSize: "16px", color: "#333", padding: "20px" },
+                }}
+                inputStyle={{
+                  border: "none", // Remove the additional border inside
+                }}
+              />
+            </div>
             <TextField
               className="form-group"
               variant="standard"

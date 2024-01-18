@@ -119,7 +119,7 @@ const DoctorProfile = () => {
     alignItems: "center",
     justifyContent: "space-between",
     padding: "2rem",
-    background: "linear-gradient(90deg, #D67449 0.88%, #5179BD 100%)",
+    backgroundColor: "#5179BD",
     color: "#fff",
     fontFamily: "Poppins, sans-serif",
     marginTop: "3rem",
@@ -254,8 +254,7 @@ const DoctorProfile = () => {
                 width: "40%",
                 fontFamily: "Poppins, sans-serif",
                 fontSize: "0.9rem",
-                background:
-                  "linear-gradient(90deg, #D67449 10.9%, #5179BD 100%)",
+                backgroundColor: "#5179BD",
                 borderRadius: "1rem",
                 padding: "0.6rem",
                 color: "white",

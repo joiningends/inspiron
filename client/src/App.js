@@ -52,6 +52,8 @@ import CompletePayment from "./components/Pages/CompletePayment";
 import PaymentConfirm from "./components/Pages/PaymentConfirm";
 import { Rating } from "@mui/material";
 import RatingSystem from "./components/Pages/Rating";
+import SelfHelp from "./components/Pages/SelfHelp";
+import ResetPasswordTherapist from "./components/Pages/ResetPasswordTherapist";
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -107,12 +109,23 @@ function App() {
                   path="/paymentConfirm/:amount"
                   element={<PaymentConfirm />}
                 />
+
                 <Route path="/rating" element={<RatingSystem />} />
                 <Route
                   path="/PendingPayments"
                   element={
                     isEmpidNull ? (
                       <PendingPayments />
+                    ) : (
+                      <Navigate to="/other-route" replace />
+                    )
+                  }
+                />
+                <Route
+                  path="/SelffHelp"
+                  element={
+                    isEmpidNull ? (
+                      <SelfHelp />
                     ) : (
                       <Navigate to="/other-route" replace />
                     )
@@ -216,6 +229,10 @@ function App() {
             <Route
               path="passwordReset/reset/:token"
               element={<ResetPasswordPage />}
+            />
+            <Route
+              path="passwordReset/therapist/reset/:token"
+              element={<ResetPasswordTherapist />}
             />
             <Route path="/login/:company/:groupId" element={<GroupSignUp />} />
             <Route

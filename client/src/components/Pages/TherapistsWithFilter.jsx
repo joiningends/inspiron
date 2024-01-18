@@ -14,6 +14,7 @@ import {
   Chip,
 } from "@material-ui/core";
 import groupDiscuss from "./groupDiscuss.jpg";
+import discussNew from "./newDiscuss.JPG";
 
 import { useSelector, useDispatch } from "react-redux";
 
@@ -422,16 +423,16 @@ export const TherapistsWithFilter = () => {
       <div
         className="assessmentintroPage"
         style={{
-          backgroundImage: `url(${groupDiscuss})`,
+          backgroundImage: `url(${discussNew})`,
           backgroundSize: "cover",
-          backgroundPosition: "top center",
+          backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          height: "15rem",
+          height: "10rem",
           width: "100vw",
           marginTop: "-2rem",
         }}
       >
-        <h1 style={{ color: "white", fontSize: "2rem", fontWeight: 700 }}>
+        <h1 style={{ color: "white", fontSize: "1.6rem", fontWeight: 600 }}>
           Find a Therapist thatmeets your needs
         </h1>
         <p style={{ color: "white" }}>

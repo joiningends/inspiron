@@ -232,7 +232,7 @@ function Profile() {
           </FieldContainer>
           <FieldContainer>
             <InputLabel style={{ marginTop: "1rem" }}>
-              Date of Birth:
+              Date of Birth (DD-MM-YYYY):
             </InputLabel>
             <DatePicker
               selected={dob}

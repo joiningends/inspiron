@@ -362,7 +362,7 @@ function SociodemographicForm() {
           </select>
         </label>
         <label>
-          Date of Birth:
+          Date of Birth: (dd-MM-yyyy)
           <input
             type="date"
             value={dateOfBirth}

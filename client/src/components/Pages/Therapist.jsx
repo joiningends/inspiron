@@ -111,8 +111,7 @@ function Therapist({ therapist }) {
                 height: "100%",
                 backgroundColor: "lightgray",
               }}
-            >
-            </span>
+            ></span>
           )}
           <img src={inspiron} alt="Watermark" className="watermark" />
         </div>
@@ -186,8 +185,7 @@ function Therapist({ therapist }) {
               to={`/bookaslot/${therapist._id}`}
               className="therapist-know-more-button"
               style={{
-                background:
-                  "linear-gradient(90deg, #D67449 10.9%, #5179BD 100%)",
+                backgroundColor: "#5179BD",
                 color: "white",
                 textDecoration: "none",
                 borderRadius: "3rem",

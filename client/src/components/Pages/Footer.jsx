@@ -41,6 +41,8 @@ export default function Footer() {
               component={Link}
               href="https://www.facebook.com/inspirononline"
               color="inherit"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <img
                 src={whiteFacebook}
@@ -48,7 +50,13 @@ export default function Footer() {
                 style={{ width: "24px", height: "24px" }}
               />
             </IconButton>
-            <IconButton component={Link} href="#" color="inherit">
+            <IconButton
+              component={Link}
+              href="#"
+              color="inherit"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <img
                 src={whiteTwitter}
                 alt="Twitter"
@@ -59,6 +67,8 @@ export default function Footer() {
               component={Link}
               href="https://www.instagram.com/inspirononline/"
               color="inherit"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <img
                 src={whiteInstagram}
@@ -70,6 +80,8 @@ export default function Footer() {
               component={Link}
               href="https://www.linkedin.com/company/inspiron-psychological-well-being-center"
               color="inherit"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <img
                 src={whiteLinkedIn}
@@ -81,6 +93,8 @@ export default function Footer() {
               component={Link}
               href="https://www.youtube.com/channel/UCWlahlWLgmHSy_lrJkqShVg"
               color="inherit"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               <img
                 src={whiteYoutube}
@@ -99,7 +113,12 @@ export default function Footer() {
               color="textSecondary"
               style={{ color: "white" }}
             >
-              <Link href="/" color="inherit">
+              <Link
+                href="/"
+                color="inherit"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Home
               </Link>
             </Typography>
@@ -108,7 +127,12 @@ export default function Footer() {
               color="textSecondary"
               style={{ color: "white" }}
             >
-              <Link href="/assessment" color="inherit">
+              <Link
+                href="/assessment"
+                color="inherit"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Assessment
               </Link>
             </Typography>
@@ -117,7 +141,12 @@ export default function Footer() {
               color="textSecondary"
               style={{ color: "white" }}
             >
-              <Link href="/FindTherapist" color="inherit">
+              <Link
+                href="/FindTherapist"
+                color="inherit"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Find Therapist
               </Link>
             </Typography>
@@ -126,7 +155,12 @@ export default function Footer() {
               color="textSecondary"
               style={{ color: "white" }}
             >
-              <Link href="/Profile" color="inherit">
+              <Link
+                href="/Profile"
+                color="inherit"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Profile
               </Link>
             </Typography>
@@ -144,6 +178,8 @@ export default function Footer() {
               <Link
                 href="https://www.inspirononline.com/privacy-policy/"
                 color="inherit"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Privacy Policy
               </Link>
@@ -156,6 +192,8 @@ export default function Footer() {
               <Link
                 href="https://www.inspirononline.com/terms/"
                 color="inherit"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Terms and Conditions
               </Link>
@@ -176,10 +214,22 @@ export default function Footer() {
                 color="textSecondary"
                 style={{ color: "white", marginBottom: "0.5rem" }}
               >
-                <Link href="#" color="inherit">
+                <Link
+                  href="https://www.google.com/maps?s=web&sca_esv=596768218&lqi=ChJpbnNwaXJvbiBiYW5nYWxvcmVI9O720KGugIAIWiIQABABGAAYASISaW5zcGlyb24gYmFuZ2Fsb3JlKgQIAhAAkgEVbWVudGFsX2hlYWx0aF9zZXJ2aWNlmgEkQ2hkRFNVaE5NRzluUzBWSlEwRm5TVU5oYkdSeVduaFJSUkFCqgE7EAEyHxABIhu2snHa3evo4X_02BDP7pYi24vLMPNqQvFId40yFhACIhJpbnNwaXJvbiBiYW5nYWxvcmU&vet=12ahUKEwjjtKq1_s-DAxVC4jgGHZLgBd0Q1YkKegQIOhAB..i&cs=1&um=1&ie=UTF-8&fb=1&gl=in&sa=X&geocode=KY_-Y1epFq47MSRV-2xImldR&daddr=72,+4th+Main+Rd,+BDA+Colony,+Domlur+Village,+Domlur,+Bengaluru,+Karnataka+560071"
+                  color="inherit"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Indiranagar #72, 4th Main Road, Domlur, 2nd Stage,
-                  Indiranagar, Bangalore, Karnataka, India 560 071 +91
-                  9845676442
+                  Indiranagar, Bangalore, Karnataka, India 560 071
+                </Link>
+                <Link
+                  href="https://wa.me/+919845676442"
+                  color="inherit"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  &nbsp;&ndash;&nbsp; +91 9845676442
                 </Link>
               </Typography>
               <Typography
@@ -187,7 +237,28 @@ export default function Footer() {
                 color="textSecondary"
                 style={{ color: "white" }}
               >
-                <Link href="#" color="inherit"> +91 9845140442
+                <Link
+                  href="https://www.google.com/maps/dir//36,+14th+Main+Rd,+IAS+Colony,+Sector+4,+HSR+Layout,+Bengaluru,+Karnataka+560102/@12.9133903,77.5561339,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x3bae15db464281a9:0xed5ee3892b69d264!2m2!1d77.6385358!2d12.9134032?entry=ttu"
+                  color="inherit"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  HSR Center #36, 14th Main Road, IAS Colony, Sector 4, HSR
+                  Layout, Bengaluru, Karnataka 560102
+                </Link>
+              </Typography>
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                style={{ color: "white" }}
+              >
+                <Link
+                  href="https://wa.me/+919845140442"
+                  color="inherit"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  +91 9845140442
                 </Link>
               </Typography>
             </Typography>
@@ -206,6 +277,8 @@ export default function Footer() {
                 variant="body2"
                 style={{ fontWeight: "bold", color: "white" }}
                 href="https://www.joiningends.in/"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Designed and Developed by JoiningEnds
               </Link>

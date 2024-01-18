@@ -160,7 +160,7 @@ function AssessmentCreatePage() {
           expertise: severities[2].expertiseList,
           serverityname: ["Severe"],
           result: severities[2].result,
-          description: severities[2].description,
+          description: "",
         },
         low: {
           min: parseInt(severities[0].minScore),
@@ -176,7 +176,7 @@ function AssessmentCreatePage() {
           expertise: severities[1].expertiseList,
           serverityname: ["Severe"],
           result: severities[1].result,
-          description: severities[1].description,
+          description: "",
         },
       };
 
@@ -617,37 +617,47 @@ function AssessmentCreatePage() {
                     }}
                   />
                 </div>
-                <div style={{ marginBottom: "20px" }}>
-                  <label
-                    htmlFor={`description-${severityIndex}`}
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: "14px",
-                      color: "#555555",
-                      width: "40vw",
-                    }}
-                  >
-                    Description:
-                  </label>
-                  <input
-                    type="text"
-                    id={`description-${severityIndex}`}
-                    name="description"
-                    value={severity.description}
-                    onChange={event =>
-                      handleSeverityChange(event, severityIndex, "description")
-                    }
-                    required
-                    style={{
-                      padding: "10px",
-                      borderRadius: "5px",
-                      border: "1px solid #D67449",
-                      fontSize: "14px",
-                      color: "#555555",
-                      transition: "all 0.3s ease-out",
-                    }}
-                  />
-                </div>
+                {severityIndex === 0 && (
+                  <div style={{ marginBottom: "20px" }}>
+                    <label
+                      htmlFor={`description-${severityIndex}`}
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "14px",
+                        color: "#555555",
+                        width: "40vw",
+                      }}
+                    >
+                      Description:
+                    </label>
+                    <textarea
+                      id={`description-${severityIndex}`}
+                      name="description"
+                      value={severity.description}
+                      onChange={event =>
+                        handleSeverityChange(
+                          event,
+                          severityIndex,
+                          "description"
+                        )
+                      }
+                      required
+                      style={{
+                        padding: "10px",
+                        borderRadius: "5px",
+                        border: "1px solid #D67449",
+                        fontSize: "14px",
+                        color: "#555555",
+                        minHeight: "30rem", // Set minimum height
+                        width: "100%", // Ensure full width
+                        boxSizing: "border-box", // Include padding in the height
+                        resize: "vertical", // Allow vertical resizing
+                        textAlign: "top-left", // Align text to top left corner
+                        transition: "all 0.3s ease-out",
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           ))}

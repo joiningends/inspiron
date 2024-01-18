@@ -65,6 +65,7 @@ function Result() {
   const isLoggedIn = storedUser !== null && storedToken !== null;
   const assessmentScore = localStorage.getItem("totalPoints");
   const storedAssessment = JSON.parse(localStorage.getItem("assessment"));
+  console.log(storedAssessment);
   const [data, setData] = useState(null);
   const assessmentId = storedAssessment?._id;
 
@@ -116,70 +117,57 @@ function Result() {
   const bulletPoints = [];
 
   if (data?.low) {
-    const lowDescription = `• ${data?.low?.result}. ${data?.low?.description}`;
+    const lowDescription = `${data?.low?.description}`;
     bulletPoints.push(lowDescription);
   }
 
-  if (data?.medium) {
-    const mediumDescription = `• ${data?.medium?.result}. ${data?.medium?.description}`;
-    bulletPoints.push(mediumDescription);
-  }
-
-  if (data?.high) {
-    const highDescription = `• ${data?.high?.result}. ${data?.high?.description}`;
-    bulletPoints.push(highDescription);
-  }
-
   const generatePDF = assessmentScore => {
-    const doc = new jsPDF();
+    const doc = new jsPDF(); // Ensure proper jsPDF object reference
 
-    const imgWidth = 150; // Adjust the width of the logo
-    const imgHeight = 80; // Adjust the height of the logo
-
-    // Set the X and Y coordinates to position the logo
-    const xCoordinate = 30; // Adjust the X coordinate (horizontal position)
-    const yCoordinate = -25; // Adjust the Y coordinate (vertical position)
+    const imgWidth = 150;
+    const imgHeight = 80;
+    const xCoordinate = 30;
+    const yCoordinate = 1;
 
     doc.addImage(logo, "PNG", xCoordinate, yCoordinate, imgWidth, imgHeight);
 
-    // Adjust the X and Y coordinates for the assessment score
-    const textXCoordinate = 10; // Horizontal position for the text
-    const textYCoordinate = yCoordinate + imgHeight + 5; // Vertical position for the text
+    const textXCoordinate = 10;
+    const textYCoordinate = yCoordinate + imgHeight + 10;
 
-    // Set the font style for both the heading and the assessment score text
-    doc.setFont("helvetica", "bold"); // Change the font style to "bold"
-
-    // Add the "Assessment Score" heading text with underline
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
     doc.text(textXCoordinate, textYCoordinate, "Assessment Score:", {
       decoration: "underline",
     });
 
-    // Add the assessment score text with proper font
-    doc.setFont("helvetica", "normal"); // Change the font style to "normal" for the assessment score
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(16);
-    doc.text(textXCoordinate + 65, textYCoordinate, `${assessmentScore}`); // Adjust the position for the score
+    doc.text(textXCoordinate + 65, textYCoordinate, `${assessmentScore}`);
 
-    // Adjust the Y coordinate for the "Your Result" text
-    const resultYCoordinate = textYCoordinate + 15; // Adjust the vertical position
+    const resultYCoordinate = textYCoordinate + 15;
 
-    // Set the font style for the "Your Result" text
-    doc.setFont("helvetica", "bold"); // Change the font style to "bold"
-
-    // Add the "Your Result" text with underline
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
     doc.text(textXCoordinate, resultYCoordinate, "Your Result:", {
       decoration: "underline",
     });
 
-    // Set the font style for the result text
-    doc.setFont("helvetica", "normal"); // Change the font style to "normal"
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(14);
-    doc.text(textXCoordinate, resultYCoordinate + 8, userResult);
 
-    // Add the "Your Score Interpretation" heading with underline
-    const interpretationYCoordinate = resultYCoordinate + 20; // Adjust the vertical position
-    doc.setFont("helvetica", "bold"); // Change the font style to "bold"
+    // Split userResult into lines and display each line separately
+    const userResultLines = doc.splitTextToSize(userResult, 170);
+    for (let i = 0; i < userResultLines.length; i++) {
+      doc.text(
+        textXCoordinate,
+        resultYCoordinate + 8 + i * 8,
+        userResultLines[i]
+      );
+    }
+
+    let interpretationYCoordinate =
+      resultYCoordinate + userResultLines.length * 8 + 10;
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
     doc.text(
       textXCoordinate,
@@ -188,31 +176,41 @@ function Result() {
       { decoration: "underline" }
     );
 
-    // Add the bullet points with proper font
-    const bulletYCoordinate = interpretationYCoordinate + 14; // Adjust the vertical position for bullet points
+    let bulletYCoordinate = interpretationYCoordinate + 14;
     doc.setFontSize(12);
+    const widthForText = 170;
+    const heightForText = doc.getTextDimensions("Sample Text").h;
 
-    // Use splitTextToSize to wrap text to the next line and add bullet points
-    // const bulletPoints = [
-    //   "• A score of 0 to 16 indicates no likelihood of having ADHD. This means that you do not have ADHD, no chances of having it. In case you are still experiencing symptoms, it is recommended for you to visit a licensed professional who can diagnose you and help you with the treatment.",
-    //   "• A score of 17 to 23 indicates a likelihood of having ADHD. This means that you might have ADHD but to be sure, it is advised to get a proper diagnostic test. With the test that you just did, you got screened for chances of having ADHD. A mental health professional can guide you best into the next steps for the same.",
-    //   "• A score of 24 and above increases the likelihood of having ADHD to a high level. It feels confusing at the moment but you must take this screening report to a psychiatrist or a clinical psychologist who can help you best in this time of need. You need not worry about that since Felicity has got you covered.",
-    // ];
+    const interpretationLines = doc.splitTextToSize(
+      bulletPoints.join("\n"),
+      widthForText
+    );
 
-    const splitBulletPoints = doc.splitTextToSize(bulletPoints, 170); // Adjust the width as needed
+    let remainingLines = interpretationLines;
+    let currentPage = 1;
+    let pageHeight = doc.internal.pageSize.height;
 
-    for (let i = 0; i < splitBulletPoints.length; i++) {
-      const bulletText = splitBulletPoints[i];
-      doc.text(textXCoordinate + 10, bulletYCoordinate + i * 12, bulletText);
+    for (let i = 0; i < remainingLines.length; i++) {
+      if (bulletYCoordinate + heightForText > pageHeight) {
+        doc.addPage();
+        currentPage++;
+        bulletYCoordinate = 20;
+        pageHeight = doc.internal.pageSize.height;
+      }
+      const splitText = doc.splitTextToSize(remainingLines[i], widthForText);
+      for (let j = 0; j < splitText.length; j++) {
+        const lineYCoordinate = bulletYCoordinate + j * heightForText * 1.2;
+        doc.text(textXCoordinate + 10, lineYCoordinate, splitText[j]);
+      }
+      bulletYCoordinate += heightForText * 1.2 * splitText.length;
     }
 
-    // Add the watermark image at the bottom right corner
-    const watermarkWidth = 80; // Adjust the width of the watermark
-    const watermarkHeight = 60; // Adjust the height of the watermark
+    const watermarkWidth = 80;
+    const watermarkHeight = 60;
     const watermarkXCoordinate =
-      doc.internal.pageSize.width - watermarkWidth - 10; // Adjust the X coordinate
+      doc.internal.pageSize.width - watermarkWidth - 10;
     const watermarkYCoordinate =
-      doc.internal.pageSize.height - watermarkHeight - 10; // Adjust the Y coordinate
+      doc.internal.pageSize.height - watermarkHeight - 10;
     doc.addImage(
       resultImg,
       "PNG",
@@ -222,9 +220,16 @@ function Result() {
       watermarkHeight
     );
 
-    doc.save("report.pdf");
+    const pdfOutput = doc.output("blob");
+    const blobURL = URL.createObjectURL(pdfOutput);
 
-    console.log();
+    const downloadLink = document.createElement("a");
+    downloadLink.href = blobURL;
+    downloadLink.download = "report.pdf";
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
   };
 
   useEffect(() => {
@@ -242,8 +247,7 @@ function Result() {
               elevation={3}
               style={{
                 ...paperStyle,
-                background:
-                  "linear-gradient(90deg, #D67449 0.88%, #5179BD 100%)",
+                backgroundColor: "#5179BD",
               }}
             >
               <Typography variant="h4" style={headerStyle}>

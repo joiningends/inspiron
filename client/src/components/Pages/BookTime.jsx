@@ -59,7 +59,7 @@ const Popup = ({
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar />
       <div
         style={{
-          background: "linear-gradient(90deg, #D67449 0.88%, #5179BD 100%)",
+          backgroundColor: "#5179BD",
           padding: "30px",
           borderRadius: "10px",
           boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",

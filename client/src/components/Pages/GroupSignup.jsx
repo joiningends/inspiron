@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUser,
-  faPhoneAlt,
-  faEnvelope,
-  faLock,
-  faEye,
-  faEyeSlash,
-} from "@fortawesome/free-solid-svg-icons";
+
+import PhoneInput from "react-phone-number-input";
 
 import buildingImage from "./corporatebuilding.png";
 import userIdC from "./userId.png";
@@ -56,27 +50,37 @@ const GroupSignUp = () => {
   const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(true);
   const [isTermsAccepted, setTermsAccepted] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState();
 
   const handleChange = e => {
     const { name, value } = e.target;
-    if (name === "mobile" && isNaN(value)) {
-      return;
-    }
-    setFormData(prevData => {
-      const updatedData = {
+
+    if (name === "empid") {
+      setFormData(prevData => ({
         ...prevData,
         [name]: value,
-      };
-      if (name === "password" || name === "confirmPassword") {
-        setPasswordMatch(updatedData.password === updatedData.confirmPassword);
-      }
+      }));
+    }
+    if (name === "password" || name === "confirmPassword") {
+      setPasswordMatch(
+        name === "password" && value === formData.confirmPassword
+      );
+
+      setFormData(prevData => ({
+        ...prevData,
+        [name]: value,
+      }));
+
       if (name === "confirmPassword") {
         setConfirmPasswordTouched(true);
       }
-      return updatedData;
-    });
+    } else if (name === "mobile" || name === "email" || name === "name") {
+      setFormData(prevData => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
-
   const toggleShowPassword = () => {
     setShowPassword(prevShowPassword => !prevShowPassword);
   };
@@ -93,7 +97,7 @@ const GroupSignUp = () => {
     e.preventDefault();
     if (
       !formData.name ||
-      !formData.mobile ||
+      !phoneNumber ||
       !formData.email ||
       !formData.password ||
       !formData.confirmPassword ||
@@ -119,29 +123,7 @@ const GroupSignUp = () => {
       return;
     }
 
-    if (formData.mobile.length !== 12) {
-      toast.error(
-        "Please enter a valid 12-digit phone number starting with '91'.",
-        {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            background: "#f44336",
-            color: "#fff",
-            fontSize: "14px",
-            borderRadius: "4px",
-            padding: "12px",
-            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-          },
-        }
-      );
-      return;
-    }
+    const formattedPhoneNumber = phoneNumber.replace(/\D/g, "");
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(formData.email)) {
@@ -170,7 +152,7 @@ const GroupSignUp = () => {
         `${process.env.REACT_APP_SERVER_URL}/users/register/${groupId}`,
         {
           name: formData.name,
-          mobile: formData.mobile,
+          mobile: formattedPhoneNumber,
           email: formData.email,
           password: formData.password,
           empid: formData.empid,
@@ -179,12 +161,14 @@ const GroupSignUp = () => {
 
       setFormData({
         name: "",
-        mobile: "91",
+        mobile: "",
         email: "",
         password: "",
         confirmPassword: "",
         empid: "",
       });
+
+      setPhoneNumber();
 
       toast.success("Please verify your mail ID.", {
         position: "top-right",
@@ -206,64 +190,6 @@ const GroupSignUp = () => {
     } catch (error) {
       console.error("Error registering user:", error);
       toast.error("An error occurred while signing up. Please try again.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        style: {
-          background: "#f44336",
-          color: "#fff",
-          fontSize: "14px",
-          borderRadius: "4px",
-          padding: "12px",
-          boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-        },
-      });
-    }
-  };
-
-  const isValidPhoneNumber = phone => {
-    return /^91\d{10}$/.test(phone);
-  };
-
-  const handlePhoneNumberBlur = () => {
-    const validPhoneNumber = isValidPhoneNumber(formData.mobile);
-    if (!validPhoneNumber) {
-      toast.error(
-        "Please enter a valid 12-digit phone number starting with '91'.",
-        {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            background: "#f44336",
-            color: "#fff",
-            fontSize: "14px",
-            borderRadius: "4px",
-            padding: "12px",
-            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-          },
-        }
-      );
-    }
-  };
-
-  const isValidEmail = email => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
-  };
-
-  const handleEmailBlur = () => {
-    const validEmail = isValidEmail(formData.email);
-    if (!validEmail) {
-      toast.error("Please enter a valid email address.", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: true,
@@ -377,42 +303,54 @@ const GroupSignUp = () => {
                 required
               />
 
-              <TextField
-                className="form-group"
-                variant="standard"
-                fullWidth
-                style={{ marginBottom: "10px" }}
-                InputLabelProps={{
-                  shrink: true,
-                  style: {
-                    fontFamily: "Poppins, sans-serif",
-                    color: "#D67449",
-                  },
+              <Typography
+                variant="subtitle1"
+                gutterBottom
+                style={{
+                  color: " rgba(0, 0, 0, 0.6)",
+                  fontSize: "0.76rem",
+                  marginRight: "17.4rem",
+                  whiteSpace: "nowrap",
                 }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <img
-                        src={telePhone}
-                        alt="telephone"
-                        style={{ height: "1.2em", marginRight: "8px" }}
-                      />
-                    </InputAdornment>
-                  ),
-                  disableUnderline: true,
-                  style: {
-                    fontFamily: "Poppins, sans-serif",
-                    borderBottom: "none",
-                    marginBottom: "10px",
-                  },
-                }}
-                label="Please enter WhatsApp number here"
-                name="mobile"
-                value={formData.mobile}
-                onChange={handleChange}
-                required
-              />
-
+              >
+                Please enter WhatsApp number here*
+              </Typography>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img
+                  src={telePhone}
+                  alt="phone icon"
+                  style={{
+                    height: "1.5rem",
+                    width: "1.5rem",
+                    marginRight: "8px",
+                    marginBottom: "8px",
+                  }}
+                />
+                <PhoneInput
+                  international
+                  defaultCountry="IN"
+                  value={phoneNumber}
+                  onChange={setPhoneNumber}
+                  placeholder="Enter WhatsApp number here (Country Name)"
+                  style={{
+                    height: "40px", // Fixed height
+                    width: "calc(100% - 32px)", // Adjusted width to accommodate icon and margin
+                    fontSize: "16px",
+                    border: "1px solid #E7E7E7",
+                    borderRadius: "4px",
+                    padding: "10px",
+                    marginBottom: "16px", // Add space below
+                  }}
+                  inputProps={{
+                    name: "phone",
+                    required: true,
+                    style: { fontSize: "16px", color: "#333", padding: "20px" },
+                  }}
+                  inputStyle={{
+                    border: "none", // Remove the additional border inside
+                  }}
+                />
+              </div>
               <TextField
                 className="form-group"
                 variant="standard"

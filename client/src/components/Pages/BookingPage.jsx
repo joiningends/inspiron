@@ -62,6 +62,7 @@ function BookingPage() {
   const [appointmentData, setAppointmentData] = useState(null);
   const [error, setError] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  console.log(experienceLevel);
 
   const [razorpayOptions, setRazorpayOptions] = useState({
     key: "rzp_test_9RNyyq8jjMD11V",
@@ -142,7 +143,8 @@ function BookingPage() {
       .then(response => response.json())
       .then(responseData => {
         setTherapistData(responseData);
-        setExperienceLevel(responseData?.expriencelevel[0].expriencelevel);
+        console.log(responseData);
+        setExperienceLevel(responseData?.expriencelevel.expriencelevel);
       })
       .catch(error => {
         console.error("Error fetching therapist data:", error);
@@ -306,36 +308,6 @@ function BookingPage() {
   const handleCancelClick = () => {
     setOpenPaymentDialog(false);
   };
-  // Assuming you have a Razorpay callback handler
-  const handleRazorpayCallback = response => {
-    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
-      response;
-
-    if (selectedPaymentMode === "online") {
-      const verifyApiUrl = `${process.env.REACT_APP_SERVER_URL}/payments/verify/${appointmentId}`;
-
-      // Make a POST request to the verify API
-      fetch(verifyApiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          razorpay_payment_id,
-          razorpay_order_id,
-          razorpay_signature,
-        }),
-      })
-        .then(response => response.json())
-        .then(data => {
-          // Handle the verification response as needed
-        })
-        .catch(error => {
-          console.error("Error verifying payment:", error);
-          // Handle errors if necessary
-        });
-    }
-  };
 
   useEffect(() => {
     // Define an async function to fetch the appointment data
@@ -358,13 +330,12 @@ function BookingPage() {
 
   return (
     <Box style={containerStyle}>
-      <Typography variant="h4" align="center" style={headerStyle}>
-        Book a Therapy Session
-      </Typography>
       <Divider style={{ margin: "20px 0" }} />
       {therapistData && (
         <Paper elevation={5} style={{ padding: "20px", marginBottom: "20px" }}>
-          <Typography variant="h6">Therapist Information:</Typography>
+          <Typography variant="h6">
+            {therapistData.therapisttype} Information:
+          </Typography>
           <Typography>Therapist Name: {therapistData.name}</Typography>
         </Paper>
       )}

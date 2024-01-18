@@ -8,6 +8,10 @@
   position: relative;
 }
 
+.custom-phone-input-wrapper input {
+  border: none !important; 
+}
+
 .signup-form {
   width: 300px;
   padding: 20px;
