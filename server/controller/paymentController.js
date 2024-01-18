@@ -90,9 +90,8 @@ const verifyPayment = async (req, res) => {
 
       const therapistId = appointment.therapist;
       const therapist = await Therapist.findById(therapistId).select(
-        "name level sessions"
-      );
-      if (!therapist) {
+        "name level sessions meetLink" );
+        if (!therapist) {
         console.log("Therapist not found:", therapistId);
         return res.status(404).json({ error: "Therapist not found" });
       }
@@ -300,27 +299,49 @@ const verifyPayment = async (req, res) => {
       console.log("Discount Price:", discountPriceamount);
       console.log("Booked Session:", bookedsession);
       
-
+const meetLink = therapist.meetLink
+console.log(user.mobile,)
       sendWhatsAppMessage(
         user.mobile,
         `
+        
 Hi ${username},
-Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}.
-Please log into the application 5 mins before the start of the session.
-Thanks,
-Team Inspiron
-      `
+        
+This is Inspiron. Your upcoming appointment is confirmed!
+📅 Date: ${appointmentDateonly}
+🕒 Time: ${appointmentTime}
+🥼 Mental Health Expert: ${therapistName}
+📍 Location: ${meetLink}
+        
+Payment Status: ${paymentStatus}
+Reply 'CONFIRMED' to acknowledge or call for any changes.
+Thank you,
+Inspiron Team 🌈💚
+        `
+        
+      
       );
 
       let emailMessage;
 
       emailMessage = `
-    Hi ${username},\n
-    Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}. Please log into the application 5 mins before the start of the session.\n
-    Your payment for Rs ${discountPriceamount} has been received.\n
-        Thanks,\n
-          Team Inspiron
-        `;
+Dear ${username},
+
+We are pleased to confirm your upcoming appointment with our dedicated mental health expert ${therapistName} at Inspiron.
+
+Details:
+Date: ${appointmentDateonly}
+Time: ${appointmentTime}
+Location: ${meetLink}
+Payment Status: ${paymentStatus}
+
+If you have any questions or need to reschedule, please don't hesitate to contact us at .
+We look forward to supporting you on your journey to well-being.
+
+Best regards,
+Inspiron Psychological Well-being Centre
+`;
+
 
       // Send the email (you need to implement this function)
       sendEmail(user.email, "Appointment Confirmation", emailMessage);
@@ -404,7 +425,7 @@ const sendEmail = (to, subject, message) => {
   const mailOptions = {
     from: "info@inspirononline.com",
     to: to,
-    subject: "Booking Conformation",
+    subject: "Confirmation of Your Appointment with Inspiron",
     text: message,
   };
 

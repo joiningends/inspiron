@@ -256,46 +256,78 @@ const getTherapistById = async (req, res) => {
 
     const therapistSessions = therapist.sessions || [];
     const currentDate = new Date(); // Get the current date and time
-
-    // Filter therapist sessions to exclude sessions with start times less than the current date
-    const filteredSessions = therapistSessions.filter(session => {
+    const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
+    console.log(currentTime);
+    
+    const filteredSessions = therapistSessions.flatMap(session => {
       const sessionDate = new Date(session.date);
-      if (
-        sessionDate.toDateString() === currentDate.toDateString() ||
-        sessionDate > currentDate
-      ) {
-        if (Array.isArray(session.timeSlots)) {
-          return session.timeSlots.some(timeSlot => {
-            const sessionStartTime = new Date(
-              `${session.date}T${timeSlot.startTime}`
-            );
-            return sessionStartTime >= currentDate;
-          });
+    
+      console.log('Session:', session); // Add this line for debugging
+    
+      if (session && Array.isArray(session.timeSlots)) {
+        if (sessionDate > currentDate) {
+          // Include all time slots for future sessions
+          return {
+            date: session.date,
+            timeSlots: session.timeSlots.filter(timeSlot => new Date(`${session.date} ${timeSlot.startTime}`) >= currentDate),
+          };
+        } else if (sessionDate.toDateString() === currentDate.toDateString()) {
+          // Include time slots for today's session and check the current time
+          const validTimeSlots = session.timeSlots
+            .filter(timeSlot => timeSlot.startTime >= currentTime)
+            .map(timeSlot => ({
+              startTime: timeSlot.startTime,
+              endTime: timeSlot.endTime,
+              sessionType: timeSlot.sessionType,
+              location: timeSlot.location,
+            }));
+    
+          return {
+            date: session.date,
+            timeSlots: validTimeSlots,
+          };
+        }
+      } else if (session && session.timeSlot) {
+        // Corrected the property name to session.timeSlots
+        if (new Date(`${session.date} ${session.timeSlot.startTime}`) > currentDate) {
+          return {
+            date: session.date,
+            timeSlots: [session.timeSlot],
+          };
         }
       }
-      return false;
-    });
+      return null;
+    }).filter(Boolean);
+    
+    console.log('Filtered Sessions:', filteredSessions);
+    
+    
 
-    // Count online and offline sessions for the filtered sessions
-    filteredSessions.forEach(session => {
-      session.timeSlots.forEach(timeSlot => {
-        const sessionStartTime = new Date(
-          `${session.date}T${timeSlot.startTime}`
-        );
-        if (sessionStartTime >= currentDate) {
-          if (timeSlot.sessionType === "online") {
+
+console.log('Filtered Sessions:', filteredSessions);
+    if (filteredSessions && Array.isArray(filteredSessions)) {
+      console.log('Filtered Sessions:', filteredSessions);
+    
+      filteredSessions.forEach(session => {
+        if (session && session.timeSlot) {
+          console.log('Time Slot:', session.timeSlot);
+    
+          if (session.timeSlot.sessionType === "online") {
+            console.log('Incrementing onlineSessionCount');
             onlineSessionCount++;
           } else if (
-            timeSlot.sessionType === "offline" ||
-            timeSlot.sessionType === "online/offline"
+            session.timeSlot.sessionType === "offline" ||
+            session.timeSlot.sessionType === "online/offline"
           ) {
+            console.log('Incrementing offlineSessionCount');
             offlineSessionCount++;
           }
         }
       });
-    });
-
-    // Return the therapist data with session counts and filtered sessions
+    }
+    
+    
+    
     res.status(200).json({
       ...therapist.toObject(),
       sessions: filteredSessions,
@@ -308,6 +340,9 @@ const getTherapistById = async (req, res) => {
       .json({ error: "Failed to retrieve therapist", details: error.message });
   }
 };
+
+
+
 
 const createTherapistfull = async (req, res) => {
   try {
@@ -355,7 +390,7 @@ const createTherapist = async (req, res) => {
 
     // Generate a random password
     const randomPassword = createRandomPassword();
-
+    const passwordHash = await bcrypt.hash(randomPassword, 10);
     // Create therapist object with populated availability and passwordHash
     const therapist = new Therapist({
       name,
@@ -363,8 +398,16 @@ const createTherapist = async (req, res) => {
       mobile,
       availability,
       therapisttype,
-      password: randomPassword,
+      passwordHash
     });
+    await therapist.save();
+
+    // Generate a random token and save it in the therapist's database record
+    const resetToken = jwt.sign({ userId: therapist._id }, process.env.secret, {
+      expiresIn: '1h', // Token expires in 1 hour
+    });
+    therapist.resetPasswordToken = resetToken;
+    therapist.resetPasswordExpires = Date.now() + 3600000; // 1 hour in milliseconds
     await therapist.save();
 
     const transporter = nodemailer.createTransport({
@@ -385,7 +428,8 @@ const createTherapist = async (req, res) => {
         <p>Your therapist account has been successfully created.</p>
         <p>Your login details are:</p>
         <p>Email: ${therapist.email}</p>
-        <p>Password: ${randomPassword}</p>
+        <a href="${process.env.CLIENT_URL}/passwordReset/therapist/reset/${resetToken}">Set Password</a>
+        <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
       `,
     };
     await transporter.sendMail(mailOptions);
@@ -398,6 +442,63 @@ const createTherapist = async (req, res) => {
   }
 };
 
+
+
+const resetPassword = async (req, res) => {
+  try {
+    const { resetToken, newPassword } = req.body;
+
+    // Find the user by the reset token
+    const user = await Therapist.findOne({
+      resetPasswordToken: resetToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+    }
+
+    // Update the user's password and reset token fields
+    user.passwordHash = bcrypt.hashSync(newPassword, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    // Create a nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      host: "smtppro.zoho.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "info@inspirononline.com",
+        pass: "zU0VjyrxHmFm",
+      },
+    });
+  
+    const mailOptions = {
+      from: "info@inspirononline.com",
+      to: user.email,
+      subject: 'Password Reset Confirmation',
+      html: `
+        <p>Hi ${user.name},</p>
+        <p>Your password has been successfully set. If you did not initiate this request, please contact support.</p>
+        <p>Thanks,<br>Team Inspiron</p>`,
+    };
+
+    // Send the password reset confirmation email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+      } else {
+        console.log('Password reset confirmation email sent:', info.response);
+      }
+    });
+
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+};
 const updateTherapist = (req, res) => {
   const therapistId = req.params.id;
   const updatedData = req.body;
@@ -417,7 +518,6 @@ const updateTherapist = (req, res) => {
         .json({ error: "Failed to update therapist", details: error });
     });
 };
-
 const updateTherapists = async (req, res) => {
   const therapistId = req.params.id;
   const { expriencelevel, group } = req.body;
@@ -987,6 +1087,8 @@ module.exports = {
   getTherapistById,
   createTherapistfull,
   createTherapist,
+  
+  resetPassword,
   updateTherapist,
   updateTherapists,
   updateTherapistsign,
@@ -1010,4 +1112,5 @@ module.exports = {
   approveTherapist,
   userRating,
   userRatingadmin,
+ 
 };

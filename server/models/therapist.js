@@ -47,7 +47,7 @@ type:String
     unique: true,
   },
 
-  password: {
+  passwordHash : {
     type: String,
   },
 
@@ -189,7 +189,31 @@ type:String
       },
     },
   ],
+  resetPasswordToken :{
+    type:String
+  },
+  resetPasswordExpires:{
+    type: Date,
+  },
 });
 
+therapistSchema.pre("save", async function (next) {
+  const therapist = this;
+
+  // Check if the email is already used by a user
+  const userWithSameEmail = await mongoose.models.User.findOne({
+    email: therapist.email,
+  });
+
+  if (userWithSameEmail) {
+    const error = new Error("Email must be unique across therapists and users");
+    return next(error);
+  }
+
+  // Continue with the save operation
+  next();
+});
 
 exports.Therapist = mongoose.model("Therapist", therapistSchema);
+
+

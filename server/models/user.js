@@ -147,7 +147,22 @@ type:Number,
       }
       });
 
-
+      userSchema.pre("save", async function (next) {
+        const user = this;
+      
+        // Check if the email is already used by a therapist
+        const therapistWithSameEmail = await mongoose.models.Therapist.findOne({
+          email: user.email,
+        });
+      
+        if (therapistWithSameEmail) {
+          const error = new Error("Email must be unique across therapists and users");
+          return next(error);
+        }
+      
+        // Continue with the save operation
+        next();
+      });
 
 
 exports.User = mongoose.model('User', userSchema);

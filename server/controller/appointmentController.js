@@ -79,7 +79,64 @@ exports.createAppointment = async (req, res) => {
             .status(409)
             .json({ error: "The requested time slot is already booked" });
         }
+        
+    
+        const therapistSessions = therapist.sessions || [];
+const currentDate = new Date(); // Get the current date and time
+const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
+console.log(currentTime);
 
+const filteredSessions = therapistSessions.flatMap(session => {
+  const sessionDate = new Date(session.date);
+
+  console.log('Session:', session); // Add this line for debugging
+
+  if (session && Array.isArray(session.timeSlots)) {
+    if (sessionDate > currentDate) {
+      // Include all time slots for future sessions
+      return session.timeSlots.map(timeSlot => ({
+        date: session.date,
+        timeSlot,
+      }));
+    } else if (sessionDate.toDateString() === currentDate.toDateString()) {
+      // Include time slots for today's session and check the current time
+      const validTimeSlots = session.timeSlots
+        .filter(timeSlot => timeSlot.startTime >= currentTime)
+        .map(timeSlot => ({
+          date: session.date,
+          timeSlot,
+        }));
+
+      return validTimeSlots;
+    }
+  } else if (session && session.timeSlot) {
+    // Corrected the property name to session.timeSlots
+    if (new Date(`${session.date} ${session.timeSlot.startTime}`) > currentDate) {
+      return [{ date: session.date, timeSlot: session.timeSlot }];
+    }
+  }
+  return null;
+}).filter(Boolean);
+
+console.log('Filtered Sessions:', filteredSessions);
+
+ 
+        const selectedSlotValid = filteredSessions.some(session => {
+          return (
+            session.date === dateTime &&
+            session.timeSlot &&
+            session.timeSlot.startTime <= startTime &&
+            session.timeSlot.endTime >= endTime
+          );
+        });
+        
+        console.log(selectedSlotValid);
+        
+        if (!selectedSlotValid) {
+          return res.status(409).json({ error: "Please refresh your page to book an appointment." });
+        }
+        
+        
         const newAppointment = new Appointment({
           therapist: therapistId,
           meetlink: therapist.meetLink,
@@ -110,7 +167,7 @@ exports.createAppointment = async (req, res) => {
         user.priceHistory.push(currentSessionDetails);
 
         await user.save();
-        const therapistSessions = therapist.sessions || [];
+        
         console.log(therapistSessions);
         // Extract appointment date, start time, and end time
         const appointmentDate = newAppointment.dateTime;
@@ -350,7 +407,61 @@ exports.createAppointment = async (req, res) => {
           .status(409)
           .json({ error: "The requested time slot is already booked" });
       }
+      const therapistSessions = therapist.sessions || [];
+const currentDate = new Date(); // Get the current date and time
+const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
+console.log(currentTime);
 
+const filteredSessions = therapistSessions.flatMap(session => {
+  const sessionDate = new Date(session.date);
+
+  console.log('Session:', session); // Add this line for debugging
+
+  if (session && Array.isArray(session.timeSlots)) {
+    if (sessionDate > currentDate) {
+      // Include all time slots for future sessions
+      return session.timeSlots.map(timeSlot => ({
+        date: session.date,
+        timeSlot,
+      }));
+    } else if (sessionDate.toDateString() === currentDate.toDateString()) {
+      // Include time slots for today's session and check the current time
+      const validTimeSlots = session.timeSlots
+        .filter(timeSlot => timeSlot.startTime >= currentTime)
+        .map(timeSlot => ({
+          date: session.date,
+          timeSlot,
+        }));
+
+      return validTimeSlots;
+    }
+  } else if (session && session.timeSlot) {
+    // Corrected the property name to session.timeSlots
+    if (new Date(`${session.date} ${session.timeSlot.startTime}`) > currentDate) {
+      return [{ date: session.date, timeSlot: session.timeSlot }];
+    }
+  }
+  return null;
+}).filter(Boolean);
+
+console.log('Filtered Sessions:', filteredSessions);
+
+
+      const selectedSlotValid = filteredSessions.some(session => {
+        return (
+          session.date === dateTime &&
+          session.timeSlot &&
+          session.timeSlot.startTime <= startTime &&
+          session.timeSlot.endTime >= endTime
+        );
+      });
+      
+      console.log(selectedSlotValid);
+      
+      if (!selectedSlotValid) {
+        return res.status(409).json({ error: "Please refresh your page to book an appointment." });
+      }
+      
       const newAppointment = new Appointment({
         therapist: therapistId,
         meetlink: therapist.meetLink,
@@ -462,7 +573,7 @@ exports.createAppointment = async (req, res) => {
           user: userId,
           expriencelevel: therapist.level,
           coinBalance: -1,
-          avarage: 0, // Set average here if needed
+          avarage:calculatedAverage, // Set average here if needed
           userName: user.name,
         });
 
@@ -563,7 +674,61 @@ exports.createAppointmentbytherapist = async (req, res) => {
             .status(409)
             .json({ error: "The requested time slot is already booked" });
         }
-
+        const therapistSessions = therapist.sessions || [];
+        const currentDate = new Date(); // Get the current date and time
+        const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
+        console.log(currentTime);
+        
+        const filteredSessions = therapistSessions.flatMap(session => {
+          const sessionDate = new Date(session.date);
+        
+          console.log('Session:', session); // Add this line for debugging
+        
+          if (session && Array.isArray(session.timeSlots)) {
+            if (sessionDate > currentDate) {
+              // Include all time slots for future sessions
+              return session.timeSlots.map(timeSlot => ({
+                date: session.date,
+                timeSlot,
+              }));
+            } else if (sessionDate.toDateString() === currentDate.toDateString()) {
+              // Include time slots for today's session and check the current time
+              const validTimeSlots = session.timeSlots
+                .filter(timeSlot => timeSlot.startTime >= currentTime)
+                .map(timeSlot => ({
+                  date: session.date,
+                  timeSlot,
+                }));
+        
+              return validTimeSlots;
+            }
+          } else if (session && session.timeSlot) {
+            // Corrected the property name to session.timeSlots
+            if (new Date(`${session.date} ${session.timeSlot.startTime}`) > currentDate) {
+              return [{ date: session.date, timeSlot: session.timeSlot }];
+            }
+          }
+          return null;
+        }).filter(Boolean);
+        
+        console.log('Filtered Sessions:', filteredSessions);
+        
+ 
+        const selectedSlotValid = filteredSessions.some(session => {
+          return (
+            session.date === dateTime &&
+            session.timeSlot &&
+            session.timeSlot.startTime <= startTime &&
+            session.timeSlot.endTime >= endTime
+          );
+        });
+        
+        console.log(selectedSlotValid);
+        
+        if (!selectedSlotValid) {
+          return res.status(409).json({ error: "Please refresh your page to book an appointment." });
+        }
+        
         const newAppointment = new Appointment({
           therapist: therapistId,
           meetlink: therapist.meetLink,
@@ -593,7 +758,7 @@ exports.createAppointmentbytherapist = async (req, res) => {
         user.priceHistory.push(currentSessionDetails);
 
         await user.save();
-        const therapistSessions = therapist.sessions || [];
+        
         console.log(therapistSessions);
         // Extract appointment date, start time, and end time
         const appointmentDate = newAppointment.dateTime;
@@ -825,7 +990,62 @@ exports.createAppointmentbytherapist = async (req, res) => {
         .status(409)
         .json({ error: "The requested time slot is already booked" });
     }
+    const therapistSessions = therapist.sessions || [];
+const currentDate = new Date(); // Get the current date and time
+const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
+console.log(currentTime);
 
+const filteredSessions = therapistSessions.flatMap(session => {
+  const sessionDate = new Date(session.date);
+
+  console.log('Session:', session); // Add this line for debugging
+
+  if (session && Array.isArray(session.timeSlots)) {
+    if (sessionDate > currentDate) {
+      // Include all time slots for future sessions
+      return session.timeSlots.map(timeSlot => ({
+        date: session.date,
+        timeSlot,
+      }));
+    } else if (sessionDate.toDateString() === currentDate.toDateString()) {
+      // Include time slots for today's session and check the current time
+      const validTimeSlots = session.timeSlots
+        .filter(timeSlot => timeSlot.startTime >= currentTime)
+        .map(timeSlot => ({
+          date: session.date,
+          timeSlot,
+        }));
+
+      return validTimeSlots;
+    }
+  } else if (session && session.timeSlot) {
+    // Corrected the property name to session.timeSlots
+    if (new Date(`${session.date} ${session.timeSlot.startTime}`) > currentDate) {
+      return [{ date: session.date, timeSlot: session.timeSlot }];
+    }
+  }
+  return null;
+}).filter(Boolean);
+
+console.log('Filtered Sessions:', filteredSessions);
+
+
+
+    const selectedSlotValid = filteredSessions.some(session => {
+      return (
+        session.date === dateTime &&
+        session.timeSlot &&
+        session.timeSlot.startTime <= startTime &&
+        session.timeSlot.endTime >= endTime
+      );
+    });
+    
+    console.log(selectedSlotValid);
+    
+    if (!selectedSlotValid) {
+      return res.status(409).json({ error: "Please refresh your page to book an appointment." });
+    }
+    
     const newAppointment = new Appointment({
       therapist: therapistId,
       meetlink: therapist.meetLink,
@@ -856,7 +1076,7 @@ exports.createAppointmentbytherapist = async (req, res) => {
     };
     user.priceHistory.push(currentSessionDetails);
     await user.save();
-    const therapistSessions = therapist.sessions || [];
+    
     console.log(therapistSessions);
     // Extract appointment date, start time, and end time
     const appointmentDate = newAppointment.dateTime;
@@ -1401,6 +1621,7 @@ exports.deleteAllAppointments = async (req, res) => {
 };
 exports.updateAppointmentWithPayment = async (req, res) => {
   let userEmail;
+  let matchingTimeSlotLocation ="Indiranagar/HSR Layout";;
   try {
     const appointmentId = req.params.id;
     const therapistId = req.params.therapistId;
@@ -1435,6 +1656,7 @@ exports.updateAppointmentWithPayment = async (req, res) => {
     const appointmentDate = appointment.dateTime;
     const appointmentStartTime = appointment.startTime;
     const appointmentEndTime = appointment.endTime;
+    
     console.log("Therapist Sessions Before Filtering:");
     therapistSessions.forEach(session => {
       console.log(`Date: ${session.date}`);
@@ -1442,17 +1664,20 @@ exports.updateAppointmentWithPayment = async (req, res) => {
         console.log(`Time Slot ${index + 1}:`);
         console.log(`  Start Time: ${timeSlot.startTime}`);
         console.log(`  End Time: ${timeSlot.endTime}`);
+        if (timeSlot.startTime === appointmentStartTime) {
+          matchingTimeSlotLocation = timeSlot.location; // Update the location if a match is found
+        }
       });
     });
-    // Filter and remove the matching therapist session based on date and start time
-    // Filter and remove the matching therapist session based on date and start time
-    // Filter and remove the matching therapist session's start time
+    
     const updatedTherapistSessions = therapistSessions.filter(session => {
       const sessionDate = new Date(session.date); // Assuming session.date is a string in ISO format
       const matchingTimeSlotIndex = session.timeSlots.findIndex(
         timeSlot => timeSlot.startTime === appointmentStartTime
       );
-
+      
+     
+      console.log(matchingTimeSlotLocation)
       if (
         sessionDate.toDateString() === appointmentDate.toDateString() &&
         matchingTimeSlotIndex !== -1
@@ -1475,6 +1700,7 @@ exports.updateAppointmentWithPayment = async (req, res) => {
         console.log(`Time Slot ${index + 1}:`);
         console.log(`  Start Time: ${timeSlot.startTime}`);
         console.log(`  End Time: ${timeSlot.endTime}`);
+        
       });
     });
     const filter = { _id: therapist._id }; // Replace with the appropriate query
@@ -1529,22 +1755,47 @@ exports.updateAppointmentWithPayment = async (req, res) => {
     let emailMessage;
     if (paymentMethod === "Offline") {
       emailMessage = `
-    Hi ${username},\n
-    Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDate} at ${appointmentTime}. Please log into the application 5 mins before the start of the session.\n
-        Thanks,\n
-        Team Inspiron
-      `;
+Dear ${username},
 
+We are pleased to confirm your upcoming appointment with our dedicated mental health expert ${therapistName} at Inspiron.
+      
+Details:
+Date: ${appointmentDateonly}
+Time: ${appointmentTime}
+Location: ${matchingTimeSlotLocation}
+Payment Status: Offline
+      
+If you have any questions or need to reschedule, please don't hesitate to contact us at .
+ We look forward to supporting you on your journey to well-being.
+      
+Best regards,
+Inspiron Psychological Well-being Centre
+      `;
+      
+      
+
+     
+console.log(user.mobile,)
       sendWhatsAppMessage(
         user.mobile,
         `
-    Hi ${username},
-Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}.
-Please log into the application 5 mins before the start of the session.
-Thanks,
-Team Inspiron
-    `
+Hi ${username},
+
+This is Inspiron. Your upcoming appointment is confirmed!
+📅 Date: ${appointmentDateonly}
+🕒 Time: ${appointmentTime}
+🥼 Mental Health Expert: ${therapistName}
+📍 Location:${matchingTimeSlotLocation}
+        
+Payment Status: Offline
+Reply 'CONFIRMED' to acknowledge or call  for any changes.
+Thank you,
+Inspiron Team 🌈💚
+        `
+        
+      
       );
+
     }
     // Send the email
     sendEmail(userEmail, "Appointment Confirmation", emailMessage);
@@ -1575,7 +1826,7 @@ const sendEmail = (to, subject, message) => {
   const mailOptions = {
     from: "info@inspirononline.com",
     to: to,
-    subject: "Booking Confirmation",
+    subject: "Confirmation of Your Appointment with Inspiron",
     text: message,
   };
 
@@ -3092,9 +3343,31 @@ cron.schedule("* * * * *", async () => {
 
       if (timeDifference >= 0 && timeDifference <= 5 * 60 * 1000) {
         const recipientNumber = user.mobile;
-        const message = `Your appointment with ${therapist.name} is in 5 minutes.`;
-        sendWhatsAppMessage(recipientNumber, message);
+        
+        sendWhatsAppMessage(
+          recipientNumber,
+          `
+Hi ${username},
+          
+This is Inspiron. Your upcoming appointment is confirmed!
+Your appointment is in 5 minutes.
+📅 Date: ${appointmentDateonly}
+🕒 Time: ${appointmentTime}
+🥼 Mental Health Expert: ${therapist.name}
+  
+Reply 'CONFIRMED' to acknowledge or call for any changes.
+Thank you,
+Inspiron Team 🌈💚
+          `
+          
+        
+        );
+        const appointmentTime = appointment.startTime;
 
+        const dateObject = new Date(appointmentDateTime);
+  
+        // Extract the date part in YYYY-MM-DD format
+        const appointmentDateonly = dateObject.toISOString().split("T")[0];
         const transporter = nodemailer.createTransport({
           host: "smtppro.zoho.com",
           port: 465,
@@ -3104,14 +3377,29 @@ cron.schedule("* * * * *", async () => {
             pass: "zU0VjyrxHmFm",
           },
         });
+        
+        // Modify your reminder message template
+        const reminderMessage = `
+Dear ${user.name},
+        
+A friendly reminder Your appointment with ${therapist.name} is in 5 minutes.
+Details:
+Date: ${appointmentDateonly}
+Time: ${appointmentTime}
+Prepare any questions or topics you'd like to discuss. If you need to reschedule, please contact us .
+We're here to support you on your well-being journey.
 
+Warm regards,
+Inspiron Psychological Well-being Centre
+        `;
+        
         const mailOptions = {
           from: "info@inspirononline.com",
           to: user.email,
-          subject: "Appointment Reminder",
-          text: `Your appointment with ${therapist.name} is in 5 minutes.`,
+          subject: "Gentle Reminder: Upcoming Appointment",
+          text: reminderMessage,
         };
-
+        
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
             console.error("Error sending email:", error);
@@ -3119,6 +3407,7 @@ cron.schedule("* * * * *", async () => {
             console.log("Email sent:", info.response);
           }
         });
+        
 
         // Mark the appointment as reminded
         appointment.reminded = true;

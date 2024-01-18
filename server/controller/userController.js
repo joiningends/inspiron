@@ -248,7 +248,7 @@ const loginUser = async (req, res) => {
     const therapist = await Therapist.findOne({ email });
 
     if (therapist) {
-      if (therapist.password === password) { // Directly compare the password from the database
+      if (therapist && bcrypt.compareSync(password, therapist.passwordHash)) { // Directly compare the password from the database
         const secret = process.env.secret;
         const token = jwt.sign(
           {
@@ -665,7 +665,7 @@ const updateUserTypes = async (req, res) => {
   }
 };
 
-// ... (existing code)
+
 
 const forgotPassword = async (req, res) => {
   try {
@@ -674,56 +674,107 @@ const forgotPassword = async (req, res) => {
     // Check if the user exists with the provided email
     const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (user) {
+      // Generate a random token and save it in the user's database record
+      const resetToken = jwt.sign({ userId: user._id }, process.env.secret, {
+        expiresIn: '1h', // Token expires in 1 hour
+      });
+      user.resetPasswordToken = resetToken;
+      user.resetPasswordExpires = Date.now() + 3600000; // 1 hour in milliseconds
+      await user.save();
 
-    // Generate a random token and save it in the user's database record
-    const resetToken = jwt.sign({ userId: user._id }, process.env.secret, {
-      expiresIn: '1h', // Token expires in 1 hour
-    });
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour in milliseconds
-    await user.save();
+      // Create a nodemailer transporter
+      const transporter = nodemailer.createTransport({
+        host: "smtppro.zoho.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: "info@inspirononline.com",
+          pass: "zU0VjyrxHmFm",
+        },
+      });
 
-    // Create a nodemailer transporter
-    const transporter = nodemailer.createTransport({
-      host: "smtppro.zoho.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: "info@inspirononline.com",
-        pass: "zU0VjyrxHmFm",
-      },
-    });
-  
-    const mailOptions = {
-      from: "info@inspirononline.com",
-      to: user.email,
-      subject: 'Password Reset Request',
-      html: `
-        <p>Hi ${user.name},</p>
-        <p>You are receiving this email because you (or someone else) have requested a password reset for your account.</p>
-        <p>Please click the following link to reset your password:</p>
-        <a href="${process.env.CLIENT_URL}/passwordReset/reset/${resetToken}">Reset Password</a>
-        <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
-        <p>Thanks,<br>Team Inspiron</p>`,
-    };
+      const mailOptions = {
+        from: "info@inspirononline.com",
+        to: user.email,
+        subject: 'Password Reset Request',
+        html: `
+          <p>Hi ${user.name},</p>
+          <p>You are receiving this email because you (or someone else) have requested a password reset for your account.</p>
+          <p>Please click the following link to reset your password:</p>
+          <a href="${process.env.CLIENT_URL}/passwordReset/reset/${resetToken}">Reset Password</a>
+          <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+          <p>Thanks,<br>Team Inspiron</p>`,
+      };
 
-    // Send the password reset email
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error('Error sending email:', error);
-        res.status(500).json({ error: 'Failed to send password reset email' });
-      } else {
-        console.log('Password reset email sent:', info.response);
-        res.status(200).json({ message: 'Password reset email sent successfully' });
+      // Send the password reset email
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+          res.status(500).json({ error: 'Failed to send password reset email' });
+        } else {
+          console.log('Password reset email sent:', info.response);
+          res.status(200).json({ message: 'Password reset email sent successfully' });
+        }
+      });
+    } else {
+      // Check if the therapist exists with the provided email
+      const therapist = await Therapist.findOne({ email });
+
+      if (!therapist) {
+        // Neither user nor therapist found with the provided email
+        return res.status(404).json({ message: 'User or Therapist not found' });
       }
-    });
+
+      // Generate a random token and save it in the therapist's database record
+      const resetToken = jwt.sign({ therapistId: therapist._id }, process.env.secret, {
+        expiresIn: '1h', // Token expires in 1 hour
+      });
+      therapist.resetPasswordToken = resetToken;
+      therapist.resetPasswordExpires = Date.now() + 3600000; // 1 hour in milliseconds
+      await therapist.save();
+
+      // Create a nodemailer transporter for therapists
+      const transporter = nodemailer.createTransport({
+        host: "smtppro.zoho.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: "info@inspirononline.com",
+          pass: "zU0VjyrxHmFm",
+        },
+      });
+
+      const mailOptions = {
+        from: "info@inspirononline.com",
+        to: therapist.email,
+        subject: 'Password Reset Request',
+        html: `
+          <p>Hi ${therapist.name},</p>
+          <p>You are receiving this email because you (or someone else) have requested a password reset for your account.</p>
+          <p>Please click the following link to reset your password:</p>
+          <a href="${process.env.CLIENT_URL}/passwordReset/therapist/reset/${resetToken}">Reset Password</a>
+          <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+          <p>Thanks,<br>Team Inspiron</p>`,
+      };
+
+      // Send the password reset email for therapists
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+          res.status(500).json({ error: 'Failed to send password reset email' });
+        } else {
+          console.log('Password reset email sent:', info.response);
+          res.status(200).json({ message: 'Password reset email sent successfully' });
+        }
+      });
+    }
   } catch (error) {
+    console.error('Error:', error);
     res.status(500).json({ error: 'Failed to initiate password reset' });
   }
 };
+
 
 const resetPassword = async (req, res) => {
   try {
