@@ -217,6 +217,7 @@ function BookTime() {
       .then(response => {
         // Handle the successful response and store the data in state
         setTherapistData(response.data);
+        console.log(response.data)
       })
       .catch(error => {
         // Handle any errors here

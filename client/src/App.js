@@ -111,6 +111,7 @@ function App() {
                 />
 
                 <Route path="/rating" element={<RatingSystem />} />
+                <Route path="/selfhelp" element={<SelfHelp />} />
                 <Route
                   path="/PendingPayments"
                   element={
@@ -122,7 +123,7 @@ function App() {
                   }
                 />
                 <Route
-                  path="/SelffHelp"
+                  path="/selfhelp"
                   element={
                     isEmpidNull ? (
                       <SelfHelp />
