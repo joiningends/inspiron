@@ -21,7 +21,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import DescriptionIcon from "@mui/icons-material/Description";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PaymentIcon from "@mui/icons-material/Payment";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn"; // Placeholder icon
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import Footer from "../Footer";
 
 function formatDate(isoDate) {
@@ -76,16 +76,13 @@ function PatientPage() {
   };
 
   const filterPatients = () => {
-    // Ensure that patients is an array
     if (!Array.isArray(patients)) {
       return [];
     }
 
-    return patients
-      .filter(patient =>
-        patient.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      .slice(startIndex, endIndex);
+    return patients.filter(patient =>
+      patient.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   };
 
   const startIndex = (currentPage - 1) * patientsPerPage;
@@ -122,7 +119,10 @@ function PatientPage() {
             <TableHead>
               <TableRow>
                 <TableCell>Patient Name</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Mobile</TableCell>
                 <TableCell>Last Session Date</TableCell>
+                <TableCell>Last mental expert</TableCell>
                 <TableCell>Total Sessions</TableCell>
                 <TableCell>Corporate Name</TableCell>
                 <TableCell>Actions</TableCell>
@@ -136,7 +136,10 @@ function PatientPage() {
                     <TableCell className="patient-name-cell">
                       {patient.name}
                     </TableCell>
+                    <TableCell>{patient.email}</TableCell>
+                    <TableCell>{patient.mobile}</TableCell>
                     <TableCell>{formatDate(patient.date)}</TableCell>
+                    <TableCell>{patient.lasttherapistname}</TableCell>
                     <TableCell>{patient.Sessionnumber}</TableCell>
                     <TableCell>{patient.clientName}</TableCell>
                     <TableCell>
@@ -152,16 +155,6 @@ function PatientPage() {
                             <VisibilityIcon />
                           </Button>
                         )}
-                      </Tooltip>
-                      <Tooltip title="View/Download" arrow>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          className="view-download-button"
-                          style={{ marginLeft: "1rem" }}
-                        >
-                          <DescriptionIcon />
-                        </Button>
                       </Tooltip>
                       <Tooltip title="Payment" arrow>
                         <Button

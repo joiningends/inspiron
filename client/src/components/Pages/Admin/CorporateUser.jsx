@@ -9,6 +9,7 @@ import "./CorporateUser.css";
 function CorporateUser() {
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const usersPerPage = 5;
   const { groupid } = useParams();
 
@@ -16,17 +17,16 @@ function CorporateUser() {
     async function fetchUserData() {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_SERVER_URL}/users/group/${groupid}`
+          `${process.env.REACT_APP_SERVER_URL}/users/group/${groupid}?search=${searchQuery}`
         );
         setUsers(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     }
 
     fetchUserData();
-  }, [groupid]);
+  }, [groupid, searchQuery]);
 
   const handleAction = async (userId, action) => {
     try {
@@ -50,9 +50,19 @@ function CorporateUser() {
     }
   };
 
+  const filteredUsers = users.filter(
+    user =>
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.empid.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (user.mobile &&
+        typeof user.mobile === "string" &&
+        user.mobile.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
   const handlePageChange = (event, pageNumber) => {
     setCurrentPage(pageNumber);
@@ -60,11 +70,21 @@ function CorporateUser() {
 
   return (
     <div>
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search by name, employee ID, phone number, or email"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          style={{ margin: "0.5rem", width: "88%" }}
+        />
+      </div>
       <table>
         <thead>
           <tr>
             <th>Name</th>
             <th>Employee Id</th>
+            <th>Group Id</th>
             <th>Email</th>
             <th>Phone Number</th>
             <th>Credit</th>
@@ -76,6 +96,7 @@ function CorporateUser() {
             <tr key={user._id}>
               <td>{user.name}</td>
               <td>{user.empid}</td>
+              <td>{user.groupid}</td>
               <td>{user.email}</td>
               <td>{user.mobile}</td>
               <td>{user.credits}</td>
@@ -105,7 +126,7 @@ function CorporateUser() {
       </table>
       <div className="pagination-container">
         <Pagination
-          count={Math.ceil(users.length / usersPerPage)}
+          count={Math.ceil(filteredUsers.length / usersPerPage)}
           page={currentPage}
           onChange={handlePageChange}
         />

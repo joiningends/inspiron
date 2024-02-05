@@ -20,6 +20,7 @@ import RatingIcon from "./starForKnowMorePage.png";
 import OnlineIcon from "./online-meetingForKnowMorePage.png";
 import TotalSessionIcon from "./interactionsForKnowMorePage.png";
 import OfflineIcon from "./meetingImageForKnowMorepage.png";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 const Popup = ({
   selectedTimeSlot,
   selectedDate,
@@ -28,10 +29,12 @@ const Popup = ({
   cleanUserId,
   onBookNowCorp,
   isBalanceGreaterThanZero,
+  companypayment,
 }) => {
   const { id } = useParams();
 
-  const groupId = localStorage.getItem("groupid");
+  let groupId = localStorage.getItem("groupid");
+  console.log(companypayment);
 
   return (
     <div
@@ -120,7 +123,7 @@ const Popup = ({
           >
             Close
           </button>
-          {groupId === "null" ? (
+          {!companypayment ? (
             <button
               style={{
                 padding: "10px 20px",
@@ -162,7 +165,6 @@ function BookTime() {
   const { id } = useParams(); // Access the therapist ID from the URL parameter
   const dispatch = useDispatch();
   const therapist = useSelector(state => state.therapist);
-  console.log(therapist)
   const [currentPage, setCurrentPage] = useState(1);
 
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
@@ -182,6 +184,33 @@ function BookTime() {
 
   const [therapistData, setTherapistData] = useState(null);
   const [availableSession, setAvailableSession] = useState("");
+
+  let groupId = localStorage.getItem("groupid");
+  const [dataCompany, setDataCompany] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Only make the request if groupId is not null or undefined
+        if (groupId !== null) {
+          // Remove quotes around groupId
+          const groupVal = groupId.replace(/"/g, "");
+
+          const response = await axios.get(
+            `http://localhost:5001/api/v1/clients/group/${groupVal}`
+          );
+          console.log(response);
+          // Handle the successful response here
+          setDataCompany(response.data.companypayment);
+        }
+      } catch (error) {
+        // Handle errors here
+        console.error("Error:", error);
+      }
+    };
+
+    fetchData();
+  }, [groupId]);
 
   const paginationButtonStyle = {
     backgroundColor: "#5179BD",
@@ -217,7 +246,6 @@ function BookTime() {
       .then(response => {
         // Handle the successful response and store the data in state
         setTherapistData(response.data);
-        console.log(response.data)
       })
       .catch(error => {
         // Handle any errors here
@@ -268,9 +296,8 @@ function BookTime() {
     // Check if therapist and coinData are available
     if (therapist && coinDataArray.length > 0) {
       // Get the therapist's level from experiencelevel[0]
-     
-      const therapistLevel = therapist.expriencelevel;
 
+      const therapistLevel = therapist.expriencelevel;
 
       // Find the corresponding coinData for the therapist's level
       const matchingCoinData = coinDataArray.find(
@@ -326,6 +353,8 @@ function BookTime() {
         duration: 60,
       },
     };
+
+    console.log(appointmentData);
 
     axios
       .post(`${process.env.REACT_APP_SERVER_URL}/appointments`, appointmentData)
@@ -468,9 +497,11 @@ function BookTime() {
   }
 
   const handleBookNowCorporate = () => {
+    console.log("Hello1");
     if (!selectedTimeSlot) {
       return; // If no time slot is selected, do nothing
     }
+    console.log("Hello2");
 
     const { mode } = selectedTimeSlot;
     // Prepare the data for the API request
@@ -487,10 +518,16 @@ function BookTime() {
       },
     };
 
+    console.log("byebey");
+    console.log(
+      `${process.env.REACT_APP_SERVER_URL}/appointments`,
+      appointmentData
+    );
     axios
       .post(`${process.env.REACT_APP_SERVER_URL}/appointments`, appointmentData)
       .then(response => {
         // Handle the success response here, if needed
+        console.log(response);
         setAppointmentId(response.data._id);
         window.open(`/sessionIsBookedCorp/${response.data._id}`, "_self");
       })
@@ -846,6 +883,7 @@ function BookTime() {
           cleanUserId={cleanUserId}
           isBalanceGreaterThanZero={isBalanceGreaterThanZero}
           onBookNowCorp={handleBookNowCorporate}
+          companypayment={dataCompany}
         />
       )}
       <Footer />

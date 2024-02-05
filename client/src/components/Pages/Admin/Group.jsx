@@ -25,6 +25,7 @@ function Groups() {
   const [paymentCredit, setPaymentCredit] = useState("");
   const [selectedGroupId, setSelectedGroupId] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchData = async () => {
     try {
@@ -63,7 +64,7 @@ function Groups() {
 
     const formData = new FormData();
     formData.append("name", name);
-    formData.append("image", selectedImage); // Append the image file
+    formData.append("image", selectedImage);
     formData.append("address", address);
     formData.append("companypayment", allowCompanyPayment);
 
@@ -80,8 +81,8 @@ function Groups() {
       console.log("Client created successfully:", response.data);
       toast.success("Group created successfully");
       setTimeout(() => {
-        window.location.reload(); // Reload the page after a delay
-      }, 1000); // Adjust the delay time as needed
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Unable to create a group");
@@ -128,7 +129,7 @@ function Groups() {
       return;
     }
 
-    const valueToSubtract = parseFloat(paymentCredit); // Use parseFloat to parse floating-point numbers
+    const valueToSubtract = parseFloat(paymentCredit);
     console.log(valueToSubtract);
 
     if (
@@ -156,10 +157,33 @@ function Groups() {
     setErrorMessage("");
   };
 
+  const filteredData = currentData.filter(group =>
+    group.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <ToastContainer />
       <div className="table-container">
+      <div className="add-corporate-button">
+          <button className="add-button" onClick={handleAddCorporateClick}>
+            ADD CORPORATE
+          </button>
+        </div>
+        <div className="search-container" style={{width:"89%",marginLeft:"1rem"}}>
+          <TextField
+            className="search-input"
+            label="Search by Group Name"
+            variant="outlined"
+            fullWidth
+            size="large"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            InputProps={{
+              style: { fontFamily: "Poppins" },
+            }}
+          />
+        </div>
         {showForm && (
           <div className="overlay">
             <div className="form-container">
@@ -225,11 +249,7 @@ function Groups() {
             </div>
           </div>
         )}
-        <div className="add-corporate-button">
-          <button className="add-button" onClick={handleAddCorporateClick}>
-            ADD CORPORATE
-          </button>
-        </div>
+        
         <table className="groups-table">
           <thead>
             <tr>
@@ -242,7 +262,7 @@ function Groups() {
             </tr>
           </thead>
           <tbody>
-            {currentData?.map(group => (
+            {filteredData.map(group => (
               <tr key={group._id}>
                 <td>{group.name}</td>
                 <td>{group.address}</td>
