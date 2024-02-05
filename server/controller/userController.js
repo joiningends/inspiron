@@ -1,33 +1,24 @@
-const { User } = require("../models/user");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const { Therapist } = require("../models/therapist");
-const Heading = require("../models/heading");
-const Client = require("../models/client");
-const nodemailer = require("nodemailer");
-const { Appointment } = require("../models/appointment");
-const fetch = require("node-fetch");
-const {
-  sendWhatsAppMessage,
-  getSentMessageCount,
-  getSentMessages,
-} = require("../controller/whatsappcontrooler");
+const { User } = require('../models/user');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { Therapist } = require('../models/therapist');
+const Heading = require('../models/heading');
+const Client = require('../models/client');
+const nodemailer = require('nodemailer'); 
+const { Appointment } = require('../models/appointment');
+const fetch = require('node-fetch');
+const { sendWhatsAppMessage, getSentMessageCount, getSentMessages } = require('../controller/whatsappcontrooler'); 
 const getUsers = async (req, res) => {
   try {
     // Find users without a groupid
-    const userListWithoutGroupId = await User.find({
-      groupid: { $exists: false },
-    }).select("-passwordHash");
-
+    const userListWithoutGroupId = await User.find({ groupid: { $exists: false } }).select('-passwordHash');
+    
     // Find approved users with a groupid
-    const approvedUsersWithGroupId = await User.find({
-      types: "approved",
-      groupid: { $exists: true },
-    }).select("-passwordHash");
+    const approvedUsersWithGroupId = await User.find({ types: 'approved', groupid: { $exists: true } }).select('-passwordHash');
 
     // Assuming you have a 'Client' model with a 'groupid' and 'name' field
     const clientMap = new Map(); // Create a map to store groupid to client name mappings
-
+    
     // Populate the clientMap with groupid to name mappings
     const clients = await Client.find();
     clients.forEach(client => {
@@ -39,10 +30,10 @@ const getUsers = async (req, res) => {
       ...user.toObject(),
       clientName: clientMap.get(user.groupid) || null, // Use the client name if found, otherwise null
     }));
-
+    
     const allUsers = [...userListWithoutGroupId, ...usersWithGroupIdAndName];
-
-    allUsers.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+   
+    allUsers.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
     res.send(allUsers);
   } catch (error) {
@@ -51,13 +42,14 @@ const getUsers = async (req, res) => {
 };
 
 const getUserById = async (req, res) => {
+ 
   try {
     const userId = req.params.id;
 
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     res.json(user);
@@ -71,28 +63,33 @@ const getUsersByGroup = async (req, res) => {
     const { groupid } = req.params;
 
     // Query users by groupid
-    const users = await User.find({ groupid: groupid });
+    const users = await User.find({ groupid: groupid })
 
     // Send the list of users in the response
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ error: "Failed to get users" });
+    res.status(500).json({ error: 'Failed to get users' });
   }
 };
 
 const generateRandomToken = () => {
   const tokenLength = 16; // You can adjust the length of the token as needed
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let token = "";
-
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let token = '';
+  
   for (let i = 0; i < tokenLength; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
     token += characters.charAt(randomIndex);
   }
-
+  
   return token;
 };
+
+
+
+
+
+
 
 const registernormalUser = async (req, res) => {
   try {
@@ -115,30 +112,24 @@ const registernormalUser = async (req, res) => {
     const savedUser = await user.save();
 
     if (!savedUser) {
-      return res.status(400).send("The user could not be created!");
+      return res.status(400).send('The user could not be created!');
     }
 
-    sendWhatsAppMessage(
-      savedUser.mobile,
-      `
+     sendWhatsAppMessage(savedUser.mobile, `
 Hi ${savedUser.name},
 Your account has been created.Please check your email for verification.
 Thanks,
 Team Inspiron
-`
-    );
+`);
 
     sendVerificationEmail(savedUser.email, verificationToken, savedUser.name);
 
-    res.send("Please check your email to verify your account.");
+    res.send('Please check your email to verify your account.');
   } catch (error) {
-    console.error("Failed to create user:", error);
+    console.error('Failed to create user:', error);
     res
       .status(500)
-      .json({
-        success: false,
-        error: "An error occurred while creating the user",
-      });
+      .json({ success: false, error: 'An error occurred while creating the user' });
   }
 };
 
@@ -159,7 +150,7 @@ const sendVerificationEmail = (email, token, name) => {
   const mailOptions = {
     from: "info@inspirononline.com",
     to: email,
-    subject: "Verify Your Email Address",
+    subject: 'Verify Your Email Address',
     html: `
       <p>Hi ${name},</p>
       <p>Thank you for registering with Inspiron. Please click the following link to verify your email address:</p>
@@ -169,12 +160,14 @@ const sendVerificationEmail = (email, token, name) => {
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.error("Error sending verification email:", error);
+      console.error('Error sending verification email:', error);
     } else {
-      console.log("Verification email sent:", info.response);
+      console.log('Verification email sent:', info.response);
     }
   });
 };
+
+
 
 // Route for handling email verification
 const verify = async (req, res) => {
@@ -185,7 +178,7 @@ const verify = async (req, res) => {
     const user = await User.findOne({ verificationToken });
 
     if (!user) {
-      return res.status(404).send("Invalid or expired token");
+      return res.status(404).send('Invalid or expired token');
     }
 
     // Mark the user as verified and remove the verification token
@@ -193,12 +186,17 @@ const verify = async (req, res) => {
     user.verificationToken = undefined;
     await user.save();
 
-    res.send("Email verified successfully. You can now log in.");
+    res.send('Email verified successfully. You can now log in.');
   } catch (error) {
-    console.error("Error verifying email:", error);
-    res.status(500).send("Internal server error");
+    console.error('Error verifying email:', error);
+    res.status(500).send('Internal server error');
   }
-};
+}
+
+
+
+
+
 
 const updateUser = async (req, res) => {
   const userId = req.params.id;
@@ -206,113 +204,89 @@ const updateUser = async (req, res) => {
 
   try {
     // Find the user by their ID
-    const user = await User.findByIdAndUpdate(userId, updateData, {
-      new: true,
-      upsert: true,
-    });
+    const user = await User.findByIdAndUpdate(
+      userId,
+      updateData,
+      { new: true, upsert: true }
+    );
 
     if (!user) {
-      return res.status(400).send("The user could not be updated!");
+      return res.status(400).send('The user could not be updated!');
     }
 
     res.send(user);
   } catch (error) {
-    console.error("Failed to update user:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "An error occurred while updating the user",
-      });
+    console.error('Failed to update user:', error);
+    res.status(500).json({ success: false, error: 'An error occurred while updating the user' });
   }
 };
+
+
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
     // Check if the user is the admin
-    if (email === "info@inspirononline.com" && password === "V6nEPQ3EnZx7K4Y") {
+    if (email === 'info@inspirononline.com' && password === 'V6nEPQ3EnZx7K4Y') {
       const secret = process.env.secret;
       const token = jwt.sign(
         {
-          userId: "admin-id", // You can use an actual admin ID from your database here.
-          role: "admin",
+          userId: 'admin-id', // You can use an actual admin ID from your database here.
+          role: 'admin',
           groupid: null, // No groupid for admin
-          empid: null, // No empid for admin
+          empid: null,   // No empid for admin
         },
         secret,
-        { expiresIn: "30d" }
+        { expiresIn: '30d' }
       );
 
-      return res
-        .status(200)
-        .send({
-          user: email,
-          role: "admin",
-          token: token,
-          groupid: null,
-          empid: null,
-        });
+      return res.status(200).send({ user: email, role: 'admin', token: token, groupid: null, empid: null });
     }
 
     // Check if the user is a therapist
     const therapist = await Therapist.findOne({ email });
 
     if (therapist) {
-      if (therapist && bcrypt.compareSync(password, therapist.passwordHash)) {
-        // Directly compare the password from the database
+      if (therapist.password === password) { // Directly compare the password from the database
         const secret = process.env.secret;
         const token = jwt.sign(
           {
             userId: therapist.id,
-            role: "therapist",
+            role: 'therapist',
             groupid: null, // No groupid for therapist
             empid: therapist.empid || null, // Return therapist's empid if present, otherwise null
           },
           secret,
-          { expiresIn: "30d" }
+          { expiresIn: '30d' }
         );
 
-        return res
-          .status(200)
-          .send({
-            user: therapist.email,
-            role: "therapist",
-            token: token,
-            groupid: null,
-            empid: therapist.empid || null,
-          });
+        return res.status(200).send({ user: therapist.email, role: 'therapist', token: token, groupid: null, empid: therapist.empid || null });
       }
     }
-
+   
     // Check if the user is a regular user
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).send("Invalid email or password!");
+      return res.status(400).send('Invalid email or password!');
     }
 
     if (user.isVerified === false) {
-      return res
-        .status(400)
-        .send(
-          "Email not verified. Please check your email for verification instructions."
-        );
+      
+      return res.status(400).send('Email not verified. Please check your email for verification instructions.');
     }
-
+    
     if (user && bcrypt.compareSync(password, user.passwordHash)) {
-      let role = "user"; // Default role is user
+      let role = 'user'; // Default role is user
       let groupid = null;
       let empid = null;
 
       if (user.groupid) {
-        if (user.types === "approved" || user.types === "enable") {
-          role = "user"; // Use the groupid as role if user has one and is approved
+        if (user.types === 'approved' || user.types === 'enable') {
+          role = 'user'; // Use the groupid as role if user has one and is approved
           groupid = user.groupid;
         } else {
-          return res
-            .status(200)
-            .send("Please wait, your approval is in process");
+          return res.status(200).send('Please wait, your approval is in process');
         }
       }
 
@@ -329,150 +303,139 @@ const loginUser = async (req, res) => {
           empid: empid,
         },
         secret,
-        { expiresIn: "30d" }
+        { expiresIn: '30d' }
       );
 
-      return res
-        .status(200)
-        .send({
-          userId: user.id,
-          user: user.email,
-          role: role,
-          token: token,
-          groupid: groupid,
-          empid: empid,
-        });
+      return res.status(200).send({ userId: user.id, user: user.email, role: role, token: token, groupid: groupid, empid: empid });
     }
 
     // If the user is not found or the password is wrong, return an error
-    res.status(400).send("Invalid email or password!");
+    res.status(400).send('Invalid email or password!');
   } catch (error) {
-    res.status(500).json({ error: "Failed to log in" });
+    res.status(500).json({ error: 'Failed to log in' });
   }
 };
 
+
+
+
+  
+    
 const registerUser = async (req, res) => {
   try {
-    const { name, mobile, email, password, empid } = req.body;
+      const {
+        name,
+        mobile,
+        email,
+        password,
+        empid,
+      } = req.body;
+  
+      const generatedGroupId = req.params.generatedGroupId;
+  
+      console.log('Generated Group ID:', generatedGroupId);
+  
+      // Check if the user with the provided email already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ success: false, message: 'User with this email already exists' });
+      }
+  
+      // Hash the password before storing it in the database
+      const passwordHash = bcrypt.hashSync(password, 10);
+  
+      // Find a matching client based on generatedGroupId
+      const matchingClient = await Client.findOne({ groupid: generatedGroupId });
+  
+      if (!matchingClient) {
+        return res.status(404).json({ success: false, message: 'No matching corporate found for this group' });
+      }
+  
+      const verificationToken = generateRandomToken();
+  
+      // Create a new user with the provided data and the extracted groupid
+      const newUser = new User({
+        name,
+        mobile,
+        email,
+        passwordHash,
+        empid,
+        verificationToken,
+        isVerified: false,
+        groupid: generatedGroupId,
+        corporate: matchingClient.name,
+      });
+  
+      console.log('New User:', newUser);
+  
+      const savedUser = await newUser.save();
 
-    const generatedGroupId = req.params.generatedGroupId;
-
-    console.log("Generated Group ID:", generatedGroupId);
-
-    // Check if the user with the provided email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "User with this email already exists",
-        });
-    }
-
-    // Hash the password before storing it in the database
-    const passwordHash = bcrypt.hashSync(password, 10);
-
-    // Find a matching client based on generatedGroupId
-    const matchingClient = await Client.findOne({ groupid: generatedGroupId });
-
-    if (!matchingClient) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "No matching corporate found for this group",
-        });
-    }
-
-    const verificationToken = generateRandomToken();
-
-    // Create a new user with the provided data and the extracted groupid
-    const newUser = new User({
-      name,
-      mobile,
-      email,
-      passwordHash,
-      empid,
-      verificationToken,
-      isVerified: false,
-      groupid: generatedGroupId,
-      corporate: matchingClient.name,
-    });
-
-    console.log("New User:", newUser);
-
-    const savedUser = await newUser.save();
-
-    if (!savedUser) {
-      return res.status(400).send("The user could not be created!");
-    }
-
-    sendWhatsAppMessage(
-      savedUser.mobile,
-      `
+      if (!savedUser) {
+        return res.status(400).send('The user could not be created!');
+      }
+  
+       sendWhatsAppMessage(savedUser.mobile, `
   Hi ${savedUser.name},
   Your account has been created.Please check your email for verification.
   Thanks,
   Team Inspiron
-  `
-    );
-
-    sendVerificationEmails(savedUser.email, verificationToken, savedUser.name);
-
-    res.send("Please check your email to verify your account.");
-  } catch (error) {
-    console.error("Failed to create user:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "An error occurred while creating the user",
-      });
-  }
-};
-
-// Function to send a verification email
-const sendVerificationEmails = (email, token, name) => {
-  const verificationLink = `${process.env.CLIENT_URL}/thankyouForRegistering_teamInspiron/verify/${token}`;
-
-  const transporter = nodemailer.createTransport({
-    host: "smtppro.zoho.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: "info@inspirononline.com",
-      pass: "zU0VjyrxHmFm",
-    },
-  });
-
-  const mailOptions = {
-    from: "info@inspirononline.com",
-    to: email,
-    subject: "Verify Your Email Address",
-    html: `
+  `);
+  
+      sendVerificationEmails(savedUser.email, verificationToken, savedUser.name);
+  
+      res.send('Please check your email to verify your account.');
+    } catch (error) {
+      console.error('Failed to create user:', error);
+      res
+        .status(500)
+        .json({ success: false, error: 'An error occurred while creating the user' });
+    }
+  };
+  
+  // Function to send a verification email
+  const sendVerificationEmails = (email, token, name) => {
+    const verificationLink = `${process.env.CLIENT_URL}/thankyouForRegistering_teamInspiron/verify/${token}`;
+  
+    const transporter = nodemailer.createTransport({
+      host: "smtppro.zoho.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "info@inspirononline.com",
+        pass: "zU0VjyrxHmFm",
+      },
+    });
+  
+    const mailOptions = {
+      from: "info@inspirononline.com",
+      to: email,
+      subject: 'Verify Your Email Address',
+      html: `
         <p>Hi ${name},</p>
         <p>Thank you for registering with Inspiron. Please click the following link to verify your email address:</p>
         <a href="${verificationLink}">Verify Email</a>
         <p>Thanks,<br>Team Inspiron</p>`,
+    };
+  
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending verification email:', error);
+      } else {
+        console.log('Verification email sent:', info.response);
+      }
+    });
   };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error("Error sending verification email:", error);
-    } else {
-      console.log("Verification email sent:", info.response);
-    }
-  });
-};
-
-const deleteUser = async (req, res) => {
+    
+    
+    
+    
+    const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndRemove(req.params.id);
     if (user) {
-      res.status(200).json({ success: true, message: "The user is deleted!" });
+      res.status(200).json({ success: true, message: 'The user is deleted!' });
     } else {
-      res.status(404).json({ success: false, message: "User not found!" });
+      res.status(404).json({ success: false, message: 'User not found!' });
     }
   } catch (error) {
     res.status(500).json({ success: false, error: error });
@@ -497,7 +460,7 @@ const updateUserByTherapist = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: 'User not found' });
     }
 
     // Update the user's name, age, and gender if provided
@@ -526,15 +489,20 @@ const updateUserByTherapist = async (req, res) => {
       casesummery: user.casesummery,
     };
 
-    return res.json({
-      message: "User information updated successfully",
-      user: updatedUser,
-    });
+    return res.json({ message: 'User information updated successfully', user: updatedUser });
   } catch (err) {
-    console.error("Error updating user information:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error updating user information:', err);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
+
+
+
+
+
+
 
 const updateStatusBasedOnData = async (req, res) => {
   try {
@@ -542,21 +510,23 @@ const updateStatusBasedOnData = async (req, res) => {
     const foundAppointment = await Appointment.findById(appointmentId);
 
     if (!foundAppointment) {
-      return res.status(404).json({ message: "Appointment not found" });
+      return res.status(404).json({ message: 'Appointment not found' });
     }
 
     // Update the appointment status
-    foundAppointment.status = "started";
+    foundAppointment.status = 'started';
     await foundAppointment.save();
 
     const updatedAppointment = foundAppointment.toObject();
 
     res.json({ appointment: updatedAppointment });
   } catch (error) {
-    console.error("Error updating appointment status:", error);
-    res.status(500).json({ error: "An error occurred while updating status" });
+    console.error('Error updating appointment status:', error);
+    res.status(500).json({ error: 'An error occurred while updating status' });
   }
 };
+
+
 
 const updateStatusBasedOnDataendthesession = async (req, res) => {
   try {
@@ -566,59 +536,41 @@ const updateStatusBasedOnDataendthesession = async (req, res) => {
     const foundAppointment = await Appointment.findById(appointmentId);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
-
     if (!foundAppointment) {
-      return res.status(404).json({ message: "Appointment not found" });
+      return res.status(404).json({ message: 'Appointment not found' });
     }
-
-    const therapistid = foundAppointment.therapist;
-
-    if (!therapistid) {
-      return res.status(404).json({ message: "Therapist not found" });
-    }
-
-    console.log(therapistid);
 
     const { chief, illness } = user;
     const isEnded = chief && chief.length > 0 && illness && illness.length > 0;
 
     if (isEnded) {
-      foundAppointment.status = "ended";
-      foundAppointment.firstsession = "completed";
+      foundAppointment.status = 'ended';
+      foundAppointment.firstsession = 'completed';
+
+      // Set user.israting to false
       user.israting = false;
-
-      // Retrieve the therapist document
-      const therapist = await Therapist.findById(therapistid);
-
-      // Set user.lasttherapist and user.lasttherapistname
-      user.lasttherapist = therapistid;
-      user.lasttherapistname = therapist ? therapist.name : null;
-
-      user.firstsession = "completed";
-
+      user.lasttherapist=foundAppointment.therapist;
+      user.firstsession = 'completed';
       await foundAppointment.save();
       await user.save();
 
       const updatedAppointment = foundAppointment.toObject();
-
+      
       // Include user.israting in the response
       res.json({ appointment: updatedAppointment, israting: user.israting });
     } else {
-      foundAppointment.firstsession = "pending";
-      return res
-        .status(400)
-        .json({
-          message:
-            "Please fill in the first session note before ending the session",
-        });
+      foundAppointment.firstsession = 'pending';
+      return res.status(400).json({ message: 'Please fill in the first session note before ending the session' });
     }
   } catch (error) {
-    console.error("Error updating appointment status:", error);
-    res.status(500).json({ error: "An error occurred while updating status" });
+    console.error('Error updating appointment status:', error);
+    res.status(500).json({ error: 'An error occurred while updating status' });
   }
 };
+
+
 
 const updateUserTypes = async (req, res) => {
   try {
@@ -629,15 +581,15 @@ const updateUserTypes = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: 'User not found' });
     }
 
     // Update the types field
     user.types = types;
 
     // Determine if the type is approved or disapproved
-    const isApproved = types === "approved";
-    const isDisapproved = types === "disapproved";
+    const isApproved = types === 'approved';
+    const isDisapproved = types === 'disapproved';
 
     // Save the updated user in the database
     const updatedUser = await user.save();
@@ -654,11 +606,11 @@ const updateUserTypes = async (req, res) => {
           pass: "zU0VjyrxHmFm",
         },
       });
-
+    
       const mailOptions = {
         from: "info@inspirononline.com",
         to: updatedUser.email,
-        subject: "Profile Approved",
+        subject: 'Profile Approved',
         html: `
           <p>Hi ${updatedUser.name},</p>
           <p>Your profile has been approved. Please log in to book your session with a Therapist.</p>
@@ -668,9 +620,9 @@ const updateUserTypes = async (req, res) => {
       // Send the approval email
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.error("Error sending email:", error);
+          console.error('Error sending email:', error);
         } else {
-          console.log("Approval email sent:", info.response);
+          console.log('Approval email sent:', info.response);
         }
       });
     } else if (isDisapproved) {
@@ -683,11 +635,11 @@ const updateUserTypes = async (req, res) => {
           pass: "zU0VjyrxHmFm",
         },
       });
-
+    
       const mailOptions = {
         from: "info@inspirononline.com",
         to: updatedUser.email,
-        subject: "Profile Disapproved",
+        subject: 'Profile Disapproved',
         html: `
           <p>Hi ${updatedUser.name},</p>
           <p>Your profile has been disapproved. Please contact HR for further information.</p>
@@ -697,9 +649,9 @@ const updateUserTypes = async (req, res) => {
       // Send the disapproval email
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.error("Error sending email:", error);
+          console.error('Error sending email:', error);
         } else {
-          console.log("Disapproval email sent:", info.response);
+          console.log('Disapproval email sent:', info.response);
         }
       });
     }
@@ -707,18 +659,13 @@ const updateUserTypes = async (req, res) => {
       // Delete the user
       await User.findByIdAndDelete(userId); // This line deletes the user from the database
     }
-    res
-      .status(200)
-      .json({
-        message: `User types ${
-          isApproved ? "approved" : "disapproved"
-        } successfully`,
-        user: updatedUser,
-      });
+    res.status(200).json({ message: `User types ${isApproved ? 'approved' : 'disapproved'} successfully`, user: updatedUser });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
+// ... (existing code)
 
 const forgotPassword = async (req, res) => {
   try {
@@ -727,116 +674,54 @@ const forgotPassword = async (req, res) => {
     // Check if the user exists with the provided email
     const user = await User.findOne({ email });
 
-    if (user) {
-      // Generate a random token and save it in the user's database record
-      const resetToken = jwt.sign({ userId: user._id }, process.env.secret, {
-        expiresIn: "1h", // Token expires in 1 hour
-      });
-      user.resetPasswordToken = resetToken;
-      user.resetPasswordExpires = Date.now() + 3600000; // 1 hour in milliseconds
-      await user.save();
-
-      // Create a nodemailer transporter
-      const transporter = nodemailer.createTransport({
-        host: "smtppro.zoho.com",
-        port: 465,
-        secure: true,
-        auth: {
-          user: "info@inspirononline.com",
-          pass: "zU0VjyrxHmFm",
-        },
-      });
-
-      const mailOptions = {
-        from: "info@inspirononline.com",
-        to: user.email,
-        subject: "Password Reset Request",
-        html: `
-          <p>Hi ${user.name},</p>
-          <p>You are receiving this email because you (or someone else) have requested a password reset for your account.</p>
-          <p>Please click the following link to reset your password:</p>
-          <a href="${process.env.CLIENT_URL}/passwordReset/reset/${resetToken}">Reset Password</a>
-          <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
-          <p>Thanks,<br>Team Inspiron</p>`,
-      };
-
-      // Send the password reset email
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error("Error sending email:", error);
-          res
-            .status(500)
-            .json({ error: "Failed to send password reset email" });
-        } else {
-          console.log("Password reset email sent:", info.response);
-          res
-            .status(200)
-            .json({ message: "Password reset email sent successfully" });
-        }
-      });
-    } else {
-      // Check if the therapist exists with the provided email
-      const therapist = await Therapist.findOne({ email });
-
-      if (!therapist) {
-        // Neither user nor therapist found with the provided email
-        return res.status(404).json({ message: "User or Therapist not found" });
-      }
-
-      // Generate a random token and save it in the therapist's database record
-      const resetToken = jwt.sign(
-        { therapistId: therapist._id },
-        process.env.secret,
-        {
-          expiresIn: "1h", // Token expires in 1 hour
-        }
-      );
-      therapist.resetPasswordToken = resetToken;
-      therapist.resetPasswordExpires = Date.now() + 3600000; // 1 hour in milliseconds
-      await therapist.save();
-
-      // Create a nodemailer transporter for therapists
-      const transporter = nodemailer.createTransport({
-        host: "smtppro.zoho.com",
-        port: 465,
-        secure: true,
-        auth: {
-          user: "info@inspirononline.com",
-          pass: "zU0VjyrxHmFm",
-        },
-      });
-
-      const mailOptions = {
-        from: "info@inspirononline.com",
-        to: therapist.email,
-        subject: "Password Reset Request",
-        html: `
-          <p>Hi ${therapist.name},</p>
-          <p>You are receiving this email because you (or someone else) have requested a password reset for your account.</p>
-          <p>Please click the following link to reset your password:</p>
-          <a href="${process.env.CLIENT_URL}/passwordReset/therapist/reset/${resetToken}">Reset Password</a>
-          <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
-          <p>Thanks,<br>Team Inspiron</p>`,
-      };
-
-      // Send the password reset email for therapists
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error("Error sending email:", error);
-          res
-            .status(500)
-            .json({ error: "Failed to send password reset email" });
-        } else {
-          console.log("Password reset email sent:", info.response);
-          res
-            .status(200)
-            .json({ message: "Password reset email sent successfully" });
-        }
-      });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
+
+    // Generate a random token and save it in the user's database record
+    const resetToken = jwt.sign({ userId: user._id }, process.env.secret, {
+      expiresIn: '1h', // Token expires in 1 hour
+    });
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour in milliseconds
+    await user.save();
+
+    // Create a nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      host: "smtppro.zoho.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "info@inspirononline.com",
+        pass: "zU0VjyrxHmFm",
+      },
+    });
+  
+    const mailOptions = {
+      from: "info@inspirononline.com",
+      to: user.email,
+      subject: 'Password Reset Request',
+      html: `
+        <p>Hi ${user.name},</p>
+        <p>You are receiving this email because you (or someone else) have requested a password reset for your account.</p>
+        <p>Please click the following link to reset your password:</p>
+        <a href="${process.env.CLIENT_URL}/passwordReset/reset/${resetToken}">Reset Password</a>
+        <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+        <p>Thanks,<br>Team Inspiron</p>`,
+    };
+
+    // Send the password reset email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+        res.status(500).json({ error: 'Failed to send password reset email' });
+      } else {
+        console.log('Password reset email sent:', info.response);
+        res.status(200).json({ message: 'Password reset email sent successfully' });
+      }
+    });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Failed to initiate password reset" });
+    res.status(500).json({ error: 'Failed to initiate password reset' });
   }
 };
 
@@ -851,9 +736,7 @@ const resetPassword = async (req, res) => {
     });
 
     if (!user) {
-      return res
-        .status(400)
-        .json({ message: "Invalid or expired reset token" });
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
     }
 
     // Update the user's password and reset token fields
@@ -872,11 +755,11 @@ const resetPassword = async (req, res) => {
         pass: "zU0VjyrxHmFm",
       },
     });
-
+  
     const mailOptions = {
       from: "info@inspirononline.com",
       to: user.email,
-      subject: "Password Reset Confirmation",
+      subject: 'Password Reset Confirmation',
       html: `
         <p>Hi ${user.name},</p>
         <p>Your password has been successfully reset. If you did not initiate this request, please contact support.</p>
@@ -886,18 +769,19 @@ const resetPassword = async (req, res) => {
     // Send the password reset confirmation email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.error("Error sending email:", error);
+        console.error('Error sending email:', error);
       } else {
-        console.log("Password reset confirmation email sent:", info.response);
+        console.log('Password reset confirmation email sent:', info.response);
       }
     });
 
-    res.status(200).json({ message: "Password reset successful" });
+    res.status(200).json({ message: 'Password reset successful' });
   } catch (error) {
-    res.status(500).json({ error: "Failed to reset password" });
+    res.status(500).json({ error: 'Failed to reset password' });
   }
 };
 // controllers/userController.js
+
 
 const updateUserProfile = async (req, res) => {
   const userId = req.params.userId;
@@ -907,7 +791,7 @@ const updateUserProfile = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: 'User not found' });
     }
 
     // Update the user's profile fields
@@ -932,8 +816,8 @@ const updateUserProfile = async (req, res) => {
 
     res.status(200).json(user);
   } catch (error) {
-    console.error("Error updating user profile:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 const deleteAllTherapists = async (req, res) => {
@@ -941,37 +825,27 @@ const deleteAllTherapists = async (req, res) => {
     // Delete all therapists from the database
     await User.deleteMany({});
 
-    res.status(200).json({ message: "All therapists deleted successfully" });
+    res.status(200).json({ message: 'All therapists deleted successfully' });
   } catch (error) {
-    console.error("Error deleting therapists:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while deleting therapists" });
+    console.error('Error deleting therapists:', error);
+    res.status(500).json({ error: 'An error occurred while deleting therapists' });
   }
 };
 
-const updateUserIsRating = async (req, res) => {
+const updateUserIsRating =  async (req, res) => {
   try {
     const userId = req.params.id;
-
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { israting: true },
-      { new: true }
-    );
+   
+    const user = await User.findByIdAndUpdate(userId, { israting: true }, { new: true });
 
     if (!user) {
-      return { success: false, message: "User not found" };
+      return { success: false, message: 'User not found' };
     }
 
-    return {
-      success: true,
-      message: "User israting updated successfully",
-      user,
-    };
+    return { success: true, message: 'User israting updated successfully', user };
   } catch (error) {
-    console.error("Error updating user israting:", error);
-    return { success: false, message: "Internal Server Error" };
+    console.error('Error updating user israting:', error);
+    return { success: false, message: 'Internal Server Error' };
   }
 };
 
@@ -988,13 +862,13 @@ module.exports = {
   deleteUser,
   getUserCount,
   updateUserByTherapist,
-
+  
   updateStatusBasedOnData,
   updateStatusBasedOnDataendthesession,
   updateUserTypes,
-  forgotPassword,
+  forgotPassword, 
   resetPassword,
   updateUserProfile,
   deleteAllTherapists,
-  updateUserIsRating,
+  updateUserIsRating
 };

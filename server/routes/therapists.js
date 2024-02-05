@@ -40,7 +40,6 @@ router.get('/score/:assessmentId/:groupid/:assessmentScore', therapistController
 router.get('/:id', therapistController.getTherapistById);
 
 router.post('/', therapistController.createTherapist);
-router.post('/reset-password', therapistController.resetPassword);
 router.post('/full', therapistController.createTherapistfull);
 
 // Define the route for therapist password creation

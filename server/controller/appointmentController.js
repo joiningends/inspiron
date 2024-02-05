@@ -10,13 +10,13 @@ const fs = require("fs");
 const util = require("util");
 const writeFile = util.promisify(fs.writeFile);
 const cron = require("node-cron");
-const PDFDocument = require("pdfkit");
+const PDFDocument = require('pdfkit');
 const moment = require("moment");
 const {
-  sendWhatsAppMessage,
-  sendWhatsAppMessageMedia,
+  sendWhatsAppMessage,sendWhatsAppMessageMedia,
   getSentMessageCount,
   getSentMessages,
+  
 } = require("../controller/whatsappcontrooler");
 
 // Function to update the Sessionnumber for the user
@@ -80,73 +80,6 @@ exports.createAppointment = async (req, res) => {
             .json({ error: "The requested time slot is already booked" });
         }
 
-        const therapistSessions = therapist.sessions || [];
-        const currentDate = new Date(); // Get the current date and time
-        const currentTime = new Date().toLocaleTimeString("en-US", {
-          hour12: false,
-        });
-        console.log(currentTime);
-
-        const filteredSessions = therapistSessions
-          .flatMap(session => {
-            const sessionDate = new Date(session.date);
-
-            console.log("Session:", session); // Add this line for debugging
-
-            if (session && Array.isArray(session.timeSlots)) {
-              if (sessionDate > currentDate) {
-                // Include all time slots for future sessions
-                return session.timeSlots.map(timeSlot => ({
-                  date: session.date,
-                  timeSlot,
-                }));
-              } else if (
-                sessionDate.toDateString() === currentDate.toDateString()
-              ) {
-                // Include time slots for today's session and check the current time
-                const validTimeSlots = session.timeSlots
-                  .filter(timeSlot => timeSlot.startTime >= currentTime)
-                  .map(timeSlot => ({
-                    date: session.date,
-                    timeSlot,
-                  }));
-
-                return validTimeSlots;
-              }
-            } else if (session && session.timeSlot) {
-              // Corrected the property name to session.timeSlots
-              if (
-                new Date(`${session.date} ${session.timeSlot.startTime}`) >
-                currentDate
-              ) {
-                return [{ date: session.date, timeSlot: session.timeSlot }];
-              }
-            }
-            return null;
-          })
-          .filter(Boolean);
-
-        console.log("Filtered Sessions:", filteredSessions);
-
-        const selectedSlotValid = filteredSessions.some(session => {
-          return (
-            session.date === dateTime &&
-            session.timeSlot &&
-            session.timeSlot.startTime <= startTime &&
-            session.timeSlot.endTime >= endTime
-          );
-        });
-
-        console.log(selectedSlotValid);
-
-        if (!selectedSlotValid) {
-          return res
-            .status(409)
-            .json({
-              error: "Please refresh your page to book an appointment.",
-            });
-        }
-
         const newAppointment = new Appointment({
           therapist: therapistId,
           meetlink: therapist.meetLink,
@@ -177,7 +110,7 @@ exports.createAppointment = async (req, res) => {
         user.priceHistory.push(currentSessionDetails);
 
         await user.save();
-
+        const therapistSessions = therapist.sessions || [];
         console.log(therapistSessions);
         // Extract appointment date, start time, and end time
         const appointmentDate = newAppointment.dateTime;
@@ -331,14 +264,14 @@ exports.createAppointment = async (req, res) => {
 
         if (existingCoin) {
           // Update the existing coin balance
-          existingCoin.coinBalance = 0;
+          existingCoin.coinBalance = existingCoin.coinBalance - 1;
           existingCoin.avarage = calculatedAverage;
           await existingCoin.save();
         } else {
           const coinEntry = new Coin({
             user: userId,
             expriencelevel: therapist.level,
-            coinBalance: 0,
+            coinBalance: -1,
             groupid: user.groupid,
             avarage: calculatedAverage,
           });
@@ -372,261 +305,14 @@ exports.createAppointment = async (req, res) => {
           Thank you for successfully booking an appointment with ${therapist.name} on ${appointmentDateonly} at ${startTime}. Please log into the application 5 mins before the start of the session.\n
           Thanks,\n
           Team Inspiron
-Dear ${user.name},
-
-We are pleased to confirm your upcoming appointment with our dedicated mental health expert ${therapist.name} at Inspiron.
-
-Details:
-Date: ${appointmentDateonly}
-Time: ${appointmentTime}
-Location: ${meetLink}
-Payment Status: ${paymentStatus}
-
-If you have any questions or need to reschedule, please don't hesitate to contact us at .
-We look forward to supporting you on your journey to well-being.
-
-Best regards,
-Inspiron Psychological Well-being Centre
         `;
 
         sendEmailfor(user.email, "Appointment Confirmation", emailMessage);
 
         return res.status(201).json(populatedAppointment);
-      } else {
-        const priceDetails = await Price.findById(priceId).select(
-          "level session sessionPrice discountPrice"
-        );
-
-        if (!priceDetails) {
-          throw new Error("Price details not found");
-        }
-        const negativeCoinBalance = await Coin.findOne({
-          user: userId,
-          coinBalance: { $lt: 0, $ne: 0 },
-        });
-
-        if (negativeCoinBalance) {
-          const { coinBalance, avarage, expriencelevel } = negativeCoinBalance;
-
-          const product = -coinBalance * avarage;
-
-          return res.status(400).json({
-            message: `Dear customer, please pay the amount: ${product}`,
-            userId: userId,
-            expriencelevel: expriencelevel,
-          });
-        }
-
-        // Continue with booking logic for users without groupid and without company payment
-        // Check if the appointment slot is available
-        const existingAppointment = await Appointment.findOne({
-          therapist: therapistId,
-          dateTime,
-          startTime: { $lte: endTime },
-          endTime: { $gte: startTime },
-        });
-
-        if (existingAppointment) {
-          return res
-            .status(409)
-            .json({ error: "The requested time slot is already booked" });
-        }
-        const therapistSessions = therapist.sessions || [];
-        const currentDate = new Date(); // Get the current date and time
-        const currentTime = new Date().toLocaleTimeString("en-US", {
-          hour12: false,
-        });
-        console.log(currentTime);
-
-        const filteredSessions = therapistSessions
-          .flatMap(session => {
-            const sessionDate = new Date(session.date);
-
-            console.log("Session:", session); // Add this line for debugging
-
-            if (session && Array.isArray(session.timeSlots)) {
-              if (sessionDate > currentDate) {
-                // Include all time slots for future sessions
-                return session.timeSlots.map(timeSlot => ({
-                  date: session.date,
-                  timeSlot,
-                }));
-              } else if (
-                sessionDate.toDateString() === currentDate.toDateString()
-              ) {
-                // Include time slots for today's session and check the current time
-                const validTimeSlots = session.timeSlots
-                  .filter(timeSlot => timeSlot.startTime >= currentTime)
-                  .map(timeSlot => ({
-                    date: session.date,
-                    timeSlot,
-                  }));
-
-                return validTimeSlots;
-              }
-            } else if (session && session.timeSlot) {
-              // Corrected the property name to session.timeSlots
-              if (
-                new Date(`${session.date} ${session.timeSlot.startTime}`) >
-                currentDate
-              ) {
-                return [{ date: session.date, timeSlot: session.timeSlot }];
-              }
-            }
-            return null;
-          })
-          .filter(Boolean);
-
-        console.log("Filtered Sessions:", filteredSessions);
-
-        const selectedSlotValid = filteredSessions.some(session => {
-          return (
-            session.date === dateTime &&
-            session.timeSlot &&
-            session.timeSlot.startTime <= startTime &&
-            session.timeSlot.endTime >= endTime
-          );
-        });
-
-        console.log(selectedSlotValid);
-
-        if (!selectedSlotValid) {
-          return res
-            .status(409)
-            .json({
-              error: "Please refresh your page to book an appointment.",
-            });
-        }
-
-        const newAppointment = new Appointment({
-          therapist: therapistId,
-          meetlink: therapist.meetLink,
-          user: userId,
-          dateTime,
-          startTime,
-          endTime,
-          sessionMode,
-        });
-
-        const currentSessionDetails = {
-          appointmentId: newAppointment._id,
-          priceId: priceId,
-          level: priceDetails.level,
-          session: priceDetails.session,
-          sessionPrice: priceDetails.sessionPrice,
-          discountPrice: priceDetails.discountPrice,
-        };
-        user.priceHistory.push(currentSessionDetails);
-        await user.save();
-
-        let calculatedAverage;
-        let totalSessions;
-        let totalDiscountPriceIncludingAppointment = 0;
-        let packageAmount;
-
-        const therapistLevel = therapist.level
-          ? therapist.level.toString()
-          : null;
-
-        const userPriceHistory = user.priceHistory.filter(priceDetails => {
-          const level = priceDetails.level
-            ? priceDetails.level.toString()
-            : null;
-
-          if (therapistLevel && level) {
-            return level === therapistLevel;
-          }
-
-          return false;
-        });
-
-        console.log(
-          "User Price History Matching Therapist Level:",
-          userPriceHistory
-        );
-
-        const totalDiscountPrice = userPriceHistory.reduce(
-          (sum, priceDetails) => {
-            if (priceDetails.discountPrice) {
-              return sum + priceDetails.discountPrice;
-            }
-            return sum;
-          },
-          0
-        );
-
-        console.log("Total Discount Price:", totalDiscountPrice);
-
-        totalDiscountPriceIncludingAppointment = totalDiscountPrice;
-        console.log(
-          "Total Discount Price Including Appointment:",
-          totalDiscountPriceIncludingAppointment
-        );
-
-        const totalSessionsInPriceHistory = userPriceHistory.reduce(
-          (sum, priceDetails) => {
-            if (priceDetails.session) {
-              return sum + priceDetails.session;
-            }
-            return sum;
-          },
-          0
-        );
-
-        totalSessions = totalSessionsInPriceHistory;
-        console.log("Total Sessions:", totalSessions);
-        // Calculate the average price
-        calculatedAverage =
-          Math.round(
-            (totalDiscountPriceIncludingAppointment / totalSessions) * 100
-          ) / 100;
-
-        // Save the updated appointment
-
-        const savedAppointment = await newAppointment.save();
-        await updateSessionNumber(userId, therapistId);
-
-        await user.save();
-
-        // Check if the user has a coin balance for this level
-        const existingCoin = await Coin.findOne({
-          user: userId,
-          expriencelevel: therapist.level,
-        });
-        if (existingCoin) {
-          // Check if the user has a coin balance for this level
-          if (existingCoin.coinBalance > 0) {
-            savedAppointment.coinpositive = true;
-            await savedAppointment.save();
-          }
-        }
-
-        if (existingCoin) {
-          // Update the existing coin balance
-          existingCoin.coinBalance = existingCoin.coinBalance - 1;
-          existingCoin.avarage = calculatedAverage;
-          await existingCoin.save();
-        } else {
-          const coinEntry = new Coin({
-            user: userId,
-            expriencelevel: therapist.level,
-            coinBalance: -1,
-            avarage: calculatedAverage, // Set average here if needed
-            userName: user.name,
-          });
-
-          await coinEntry.save();
-        }
-
-        const populatedAppointment = await Appointment.findById(
-          savedAppointment._id
-        )
-          .populate("user", "name age gender")
-          .exec();
-
-        return res.status(201).json(populatedAppointment);
       }
     } else {
+      
       const priceDetails = await Price.findById(priceId).select(
         "level session sessionPrice discountPrice"
       );
@@ -636,99 +322,38 @@ Inspiron Psychological Well-being Centre
       }
       const negativeCoinBalance = await Coin.findOne({
         user: userId,
-        coinBalance: { $lt: 0, $ne: 0 },
+        coinBalance: { $lt: 0, $ne: 0 }, 
       });
+      
+  
 
-      if (negativeCoinBalance) {
-        const { coinBalance, avarage, expriencelevel } = negativeCoinBalance;
 
-        const product = -coinBalance * avarage;
+if (negativeCoinBalance) {
+  const { coinBalance, avarage, expriencelevel } = negativeCoinBalance;
 
-        return res.status(400).json({
-          message: `Dear customer, please pay the amount: ${product}`,
-          userId: userId,
-          expriencelevel: expriencelevel,
-        });
-      }
+  
+  const product = (-coinBalance) * avarage;
 
-      // Continue with booking logic for users without groupid and without company payment
-      // Check if the appointment slot is available
-      const existingAppointment = await Appointment.findOne({
-        therapist: therapistId,
-        dateTime,
-        startTime: { $lte: endTime },
-        endTime: { $gte: startTime },
-      });
+  return res.status(400).json({
+    message: `Dear customer, please pay the amount: ${product}`,
+    userId: userId,
+    expriencelevel: expriencelevel,
+  });
+}
 
-      if (existingAppointment) {
-        return res
-          .status(409)
-          .json({ error: "The requested time slot is already booked" });
-      }
-      const therapistSessions = therapist.sessions || [];
-      const currentDate = new Date(); // Get the current date and time
-      const currentTime = new Date().toLocaleTimeString("en-US", {
-        hour12: false,
-      });
-      console.log(currentTime);
+// Continue with booking logic for users without groupid and without company payment
+// Check if the appointment slot is available
+const existingAppointment = await Appointment.findOne({
+  therapist: therapistId,
+  dateTime,
+  startTime: { $lte: endTime },
+  endTime: { $gte: startTime },
+});
 
-      const filteredSessions = therapistSessions
-        .flatMap(session => {
-          const sessionDate = new Date(session.date);
+if (existingAppointment) {
+  return res.status(409).json({ error: 'The requested time slot is already booked' });
+}
 
-          console.log("Session:", session); // Add this line for debugging
-
-          if (session && Array.isArray(session.timeSlots)) {
-            if (sessionDate > currentDate) {
-              // Include all time slots for future sessions
-              return session.timeSlots.map(timeSlot => ({
-                date: session.date,
-                timeSlot,
-              }));
-            } else if (
-              sessionDate.toDateString() === currentDate.toDateString()
-            ) {
-              // Include time slots for today's session and check the current time
-              const validTimeSlots = session.timeSlots
-                .filter(timeSlot => timeSlot.startTime >= currentTime)
-                .map(timeSlot => ({
-                  date: session.date,
-                  timeSlot,
-                }));
-
-              return validTimeSlots;
-            }
-          } else if (session && session.timeSlot) {
-            // Corrected the property name to session.timeSlots
-            if (
-              new Date(`${session.date} ${session.timeSlot.startTime}`) >
-              currentDate
-            ) {
-              return [{ date: session.date, timeSlot: session.timeSlot }];
-            }
-          }
-          return null;
-        })
-        .filter(Boolean);
-
-      console.log("Filtered Sessions:", filteredSessions);
-
-      const selectedSlotValid = filteredSessions.some(session => {
-        return (
-          session.date === dateTime &&
-          session.timeSlot &&
-          session.timeSlot.startTime <= startTime &&
-          session.timeSlot.endTime >= endTime
-        );
-      });
-
-      console.log(selectedSlotValid);
-
-      if (!selectedSlotValid) {
-        return res
-          .status(409)
-          .json({ error: "Please refresh your page to book an appointment." });
-      }
 
       const newAppointment = new Appointment({
         therapist: therapistId,
@@ -750,7 +375,7 @@ Inspiron Psychological Well-being Centre
       };
       user.priceHistory.push(currentSessionDetails);
       await user.save();
-
+     
       let calculatedAverage;
       let totalSessions;
       let totalDiscountPriceIncludingAppointment = 0;
@@ -761,7 +386,9 @@ Inspiron Psychological Well-being Centre
         : null;
 
       const userPriceHistory = user.priceHistory.filter(priceDetails => {
-        const level = priceDetails.level ? priceDetails.level.toString() : null;
+        const level = priceDetails.level
+          ? priceDetails.level.toString()
+          : null;
 
         if (therapistLevel && level) {
           return level === therapistLevel;
@@ -816,7 +443,9 @@ Inspiron Psychological Well-being Centre
       const savedAppointment = await newAppointment.save();
       await updateSessionNumber(userId, therapistId);
 
+      
       await user.save();
+      
 
       // Check if the user has a coin balance for this level
       const existingCoin = await Coin.findOne({
@@ -841,7 +470,7 @@ Inspiron Psychological Well-being Centre
           user: userId,
           expriencelevel: therapist.level,
           coinBalance: -1,
-          avarage: calculatedAverage, // Set average here if needed
+          avarage: 0, // Set average here if needed
           userName: user.name,
         });
 
@@ -942,72 +571,6 @@ exports.createAppointmentbytherapist = async (req, res) => {
             .status(409)
             .json({ error: "The requested time slot is already booked" });
         }
-        const therapistSessions = therapist.sessions || [];
-        const currentDate = new Date(); // Get the current date and time
-        const currentTime = new Date().toLocaleTimeString("en-US", {
-          hour12: false,
-        });
-        console.log(currentTime);
-
-        const filteredSessions = therapistSessions
-          .flatMap(session => {
-            const sessionDate = new Date(session.date);
-
-            console.log("Session:", session); // Add this line for debugging
-
-            if (session && Array.isArray(session.timeSlots)) {
-              if (sessionDate > currentDate) {
-                // Include all time slots for future sessions
-                return session.timeSlots.map(timeSlot => ({
-                  date: session.date,
-                  timeSlot,
-                }));
-              } else if (
-                sessionDate.toDateString() === currentDate.toDateString()
-              ) {
-                // Include time slots for today's session and check the current time
-                const validTimeSlots = session.timeSlots
-                  .filter(timeSlot => timeSlot.startTime >= currentTime)
-                  .map(timeSlot => ({
-                    date: session.date,
-                    timeSlot,
-                  }));
-
-                return validTimeSlots;
-              }
-            } else if (session && session.timeSlot) {
-              // Corrected the property name to session.timeSlots
-              if (
-                new Date(`${session.date} ${session.timeSlot.startTime}`) >
-                currentDate
-              ) {
-                return [{ date: session.date, timeSlot: session.timeSlot }];
-              }
-            }
-            return null;
-          })
-          .filter(Boolean);
-
-        console.log("Filtered Sessions:", filteredSessions);
-
-        const selectedSlotValid = filteredSessions.some(session => {
-          return (
-            session.date === dateTime &&
-            session.timeSlot &&
-            session.timeSlot.startTime <= startTime &&
-            session.timeSlot.endTime >= endTime
-          );
-        });
-
-        console.log(selectedSlotValid);
-
-        if (!selectedSlotValid) {
-          return res
-            .status(409)
-            .json({
-              error: "Please refresh your page to book an appointment.",
-            });
-        }
 
         const newAppointment = new Appointment({
           therapist: therapistId,
@@ -1038,7 +601,7 @@ exports.createAppointmentbytherapist = async (req, res) => {
         user.priceHistory.push(currentSessionDetails);
 
         await user.save();
-
+        const therapistSessions = therapist.sessions || [];
         console.log(therapistSessions);
         // Extract appointment date, start time, and end time
         const appointmentDate = newAppointment.dateTime;
@@ -1192,346 +755,8 @@ exports.createAppointmentbytherapist = async (req, res) => {
 
         if (existingCoin) {
           // Update the existing coin balance
-          existingCoin.coinBalance = 0;
-          existingCoin.avarage = calculatedAverage;
-          await existingCoin.save();
-        } else {
-          const coinEntry = new Coin({
-            user: userId,
-            expriencelevel: therapist.level,
-            coinBalance: 0,
-            groupid: user.groupid,
-            avarage: calculatedAverage,
-          });
-
-          await coinEntry.save();
-        }
-
-        const populatedAppointment = await Appointment.findById(
-          savedAppointment._id
-        )
-          .populate("user", "name age gender")
-          .exec();
-
-        const therapistName = therapist.name;
-
-        const dateObject = new Date(appointmentDate);
-
-        // Extract the date part in YYYY-MM-DD format
-        const appointmentDateonly = dateObject.toISOString().split("T")[0];
-
-        sendWhatsAppMessage(
-          user.mobile,
-          `
-         
-          
-Hi ${user.name},
-        
-This is Inspiron. Your upcoming appointment is confirmed!
-📅 Date: ${appointmentDateonly}
-🕒 Time:  ${appointmentStartTime}
-🥼 Mental Health Expert: ${therapistName}
-📍 Location: ${meetLink}
-        
-Payment Status: Paid
-Reply 'CONFIRMED' to acknowledge or call for any changes.
-Thank you,
-Inspiron Team 🌈💚
-        `
-        );
-
-        const emailMessage = `
-          
-Dear ${user.name},
-
-We are pleased to confirm your upcoming appointment with our dedicated mental health expert ${therapistName} at Inspiron.
-
-Details:
-Date: ${appointmentDateonly}
-Time: ${appointmentStartTime}
-Location: ${meetLink}
-Payment Status: Paid
-
-If you have any questions or need to reschedule, please don't hesitate to contact us at .
-We look forward to supporting you on your journey to well-being.
-
-Best regards,
-Inspiron Psychological Well-being Centre
-`;
-        sendEmailfortherapistbook(
-          user.email,
-          "Appointment Confirmation",
-          emailMessage
-        );
-
-        return res.status(201).json(populatedAppointment);
-      } else {
-        // Continue with booking logic for users without groupid and without company payment
-        // Check if the appointment slot is available
-        const priceDetails = await Price.findById(priceId).select(
-          "level session sessionPrice discountPrice"
-        );
-
-        if (!priceDetails) {
-          throw new Error("Price details not found");
-        }
-
-        const existingAppointment = await Appointment.findOne({
-          therapist: therapistId,
-          dateTime,
-          startTime: { $lte: endTime },
-          endTime: { $gte: startTime },
-        });
-
-        if (existingAppointment) {
-          return res
-            .status(409)
-            .json({ error: "The requested time slot is already booked" });
-        }
-        const therapistSessions = therapist.sessions || [];
-        const currentDate = new Date(); // Get the current date and time
-        const currentTime = new Date().toLocaleTimeString("en-US", {
-          hour12: false,
-        });
-        console.log(currentTime);
-
-        const filteredSessions = therapistSessions
-          .flatMap(session => {
-            const sessionDate = new Date(session.date);
-
-            console.log("Session:", session); // Add this line for debugging
-
-            if (session && Array.isArray(session.timeSlots)) {
-              if (sessionDate > currentDate) {
-                // Include all time slots for future sessions
-                return session.timeSlots.map(timeSlot => ({
-                  date: session.date,
-                  timeSlot,
-                }));
-              } else if (
-                sessionDate.toDateString() === currentDate.toDateString()
-              ) {
-                // Include time slots for today's session and check the current time
-                const validTimeSlots = session.timeSlots
-                  .filter(timeSlot => timeSlot.startTime >= currentTime)
-                  .map(timeSlot => ({
-                    date: session.date,
-                    timeSlot,
-                  }));
-
-                return validTimeSlots;
-              }
-            } else if (session && session.timeSlot) {
-              // Corrected the property name to session.timeSlots
-              if (
-                new Date(`${session.date} ${session.timeSlot.startTime}`) >
-                currentDate
-              ) {
-                return [{ date: session.date, timeSlot: session.timeSlot }];
-              }
-            }
-            return null;
-          })
-          .filter(Boolean);
-
-        console.log("Filtered Sessions:", filteredSessions);
-
-        const selectedSlotValid = filteredSessions.some(session => {
-          return (
-            session.date === dateTime &&
-            session.timeSlot &&
-            session.timeSlot.startTime <= startTime &&
-            session.timeSlot.endTime >= endTime
-          );
-        });
-
-        console.log(selectedSlotValid);
-
-        if (!selectedSlotValid) {
-          return res
-            .status(409)
-            .json({
-              error: "Please refresh your page to book an appointment.",
-            });
-        }
-
-        const newAppointment = new Appointment({
-          therapist: therapistId,
-          meetlink: therapist.meetLink,
-          price: therapist.expriencelevel, // Store the price from priceDetails
-          session: priceDetails.session,
-          sessionPrice: priceDetails.sessionPrice, // Update the session price
-          discountPrice: priceDetails.discountPrice,
-          level: priceDetails.level,
-          user: userId,
-          dateTime,
-          startTime,
-          endTime,
-          sessionMode,
-          message: priceDetails.discountPrice,
-          paymentstatus: "Offline",
-          paymentMethod: "Book by Therapist",
-        });
-
-        // Update the appointment's price, sessions, and discounted price
-
-        const currentSessionDetails = {
-          appointmentId: newAppointment._id,
-          priceId: priceId,
-          level: priceDetails.level,
-          session: priceDetails.session,
-          sessionPrice: priceDetails.sessionPrice, // Store the current session price
-          discountPrice: priceDetails.discountPrice,
-        };
-        user.priceHistory.push(currentSessionDetails);
-        await user.save();
-
-        console.log(therapistSessions);
-        // Extract appointment date, start time, and end time
-        const appointmentDate = newAppointment.dateTime;
-        const appointmentStartTime = newAppointment.startTime;
-        const appointmentEndTime = newAppointment.endTime;
-        console.log("Therapist Sessions Before Filtering:");
-        therapistSessions.forEach(session => {
-          console.log(`Date: ${session.date}`);
-          session.timeSlots.forEach((timeSlot, index) => {
-            console.log(`Time Slot ${index + 1}:`);
-            console.log(`  Start Time: ${timeSlot.startTime}`);
-            console.log(`  End Time: ${timeSlot.endTime}`);
-          });
-        });
-        // Filter and remove the matching therapist session based on date and start time
-        // Filter and remove the matching therapist session based on date and start time
-        // Filter and remove the matching therapist session's start time
-        const updatedTherapistSessions = therapistSessions.filter(session => {
-          const sessionDate = new Date(session.date); // Assuming session.date is a string in ISO format
-          const matchingTimeSlotIndex = session.timeSlots.findIndex(
-            timeSlot => timeSlot.startTime === appointmentStartTime
-          );
-
-          if (
-            sessionDate.toDateString() === appointmentDate.toDateString() &&
-            matchingTimeSlotIndex !== -1
-          ) {
-            // Remove the matching start time from the session's time slots
-            session.timeSlots.splice(matchingTimeSlotIndex, 1);
-            return session.timeSlots.length > 0; // Only return sessions with remaining time slots
-          }
-          return true; // Keep other sessions as they are
-        });
-
-        // Filter out sessions with no time slots left
-        const updatedTherapistSessionsWithoutEmptySessions =
-          updatedTherapistSessions.filter(
-            session => session.timeSlots.length > 0
-          );
-
-        console.log("Therapist Sessions After Filtering:");
-        updatedTherapistSessions.forEach(session => {
-          console.log(`Date: ${session.date}`);
-          session.timeSlots.forEach((timeSlot, index) => {
-            console.log(`Time Slot ${index + 1}:`);
-            console.log(`  Start Time: ${timeSlot.startTime}`);
-            console.log(`  End Time: ${timeSlot.endTime}`);
-          });
-        });
-        const filter = { _id: therapist._id }; // Replace with the appropriate query
-
-        const update = {
-          sessions: updatedTherapistSessionsWithoutEmptySessions,
-        };
-
-        const options = { new: true }; // To return the updated document
-
-        const updatedTherapistInDB = await Therapist.findOneAndUpdate(
-          filter,
-          update,
-          options
-        );
-
-        if (!updatedTherapistInDB) {
-          console.log("Failed to update therapist sessions in the database");
-          return res
-            .status(500)
-            .json({ error: "Failed to update therapist sessions" });
-        }
-
-        let calculatedAverage;
-        let totalSessions;
-        let totalDiscountPriceIncludingAppointment = 0;
-        let packageAmount;
-
-        const therapistLevel = therapist.level
-          ? therapist.level.toString()
-          : null;
-
-        const userPriceHistory = user.priceHistory.filter(priceDetails => {
-          const level = priceDetails.level
-            ? priceDetails.level.toString()
-            : null;
-
-          if (therapistLevel && level) {
-            return level === therapistLevel;
-          }
-
-          return false;
-        });
-
-        console.log(
-          "User Price History Matching Therapist Level:",
-          userPriceHistory
-        );
-
-        const totalDiscountPrice = userPriceHistory.reduce(
-          (sum, priceDetails) => {
-            if (priceDetails.discountPrice) {
-              return sum + priceDetails.discountPrice;
-            }
-            return sum;
-          },
-          0
-        );
-
-        console.log("Total Discount Price:", totalDiscountPrice);
-
-        totalDiscountPriceIncludingAppointment = totalDiscountPrice;
-        console.log(
-          "Total Discount Price Including Appointment:",
-          totalDiscountPriceIncludingAppointment
-        );
-
-        const totalSessionsInPriceHistory = userPriceHistory.reduce(
-          (sum, priceDetails) => {
-            if (priceDetails.session) {
-              return sum + priceDetails.session;
-            }
-            return sum;
-          },
-          0
-        );
-
-        totalSessions = totalSessionsInPriceHistory;
-        console.log("Total Sessions:", totalSessions);
-        // Calculate the average price
-        calculatedAverage =
-          Math.round(
-            (totalDiscountPriceIncludingAppointment / totalSessions) * 100
-          ) / 100;
-        const savedAppointment = await newAppointment.save();
-        await updateSessionNumber(userId, therapistId);
-
-        // Check if the user has a coin balance for this level
-        const existingCoin = await Coin.findOne({
-          user: userId,
-          expriencelevel: therapist.level,
-        });
-
-        if (existingCoin) {
-          // Update the existing coin balance
           existingCoin.coinBalance = existingCoin.coinBalance - 1;
-          if (existingCoin.coinBalance < 0) {
-            existingCoin.avarage = calculatedAverage; // Update the average if negative
-          }
+          existingCoin.avarage = calculatedAverage;
           await existingCoin.save();
         } else {
           const coinEntry = new Coin({
@@ -1541,6 +766,7 @@ Inspiron Psychological Well-being Centre
             groupid: user.groupid,
             avarage: calculatedAverage,
           });
+
           await coinEntry.save();
         }
 
@@ -1583,320 +809,249 @@ Inspiron Psychological Well-being Centre
 
         return res.status(201).json(populatedAppointment);
       }
+    }
+
+    // Continue with booking logic for users without groupid and without company payment
+    // Check if the appointment slot is available
+    const priceDetails = await Price.findById(priceId).select(
+      "level session sessionPrice discountPrice"
+    );
+
+    if (!priceDetails) {
+      throw new Error("Price details not found");
+    }
+
+    const existingAppointment = await Appointment.findOne({
+      therapist: therapistId,
+      dateTime,
+      startTime: { $lte: endTime },
+      endTime: { $gte: startTime },
+    });
+
+    if (existingAppointment) {
+      return res
+        .status(409)
+        .json({ error: "The requested time slot is already booked" });
+    }
+
+    const newAppointment = new Appointment({
+      therapist: therapistId,
+      meetlink: therapist.meetLink,
+      price: therapist.expriencelevel, // Store the price from priceDetails
+      session: priceDetails.session,
+      sessionPrice: priceDetails.sessionPrice, // Update the session price
+      discountPrice: priceDetails.discountPrice,
+      level: priceDetails.level,
+      user: userId,
+      dateTime,
+      startTime,
+      endTime,
+      sessionMode,
+      message: priceDetails.discountPrice,
+      paymentstatus: "Offline",
+      paymentMethod: "Book by Therapist",
+    });
+
+    // Update the appointment's price, sessions, and discounted price
+
+    const currentSessionDetails = {
+      appointmentId: newAppointment._id,
+      priceId: priceId,
+      level: priceDetails.level,
+      session: priceDetails.session,
+      sessionPrice: priceDetails.sessionPrice, // Store the current session price
+      discountPrice: priceDetails.discountPrice,
+    };
+    user.priceHistory.push(currentSessionDetails);
+    await user.save();
+    const therapistSessions = therapist.sessions || [];
+    console.log(therapistSessions);
+    // Extract appointment date, start time, and end time
+    const appointmentDate = newAppointment.dateTime;
+    const appointmentStartTime = newAppointment.startTime;
+    const appointmentEndTime = newAppointment.endTime;
+    console.log("Therapist Sessions Before Filtering:");
+    therapistSessions.forEach(session => {
+      console.log(`Date: ${session.date}`);
+      session.timeSlots.forEach((timeSlot, index) => {
+        console.log(`Time Slot ${index + 1}:`);
+        console.log(`  Start Time: ${timeSlot.startTime}`);
+        console.log(`  End Time: ${timeSlot.endTime}`);
+      });
+    });
+    // Filter and remove the matching therapist session based on date and start time
+    // Filter and remove the matching therapist session based on date and start time
+    // Filter and remove the matching therapist session's start time
+    const updatedTherapistSessions = therapistSessions.filter(session => {
+      const sessionDate = new Date(session.date); // Assuming session.date is a string in ISO format
+      const matchingTimeSlotIndex = session.timeSlots.findIndex(
+        timeSlot => timeSlot.startTime === appointmentStartTime
+      );
+
+      if (
+        sessionDate.toDateString() === appointmentDate.toDateString() &&
+        matchingTimeSlotIndex !== -1
+      ) {
+        // Remove the matching start time from the session's time slots
+        session.timeSlots.splice(matchingTimeSlotIndex, 1);
+        return session.timeSlots.length > 0; // Only return sessions with remaining time slots
+      }
+      return true; // Keep other sessions as they are
+    });
+
+    // Filter out sessions with no time slots left
+    const updatedTherapistSessionsWithoutEmptySessions =
+      updatedTherapistSessions.filter(session => session.timeSlots.length > 0);
+
+    console.log("Therapist Sessions After Filtering:");
+    updatedTherapistSessions.forEach(session => {
+      console.log(`Date: ${session.date}`);
+      session.timeSlots.forEach((timeSlot, index) => {
+        console.log(`Time Slot ${index + 1}:`);
+        console.log(`  Start Time: ${timeSlot.startTime}`);
+        console.log(`  End Time: ${timeSlot.endTime}`);
+      });
+    });
+    const filter = { _id: therapist._id }; // Replace with the appropriate query
+
+    const update = {
+      sessions: updatedTherapistSessionsWithoutEmptySessions,
+    };
+
+    const options = { new: true }; // To return the updated document
+
+    const updatedTherapistInDB = await Therapist.findOneAndUpdate(
+      filter,
+      update,
+      options
+    );
+
+    if (!updatedTherapistInDB) {
+      console.log("Failed to update therapist sessions in the database");
+      return res
+        .status(500)
+        .json({ error: "Failed to update therapist sessions" });
+    }
+
+    let calculatedAverage;
+    let totalSessions;
+    let totalDiscountPriceIncludingAppointment = 0;
+    let packageAmount;
+
+    const therapistLevel = therapist.level ? therapist.level.toString() : null;
+
+    const userPriceHistory = user.priceHistory.filter(priceDetails => {
+      const level = priceDetails.level ? priceDetails.level.toString() : null;
+
+      if (therapistLevel && level) {
+        return level === therapistLevel;
+      }
+
+      return false;
+    });
+
+    console.log(
+      "User Price History Matching Therapist Level:",
+      userPriceHistory
+    );
+
+    const totalDiscountPrice = userPriceHistory.reduce((sum, priceDetails) => {
+      if (priceDetails.discountPrice) {
+        return sum + priceDetails.discountPrice;
+      }
+      return sum;
+    }, 0);
+
+    console.log("Total Discount Price:", totalDiscountPrice);
+
+    totalDiscountPriceIncludingAppointment = totalDiscountPrice;
+    console.log(
+      "Total Discount Price Including Appointment:",
+      totalDiscountPriceIncludingAppointment
+    );
+
+    const totalSessionsInPriceHistory = userPriceHistory.reduce(
+      (sum, priceDetails) => {
+        if (priceDetails.session) {
+          return sum + priceDetails.session;
+        }
+        return sum;
+      },
+      0
+    );
+
+    totalSessions = totalSessionsInPriceHistory;
+    console.log("Total Sessions:", totalSessions);
+    // Calculate the average price
+    calculatedAverage =
+      Math.round(
+        (totalDiscountPriceIncludingAppointment / totalSessions) * 100
+      ) / 100;
+    const savedAppointment = await newAppointment.save();
+    await updateSessionNumber(userId, therapistId);
+
+    // Check if the user has a coin balance for this level
+    const existingCoin = await Coin.findOne({
+      user: userId,
+      expriencelevel: therapist.level,
+    });
+
+    if (existingCoin) {
+      // Update the existing coin balance
+      existingCoin.coinBalance = existingCoin.coinBalance - 1;
+      if (existingCoin.coinBalance < 0) {
+        existingCoin.avarage = calculatedAverage; // Update the average if negative
+      }
+      await existingCoin.save();
     } else {
-      // Continue with booking logic for users without groupid and without company payment
-      // Check if the appointment slot is available
-      const priceDetails = await Price.findById(priceId).select(
-        "level session sessionPrice discountPrice"
-      );
-
-      if (!priceDetails) {
-        throw new Error("Price details not found");
-      }
-
-      const existingAppointment = await Appointment.findOne({
-        therapist: therapistId,
-        dateTime,
-        startTime: { $lte: endTime },
-        endTime: { $gte: startTime },
-      });
-
-      if (existingAppointment) {
-        return res
-          .status(409)
-          .json({ error: "The requested time slot is already booked" });
-      }
-      const therapistSessions = therapist.sessions || [];
-      const currentDate = new Date(); // Get the current date and time
-      const currentTime = new Date().toLocaleTimeString("en-US", {
-        hour12: false,
-      });
-      console.log(currentTime);
-
-      const filteredSessions = therapistSessions
-        .flatMap(session => {
-          const sessionDate = new Date(session.date);
-
-          console.log("Session:", session); // Add this line for debugging
-
-          if (session && Array.isArray(session.timeSlots)) {
-            if (sessionDate > currentDate) {
-              // Include all time slots for future sessions
-              return session.timeSlots.map(timeSlot => ({
-                date: session.date,
-                timeSlot,
-              }));
-            } else if (
-              sessionDate.toDateString() === currentDate.toDateString()
-            ) {
-              // Include time slots for today's session and check the current time
-              const validTimeSlots = session.timeSlots
-                .filter(timeSlot => timeSlot.startTime >= currentTime)
-                .map(timeSlot => ({
-                  date: session.date,
-                  timeSlot,
-                }));
-
-              return validTimeSlots;
-            }
-          } else if (session && session.timeSlot) {
-            // Corrected the property name to session.timeSlots
-            if (
-              new Date(`${session.date} ${session.timeSlot.startTime}`) >
-              currentDate
-            ) {
-              return [{ date: session.date, timeSlot: session.timeSlot }];
-            }
-          }
-          return null;
-        })
-        .filter(Boolean);
-
-      console.log("Filtered Sessions:", filteredSessions);
-
-      const selectedSlotValid = filteredSessions.some(session => {
-        return (
-          session.date === dateTime &&
-          session.timeSlot &&
-          session.timeSlot.startTime <= startTime &&
-          session.timeSlot.endTime >= endTime
-        );
-      });
-
-      console.log(selectedSlotValid);
-
-      if (!selectedSlotValid) {
-        return res
-          .status(409)
-          .json({ error: "Please refresh your page to book an appointment." });
-      }
-
-      const newAppointment = new Appointment({
-        therapist: therapistId,
-        meetlink: therapist.meetLink,
-        price: therapist.expriencelevel, // Store the price from priceDetails
-        session: priceDetails.session,
-        sessionPrice: priceDetails.sessionPrice, // Update the session price
-        discountPrice: priceDetails.discountPrice,
-        level: priceDetails.level,
-        user: userId,
-        dateTime,
-        startTime,
-        endTime,
-        sessionMode,
-        message: priceDetails.discountPrice,
-        paymentstatus: "Offline",
-        paymentMethod: "Book by Therapist",
-      });
-
-      // Update the appointment's price, sessions, and discounted price
-
-      const currentSessionDetails = {
-        appointmentId: newAppointment._id,
-        priceId: priceId,
-        level: priceDetails.level,
-        session: priceDetails.session,
-        sessionPrice: priceDetails.sessionPrice, // Store the current session price
-        discountPrice: priceDetails.discountPrice,
-      };
-      user.priceHistory.push(currentSessionDetails);
-      await user.save();
-
-      console.log(therapistSessions);
-      // Extract appointment date, start time, and end time
-      const appointmentDate = newAppointment.dateTime;
-      const appointmentStartTime = newAppointment.startTime;
-      const appointmentEndTime = newAppointment.endTime;
-      console.log("Therapist Sessions Before Filtering:");
-      therapistSessions.forEach(session => {
-        console.log(`Date: ${session.date}`);
-        session.timeSlots.forEach((timeSlot, index) => {
-          console.log(`Time Slot ${index + 1}:`);
-          console.log(`  Start Time: ${timeSlot.startTime}`);
-          console.log(`  End Time: ${timeSlot.endTime}`);
-        });
-      });
-      // Filter and remove the matching therapist session based on date and start time
-      // Filter and remove the matching therapist session based on date and start time
-      // Filter and remove the matching therapist session's start time
-      const updatedTherapistSessions = therapistSessions.filter(session => {
-        const sessionDate = new Date(session.date); // Assuming session.date is a string in ISO format
-        const matchingTimeSlotIndex = session.timeSlots.findIndex(
-          timeSlot => timeSlot.startTime === appointmentStartTime
-        );
-
-        if (
-          sessionDate.toDateString() === appointmentDate.toDateString() &&
-          matchingTimeSlotIndex !== -1
-        ) {
-          // Remove the matching start time from the session's time slots
-          session.timeSlots.splice(matchingTimeSlotIndex, 1);
-          return session.timeSlots.length > 0; // Only return sessions with remaining time slots
-        }
-        return true; // Keep other sessions as they are
-      });
-
-      // Filter out sessions with no time slots left
-      const updatedTherapistSessionsWithoutEmptySessions =
-        updatedTherapistSessions.filter(
-          session => session.timeSlots.length > 0
-        );
-
-      console.log("Therapist Sessions After Filtering:");
-      updatedTherapistSessions.forEach(session => {
-        console.log(`Date: ${session.date}`);
-        session.timeSlots.forEach((timeSlot, index) => {
-          console.log(`Time Slot ${index + 1}:`);
-          console.log(`  Start Time: ${timeSlot.startTime}`);
-          console.log(`  End Time: ${timeSlot.endTime}`);
-        });
-      });
-      const filter = { _id: therapist._id }; // Replace with the appropriate query
-
-      const update = {
-        sessions: updatedTherapistSessionsWithoutEmptySessions,
-      };
-
-      const options = { new: true }; // To return the updated document
-
-      const updatedTherapistInDB = await Therapist.findOneAndUpdate(
-        filter,
-        update,
-        options
-      );
-
-      if (!updatedTherapistInDB) {
-        console.log("Failed to update therapist sessions in the database");
-        return res
-          .status(500)
-          .json({ error: "Failed to update therapist sessions" });
-      }
-
-      let calculatedAverage;
-      let totalSessions;
-      let totalDiscountPriceIncludingAppointment = 0;
-      let packageAmount;
-
-      const therapistLevel = therapist.level
-        ? therapist.level.toString()
-        : null;
-
-      const userPriceHistory = user.priceHistory.filter(priceDetails => {
-        const level = priceDetails.level ? priceDetails.level.toString() : null;
-
-        if (therapistLevel && level) {
-          return level === therapistLevel;
-        }
-
-        return false;
-      });
-
-      console.log(
-        "User Price History Matching Therapist Level:",
-        userPriceHistory
-      );
-
-      const totalDiscountPrice = userPriceHistory.reduce(
-        (sum, priceDetails) => {
-          if (priceDetails.discountPrice) {
-            return sum + priceDetails.discountPrice;
-          }
-          return sum;
-        },
-        0
-      );
-
-      console.log("Total Discount Price:", totalDiscountPrice);
-
-      totalDiscountPriceIncludingAppointment = totalDiscountPrice;
-      console.log(
-        "Total Discount Price Including Appointment:",
-        totalDiscountPriceIncludingAppointment
-      );
-
-      const totalSessionsInPriceHistory = userPriceHistory.reduce(
-        (sum, priceDetails) => {
-          if (priceDetails.session) {
-            return sum + priceDetails.session;
-          }
-          return sum;
-        },
-        0
-      );
-
-      totalSessions = totalSessionsInPriceHistory;
-      console.log("Total Sessions:", totalSessions);
-      // Calculate the average price
-      calculatedAverage =
-        Math.round(
-          (totalDiscountPriceIncludingAppointment / totalSessions) * 100
-        ) / 100;
-      const savedAppointment = await newAppointment.save();
-      await updateSessionNumber(userId, therapistId);
-
-      // Check if the user has a coin balance for this level
-      const existingCoin = await Coin.findOne({
+      const coinEntry = new Coin({
         user: userId,
         expriencelevel: therapist.level,
+        coinBalance: -1,
+        groupid: user.groupid,
+        avarage: calculatedAverage,
       });
+      await coinEntry.save();
+    }
 
-      if (existingCoin) {
-        // Update the existing coin balance
-        existingCoin.coinBalance = existingCoin.coinBalance - 1;
-        if (existingCoin.coinBalance < 0) {
-          existingCoin.avarage = calculatedAverage; // Update the average if negative
-        }
-        await existingCoin.save();
-      } else {
-        const coinEntry = new Coin({
-          user: userId,
-          expriencelevel: therapist.level,
-          coinBalance: -1,
-          groupid: user.groupid,
-          avarage: calculatedAverage,
-        });
-        await coinEntry.save();
-      }
+    const populatedAppointment = await Appointment.findById(
+      savedAppointment._id
+    )
+      .populate("user", "name age gender")
+      .exec();
 
-      const populatedAppointment = await Appointment.findById(
-        savedAppointment._id
-      )
-        .populate("user", "name age gender")
-        .exec();
+    const therapistName = therapist.name;
 
-      const therapistName = therapist.name;
+    const dateObject = new Date(appointmentDate);
 
-      const dateObject = new Date(appointmentDate);
+    // Extract the date part in YYYY-MM-DD format
+    const appointmentDateonly = dateObject.toISOString().split("T")[0];
 
-      // Extract the date part in YYYY-MM-DD format
-      const appointmentDateonly = dateObject.toISOString().split("T")[0];
-
-      sendWhatsAppMessage(
-        user.mobile,
-        `
+    sendWhatsAppMessage(
+      user.mobile,
+      `
       Hi ${user.name},
       Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentStartTime}.
       Please log into the application 5 mins before the start of the session.
       Thanks,
       Team Inspiron
       `
-      );
+    );
 
-      const emailMessage = `
+    const emailMessage = `
       Hi ${user.name},\n
       Thank you for successfully booking an appointment with ${therapist.name} on ${appointmentDateonly} at ${appointmentStartTime}. Please log into the application 5 mins before the start of the session.\n
       Thanks,\n
       Team Inspiron
     `;
 
-      sendEmailfortherapistbook(
-        user.email,
-        "Appointment Confirmation",
-        emailMessage
-      );
+    sendEmailfortherapistbook(
+      user.email,
+      "Appointment Confirmation",
+      emailMessage
+    );
 
-      return res.status(201).json(populatedAppointment);
-    }
+    return res.status(201).json(populatedAppointment);
   } catch (error) {
     console.error("Error creating appointment:", error);
     return res
@@ -2014,9 +1169,11 @@ exports.getTodayAppointmentsByTherapist = async (req, res) => {
     });
   } catch (error) {
     console.error("Error retrieving today's appointments:", error);
-    res.status(500).json({
-      error: "An error occurred while retrieving today's appointments",
-    });
+    res
+      .status(500)
+      .json({
+        error: "An error occurred while retrieving today's appointments",
+      });
   }
 };
 
@@ -2186,9 +1343,11 @@ exports.getAppointmentsByTherapistWithEndedMeetCall = async (req, res) => {
       "Failed to retrieve appointments with ended Google Meet calls:",
       error
     );
-    res.status(500).json({
-      error: "Failed to retrieve appointments with ended Google Meet calls",
-    });
+    res
+      .status(500)
+      .json({
+        error: "Failed to retrieve appointments with ended Google Meet calls",
+      });
   }
 };
 exports.retrieveAppointments = (req, res) => {
@@ -2254,7 +1413,6 @@ exports.deleteAllAppointments = async (req, res) => {
 };
 exports.updateAppointmentWithPayment = async (req, res) => {
   let userEmail;
-  let matchingTimeSlotLocation = "Indiranagar/HSR Layout";
   try {
     const appointmentId = req.params.id;
     const therapistId = req.params.therapistId;
@@ -2289,7 +1447,6 @@ exports.updateAppointmentWithPayment = async (req, res) => {
     const appointmentDate = appointment.dateTime;
     const appointmentStartTime = appointment.startTime;
     const appointmentEndTime = appointment.endTime;
-
     console.log("Therapist Sessions Before Filtering:");
     therapistSessions.forEach(session => {
       console.log(`Date: ${session.date}`);
@@ -2297,19 +1454,17 @@ exports.updateAppointmentWithPayment = async (req, res) => {
         console.log(`Time Slot ${index + 1}:`);
         console.log(`  Start Time: ${timeSlot.startTime}`);
         console.log(`  End Time: ${timeSlot.endTime}`);
-        if (timeSlot.startTime === appointmentStartTime) {
-          matchingTimeSlotLocation = timeSlot.location; // Update the location if a match is found
-        }
       });
     });
-
+    // Filter and remove the matching therapist session based on date and start time
+    // Filter and remove the matching therapist session based on date and start time
+    // Filter and remove the matching therapist session's start time
     const updatedTherapistSessions = therapistSessions.filter(session => {
       const sessionDate = new Date(session.date); // Assuming session.date is a string in ISO format
       const matchingTimeSlotIndex = session.timeSlots.findIndex(
         timeSlot => timeSlot.startTime === appointmentStartTime
       );
 
-      console.log(matchingTimeSlotLocation);
       if (
         sessionDate.toDateString() === appointmentDate.toDateString() &&
         matchingTimeSlotIndex !== -1
@@ -2386,40 +1541,21 @@ exports.updateAppointmentWithPayment = async (req, res) => {
     let emailMessage;
     if (paymentMethod === "Offline") {
       emailMessage = `
-Dear ${username},
-
-We are pleased to confirm your upcoming appointment with our dedicated mental health expert ${therapistName} at Inspiron.
-      
-Details:
-Date: ${appointmentDateonly}
-Time: ${appointmentTime}
-Location: ${matchingTimeSlotLocation}
-Payment Status: Offline
-      
-If you have any questions or need to reschedule, please don't hesitate to contact us at .
- We look forward to supporting you on your journey to well-being.
-      
-Best regards,
-Inspiron Psychological Well-being Centre
+    Hi ${username},\n
+    Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDate} at ${appointmentTime}. Please log into the application 5 mins before the start of the session.\n
+        Thanks,\n
+        Team Inspiron
       `;
 
-      console.log(user.mobile);
       sendWhatsAppMessage(
         user.mobile,
         `
-Hi ${username},
-
-This is Inspiron. Your upcoming appointment is confirmed!
-📅 Date: ${appointmentDateonly}
-🕒 Time: ${appointmentTime}
-🥼 Mental Health Expert: ${therapistName}
-📍 Location:${matchingTimeSlotLocation}
-        
-Payment Status: Offline
-Reply 'CONFIRMED' to acknowledge or call  for any changes.
-Thank you,
-Inspiron Team 🌈💚
-        `
+    Hi ${username},
+Thank you for successfully booking an appointment with ${therapistName} on ${appointmentDateonly} at ${appointmentTime}.
+Please log into the application 5 mins before the start of the session.
+Thanks,
+Team Inspiron
+    `
       );
     }
     // Send the email
@@ -2451,7 +1587,7 @@ const sendEmail = (to, subject, message) => {
   const mailOptions = {
     from: "info@inspirononline.com",
     to: to,
-    subject: "Confirmation of Your Appointment with Inspiron",
+    subject: "Booking Confirmation",
     text: message,
   };
 
@@ -2477,7 +1613,9 @@ exports.updateAppointmentPrice = async (req, res) => {
 
     const userId = appointment.user;
 
-    const user = await User.findById(userId).select(" priceHistory ");
+    const user = await User.findById(userId).select(
+      " priceHistory "
+    );
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -2492,15 +1630,15 @@ exports.updateAppointmentPrice = async (req, res) => {
     }
 
     console.log(user.priceHistory);
-    const mongoose = require("mongoose");
+    const mongoose = require('mongoose');
 
-    const appointmentIndex = user.priceHistory.findIndex(
-      entry => entry.appointmentId.toString() === appointmentId
-    );
+const appointmentIndex = user.priceHistory.findIndex(
+  entry => entry.appointmentId.toString() === appointmentId
+);
+console.log(appointmentIndex);
+
     console.log(appointmentIndex);
-
-    console.log(appointmentIndex);
-
+    
     if (appointmentIndex !== -1) {
       // Update the existing price history entry with the new price information
       user.priceHistory[appointmentIndex] = {
@@ -2554,9 +1692,7 @@ exports.extendSession = async (req, res) => {
     const userId = originalAppointment.user;
     const therapistId = originalAppointment.therapist;
 
-    const user = await User.findById(userId).select(
-      "name email priceHistory groupid credits"
-    );
+    const user = await User.findById(userId).select("name email priceHistory groupid credits");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -2727,6 +1863,8 @@ exports.extendSession = async (req, res) => {
             console.error("Invalid calculated average:", calculatedAverage);
             // Handle the error or set a default value for the average
           }
+
+         
         } else {
           console.log("User coin entry not found or level mismatch.");
         }
@@ -2746,6 +1884,8 @@ exports.extendSession = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
 
 function generateAndSavePDF(updateData) {
   return new Promise((resolve, reject) => {
@@ -2779,25 +1919,21 @@ function generateAndSavePDF(updateData) {
 
     addSectionWithBox("Summary:", updateData.summary);
     addSectionWithBox("Growth Curve Points:", updateData.growthCurve);
-    addSectionWithBox(
-      "Therapeutic Techniques Used:",
-      updateData.therapeuticTechniques
-    );
+    addSectionWithBox("Therapeutic Techniques Used:", updateData.therapeuticTechniques);
     addSectionWithBox("Homework Given:", updateData.homeworkGiven);
     addSectionWithBox("Next Session Plan:", updateData.nextSessionPlan);
 
     doc.font("Helvetica").fontSize(12);
 
     const buffers = [];
-    doc.on("data", buffer => buffers.push(buffer));
+    doc.on("data", (buffer) => buffers.push(buffer));
     doc.on("end", () => {
       const pdfBuffer = Buffer.concat(buffers);
       resolve(pdfBuffer);
     });
 
-    const pdfFilePath = `public/uploads/session_summary_${moment().format(
-      "YYYYMMDD_HHmmss"
-    )}.pdf`;
+    
+    const pdfFilePath = `public/uploads/session_summary_${moment().format("YYYYMMDD_HHmmss")}.pdf`;
     const writeStream = fs.createWriteStream(pdfFilePath);
 
     doc.pipe(writeStream);
@@ -2808,20 +1944,19 @@ function generateAndSavePDF(updateData) {
       console.log("PDF saved locally:", pdfFilePath);
     });
 
-    writeStream.on("error", err => {
+    writeStream.on("error", (err) => {
       reject(err);
     });
   });
 }
+
 
 exports.updateUserSessionNotes = async (req, res) => {
   try {
     const appointmentId = req.params.id;
     const updateData = req.body;
 
-    const appointment = await Appointment.findById(appointmentId).populate(
-      "user"
-    );
+    const appointment = await Appointment.findById(appointmentId).populate('user');
 
     if (!appointment) {
       return res.status(404).json({ message: "Appointment not found" });
@@ -2829,13 +1964,11 @@ exports.updateUserSessionNotes = async (req, res) => {
 
     appointment.sessionnotes.Summary = updateData.summary;
     appointment.sessionnotes.Growthcurvepoints = updateData.growthCurve;
-    appointment.sessionnotes.TherapeuticTechniquesused =
-      updateData.therapeuticTechniques;
+    appointment.sessionnotes.TherapeuticTechniquesused = updateData.therapeuticTechniques;
     appointment.sessionnotes.Homeworkgiven = updateData.homeworkGiven;
     appointment.sessionnotes.Nextsessionplan = updateData.nextSessionPlan;
     appointment.sessionnotes.sharedWithPatient = updateData.sharedWithPatient;
-    appointment.sessionnotes.sharedWithPsychiatrist =
-      updateData.sharedWithPsychiatrist;
+    appointment.sessionnotes.sharedWithPsychiatrist = updateData.sharedWithPsychiatrist;
     appointment.sessionnotes.generateReport = updateData.generateReport;
 
     if (
@@ -2866,14 +1999,10 @@ exports.updateUserSessionNotes = async (req, res) => {
           const matchingTherapists = await Therapist.find({ level: level });
 
           if (matchingTherapists.length > 0) {
-            const therapistTypes = matchingTherapists.map(
-              therapist => therapist.therapisttype
-            );
+            const therapistTypes = matchingTherapists.map(therapist => therapist.therapisttype);
 
             if (therapistTypes.includes("psychiatrist")) {
-              const psychiatristTherapistIds = matchingTherapists.map(
-                therapist => therapist._id
-              );
+              const psychiatristTherapistIds = matchingTherapists.map(therapist => therapist._id);
 
               const psychiatristAppointments = await Appointment.find({
                 therapist: { $in: psychiatristTherapistIds },
@@ -2881,12 +2010,11 @@ exports.updateUserSessionNotes = async (req, res) => {
               });
 
               if (psychiatristAppointments.length > 0) {
-                const sortedAppointments = psychiatristAppointments.sort(
-                  (a, b) => (a.appointmentDate > b.appointmentDate ? 1 : -1)
+                const sortedAppointments = psychiatristAppointments.sort((a, b) =>
+                  a.appointmentDate > b.appointmentDate ? 1 : -1
                 );
 
-                const latestAppointment =
-                  sortedAppointments[sortedAppointments.length - 1];
+                const latestAppointment = sortedAppointments[sortedAppointments.length - 1];
 
                 const therapistId = latestAppointment.therapist;
                 // Now, 'therapistId' contains the ID of the therapist associated with the latest appointment
@@ -2899,44 +2027,39 @@ exports.updateUserSessionNotes = async (req, res) => {
       }
     }
 
+   
     if (updateData.sharedWithPatient === true) {
       const user = await User.findById(userId);
       const userEmail = user.email;
       const Mobile = user.mobile;
 
       const pdfBuffer = await generateAndSavePDF(updateData);
-      const pdfFilePath = `public/uploads/session_summary_${moment().format(
-        "YYYYMMDD_HHmmss"
-      )}.pdf`;
-      media_url = `http://appointments.inspirononline.com/public/uploads/session_summary_${moment().format(
-        "YYYYMMDD_HHmmss"
-      )}.pdf`;
-      sendWhatsAppMessageMedia(
-        Mobile,
-        `Attached is your session summary PDF
+      const pdfFilePath = `public/uploads/session_summary_${moment().format("YYYYMMDD_HHmmss")}.pdf`;
+      media_url=`http://13.126.59.21/public/uploads/session_summary_${moment().format("YYYYMMDD_HHmmss")}.pdf`
+      sendWhatsAppMessageMedia(Mobile,
+   `Attached is your session summary PDF
         Thanks,
       Team Inspiron
-      `,
-        media_url
-      );
-      const transporter = nodemailer.createTransport({
-        host: "smtppro.zoho.com",
-        port: 465,
-        secure: true,
-        auth: {
-          user: "info@inspirononline.com",
-          pass: "zU0VjyrxHmFm",
-        },
-      });
-
-      const mailOptions = {
-        from: "info@inspirononline.com",
+      `
+        ,  media_url);
+        const transporter = nodemailer.createTransport({
+          host: "smtppro.zoho.com",
+          port: 465,
+          secure: true,
+          auth: {
+            user: "info@inspirononline.com",
+            pass: "zU0VjyrxHmFm",
+          },
+        });
+      
+        const mailOptions = {
+          from: "info@inspirononline.com",
         to: userEmail,
-        subject: "Session Summary PDF",
-        text: "Attached is your session summary PDF",
+        subject: 'Session Summary PDF',
+        text: 'Attached is your session summary PDF',
         attachments: [
           {
-            filename: "session_summary.pdf",
+            filename: 'session_summary.pdf',
             path: pdfFilePath,
           },
         ],
@@ -2944,9 +2067,9 @@ exports.updateUserSessionNotes = async (req, res) => {
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.error("Error sending email:", error);
+          console.error('Error sending email:', error);
         } else {
-          console.log("Email sent: " + info.response);
+          console.log('Email sent: ' + info.response);
         }
       });
     }
@@ -2965,6 +2088,10 @@ exports.updateUserSessionNotes = async (req, res) => {
     });
   }
 };
+
+
+
+
 
 exports.getAppointmentsByUser = async (req, res) => {
   try {
@@ -3106,7 +2233,7 @@ exports.getUniqueUserNamesForTherapist = async (req, res) => {
     const uniqueUsers = new Map();
 
     // Iterate through the appointments and filter out duplicates
-    appointments.forEach(appointment => {
+    appointments.forEach((appointment) => {
       const userId = appointment.user._id.toString(); // Convert ObjectId to string
       const userName = appointment.user.name;
       const firstSession = appointment.user.firstsession;
@@ -3117,14 +2244,11 @@ exports.getUniqueUserNamesForTherapist = async (req, res) => {
     });
 
     // Convert the Map to an array of objects with user ID, name, and firstsession
-    const uniqueUsersArray = Array.from(
-      uniqueUsers,
-      ([userId, { userName, firstSession }]) => ({
-        userId,
-        userName,
-        firstSession,
-      })
-    );
+    const uniqueUsersArray = Array.from(uniqueUsers, ([userId, { userName, firstSession }]) => ({
+      userId,
+      userName,
+      firstSession,
+    }));
 
     res.status(200).json(uniqueUsersArray);
   } catch (error) {
@@ -3278,9 +2402,11 @@ exports.updateUserSessionNotesemail = async (req, res) => {
     res.json({ message: "Appointment updated." });
   } catch (error) {
     console.error("Error updating appointment session notes:", error);
-    res.status(500).json({
-      error: "An error occurred while updating appointment session notes",
-    });
+    res
+      .status(500)
+      .json({
+        error: "An error occurred while updating appointment session notes",
+      });
   }
 };
 
@@ -3322,7 +2448,7 @@ async function sendEmailToUser(userEmail, therapistName, dateTime) {
         pass: "zU0VjyrxHmFm",
       },
     });
-
+  
     const mailOptions = {
       from: "info@inspirononline.com",
       to: userEmail,
@@ -3357,9 +2483,11 @@ exports.payment = async (req, res) => {
     res.status(200).json(appointments);
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({
-      error: "An error occurred while fetching appointments by user.",
-    });
+    res
+      .status(500)
+      .json({
+        error: "An error occurred while fetching appointments by user.",
+      });
   }
 };
 
@@ -3385,9 +2513,11 @@ exports.paymentpending = async (req, res) => {
     res.status(200).json(appointments);
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({
-      error: "An error occurred while fetching appointments by user.",
-    });
+    res
+      .status(500)
+      .json({
+        error: "An error occurred while fetching appointments by user.",
+      });
   }
 };
 
@@ -3551,14 +2681,14 @@ exports.setPaymentStatusToSuccess = async (req, res) => {
     }
 
     // Check if the appointment's paymentStatus is already set to 'success'
-    if (appointment.paymentstatus === "Success") {
+    if (appointment.paymentStatus === "Success") {
       return res
         .status(200)
         .json({ message: "PaymentStatus is already set to success" });
     }
 
     // Update the paymentStatus to 'success'
-    appointment.paymentstatus = "Success";
+    appointment.paymentStatus = "Success";
 
     // Save the updated appointment
     await appointment.save();
@@ -3727,7 +2857,7 @@ exports.setPaymentStatusToSuccess = async (req, res) => {
       existingCoin.coinBalance += session;
       console.log("Updated Coin Balance:", existingCoin.coinBalance);
 
-      existingCoin.avarage = calculatedAverage;
+      existingCoin.average = calculatedAverage;
 
       await existingCoin.save();
     }
@@ -3968,29 +3098,9 @@ cron.schedule("* * * * *", async () => {
 
       if (timeDifference >= 0 && timeDifference <= 5 * 60 * 1000) {
         const recipientNumber = user.mobile;
+        const message = `Your appointment with ${therapist.name} is in 5 minutes.`;
+        sendWhatsAppMessage(recipientNumber, message);
 
-        sendWhatsAppMessage(
-          recipientNumber,
-          `
-Hi ${username},
-          
-This is Inspiron. Your upcoming appointment is confirmed!
-Your appointment is in 5 minutes.
-📅 Date: ${appointmentDateonly}
-🕒 Time: ${appointmentTime}
-🥼 Mental Health Expert: ${therapist.name}
-  
-Reply 'CONFIRMED' to acknowledge or call for any changes.
-Thank you,
-Inspiron Team 🌈💚
-          `
-        );
-        const appointmentTime = appointment.startTime;
-
-        const dateObject = new Date(appointmentDateTime);
-
-        // Extract the date part in YYYY-MM-DD format
-        const appointmentDateonly = dateObject.toISOString().split("T")[0];
         const transporter = nodemailer.createTransport({
           host: "smtppro.zoho.com",
           port: 465,
@@ -4000,27 +3110,12 @@ Inspiron Team 🌈💚
             pass: "zU0VjyrxHmFm",
           },
         });
-
-        // Modify your reminder message template
-        const reminderMessage = `
-Dear ${user.name},
-        
-A friendly reminder Your appointment with ${therapist.name} is in 5 minutes.
-Details:
-Date: ${appointmentDateonly}
-Time: ${appointmentTime}
-Prepare any questions or topics you'd like to discuss. If you need to reschedule, please contact us .
-We're here to support you on your well-being journey.
-
-Warm regards,
-Inspiron Psychological Well-being Centre
-        `;
-
+      
         const mailOptions = {
           from: "info@inspirononline.com",
           to: user.email,
-          subject: "Gentle Reminder: Upcoming Appointment",
-          text: reminderMessage,
+          subject: "Appointment Reminder",
+          text: `Your appointment with ${therapist.name} is in 5 minutes.`,
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -4040,6 +3135,8 @@ Inspiron Psychological Well-being Centre
     console.error("Error checking for upcoming appointments:", error);
   }
 });
+
+
 
 exports.updatePackage = async (req, res) => {
   try {
