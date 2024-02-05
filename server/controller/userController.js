@@ -135,7 +135,7 @@ Team Inspiron
 
 // Function to send a verification email
 const sendVerificationEmail = (email, token, name) => {
-  const verificationLink = `${process.env.CLIENT_URL}/thankyouForRegistering_teamInspiron/verify/${token}`;
+  const verificationLink = `https://appointments.inspirononline.com/thankyouForRegistering_teamInspiron/verify/${token}`;
 
   const transporter = nodemailer.createTransport({
     host: "smtppro.zoho.com",
@@ -394,7 +394,7 @@ const registerUser = async (req, res) => {
   
   // Function to send a verification email
   const sendVerificationEmails = (email, token, name) => {
-    const verificationLink = `${process.env.CLIENT_URL}/thankyouForRegistering_teamInspiron/verify/${token}`;
+    const verificationLink = `https://appointments.inspirononline.com/thankyouForRegistering_teamInspiron/verify/${token}`;
   
     const transporter = nodemailer.createTransport({
       host: "smtppro.zoho.com",
