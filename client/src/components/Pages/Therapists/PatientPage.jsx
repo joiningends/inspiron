@@ -119,10 +119,10 @@ function PatientPage() {
             </TableHead>
             <TableBody>
               {filterPatients()
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map(patient => (
-                  <TableRow key={patient.userId}>
-                    <TableCell>{patient.userName}</TableCell>
+                ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                ?.map(patient => (
+                  <TableRow key={patient?.userId}>
+                    <TableCell>{patient?.userName}</TableCell>
                     <TableCell>
                       <Button
                         variant="outlined"

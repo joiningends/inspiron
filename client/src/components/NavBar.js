@@ -23,6 +23,7 @@ import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import LoginIcon from "@mui/icons-material/Login";
 import yourLogo from "./Pages/Artboard 2.png";
+import axios from "axios";
 
 function NavBar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -51,6 +52,34 @@ function NavBar() {
   const handleSignIn = () => {
     navigate("/signin");
   };
+
+  let groupId = localStorage.getItem("groupid");
+  const [dataCompany, setDataCompany] = useState(false);
+  console.log(dataCompany);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Only make the request if groupId is not null or undefined
+        if (groupId !== null) {
+          // Remove quotes around groupId
+          const groupVal = groupId.replace(/"/g, "");
+
+          const response = await axios.get(
+            `http://localhost:5001/api/v1/clients/group/${groupVal}`
+          );
+          console.log(response);
+          // Handle the successful response here
+          setDataCompany(response.data.companypayment);
+        }
+      } catch (error) {
+        // Handle errors here
+        console.error("Error:", error);
+      }
+    };
+
+    fetchData();
+  }, [groupId]);
 
   const empid = JSON.parse(localStorage.getItem("empid"));
   const shouldShowComponent = empid === null;
@@ -181,7 +210,7 @@ function NavBar() {
                         Appointments
                       </NavLink>
                     </li>
-                    {shouldShowComponent && (
+                    {!dataCompany && (
                       <li style={{ display: "inline", marginRight: "10px" }}>
                         <NavLink
                           to="/PendingPayments"
@@ -493,7 +522,7 @@ function NavBar() {
                     primary="Appointments"
                   />
                 </ListItemButton>
-                {shouldShowComponent && (
+                {dataCompany && (
                   <ListItemButton
                     component={NavLink}
                     to="/PendingPayments"

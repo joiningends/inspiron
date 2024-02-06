@@ -68,9 +68,8 @@ const TherapistHomePage = () => {
     fetchTherapistData();
   }, [therapistId]);
 
-  console.log(therapist);
+
   console.log(todayAppointments);
-  console.log(allAppointments);
   useEffect(() => {}, []);
 
   const handleDetails = appointmentId => {
@@ -206,9 +205,7 @@ const TherapistHomePage = () => {
                 <td className="table-body-cell">
                   {new Date(appointment?.dateTime).toLocaleDateString()}
                 </td>
-                <td className="table-body-cell">
-                  {new Date(appointment?.dateTime).toLocaleTimeString()}
-                </td>
+                <td className="table-body-cell">{appointment?.startTime}</td>
                 <td className="table-body-cell">{appointment?.sessionMode}</td>
                 <td
                   className="table-body-cell"

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
+import axios from "axios";
 import NavBar from "./components/NavBar";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Home } from "./components/Pages/Home";
@@ -67,15 +68,40 @@ function App() {
 
   const excludedPath = "/thankyouForRegistering_teamInspiron/verify/:token";
 
+  let groupId = localStorage.getItem("groupid");
+  const [dataCompany, setDataCompany] = useState(false);
+  console.log(dataCompany);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Only make the request if groupId is not null or undefined
+        if (groupId !== null) {
+          // Remove quotes around groupId
+          const groupVal = groupId.replace(/"/g, "");
+
+          const response = await axios.get(
+            `http://localhost:5001/api/v1/clients/group/${groupVal}`
+          );
+          console.log(response);
+          // Handle the successful response here
+          setDataCompany(response.data.companypayment);
+        }
+      } catch (error) {
+        // Handle errors here
+        console.error("Error:", error);
+      }
+    };
+
+    fetchData();
+  }, [groupId]);
+
   if (parsedUserRole !== null) {
     const forbiddenPaths = ["/login", "/signin", "/login/:company/:groupId"];
     if (forbiddenPaths.includes(window.location.pathname)) {
       return <Navigate to="/redirectToPage" />;
     }
   }
-
-
-
 
   return (
     <>
@@ -123,16 +149,7 @@ function App() {
 
                 <Route path="/rating" element={<RatingSystem />} />
                 <Route path="/selfhelp" element={<SelfHelp />} />
-                <Route
-                  path="/PendingPayments"
-                  element={
-                    isEmpidNull ? (
-                      <PendingPayments />
-                    ) : (
-                      <Navigate to="/other-route" replace />
-                    )
-                  }
-                />
+                <Route path="/PendingPayments" element={<PendingPayments />} />
                 <Route
                   path="/selfhelp"
                   element={
