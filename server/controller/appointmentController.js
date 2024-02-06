@@ -353,7 +353,7 @@ exports.createAppointment = async (req, res) => {
           .exec();
 
         const dateObject = new Date(appointmentDate);
-
+const meetLink = therapist.meetLink;
         // Extract the date part in YYYY-MM-DD format
         const appointmentDateonly = dateObject.toISOString().split("T")[0];
 sendWhatsAppMessage(
@@ -920,7 +920,7 @@ exports.createAppointmentbytherapist = async (req, res) => {
     const priceId = therapist.expriencelevel;
 
     console.log(priceId);
-
+    const meetLink = therapist.meetLink;
     // If the user has a groupid, check if the companypayment is true
     if (user.groupid) {
       const client = await Client.findOne({ groupid: user.groupid }).select(
@@ -2095,18 +2095,27 @@ exports.getUpcomingAppointmentsByTherapist = async (req, res) => {
     );
 
     // Filter appointments based on payment status and group ID
-    const filteredAppointments = upcomingAppointments.filter(appointment => {
+    const filteredAppointments = await Promise.all(upcomingAppointments.map(async appointment => {
       if (appointment.user.groupid) {
-        // User has a group ID, no need to check payment status
-        return true;
+        const client = await Client.findOne({ groupid: appointment.user.groupid }).select("companypayment");
+        if (client && client.companypayment === true) {
+          // User has a group ID and company payment is true, no need to check payment status
+          return true;
+        } else {
+          // User has a group ID, but company payment is false, check payment status
+          return ["Offline", "Success"].includes(appointment.paymentstatus);
+        }
       } else {
         // User doesn't have a group ID, check payment status
         return ["Offline", "Success"].includes(appointment.paymentstatus);
       }
-    });
+    }));
+
+    // Filter appointments based on the results of the promises
+    const finalFilteredAppointments = upcomingAppointments.filter((_, index) => filteredAppointments[index]);
 
     // Sort filtered appointments by date and time
-    filteredAppointments.sort((a, b) => {
+    finalFilteredAppointments.sort((a, b) => {
       if (a.dateTime < b.dateTime) return -1;
       if (a.dateTime > b.dateTime) return 1;
       if (a.startTime < b.startTime) return -1;
@@ -2114,10 +2123,10 @@ exports.getUpcomingAppointmentsByTherapist = async (req, res) => {
       return 0;
     });
 
-    const upcomingPatientsCount = filteredAppointments.length;
+    const upcomingPatientsCount = finalFilteredAppointments.length;
 
     res.status(200).json({
-      upcomingAppointments: filteredAppointments,
+      upcomingAppointments: finalFilteredAppointments,
       totalUpcomingPatients: upcomingPatientsCount,
     });
   } catch (error) {
@@ -2127,6 +2136,7 @@ exports.getUpcomingAppointmentsByTherapist = async (req, res) => {
       .json({ error: "An error occurred while retrieving appointments" });
   }
 };
+
 
 exports.getAllAppointmentsByTherapist = async (req, res) => {
   const therapistId = req.params.therapistId;
@@ -3204,19 +3214,28 @@ exports.getUpcomingAppointmentsByTherapistForUser = async (req, res) => {
     })
       .populate("user", "name age gender groupid")
       .populate("therapist", "name");
-    // Sort appointments by date and time
-    const filteredAppointments = upcomingAppointments.filter(appointment => {
+
+    const filteredAppointments = await Promise.all(upcomingAppointments.map(async appointment => {
       if (appointment.user.groupid) {
-        // User has a group ID, no need to check payment status
-        return true;
+        const client = await Client.findOne({ groupid: appointment.user.groupid }).select("companypayment");
+        if (client && client.companypayment === true) {
+          // User has a group ID and company payment is true, no need to check payment status
+          return true;
+        } else {
+          // User has a group ID, but company payment is false, check payment status
+          return ["Offline", "Success"].includes(appointment.paymentstatus);
+        }
       } else {
         // User doesn't have a group ID, check payment status
         return ["Offline", "Success"].includes(appointment.paymentstatus);
       }
-    });
+    }));
+
+    // Filter appointments based on the results of the promises
+    const finalFilteredAppointments = upcomingAppointments.filter((_, index) => filteredAppointments[index]);
 
     // Sort filtered appointments by date and time
-    filteredAppointments.sort((a, b) => {
+    finalFilteredAppointments.sort((a, b) => {
       if (a.dateTime < b.dateTime) return -1;
       if (a.dateTime > b.dateTime) return 1;
       if (a.startTime < b.startTime) return -1;
@@ -3224,10 +3243,10 @@ exports.getUpcomingAppointmentsByTherapistForUser = async (req, res) => {
       return 0;
     });
 
-    const upcomingPatientsCount = filteredAppointments.length;
+    const upcomingPatientsCount = finalFilteredAppointments.length;
 
     res.status(200).json({
-      upcomingAppointments: filteredAppointments,
+      upcomingAppointments: finalFilteredAppointments,
       totalUpcomingPatients: upcomingPatientsCount,
     });
   } catch (error) {
@@ -3237,6 +3256,7 @@ exports.getUpcomingAppointmentsByTherapistForUser = async (req, res) => {
       .json({ error: "An error occurred while retrieving appointments" });
   }
 };
+
 
 exports.updateUserSessionNotesemail = async (req, res) => {
   try {
@@ -3423,6 +3443,15 @@ exports.paymentpending = async (req, res) => {
         therapist: 1,
       }
     ).populate("therapist", "name "); // Populate therapist details
+
+    console.log("Appointments found:", appointments); // Add this line for debugging
+
+    if (appointments.length === 0) {
+      // If no appointments found
+      return res.status(404).json({
+        message: "No pending appointments found for the specified user.",
+      });
+    }
 
     res.status(200).json(appointments);
   } catch (error) {
