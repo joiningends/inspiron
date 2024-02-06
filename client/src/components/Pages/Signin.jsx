@@ -72,6 +72,7 @@ const Signin = () => {
     }
 
     try {
+      console.log(formData);
       const response = await fetch(
         `${process.env.REACT_APP_SERVER_URL}/users/login`,
         {

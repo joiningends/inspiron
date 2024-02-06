@@ -3,13 +3,10 @@ import jwt_decode from "jwt-decode";
 import { useDispatch } from "react-redux";
 import {
   fetchTherapist,
-  updateTherapist,
-  updateTherapistImage,
+
 } from "../../redux/Action";
 import Footer from "../Footer";
 import {
-  Container,
-  Typography,
   TableContainer,
   Table,
   TableHead,

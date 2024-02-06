@@ -18,11 +18,25 @@ import {
   Tooltip,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import DescriptionIcon from "@mui/icons-material/Description";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PaymentIcon from "@mui/icons-material/Payment";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import Footer from "../Footer";
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles(theme => ({
+  container: {
+  },
+  searchInput: {
+  },
+  tableContainer: {
+    overflowX: "auto",
+  },
+  actionsCell: {
+    display: "flex",
+    flexDirection: "row", // Updated style for horizontal arrangement
+  },
+}));
 
 function formatDate(isoDate) {
   if (!isoDate) return "";
@@ -34,6 +48,7 @@ function formatDate(isoDate) {
 }
 
 function PatientPage() {
+  const classes = useStyles();
   const [patients, setPatients] = useState([]);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
@@ -58,7 +73,6 @@ function PatientPage() {
         const response = await axios.get(
           `${process.env.REACT_APP_SERVER_URL}/users`
         );
-        console.log(response.data);
         setPatients(response.data);
       } catch (error) {
         console.error("Error fetching patients data:", error);
@@ -89,110 +103,99 @@ function PatientPage() {
   const endIndex = startIndex + patientsPerPage;
 
   return (
-    <>
-      <Container>
-        <Typography variant="h4" gutterBottom>
-          Patient Page
-        </Typography>
-        <TextField
-          className="search-input"
-          variant="outlined"
-          label="Search by name"
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          fullWidth
-          margin="normal"
-        />
-        <TableContainer
-          component={Paper}
-          className="table-container"
-          sx={{ overflowX: "auto" }}
-        >
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Patient Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Mobile</TableCell>
-                <TableCell>Last Session Date</TableCell>
-                <TableCell>Last mental expert</TableCell>
-                <TableCell>Total Sessions</TableCell>
-                <TableCell>Corporate Name</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filterPatients()
-                .slice(startIndex, endIndex)
-                .map(patient => (
-                  <TableRow key={patient._id}>
-                    <TableCell className="patient-name-cell">
-                      {patient.name}
-                    </TableCell>
-                    <TableCell>{patient.email}</TableCell>
-                    <TableCell>{patient.mobile}</TableCell>
-                    <TableCell>{formatDate(patient.date)}</TableCell>
-                    <TableCell>{patient.lasttherapistname}</TableCell>
-                    <TableCell>{patient.Sessionnumber}</TableCell>
-                    <TableCell>{patient.clientName}</TableCell>
-                    <TableCell>
-                      <Tooltip title="Details" arrow>
-                        {patient?.firstsession !== "pending" && (
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={() =>
-                              handleDetailsClick(patient._id, patient.user)
-                            }
-                          >
-                            <VisibilityIcon />
-                          </Button>
-                        )}
-                      </Tooltip>
-                      <Tooltip title="Payment" arrow>
+    <Container className={classes.container}>
+      <Typography variant="h4" gutterBottom style={{width:"100%"}}>
+        Patient Page
+      </Typography>
+      <TextField
+        className={classes.searchInput}
+        variant="outlined"
+        label="Search by name"
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon />
+            </InputAdornment>
+          ),
+        }}
+        fullWidth
+        margin="normal"
+      />
+      <TableContainer component={Paper} className={classes.tableContainer}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Patient Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Mobile</TableCell>
+              <TableCell>Last Session Date</TableCell>
+              <TableCell>Last mental expert</TableCell>
+              <TableCell>Total Sessions</TableCell>
+              <TableCell>Corporate Name</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filterPatients()
+              .slice(startIndex, endIndex)
+              .map(patient => (
+                <TableRow key={patient._id}>
+                  <TableCell>{patient.name}</TableCell>
+                  <TableCell>{patient.email}</TableCell>
+                  <TableCell>{patient.mobile}</TableCell>
+                  <TableCell>{formatDate(patient.date)}</TableCell>
+                  <TableCell>{patient.lasttherapistname}</TableCell>
+                  <TableCell>{patient.Sessionnumber}</TableCell>
+                  <TableCell>{patient.clientName}</TableCell>
+                  <TableCell className={classes.actionsCell}>
+                    <Tooltip title="Details" arrow>
+                      {patient?.firstsession !== "pending" && (
                         <Button
                           variant="outlined"
-                          style={{ marginLeft: "1rem" }}
                           size="small"
-                          onClick={() => handlePaymentClick(patient._id)}
+                          onClick={() =>
+                            handleDetailsClick(patient._id, patient.user)
+                          }
                         >
-                          <PaymentIcon />
+                          <VisibilityIcon />
                         </Button>
-                      </Tooltip>
-                      <Tooltip title="Coins" arrow>
-                        <Button
-                          variant="outlined"
-                          style={{ marginLeft: "1rem" }}
-                          size="small"
-                          onClick={() => handleCoinsClick(patient._id)}
-                        >
-                          <MonetizationOnIcon />
-                        </Button>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Pagination
-          count={totalPages}
-          page={currentPage}
-          onChange={handlePageChange}
-          shape="rounded"
-          size="large"
-          className="pagination"
-        />
-      </Container>
+                      )}
+                    </Tooltip>
+                    <Tooltip title="Payment" arrow>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handlePaymentClick(patient._id)}
+                      >
+                        <PaymentIcon />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Coins" arrow>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleCoinsClick(patient._id)}
+                      >
+                        <MonetizationOnIcon />
+                      </Button>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Pagination
+        count={totalPages}
+        page={currentPage}
+        onChange={handlePageChange}
+        shape="rounded"
+        size="large"
+      />
       <Footer />
-    </>
+    </Container>
   );
 }
 
