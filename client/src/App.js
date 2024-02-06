@@ -55,6 +55,7 @@ import { Rating } from "@mui/material";
 import RatingSystem from "./components/Pages/Rating";
 import SelfHelp from "./components/Pages/SelfHelp";
 import ResetPasswordTherapist from "./components/Pages/ResetPasswordTherapist";
+import PageNotFound from "./components/Pages/PageNotFound";
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -99,7 +100,7 @@ function App() {
   if (parsedUserRole !== null) {
     const forbiddenPaths = ["/login", "/signin", "/login/:company/:groupId"];
     if (forbiddenPaths.includes(window.location.pathname)) {
-      return <Navigate to="/redirectToPage" />;
+      window.location.href = "/PageNotFound";
     }
   }
 
@@ -271,6 +272,7 @@ function App() {
             <Route path="/assessment" element={<Assessments />} />
             <Route path="/assessment/:id" element={<Assessment />} />
             <Route path="/result" element={<Result />} />
+            <Route path="/PageNotFound" element={<PageNotFound />} />
           </Routes>
         </div>
       </Router>

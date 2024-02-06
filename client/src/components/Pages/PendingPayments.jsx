@@ -51,7 +51,12 @@ function PendingPayments(props) {
       setData(response.data);
       setLoading(false);
     } catch (error) {
-      setError(error);
+      if (error.response && error.response.status === 404) {
+        setData([]);
+        setError(null);
+      } else {
+        setError(error);
+      }
       setLoading(false);
     }
   };
@@ -103,13 +108,23 @@ function PendingPayments(props) {
 
   return (
     <>
-      <div>
-        <Typography variant="h5" gutterBottom>
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <Typography
+          variant="h5"
+          style={{ fontWeight: "bold", marginBottom: "10px" }}
+        >
           Pending Payments
         </Typography>
         {loading && <Typography>Loading...</Typography>}
-        {error && <Typography>Error: {error.message}</Typography>}
-        {!loading && !error && (
+        {!loading && data.length === 0 && (
+          <Typography>No data found.</Typography>
+        )}
+        {error && (
+          <Typography style={{ color: "red" }}>
+            Error: {error.message}
+          </Typography>
+        )}
+        {!loading && !error && data.length > 0 && (
           <div>
             <TableContainer
               component={Paper}
