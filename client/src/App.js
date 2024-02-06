@@ -58,6 +58,7 @@ import ResetPasswordTherapist from "./components/Pages/ResetPasswordTherapist";
 function App() {
   const userRole = localStorage.getItem("role");
   const parsedUserRole = JSON.parse(userRole);
+  console.log(parsedUserRole);
   const isAdmin = parsedUserRole === "admin";
   const isTherapist = parsedUserRole === "therapist";
   const isUser = parsedUserRole === "user";
@@ -65,6 +66,16 @@ function App() {
   const isEmpidNull = empid === null;
 
   const excludedPath = "/thankyouForRegistering_teamInspiron/verify/:token";
+
+  if (parsedUserRole !== null) {
+    const forbiddenPaths = ["/login", "/signin", "/login/:company/:groupId"];
+    if (forbiddenPaths.includes(window.location.pathname)) {
+      return <Navigate to="/redirectToPage" />;
+    }
+  }
+
+
+
 
   return (
     <>
@@ -226,6 +237,7 @@ function App() {
             )}
             <Route path="/login" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
+            <Route path="/login/:company/:groupId" element={<GroupSignUp />} />
             <Route path="/forgotpassword" element={<Forgotpassword />} />
             <Route
               path="passwordReset/reset/:token"
@@ -235,7 +247,6 @@ function App() {
               path="passwordReset/therapist/reset/:token"
               element={<ResetPasswordTherapist />}
             />
-            <Route path="/login/:company/:groupId" element={<GroupSignUp />} />
             <Route
               path="/thankyouForRegistering_teamInspiron/verify/:token"
               element={<Thankyou />}
