@@ -69,7 +69,7 @@ const verifyPayment = async (req, res) => {
 
     let paymentStatus = "Failed"; // Default status is 'failed'
 
-    if (1 === 1) {
+   if (expectedSign === razorpay_signature) {
       paymentStatus = "Success";
       const paymentVerification = new Payment({
         appointmentId: appointmentId,
