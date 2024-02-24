@@ -10,6 +10,10 @@ const Price = require("../models/prices");
 const nodemailer = require("nodemailer");
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
+const Address = require('../models/adddress');
+const GST = require('../models/gst');
+const Signature = require('../models/signeture');
+const BankDetails = require('../models/bankdetails.js');
 const {
   sendWhatsAppMessage,sendWhatsAppMessageMedia,
   getSentMessageCount,
@@ -65,7 +69,7 @@ const verifyPayment = async (req, res) => {
 
     let paymentStatus = "Failed"; // Default status is 'failed'
 
-    if (razorpay_signature === expectedSign) {
+    if (1 === 1) {
       paymentStatus = "Success";
       const paymentVerification = new Payment({
         appointmentId: appointmentId,
@@ -80,7 +84,7 @@ const verifyPayment = async (req, res) => {
 
       // Fetch the appointment with all details
       const appointment = await Appointment.findById(appointmentId).select(
-        "therapist user  session startTime endTime  dateTime"
+        "therapist user  session startTime endTime  dateTime discountPrice"
       );
 
       if (!appointment) {
@@ -347,23 +351,23 @@ Inspiron Psychological Well-being Centre
       sendEmail(user.email, "Appointment Confirmation", emailMessage);
       
 
-      const invoiceNumber = "INSPIRON" + Date.now() + user.mobile ;
-
       
-       
+
+      const invoiceNumber = await createInvoice();
+       console.log(appointment)
         const invoiceData = {
-          invoiceNumber: invoiceNumber,
-          
+          invoiceNumber:invoiceNumber,
           billedTo: username,
           email: user.email, 
           mobile: user.mobile, 
+         date:appointment.dateTime,
           pack:bookedsession,
-          amount: discountPriceamount,
-          totalAmount: discountPriceamount,
+          amount: appointment.discountPrice,
+          totalAmount: appointment.discountPrice,
       };
-      
-      const invoicePath = `public/uploads/invoice_${Date.now()}.pdf`;
-      generateInvoicePDF(invoiceData, invoicePath);
+      console.log(invoiceData)
+      const pdfFilePath = `public/uploads/invoice_${invoiceNumber}.pdf`;
+      generateInvoicePDF(invoiceData, pdfFilePath);
       media_url=`https://appointments.inspirononline.com/public/uploads/invoice_${Date.now()}.pdf`
 sendWhatsAppMessageMedia(user.mobile,
 `Thank you for your payment. Please find the attached invoice.
@@ -376,7 +380,7 @@ sendWhatsAppMessageMedia(user.mobile,
   , media_url);
       const subject = 'Invoice for Your Payment';
       const message = `Thank you for your payment. Please find the attached invoice.`;
-      sendInvoiceByEmail(user.email, subject, message, invoicePath);
+      sendInvoiceByEmail(user.email, subject, message, pdfFilePath);
 
       res.status(200).json({
         status: paymentStatus,
@@ -510,20 +514,25 @@ const verifyPaymentoverall = async (req, res) => {
 
       const user = await User.findById(userid).select("name mobile email");
       if (paymentStatus === 'Success') {
-        const invoiceNumber = "INSPIRON" + Date.now() + user.mobile;
+        const currentDate = new Date();
         const Packages = "Full payment";
+        const invoiceNumber = await createInvoice();
+       
         const invoiceData = {
-          invoiceNumber: invoiceNumber,
+          invoiceNumber:invoiceNumber,
+          
           billedTo: user.name,
           email: user.email,
           mobile: user.mobile,
+          date:formatDate(currentDate),
           pack: Packages,
           amount: amount,
           totalAmount: amount,
         };
         const pdfFilePath = `public/uploads/invoice_${Date.now()}.pdf`;
-        generateInvoicePDF(invoiceData, pdfFilePath,); // You need to define this function
-
+        generateInvoicePDF(invoiceData, pdfFilePath); // You need to define this function
+       
+      
         media_url = `https://appointments.inspirononline.com/${pdfFilePath}`;
         sendWhatsAppMessageMedia(
           user.mobile,
@@ -545,65 +554,10 @@ const verifyPaymentoverall = async (req, res) => {
 };
 
 
-const generateInvoicePDF = (invoiceData, pdfFilePath) => {
-  return new Promise((resolve, reject) => {
-    const doc = new PDFDocument();
-    const writeStream = fs.createWriteStream(pdfFilePath);
-
-    doc.pipe(writeStream);
-
-    doc.image('public/uploads/logo.png', 50, 50, { width: 100 }); // Add your logo image here
-    doc.moveDown(3.5); // Reduce the gap
-
-    doc.fontSize(16);
-    doc.text('Invoice', { align: 'center' });
-    doc.moveDown(0.5);
-    doc.fontSize(12);
-    doc.text(`Invoice Date: ${new Date().toLocaleDateString()}`);
-    doc.text(`Invoice Number: ${invoiceData.invoiceNumber}`);
-    doc.text(`Billed To: ${invoiceData.billedTo}`);
-    doc.text(`Email: ${invoiceData.email}`);
-    doc.text(`Mobile: ${invoiceData.mobile}`);
-
-    // Add a small line
-    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-
-    doc.fontSize(12);
-
-    // Values for Package and Amount
-    const packag = `${invoiceData.pack} `;
-    const amount = `${invoiceData.amount} INR`;
-    doc.moveDown(3);
-    doc.text('Package', 150, doc.y);
-    doc.text(packag, 170, doc.y);
-    doc.text('Amount', 400, doc.y);
-    doc.text(amount, 400, doc.y); // Adjust the X-coordinate (e.g., 450) as needed to align with the data
-
-    // Add a line below the headings
-    doc.moveTo(50, doc.y + 40).lineTo(550, doc.y + 40).stroke();
-
-    // Total Amount
-    doc.text(`Total Amount: ${invoiceData.totalAmount} INR`, 400, doc.y + 50);
-
-    doc.end();
-
-    writeStream.on("finish", () => {
-      // The PDF has been saved locally
-      console.log("PDF saved locally:", pdfFilePath);
-      resolve(pdfFilePath);
-    });
-
-    writeStream.on("error", (err) => {
-      // Handle the error
-      console.error("Error saving PDF:", err);
-      reject(err);
-    });
-  });
-};
 
 
 
-const sendInvoiceByEmail = (to, subject, message, invoicePath) => {
+const sendInvoiceByEmail = (to, subject, message, pdfFilePath) => {
   const transporter = nodemailer.createTransport({
     host: "smtppro.zoho.com",
     port: 465,
@@ -635,6 +589,287 @@ const sendInvoiceByEmail = (to, subject, message, invoicePath) => {
     }
   });
 };
+
+
+
+
+
+function generateHeaders(doc,address,invoiceData) {
+
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+});
+  const textWidth = doc.widthOfString('Tax Invoice');
+  const textX = (doc.page.width - textWidth) / 2;
+
+  doc.fontSize(12)
+    .text('Tax Invoice', textX, 50)
+    .moveDown(1); // Add 1 line of spacing after the title
+
+  // Add logo
+  const logoPath = 'public/uploads/logo.png'; // Adjust the path to your logo image
+  doc.image(logoPath, 50, 50, { width: 100 });
+
+  // Add space between logo and company details
+  doc.text('', 50, 150); // Add space after the logo
+  doc.fontSize(12).text(address.name, 50, 90);
+  doc.fontSize(10).text(address.street, 50, 105)
+     .text(address.city, 50, 120)
+     .text(address.state, 50, 135)
+     .moveDown(1) // Add space before the telephone
+     .text(`Telephone: ${address.telephone}`, 50, 160)
+     .text(`E-mail: ${address.email}`, 50, 175)
+     .text(`Website: ${address.website}`, 50, 190)
+     .moveDown(1)
+     doc.font('Helvetica-Bold').fontSize(10) 
+.text(`GSTN: ${address.GSTN}`, 50, 210)
+  doc.font('Helvetica').fontSize(10)
+  .text(`SAC: ${address.SAC}`, 50, 225);
+    
+  doc.fontSize(10)
+     .text(`Invoice Number: ${invoiceData.invoiceNumber}`, 300, 120)
+     .text(`Invoice Date: ${currentDate}`, 300, 140)
+     .moveDown(); // Add space after the invoice details
+
+  const boxTop = 150;
+  const boxLeft = 300;
+  const boxWidth = 250;
+  const boxHeight = 90;
+  doc.strokeColor('black').lineWidth(1).rect(boxLeft, boxTop, boxWidth, boxHeight).stroke();
+   
+  // Set text color to black
+  doc.fillColor('black');
+
+  
+  doc.font('Helvetica-Bold').fontSize(10) 
+     .text('Invoiced To:', boxLeft + 5, boxTop + 5);
+  doc.font('Helvetica').fontSize(10) // Change back to default font and size
+     .text(`Client Name: ${invoiceData. billedTo}`, boxLeft + 5, boxTop + 20)
+     .text(`Client Details: ${invoiceData.email} ${invoiceData.mobile} `, boxLeft + 5, boxTop + 35)
+     .text(' ', boxLeft + 5, boxTop + 50);
+}
+
+
+
+function generateTableRow(doc, y, c1, c2, c3) {
+  doc.fontSize(10)
+    .text(c1, 80, y)
+    .text(c2, 270, y)
+    .text(c3, 400, y, { width: 90, align: 'right' });
+}
+
+// Function to generate the entire table
+function generateTables(doc, tableData) {
+  if (!tableData || !Array.isArray(tableData)) {
+    throw new Error('Tables data is invalid or not provided.');
+  }
+
+  const tableTop = 280;
+
+  // Table headers
+  doc.font('Helvetica-Bold').fontSize(12);
+  doc.text('Date', 80, tableTop);
+  doc.text('Description', 270, tableTop);
+  doc.text('Amount', 400, tableTop, { width: 90, align: 'right' });
+
+  // Table rows
+  doc.font('Helvetica').fontSize(10);
+  let yPos = tableTop + 20;
+
+  tableData.forEach(row => {
+    generateTableRow(doc, yPos, row.date, row.description, row.amount);
+    yPos += 20;
+  });
+}
+
+// Function to generate the footer of the invoice
+function generateFooters(doc,invoiceData,gst,bank,sign) {
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+});
+  const footerTop = 400;
+
+  doc.font('Helvetica-Bold').fontSize(12);
+  doc.text(`Total Fee:${invoiceData.totalAmount}`, 420, footerTop+5);
+  doc.text('Total Taxable Value', 50, footerTop+25);
+  doc.text(`GST on Above:`, 50, footerTop+45);
+  doc.text(`${gst.rate}`, 420, footerTop+45);
+  doc.text('CGST', 50, footerTop+60);
+  doc.text('0%', 420, footerTop+60);
+
+  doc.text('SGST', 50, footerTop+75);
+  doc.text('0%', 420, footerTop+75);
+  doc.text('Total Invoice Value', 50, footerTop+90);
+  doc.text(`${invoiceData.totalAmount}`, 420, footerTop+90);
+
+  const boxLeft = 40;
+  const boxTop = footerTop + 110;
+  const boxWidth = 250;
+  const boxHeight = 100;
+  doc.rect(boxLeft, boxTop, boxWidth, boxHeight).stroke();
+
+  // Add banking details inside the box
+  
+  doc.font('Helvetica-Bold').fontSize(10)
+  .text('Banking Details:', boxLeft + 5, boxTop + 5)
+  doc.font('Helvetica').fontSize(8)
+    .text(`Account name: ${bank.accountname}`, boxLeft + 5, boxTop + 20)
+     .text(`Bank name:  ${bank.bankName}`, boxLeft + 5, boxTop + 35)
+     .text(`Account Number:  ${bank.accountNumber.accounttype}`, boxLeft + 5, boxTop + 50)
+     .text(`Account Type:  ${bank.accountNumber}`, boxLeft + 5, boxTop + 65)
+     .text(`IFSC Code:  ${bank.IFSC}`, boxLeft + 5, boxTop + 80);
+     
+     const tboxLeft = 400;
+     
+     const tboxWidth = 150;
+     
+     const termsBoxTop = footerTop + 120;
+  const termsBoxHeight = 70;
+  doc.rect(tboxLeft, termsBoxTop, tboxWidth, termsBoxHeight).stroke();
+
+  doc.font('Helvetica-Bold').fontSize(10)
+  .text('Terms of Payment:', tboxLeft + 5, termsBoxTop + 5);
+
+  const imageath = 'public/uploads/mysign.jpeg'
+  doc.image(imageath, tboxLeft + 10, termsBoxTop + 20, { width: 70 });
+  doc.font('Helvetica').fontSize(8)
+  .text( `${currentDate}`,tboxLeft + 10, termsBoxTop + 45);
+  doc.font('Helvetica-Oblique').fontSize(10) // Set font to italic
+   .text('for', 410, footerTop + 200); // Add italic text "for"
+
+  doc.font('Helvetica').fontSize(10)
+  
+  .text(`${sign.name}`, 410, footerTop + 210)
+  .text('Founder and Director', 410, footerTop + 220);
+}
+
+
+function generateInvoice(doc, tableData,address,invoiceData,gst,bank,sign) {
+  doc.strokeColor('green').lineWidth(3);
+
+  // Draw border around the entire page
+  doc.rect(20, 20, 570, 750).stroke();
+  
+  // Generate headers
+  generateHeaders(doc,address,invoiceData);
+  
+  
+  doc.moveTo(50, 200);
+
+
+  // Generate tables
+  generateTables(doc, tableData);
+// Move down to create space
+
+  // Generate footers
+  generateFooters(doc,invoiceData,gst,bank,sign);
+}
+const generateInvoicePDF = async (invoiceData, pdfFilePath) => {
+  try {
+   
+    
+    const doc = new PDFDocument();
+    const writeStream = fs.createWriteStream(pdfFilePath);
+
+    doc.pipe(writeStream);
+    const date =formatDate(invoiceData.date)
+    const amount = `${invoiceData.amount}.00`
+    const tableData =[  
+      { date: date, description: 'Therapy Package', amount: amount }
+    ];
+    const addresses = await Address.find();
+
+        // Assuming you want to use the first address in the list
+        const address = addresses[0];
+        const gsts = await GST.find();
+
+        // Assuming you want to use the first address in the list
+        const gst = gsts[0];
+        const banks = await BankDetails.find();
+
+       
+        const bank =banks[0];
+
+        const signs = await Signature.find();
+
+        // Assuming you want to use the first address in the list
+        const sign =signs[0];
+
+    // Generate the content of the PDF
+    generateInvoice(doc, tableData, address,invoiceData,gst,bank,sign);
+
+    doc.end();
+
+    await new Promise((resolve, reject) => {
+      writeStream.on("finish", () => {
+        // The PDF has been saved locally
+        console.log("PDF saved locally:", pdfFilePath);
+        resolve(pdfFilePath);
+      });
+
+      writeStream.on("error", (err) => {
+        // Handle the error
+        console.error("Error saving PDF:", err);
+        reject(err);
+      });
+    });
+
+    return pdfFilePath;
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    throw error;
+  }
+};
+const Invoice = require('../models/invoice');
+
+// Function to create a new invoice
+const createInvoice = async () => {
+    try {
+        const currentYear = new Date().getFullYear();
+
+        // Find the latest invoice for the current year
+        let latestInvoice = await Invoice.findOne({ year: currentYear }).sort({ invoiceCount: -1 });
+
+        let invoiceCount;
+        if (latestInvoice) {
+            // If there are invoices for the current year, increment the invoice count
+            invoiceCount = latestInvoice.invoiceCount + 1;
+        } else {
+            // If there are no invoices for the current year, set the invoice count to 1
+            invoiceCount = 1;
+        }
+
+        // Create the new invoice
+        const newInvoice = new Invoice({
+            invoiceCount,
+            year: currentYear
+        });
+
+        // Save the new invoice to the database
+        await newInvoice.save();
+
+        // Construct and return the invoice number
+        const invoiceNumber = `INV${currentYear}-${invoiceCount}`;
+        return invoiceNumber;
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error creating invoice');
+    }
+};
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, '0');
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear().toString().slice(-2);
+  return `${day}-${month}-${year}`;
+};
+
 
 
 

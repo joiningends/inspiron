@@ -46,7 +46,7 @@ const doseRoutes = require("./routes/doeses");
 const labtestRoutes = require("./routes/labtests");
 const ePrescriptionRoutes = require("./routes/eprescriptions");
 const whatsappRoutes = require("./routes/whatsapp");
-
+const addressRoutes = require('./routes/address');
 const api = process.env.API_URL;
 const PORT = process.env.PORT || 5001;
 app.use(`${api}/appointments`, appointmentsRoutes);
@@ -71,7 +71,7 @@ app.use(`${api}/doses`, doseRoutes);
 app.use(`${api}/labtests`, labtestRoutes);
 app.use(`${api}/eprescriptions`, ePrescriptionRoutes);
 app.use(`${api}/whatsapp`, whatsappRoutes);
-
+app.use(`${api}/address`, addressRoutes);
 // Start the scheduler
 
 const _dirname = path.dirname("");

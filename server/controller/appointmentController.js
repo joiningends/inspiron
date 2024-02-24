@@ -4043,7 +4043,7 @@ cron.schedule("* * * * *", async () => {
         sendWhatsAppMessage(
           recipientNumber,
           `
-Hi ${username},
+Hi ${user.name},
           
 This is Inspiron. Your upcoming appointment is confirmed!
 Your appointment is in 5 minutes.
