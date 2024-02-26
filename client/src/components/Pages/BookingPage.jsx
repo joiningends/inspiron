@@ -65,7 +65,7 @@ function BookingPage() {
   console.log(experienceLevel);
 
   const [razorpayOptions, setRazorpayOptions] = useState({
-    key: "rzp_test_9RNyyq8jjMD11V",
+    key: `${process.env.REACT_APP_KEY_ID}`,
     amount: 0,
     currency: "INR",
     name: "Inspiron",

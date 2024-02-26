@@ -16,7 +16,6 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import email from "./emailForSignUpPage.png";
 
 const Signin = () => {
-  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -33,10 +32,6 @@ const Signin = () => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
-  };
-
-  const toggleShowPassword = () => {
-    setShowPassword(prevShowPassword => !prevShowPassword);
   };
 
   const handleInputFocus = () => {
@@ -84,6 +79,7 @@ const Signin = () => {
         }
       );
 
+      console.log(response);
       if (response.ok) {
         const data = await response.json();
 
@@ -204,6 +200,7 @@ const Signin = () => {
           top: 0,
           left: -10,
           margin: "10px",
+          zIndex:1,
         }}
       />
       <img
@@ -217,9 +214,10 @@ const Signin = () => {
           top: -10,
           right: -10,
           margin: "10px",
+          zIndex:1,
         }}
       />
-      <div className="signin-form">
+      <div className="signin-form" style={{zIndex:"100"}}>
         <h2>Sign In</h2>
         <div className="form-group">
           <img

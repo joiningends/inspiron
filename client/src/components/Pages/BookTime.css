@@ -64,6 +64,7 @@
 
 
 
+
 .booktime-pagination {
   display: flex;
   justify-content: flex-end;
@@ -77,6 +78,16 @@
 .booktime-subDetails {
   font-size: 2rem;
 }
+
+.subDetails {
+  font-size: 1.4rem; /* Default font size for desktop */
+
+  @media (max-width: 767px) {
+    /* Media query for screens up to 767px width (considered mobile) */
+    font-size: 0.9rem; /* Font size for mobile */
+  }
+}
+
 
 .booktime-profileIcons {
   padding: 0.4rem;
@@ -379,4 +390,16 @@
   background-color: white; /* Change the background color to white */
   color: red; /* Change the text color to red */
   /* Add any other custom styles you need */
+}
+
+
+.lastUserDetailRow {
+  font-size: 1.2rem; /* Default font size for desktop */
+
+  @media (max-width: 767px) {
+    /* Media query for screens up to 767px width (considered mobile) */
+    font-size: 0.8rem; /* Font size for mobile */
+  }
+
+  text-align: center;
 }

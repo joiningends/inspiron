@@ -472,8 +472,8 @@ const DoctorProfile = () => {
         </Grid>
       </Paper>
 
-      <Grid container spacing={2} alignItems="center">
-        <Grid item xs={12}>
+      <Grid container spacing={0.5} alignItems="center">
+        <Grid item xs={14}>
           <Typography
             variant="h6"
             gutterBottom
@@ -494,13 +494,13 @@ const DoctorProfile = () => {
         </Grid>
 
         {/* Mode of Therapy */}
-        <Grid item xs={4} sm={4} style={{ marginLeft: "1rem" }}>
+        <Grid item xs={3.5} sm={4} style={{ marginLeft: "1rem" }}>
           <div style={boxStyle}>
             <div style={iconStyle}>
               <img
                 src={ModeOfMeetingIcon}
                 alt="Mode of Therapy Icon"
-                style={{ width: "100%" }}
+                style={{ width: "100%", minWidth: "1rem" }}
               />
             </div>
             <div style={contentStyle}>
@@ -534,7 +534,7 @@ const DoctorProfile = () => {
               <img
                 src={ExpertiseIcon}
                 alt="Expertise Icon"
-                style={{ width: "100%" }}
+                style={{ width: "100%", minWidth: "1rem" }}
               />
             </div>
             <div style={contentStyle}>
@@ -567,7 +567,7 @@ const DoctorProfile = () => {
               <img
                 src={LanguagesIcon}
                 alt="Languages Known Icon"
-                style={{ width: "100%" }}
+                style={{ width: "100%", minWidth: "1rem" }}
               />
             </div>
             <div style={contentStyle}>
@@ -595,12 +595,26 @@ const DoctorProfile = () => {
         </Grid>
       </Grid>
 
-      <Box style={containerStyle}>
-        <Typography variant="h6" style={{ ...titleStyle, color: "white" }}>
+      <Box
+        style={{ ...containerStyle, display: "flex", flexDirection: "column" }}
+      >
+        <Typography
+          variant="h6"
+          style={{
+            ...titleStyle,
+            color: "white",
+            textAlign: "justify",
+            marginBottom: "0.6rem",
+            fontSize: "1.4rem",
+          }}
+        >
           Connect with all parts of yourself & start new life
         </Typography>
-        <Box style={textContainerStyle}>
-          <Typography variant="body1" style={{ ...mainTextStyle }}>
+        <Box style={{ ...textContainerStyle, textAlign: "justify" }}>
+          <Typography
+            variant="body1"
+            style={{ ...mainTextStyle, textAlign: "justify" }}
+          >
             Discovering the right therapist is key to your mental well-being
             journey. Our service ensures a personalized match with experts
             versed in scientific treatment protocols, including psychometric
@@ -621,11 +635,13 @@ const DoctorProfile = () => {
             borderRadius: "1rem",
             backgroundColor: "white",
             color: "#D67449",
+            marginTop: "1rem", // Adjust the margin for spacing
           }}
         >
           Book Now
         </Button>
       </Box>
+
       <Footer />
     </>
   );

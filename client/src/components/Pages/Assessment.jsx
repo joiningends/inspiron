@@ -125,8 +125,11 @@ const AssessmentPage = () => {
                     selectedOption === option._id
                       ? "#68B545"
                       : "rgba(104, 181, 69, 0.15)",
-                  height: "50px", // Adjust the height as needed
-                  padding: "10px", // Adjust the padding as needed
+                  height: "5.5rem",
+                  padding: "10px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
                 {option.text}

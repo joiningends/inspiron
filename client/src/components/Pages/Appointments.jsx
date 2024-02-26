@@ -228,6 +228,7 @@ function Appointments() {
       .then(response => {
         // Handle the successful response here, and set the user data to state
         setUser(response.data);
+        console.log(response.data);
       })
       .catch(error => {
         // Handle any errors here
@@ -284,6 +285,7 @@ function Appointments() {
         )
         .then(response => {
           setUpcomingAppointments(response.data.upcomingAppointments);
+          console.log(response.data)
           setLoading(false);
         })
         .catch(error => {
@@ -295,6 +297,7 @@ function Appointments() {
         .get(`${process.env.REACT_APP_SERVER_URL}/appointments/users/${userId}`)
         .then(response => {
           setPastAppointments(response.data.appointments);
+          console.log(response.data.appointments)
           setLoading(false);
         })
         .catch(error => {

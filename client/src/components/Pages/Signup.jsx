@@ -110,7 +110,7 @@ const Signup = () => {
     // Remove non-numeric characters from the phone number
     const formattedPhoneNumber = phoneNumber.replace(/\D/g, "");
 
-    console.log(formattedPhoneNumber)
+    console.log(formattedPhoneNumber);
 
     dispatch(
       createUser({
@@ -162,6 +162,7 @@ const Signup = () => {
         fontFamily: "Poppins, sans-serif",
         marginTop: "-2rem",
         position: "relative",
+        width: "100%",
       }}
     >
       <img
@@ -175,6 +176,7 @@ const Signup = () => {
           top: 0,
           left: -10,
           margin: "10px",
+          zIndex: 1,
         }}
       />
       <img
@@ -188,9 +190,19 @@ const Signup = () => {
           top: -10,
           right: -10,
           margin: "10px",
+          zIndex: 1,
         }}
       />
-      <Grid container justifyContent="center">
+      <Grid
+        container
+        justifyContent="center"
+        style={{
+          zIndex: "100",
+          width: "100rem",
+          minWidth: "40rem",
+          maxWidth: "100rem",
+        }}
+      >
         <Grid item xs={12} sm={8} md={6} style={{ height: "30rem" }}>
           <FormControl
             style={{
@@ -320,7 +332,7 @@ const Signup = () => {
               className="form-group"
               variant="standard"
               fullWidth
-              style={{ marginBottom: "10px", width: "25vw" }}
+              style={{ marginBottom: "10px", width: "100%" }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

@@ -434,7 +434,7 @@ function NavBar() {
             keepMounted: true,
           }}
         >
-          <List>
+          <List style={{ width: "13rem" }}>
             {isLoggedIn && userRole === "user" && (
               <>
                 <ListItemButton

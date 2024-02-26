@@ -101,14 +101,13 @@ function CompletePayment() {
 
         // Initialize Razorpay with your Razorpay API Key
         const options = {
-          key: "rzp_test_9RNyyq8jjMD11V",
+          key: `${process.env.REACT_APP_KEY_ID}`,
           amount: actualAmount * 100, // Amount in paise
           currency: "INR",
           name: "Your Company Name",
           description: "Payment for Course",
           order_id: order_id,
           handler: function (response) {
-
             // Handle the successful payment response here
             const {
               razorpay_order_id,
@@ -117,7 +116,7 @@ function CompletePayment() {
             } = response;
 
             // Make a POST request to the verification URL
-            
+
             axios
               .post(`${process.env.REACT_APP_SERVER_URL}/payments/verify`, {
                 userid: userId,

@@ -1,9 +1,8 @@
-
-
 .homepageBanner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  padding: 20px;
 }
 
 .homepageBannerText {
@@ -18,8 +17,7 @@
 
 .homepageBannerButtonsandtext {
   flex: 1;
-  padding: 5rem;
-
+  padding: 20px;
 }
 
 .homepageBackgroundImage {
@@ -48,7 +46,7 @@
 }
 
 .linkButton.primary {
-  background-color:#5179BD;
+  background-color: #5179BD;
   color: #fff;
 }
 
@@ -63,22 +61,34 @@
   color: white;
 }
 
+@media (max-width: 1200px) {
+  .homepageBannerText {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .homepageBannerText {
+    font-size: 1.8rem;
+  }
+}
+
 @media (max-width: 768px) {
   .homepageBanner {
     flex-direction: column;
   }
 
   .homepageBannerText {
-    font-size: 2rem;
+    font-size: 1.6rem;
   }
 
   .homePageBannerParagraph {
-    font-size: 1.6rem;
-    line-height: 2.2rem;
+    font-size: 1.2rem;
+    line-height: 1.6rem;
   }
 
   .linkButton {
-    font-size: 1.2rem;
+    font-size: 1rem;
     padding: 10px 20px;
   }
 

@@ -56,6 +56,7 @@ import RatingSystem from "./components/Pages/Rating";
 import SelfHelp from "./components/Pages/SelfHelp";
 import ResetPasswordTherapist from "./components/Pages/ResetPasswordTherapist";
 import PageNotFound from "./components/Pages/PageNotFound";
+import jwtDecode from "jwt-decode";
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -72,6 +73,32 @@ function App() {
   let groupId = localStorage.getItem("groupid");
   const [dataCompany, setDataCompany] = useState(false);
   console.log(dataCompany);
+
+  useEffect(() => {
+    const checkTokenExpiration = () => {
+      const token = localStorage.getItem("token");
+
+      if (!["/signin", "/login"].includes(window.location.pathname) && token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          if (decodedToken && decodedToken.exp * 1000 < Date.now()) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            localStorage.removeItem("role");
+            localStorage.removeItem("groupid");
+            localStorage.removeItem("assessment");
+            localStorage.removeItem("therapists");
+            localStorage.removeItem("therapistsData");
+            window.location.href = "/login";
+          }
+        } catch (error) {
+          console.error("Error decoding JWT:", error);
+        }
+      }
+    };
+
+    checkTokenExpiration();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,7 +127,13 @@ function App() {
   if (parsedUserRole !== null) {
     const forbiddenPaths = ["/login", "/signin", "/login/:company/:groupId"];
     if (forbiddenPaths.includes(window.location.pathname)) {
-      window.location.href = "/PageNotFound";
+      if (parsedUserRole === "user") {
+        return (window.location.href = "/");
+      } else if (parsedUserRole === "therapist") {
+        return (window.location.href = "/therapists");
+      } else if (parsedUserRole === "admin") {
+        return (window.location.href = "/admin-Dashboard");
+      }
     }
   }
 

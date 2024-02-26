@@ -679,8 +679,23 @@ function BookTime() {
           />
         </div>
         <div className="booktime-aboutDiv">
-          <div className="booktime-containerr2">
-            <div className="booktime-profileDetails">
+          <div
+            className="booktime-containerr2"
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-around",
+              flexWrap: "wrap",
+              marginLeft: "3rem",
+            }}
+          >
+            <div
+              className="booktime-profileDetails"
+              style={{
+                textAlign: "center",
+                flex: "1 1 100%",
+              }}
+            >
               <span>
                 <img
                   src={TotalSessionIcon}
@@ -691,14 +706,15 @@ function BookTime() {
               <span>
                 <h3 className="subDetails">{availableSession}</h3>
               </span>
-              <span
-                className="lastUserDetailRow"
-                style={{ textAlign: "center" }}
-              >
+              <span className="lastUserDetailRow">
                 Total Available Sessions
               </span>
             </div>
-            <div className="booktime-profileDetails">
+
+            <div
+              className="booktime-profileDetails"
+              style={{ textAlign: "center", flex: "1 1 100%" }}
+            >
               <span>
                 <img
                   src={RatingIcon}
@@ -711,14 +727,13 @@ function BookTime() {
                   {therapist?.userRating.toFixed(1)}/5
                 </h3>
               </span>
-              <span
-                className="lastUserDetailRow"
-                style={{ textAlign: "center" }}
-              >
-                User Rating
-              </span>
+              <span className="lastUserDetailRow">User Rating</span>
             </div>
-            <div className="booktime-profileDetails">
+
+            <div
+              className="booktime-profileDetails"
+              style={{ textAlign: "center", flex: "1 1 100%" }}
+            >
               <span>
                 <img
                   src={OfflineIcon}
@@ -733,7 +748,15 @@ function BookTime() {
                 Available Offline Session
               </span>
             </div>
-            <div className="booktime-profileDetails" style={{ height: "35vh" }}>
+
+            <div
+              className="booktime-profileDetails"
+              style={{
+                textAlign: "center",
+                flex: "1 1 100%",
+                height: "13.8rem",
+              }}
+            >
               <span>
                 <img
                   src={OnlineIcon}
@@ -744,7 +767,7 @@ function BookTime() {
               <span>
                 <h3 className="subDetails">{therapist?.onlineSessionCount}</h3>
               </span>
-              <span className="lastUserDetailRow1">
+              <span className="lastUserDetailRow">
                 Available Online Sessions
               </span>
             </div>
