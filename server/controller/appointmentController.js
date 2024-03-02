@@ -4039,7 +4039,10 @@ cron.schedule("* * * * *", async () => {
 
       if (timeDifference >= 0 && timeDifference <= 5 * 60 * 1000) {
         const recipientNumber = user.mobile;
+        const dateObject = new Date(appointmentDateTime);
 
+        // Extract the date part in YYYY-MM-DD format
+        const appointmentDateonly = dateObject.toISOString().split("T")[0];
         sendWhatsAppMessage(
           recipientNumber,
           `
@@ -4058,10 +4061,7 @@ Inspiron Team 🌈💚
         );
         const appointmentTime = appointment.startTime;
 
-        const dateObject = new Date(appointmentDateTime);
-
-        // Extract the date part in YYYY-MM-DD format
-        const appointmentDateonly = dateObject.toISOString().split("T")[0];
+        
         const transporter = nodemailer.createTransport({
           host: "smtppro.zoho.com",
           port: 465,
