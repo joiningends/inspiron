@@ -15,7 +15,7 @@ const {
 const path = require("path");
 
 app.use(cors());
-app.options("*", cors());
+
 
 //middleware
 app.use(express.json());
