@@ -176,7 +176,7 @@ exports.createEPrescription = async (req, res) => {
       // Email the PDF to the user
       sendEmailWithAttachment(user.email, pdfFilePath);
       
-      media_url=`https://appointments.inspirononline.com/${pdfFilePath}`
+      media_url=`https://appointments.inspirononline.com./${pdfFilePath}`
       console.log(media_url)
       sendWhatsAppMessageMedia(user.mobile,
    `Attached is your prescription pdf
