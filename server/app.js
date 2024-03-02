@@ -14,7 +14,9 @@ const {
 
 const path = require("path");
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://appointments.inspirononline.com.'
+}));
 
 
 //middleware
