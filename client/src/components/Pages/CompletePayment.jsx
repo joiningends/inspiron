@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import Modal from "react-modal";
 
 function CompletePayment() {
   const { userId, amount, experienceLevel } = useParams();
+  const [showPopup, setShowPopup] = useState(false);
 
   const [boxStyle, setBoxStyle] = useState({
     textAlign: "center",
@@ -104,7 +106,7 @@ function CompletePayment() {
           key: `${process.env.REACT_APP_KEY_ID}`,
           amount: actualAmount * 100, // Amount in paise
           currency: "INR",
-          name: "Your Company Name",
+          name: "Inspiron",
           description: "Payment for Course",
           order_id: order_id,
           handler: function (response) {
@@ -154,6 +156,18 @@ function CompletePayment() {
       });
   };
 
+  const handlePayOffline = () => {
+    setShowPopup(true);
+  };
+
+  const handlePopupYes = () => {
+    setShowPopup(false);
+    window.location.href = "/FindTherapist";
+  };
+
+  const handlePopupNo = () => {
+    setShowPopup(false);
+  };
   return (
     <div style={containerStyle}>
       <div id="box" style={boxStyle}>
@@ -164,7 +178,58 @@ function CompletePayment() {
         <button style={primaryButtonStyle} onClick={handlePayOnline}>
           Pay Online
         </button>
-        <button style={secondaryButtonStyle}>Pay Offline</button>
+        <button style={secondaryButtonStyle} onClick={handlePayOffline}>
+          Pay Offline
+        </button>
+        <Modal
+          isOpen={showPopup}
+          onRequestClose={() => setShowPopup(false)}
+          style={{
+            content: {
+              width: "80%",
+              maxWidth: "400px",
+              height:"20rem",
+              margin: "auto",
+              borderRadius: "10px",
+              boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.3)",
+              background: "#fff",
+              padding: "20px",
+              textAlign: "center",
+              fontSize: "16px",
+            },
+          }}
+        >
+          <h2>Important Notice</h2>
+          <p>
+            If you choose the offline payment option at this moment, you cannot
+            book another appointment. For complete details, contact Team
+            Inspiron.
+          </p>
+          <div>
+            <button
+              onClick={handlePopupYes}
+              style={{
+                ...buttonStyle,
+                backgroundColor: "#D67449",
+                color: "white",
+                marginRight: "10px",
+              }}
+            >
+              Yes
+            </button>
+            <button
+              onClick={handlePopupNo}
+              style={{
+                ...buttonStyle,
+                backgroundColor: "#fff",
+                border: "1px solid #D67449",
+                color: "#D67449",
+              }}
+            >
+              No
+            </button>
+          </div>
+        </Modal>
       </div>
     </div>
   );

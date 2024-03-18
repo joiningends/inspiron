@@ -66,7 +66,7 @@ function NavBar() {
           const groupVal = groupId.replace(/"/g, "");
 
           const response = await axios.get(
-            `http://localhost:5001/api/v1/clients/group/${groupVal}`
+            `${process.env.REACT_APP_SERVER_URL}/clients/group/${groupVal}`
           );
           console.log(response);
           // Handle the successful response here
