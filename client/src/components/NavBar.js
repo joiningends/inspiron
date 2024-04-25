@@ -129,7 +129,7 @@ function NavBar() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
-            <NavLink to="/" style={{ textDecoration: "none", color: "black" }}>
+            <NavLink to="https://www.inspirononline.com/" style={{ textDecoration: "none", color: "black" }}>
               <div
                 style={{
                   width: "150px",
