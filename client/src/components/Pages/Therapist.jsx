@@ -55,7 +55,7 @@ function Therapist({ therapist }) {
   return (
     <div
       className="therapist-container"
-      style={{ position: "relative", maxWidth: "600px", minWidth: "480px" }}
+      style={{ position: "relative", minWidth:"37rem"}}
     >
       <img
         src={start}
