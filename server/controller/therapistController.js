@@ -256,78 +256,86 @@ const getTherapistById = async (req, res) => {
 
     const therapistSessions = therapist.sessions || [];
     const currentDate = new Date(); // Get the current date and time
-    const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false });
+    const currentTime = new Date().toLocaleTimeString("en-US", {
+      hour12: false,
+    });
     console.log(currentTime);
-    
-    const filteredSessions = therapistSessions.flatMap(session => {
-      const sessionDate = new Date(session.date);
-    
-      console.log('Session:', session); // Add this line for debugging
-    
-      if (session && Array.isArray(session.timeSlots)) {
-        if (sessionDate > currentDate) {
-          // Include all time slots for future sessions
-          return {
-            date: session.date,
-            timeSlots: session.timeSlots.filter(timeSlot => new Date(`${session.date} ${timeSlot.startTime}`) >= currentDate),
-          };
-        } else if (sessionDate.toDateString() === currentDate.toDateString()) {
-          // Include time slots for today's session and check the current time
-          const validTimeSlots = session.timeSlots
-            .filter(timeSlot => timeSlot.startTime >= currentTime)
-            .map(timeSlot => ({
-              startTime: timeSlot.startTime,
-              endTime: timeSlot.endTime,
-              sessionType: timeSlot.sessionType,
-              location: timeSlot.location,
-            }));
-    
-          return {
-            date: session.date,
-            timeSlots: validTimeSlots,
-          };
-        }
-      } else if (session && session.timeSlot) {
-        // Corrected the property name to session.timeSlots
-        if (new Date(`${session.date} ${session.timeSlot.startTime}`) > currentDate) {
-          return {
-            date: session.date,
-            timeSlots: [session.timeSlot],
-          };
-        }
-      }
-      return null;
-    }).filter(Boolean);
-    
-    console.log('Filtered Sessions:', filteredSessions);
-    
-    
 
+    const filteredSessions = therapistSessions
+      .flatMap(session => {
+        const sessionDate = new Date(session.date);
 
-console.log('Filtered Sessions:', filteredSessions);
+        console.log("Session:", session); // Add this line for debugging
+
+        if (session && Array.isArray(session.timeSlots)) {
+          if (sessionDate > currentDate) {
+            // Include all time slots for future sessions
+            return {
+              date: session.date,
+              timeSlots: session.timeSlots.filter(
+                timeSlot =>
+                  new Date(`${session.date} ${timeSlot.startTime}`) >=
+                  currentDate
+              ),
+            };
+          } else if (
+            sessionDate.toDateString() === currentDate.toDateString()
+          ) {
+            // Include time slots for today's session and check the current time
+            const validTimeSlots = session.timeSlots
+              .filter(timeSlot => timeSlot.startTime >= currentTime)
+              .map(timeSlot => ({
+                startTime: timeSlot.startTime,
+                endTime: timeSlot.endTime,
+                sessionType: timeSlot.sessionType,
+                location: timeSlot.location,
+              }));
+
+            return {
+              date: session.date,
+              timeSlots: validTimeSlots,
+            };
+          }
+        } else if (session && session.timeSlot) {
+          // Corrected the property name to session.timeSlots
+          if (
+            new Date(`${session.date} ${session.timeSlot.startTime}`) >
+            currentDate
+          ) {
+            return {
+              date: session.date,
+              timeSlots: [session.timeSlot],
+            };
+          }
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    console.log("Filtered Sessions:", filteredSessions);
+
+    console.log("Filtered Sessions:", filteredSessions);
     if (filteredSessions && Array.isArray(filteredSessions)) {
-      console.log('Filtered Sessions:', filteredSessions);
-    
+      console.log("Filtered Sessions:", filteredSessions);
+
       filteredSessions.forEach(session => {
         if (session && session.timeSlot) {
-          console.log('Time Slot:', session.timeSlot);
-    
+          console.log("Time Slot:", session.timeSlot);
+
           if (session.timeSlot.sessionType === "online") {
-            console.log('Incrementing onlineSessionCount');
+            console.log("Incrementing onlineSessionCount");
             onlineSessionCount++;
           } else if (
             session.timeSlot.sessionType === "offline" ||
             session.timeSlot.sessionType === "online/offline"
           ) {
-            console.log('Incrementing offlineSessionCount');
+            console.log("Incrementing offlineSessionCount");
             offlineSessionCount++;
           }
         }
       });
     }
-    
-    
-    
+
     res.status(200).json({
       ...therapist.toObject(),
       sessions: filteredSessions,
@@ -340,9 +348,6 @@ console.log('Filtered Sessions:', filteredSessions);
       .json({ error: "Failed to retrieve therapist", details: error.message });
   }
 };
-
-
-
 
 const createTherapistfull = async (req, res) => {
   try {
@@ -398,13 +403,13 @@ const createTherapist = async (req, res) => {
       mobile,
       availability,
       therapisttype,
-      passwordHash
+      passwordHash,
     });
     await therapist.save();
 
     // Generate a random token and save it in the therapist's database record
     const resetToken = jwt.sign({ userId: therapist._id }, process.env.secret, {
-      expiresIn: '1h', // Token expires in 1 hour
+      expiresIn: "1h", // Token expires in 1 hour
     });
     therapist.resetPasswordToken = resetToken;
     therapist.resetPasswordExpires = Date.now() + 3600000; // 1 hour in milliseconds
@@ -442,8 +447,6 @@ const createTherapist = async (req, res) => {
   }
 };
 
-
-
 const resetPassword = async (req, res) => {
   try {
     const { resetToken, newPassword } = req.body;
@@ -455,7 +458,9 @@ const resetPassword = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired reset token' });
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired reset token" });
     }
 
     // Update the user's password and reset token fields
@@ -474,11 +479,11 @@ const resetPassword = async (req, res) => {
         pass: "zU0VjyrxHmFm",
       },
     });
-  
+
     const mailOptions = {
       from: "info@inspirononline.com",
       to: user.email,
-      subject: 'Password Reset Confirmation',
+      subject: "Password Reset Confirmation",
       html: `
         <p>Hi ${user.name},</p>
         <p>Your password has been successfully set. If you did not initiate this request, please contact support.</p>
@@ -488,15 +493,15 @@ const resetPassword = async (req, res) => {
     // Send the password reset confirmation email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.error('Error sending email:', error);
+        console.error("Error sending email:", error);
       } else {
-        console.log('Password reset confirmation email sent:', info.response);
+        console.log("Password reset confirmation email sent:", info.response);
       }
     });
 
-    res.status(200).json({ message: 'Password reset successful' });
+    res.status(200).json({ message: "Password reset successful" });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to reset password' });
+    res.status(500).json({ error: "Failed to reset password" });
   }
 };
 const updateTherapist = (req, res) => {
@@ -576,13 +581,16 @@ const updateTherapistsign = async (req, res) => {
       return res.status(400).json({ error: "No image file provided" });
     }
 
-    const fileName = file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
-    const imagePath = `${basePath}${fileName}`;
+    let image = null;
+    if (req.file) {
+      const fileName = req.file.key; // Use the key provided by S3 instead of filename
+      const basePath = `https://inspirionimages.s3.ap-south-1.amazonaws.com/`; // Base URL of your S3 bucket
+      image = `${basePath}${fileName}`;
+    }
 
     const therapist = await Therapist.findByIdAndUpdate(
       req.params.id,
-      { sign: imagePath },
+      { sign: image },
       { new: true }
     );
 
@@ -604,13 +612,16 @@ const updateTherapistImage = async (req, res) => {
       return res.status(400).json({ error: "No image file provided" });
     }
 
-    const fileName = file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
-    const imagePath = `${basePath}${fileName}`;
+    let image = null;
+    if (req.file) {
+      const fileName = req.file.key; // Use the key provided by S3 instead of filename
+      const basePath = `https://inspirionimages.s3.ap-south-1.amazonaws.com/`; // Base URL of your S3 bucket
+      image = `${basePath}${fileName}`;
+    }
 
     const therapist = await Therapist.findByIdAndUpdate(
       req.params.id,
-      { image: imagePath },
+      { image: image },
       { new: true }
     );
 
@@ -786,13 +797,11 @@ const updateEducation = async (req, res) => {
       education: updatedEducation,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "Failed to update education details",
-        details: error,
-      });
+    res.status(500).json({
+      success: false,
+      error: "Failed to update education details",
+      details: error,
+    });
   }
 };
 
@@ -1087,7 +1096,7 @@ module.exports = {
   getTherapistById,
   createTherapistfull,
   createTherapist,
-  
+
   resetPassword,
   updateTherapist,
   updateTherapists,
@@ -1112,5 +1121,4 @@ module.exports = {
   approveTherapist,
   userRating,
   userRatingadmin,
- 
 };
