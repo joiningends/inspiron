@@ -631,41 +631,70 @@ function TherapistProfilePage() {
   return (
     <>
       <div className="rounded-image-container" style={{ position: "relative" }}>
-        <div className="rounded-image">
-          <img src={therapist?.image} alt="Therapist_image" />
-          <div
-            className="edit-button"
-            style={{
-              position: "absolute",
-              top: "calc(100% - 40px)", // Adjust the distance from the top here
-              right: "10px",
-              background: "white",
-              padding: "5px",
-              borderRadius: "50%",
-              cursor: "pointer",
-              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <FontAwesomeIcon icon={faEdit} style={{ fontSize: "16px" }} />
-            <input
-              type="file"
-              id="upload"
-              accept="image/*"
-              onChange={handleImageChange}
+        <div
+          className="rounded-image-container"
+          style={{ position: "relative" }}
+        >
+          <div className="rounded-image">
+            <img src={therapist?.image} alt="Therapist_image" />
+            <div
+              className="edit-button"
               style={{
                 position: "absolute",
-                width: "100%", // Make the input element cover the whole container
-                height: "100%", // Make the input element cover the whole container
-                opacity: "0", // Visually hide the input element
+                top: "calc(100% - 40px)", // Adjust the distance from the top here
+                right: "10px",
+                background: "white",
+                padding: "5px",
+                borderRadius: "50%",
                 cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
-            />
+            >
+              <FontAwesomeIcon icon={faEdit} style={{ fontSize: "16px" }} />
+              <input
+                type="file"
+                id="upload"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{
+                  position: "absolute",
+                  width: "100%", // Make the input element cover the whole container
+                  height: "100%", // Make the input element cover the whole container
+                  opacity: "0", // Visually hide the input element
+                  cursor: "pointer",
+                }}
+              />
+            </div>
+          </div>
+          <div
+            style={{
+              position: "relative",
+              textAlign: "center",
+              marginTop: "10px",
+            }}
+          >
+            <div style={{ fontSize: "12px", color: "red" }}>
+              Image size should be less than 1 MB
+            </div>
           </div>
         </div>
+
+        {/* <div
+          style={{
+            position: "absolute",
+            bottom: "5px",
+            right: "5px",
+            fontSize: "12px",
+            color: "red",
+          }}
+        >
+          Image size should be less than 5 MB
+        </div> */}
       </div>
+
       <div className="personalDetailsDIV">
         <div
           className="primaryDetailsDiv"

@@ -323,6 +323,16 @@ function AssessmentCreatePage() {
               }}
             />
           </div>
+          <div
+            style={{
+              fontSize: "12px",
+              color: "red",
+              textAlign: "center",
+              marginTop: "-0.5rem",
+            }}
+          >
+            Image size should be less than 1 MB
+          </div>
 
           <div style={{ marginBottom: "20px" }}>
             <label
