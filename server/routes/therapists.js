@@ -5,6 +5,8 @@ const therapistController = require("../controller/therapistController");
 const multerS3 = require("multer-s3");
 const aws = require("aws-sdk");
 
+//s3 bucket name
+
 const FILE_TYPE_MAP = {
   "image/png": "png",
   "image/jpeg": "jpeg",
