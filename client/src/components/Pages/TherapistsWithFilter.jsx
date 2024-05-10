@@ -414,6 +414,7 @@ export const TherapistsWithFilter = () => {
       key={therapist.id}
       therapist={therapist}
       className="therapist-box"
+     x
     />
   ));
 
@@ -428,7 +429,7 @@ export const TherapistsWithFilter = () => {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           height: "10rem",
-          width: "100vw",
+          minWidth:"100%",
           marginTop: "-2rem",
         }}
       >
