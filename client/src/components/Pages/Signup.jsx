@@ -34,6 +34,7 @@ import telePhone from "./telephoneForSignUppage.png";
 import lock from "./padlockForSignUpPage.png";
 import email from "./emailForSignUpPage.png";
 import user from "./userIconsforsignup.png";
+
 const Signup = () => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
@@ -46,7 +47,8 @@ const Signup = () => {
   });
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
-  const [showPassword, setShowPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isTermsAccepted, setTermsAccepted] = useState(false);
   const [selectedCountryCode, setSelectedCountryCode] = useState(null);
   const [countryOptions, setCountryOptions] = useState([]);
@@ -344,14 +346,7 @@ const Signup = () => {
                   </InputAdornment>
                 ),
                 endAdornment: (
-                  <InputAdornment
-                    position="end"
-                    style={{
-                      border: "1px solid #E7E7E7",
-                      height: "10rem",
-                      padding: "1.2rem 0",
-                    }}
-                  >
+                  <InputAdornment position="end">
                     <IconButton
                       aria-label="toggle password visibility"
                       onClick={() => setShowPassword(!showPassword)}
@@ -389,19 +384,14 @@ const Signup = () => {
                   </InputAdornment>
                 ),
                 endAdornment: (
-                  <InputAdornment
-                    position="end"
-                    style={{
-                      border: "1px solid #E7E7E7",
-                      height: "10rem",
-                      padding: "1.2rem 0",
-                    }}
-                  >
+                  <InputAdornment position="end">
                     <IconButton
                       aria-label="toggle confirm password visibility"
-                      onClick={() => setShowPassword(!showPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                     >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                      {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -409,7 +399,7 @@ const Signup = () => {
                 style: { fontFamily: "Poppins, sans-serif" },
               }}
               label="Confirm Password"
-              type={showPassword ? "text" : "password"}
+              type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}

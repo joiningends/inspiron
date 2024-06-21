@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEnvelope,
+  faLock,
+  faEye,
+  faEyeSlash,
+} from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/Action";
 import { ToastContainer, toast } from "react-toastify";
@@ -11,8 +16,6 @@ import wheel from "./inspironwhitewheel.png";
 import wheell from "./inspironwhitewheel2.png";
 import Footer from "./Footer";
 import lock from "./padlockForSignUpPage.png";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-
 import email from "./emailForSignUpPage.png";
 
 const Signin = () => {
@@ -32,14 +35,6 @@ const Signin = () => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
-  };
-
-  const handleInputFocus = () => {
-    setShowPassword(true);
-  };
-
-  const handleInputBlur = () => {
-    setShowPassword(false);
   };
 
   const handleSubmit = async e => {
@@ -67,7 +62,6 @@ const Signin = () => {
     }
 
     try {
-      console.log(formData);
       const response = await fetch(
         `${process.env.REACT_APP_SERVER_URL}/users/login`,
         {
@@ -79,7 +73,6 @@ const Signin = () => {
         }
       );
 
-      console.log(response);
       if (response.ok) {
         const data = await response.json();
 
@@ -200,7 +193,7 @@ const Signin = () => {
           top: 0,
           left: -10,
           margin: "10px",
-          zIndex:1,
+          zIndex: 1,
         }}
       />
       <img
@@ -214,10 +207,10 @@ const Signin = () => {
           top: -10,
           right: -10,
           margin: "10px",
-          zIndex:1,
+          zIndex: 1,
         }}
       />
-      <div className="signin-form" style={{zIndex:"100"}}>
+      <div className="signin-form" style={{ zIndex: "100" }}>
         <h2>Sign In</h2>
         <div className="form-group">
           <img
@@ -232,7 +225,6 @@ const Signin = () => {
             placeholder="Email"
             value={formData.email}
             onChange={handleChange}
-            onBlur={handleInputBlur}
             required
           />
         </div>
@@ -250,8 +242,6 @@ const Signin = () => {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              onFocus={handleInputFocus}
-              onBlur={handleInputBlur}
               required
               style={{ width: "100%", paddingRight: "2.5rem" }}
             />

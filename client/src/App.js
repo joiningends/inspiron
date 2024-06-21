@@ -57,6 +57,7 @@ import SelfHelp from "./components/Pages/SelfHelp";
 import ResetPasswordTherapist from "./components/Pages/ResetPasswordTherapist";
 import PageNotFound from "./components/Pages/PageNotFound";
 import jwtDecode from "jwt-decode";
+import PrivateRoute from "./PrivateRoute";
 
 function App() {
   const userRole = localStorage.getItem("role");
@@ -73,32 +74,6 @@ function App() {
   let groupId = localStorage.getItem("groupid");
   const [dataCompany, setDataCompany] = useState(false);
   console.log(dataCompany);
-
-  useEffect(() => {
-    const checkTokenExpiration = () => {
-      const token = localStorage.getItem("token");
-
-      if (!["/signin", "/login"].includes(window.location.pathname) && token) {
-        try {
-          const decodedToken = jwtDecode(token);
-          if (decodedToken && decodedToken.exp * 1000 < Date.now()) {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            localStorage.removeItem("role");
-            localStorage.removeItem("groupid");
-            localStorage.removeItem("assessment");
-            localStorage.removeItem("therapists");
-            localStorage.removeItem("therapistsData");
-            window.location.href = "/login";
-          }
-        } catch (error) {
-          console.error("Error decoding JWT:", error);
-        }
-      }
-    };
-
-    checkTokenExpiration();
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -146,49 +121,80 @@ function App() {
             {isUser && (
               <>
                 {/* Other routes that are common for all users */}
-                <Route path="/" element={<Home />} />
-                <Route path="/bookaslot/:id" element={<BookTime />} />
-                <Route path="/therapists/:id" element={<DoctorProfile />} />
+                <Route path="/" element={<PrivateRoute element={Home} />} />
+                <Route
+                  path="/bookaslot/:id"
+                  element={<PrivateRoute element={BookTime} />}
+                />
+                <Route
+                  path="/therapists/:id"
+                  element={<PrivateRoute element={DoctorProfile} />}
+                />
                 <Route
                   path="/FindTherapist"
-                  element={<TherapistsWithFilter />}
+                  element={<PrivateRoute element={TherapistsWithFilter} />}
                 />
-                <Route path="/assessment" element={<Assessments />} />
-                <Route path="/assessment/:id" element={<Assessment />} />
-
-                <Route path="/result" element={<Result />} />
-                <Route path="/therapist" element={<Therapistfilter />} />
+                <Route
+                  path="/assessment"
+                  element={<PrivateRoute element={Assessments} />}
+                />
+                <Route
+                  path="/assessment/:id"
+                  element={<PrivateRoute element={Assessment} />}
+                />
+                <Route
+                  path="/result"
+                  element={<PrivateRoute element={Result} />}
+                />
+                <Route
+                  path="/therapist"
+                  element={<PrivateRoute element={Therapistfilter} />}
+                />
                 <Route
                   path="bookaslot/bookYourSession/:therapistId/:appointmentId"
-                  element={<BookingPage />}
+                  element={<PrivateRoute element={BookingPage} />}
                 />
                 <Route
                   path="/sessionIsBooked/:appointmentId"
-                  element={<PaymentSuccessPage />}
+                  element={<PrivateRoute element={PaymentSuccessPage} />}
                 />
                 <Route
                   path="/sessionIsBookedCorp/:appointmentId"
-                  element={<PaymentSuccessPageCorp />}
+                  element={<PrivateRoute element={PaymentSuccessPageCorp} />}
                 />
-                <Route path="/Profile" element={<Profile />} />
-                <Route path="/Appointments" element={<Appointments />} />
+                <Route
+                  path="/Profile"
+                  element={<PrivateRoute element={Profile} />}
+                />
+                <Route
+                  path="/Appointments"
+                  element={<PrivateRoute element={Appointments} />}
+                />
                 <Route
                   path="/completePayment/:userId/:amount/:experienceLevel"
-                  element={<CompletePayment />}
+                  element={<PrivateRoute element={CompletePayment} />}
                 />
                 <Route
                   path="/paymentConfirm/:amount"
-                  element={<PaymentConfirm />}
+                  element={<PrivateRoute element={PaymentConfirm} />}
                 />
-
-                <Route path="/rating" element={<RatingSystem />} />
-                <Route path="/selfhelp" element={<SelfHelp />} />
-                <Route path="/PendingPayments" element={<PendingPayments />} />
+                <Route
+                  path="/rating"
+                  element={<PrivateRoute element={RatingSystem} />}
+                />
+                <Route
+                  path="/selfhelp"
+                  element={<PrivateRoute element={SelfHelp} />}
+                />
+                <Route
+                  path="/PendingPayments"
+                  element={<PrivateRoute element={PendingPayments} />}
+                />
                 <Route
                   path="/selfhelp"
                   element={
                     isEmpidNull ? (
-                      <SelfHelp />
+                      <PrivateRoute element={SelfHelp} />
                     ) : (
                       <Navigate to="/other-route" replace />
                     )
@@ -199,90 +205,116 @@ function App() {
 
             {isTherapist && (
               <>
-                <Route path="/appointment" element={<TherapistAppointment />} />
-                <Route path="/profile" element={<TherapistProfilePage />} />
+                <Route
+                  path="/appointment"
+                  element={<PrivateRoute element={TherapistAppointment} />}
+                />
+                <Route
+                  path="/profile"
+                  element={<PrivateRoute element={TherapistProfilePage} />}
+                />
                 <Route
                   path="/patient-details/:id"
-                  element={<PatientDetails />}
+                  element={<PrivateRoute element={PatientDetails} />}
                 />
                 <Route
                   path="/patient-details-first-session-notes/:id"
-                  element={<FirstSessionNotes />}
+                  element={<PrivateRoute element={FirstSessionNotes} />}
                 />
-                <Route path="/therapists" element={<TherapistHomePage />} />
-                <Route path="/timeSlots" element={<TimeSlots />} />
+                <Route
+                  path="/therapists"
+                  element={<PrivateRoute element={TherapistHomePage} />}
+                />
+                <Route
+                  path="/timeSlots"
+                  element={<PrivateRoute element={TimeSlots} />}
+                />
                 <Route
                   path="/bookSlot/:userid/:therapistid"
-                  element={<BookSlotByTherapist />}
+                  element={<PrivateRoute element={BookSlotByTherapist} />}
                 />
-                <Route path="/patientPage" element={<PatientPagee />} />
+                <Route
+                  path="/patientPage"
+                  element={<PrivateRoute element={PatientPagee} />}
+                />
                 <Route
                   path="/appointments/users/:userId/therapists/:therapistId/latest-appointment"
-                  element={<OnePatientDetails />}
+                  element={<PrivateRoute element={OnePatientDetails} />}
                 />
                 <Route
                   path="/openFirstSessionNotes/:userId"
-                  element={<OpenFirstSessionNotes />}
+                  element={<PrivateRoute element={OpenFirstSessionNotes} />}
                 />
                 <Route
                   path="/prescription/:id/:therapistId"
-                  element={<Prescription />}
+                  element={<PrivateRoute element={Prescription} />}
                 />
               </>
             )}
 
             {isAdmin && (
               <>
-                <Route path="/admin-Dashboard" element={<Dashboard />} />
+                <Route
+                  path="/admin-Dashboard"
+                  element={<PrivateRoute element={Dashboard} />}
+                />
                 <Route
                   path="/admin-Create-Assessment"
-                  element={<CreateAssessment />}
+                  element={<PrivateRoute element={CreateAssessment} />}
                 />
                 <Route
                   path="/create-assessment-page"
-                  element={<AssessmentCreatePage />}
+                  element={<PrivateRoute element={AssessmentCreatePage} />}
                 />
                 <Route
                   path="/therapists-Details/:id"
-                  element={<TherapistDetails />}
+                  element={<PrivateRoute element={TherapistDetails} />}
                 />
                 <Route
                   path="/admin-patient-details"
-                  element={<PatientPage />}
+                  element={<PrivateRoute element={PatientPage} />}
                 />
                 <Route
                   path="/session-history-patients/:id"
-                  element={<SessionHistoryOfPatients />}
+                  element={<PrivateRoute element={SessionHistoryOfPatients} />}
                 />
                 <Route
                   path="/edit_add-questions"
-                  element={<CreateFirstSessionQuestions />}
+                  element={
+                    <PrivateRoute element={CreateFirstSessionQuestions} />
+                  }
                 />
                 <Route
                   path="/edit_add-question01"
-                  element={<CreateSecondPart />}
+                  element={<PrivateRoute element={CreateSecondPart} />}
                 />
-                <Route path="/group" element={<Group />} />
+                <Route
+                  path="/group"
+                  element={<PrivateRoute element={Group} />}
+                />
                 <Route
                   path="/corporate-user/:groupid"
-                  element={<CorporateUser />}
+                  element={<PrivateRoute element={CorporateUser} />}
                 />
-                <Route path="/admin-setting" element={<SettingPage />} />
+                <Route
+                  path="/admin-setting"
+                  element={<PrivateRoute element={SettingPage} />}
+                />
                 <Route
                   path="/user-coin/:patientId"
-                  element={<PatientCoins />}
+                  element={<PrivateRoute element={PatientCoins} />}
                 />
                 <Route
                   path="/userPayment/:userId"
-                  element={<CustomerPayment />}
+                  element={<PrivateRoute element={CustomerPayment} />}
                 />
                 <Route
                   path="/patient-details-first-session-notes/:id"
-                  element={<FirstSessionNotes />}
+                  element={<PrivateRoute element={FirstSessionNotes} />}
                 />
                 <Route
                   path="/openFirstSessionNotes/:userId"
-                  element={<OpenFirstSessionNotes />}
+                  element={<PrivateRoute element={OpenFirstSessionNotes} />}
                 />
               </>
             )}
@@ -306,7 +338,6 @@ function App() {
             <Route path="/assessment/:id" element={<Assessment />} />
             <Route path="/result" element={<Result />} />
             <Route path="/PageNotFound" element={<PageNotFound />} />
-            
           </Routes>
         </div>
       </Router>

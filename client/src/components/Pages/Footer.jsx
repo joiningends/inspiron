@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Grid,
@@ -19,6 +19,13 @@ export default function Footer() {
     color: "white",
     fontWeight: "bold",
   };
+
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+
+  // Fetch current year on component mount
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   return (
     <Paper
@@ -229,7 +236,8 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  &nbsp;&ndash;&nbsp; +91 9845676442
+                  <br />
+                  +91 9845676442
                 </Link>
               </Typography>
               <Typography
@@ -271,7 +279,7 @@ export default function Footer() {
               align="center"
               style={{ marginTop: "2rem", color: "white" }}
             >
-              © 2023 Copyright Inspiron:
+              © {currentYear} Copyright Inspiron:
               <Link
                 color="inherit"
                 variant="body2"
