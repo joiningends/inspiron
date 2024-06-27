@@ -165,8 +165,8 @@ const Signup = () => {
         alt="wheel"
         className="star-icon"
         style={{
-          width: "5rem",
-          height: "25vh",
+          width: "3rem",
+          height: "6rem",
           position: "absolute",
           top: 0,
           left: -10,
@@ -179,8 +179,8 @@ const Signup = () => {
         alt="wheel"
         className="star-icon"
         style={{
-          width: "8rem",
-          height: "14vh",
+          width: "6rem",
+          height: "4rem",
           position: "absolute",
           top: -10,
           right: -10,
