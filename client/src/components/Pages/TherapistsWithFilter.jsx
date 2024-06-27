@@ -414,7 +414,7 @@ export const TherapistsWithFilter = () => {
       key={therapist.id}
       therapist={therapist}
       className="therapist-box"
-     x
+      x
     />
   ));
 
@@ -429,12 +429,12 @@ export const TherapistsWithFilter = () => {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           height: "10rem",
-          minWidth:"100%",
+          minWidth: "39rem",
           marginTop: "-2rem",
         }}
       >
         <h1 style={{ color: "white", fontSize: "1.6rem", fontWeight: 600 }}>
-          Find a Therapist thatmeets your needs
+          Find a Therapist that meets your needs
         </h1>
         <p style={{ color: "white" }}>
           Our platform is built by psychiatrists, therapists and mental health
@@ -447,7 +447,7 @@ export const TherapistsWithFilter = () => {
 
       <Grid container spacing={2} style={{ marginTop: "-1.1rem" }}>
         {/* Merged Part for Labels, Options, and Selected Filters */}
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{ minWidth: "40rem" }}>
           <Paper
             elevation={3}
             style={{
@@ -594,6 +594,7 @@ export const TherapistsWithFilter = () => {
       </Grid>
 
       <div className="therapist-containerr">{displayTherapists}</div>
+      {/* <div>{displayTherapists}</div> */}
 
       {/* Pagination controls */}
       <div className="pagination">

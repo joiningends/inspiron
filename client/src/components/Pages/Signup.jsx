@@ -1,13 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Select from "react-select";
+import React, { useState } from "react";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import * as isoCountries from "i18n-iso-countries";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
-import Flag from "react-country-flag";
 
 import {
   Container,
@@ -21,7 +17,6 @@ import {
   IconButton,
   Checkbox,
   FormControlLabel,
-  InputLabel,
 } from "@mui/material";
 import { createUser } from "../redux/Action";
 import { useDispatch } from "react-redux";
@@ -50,8 +45,6 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isTermsAccepted, setTermsAccepted] = useState(false);
-  const [selectedCountryCode, setSelectedCountryCode] = useState(null);
-  const [countryOptions, setCountryOptions] = useState([]);
   const [phoneNumber, setPhoneNumber] = useState();
 
   const handleChange = e => {
@@ -172,7 +165,7 @@ const Signup = () => {
         alt="wheel"
         className="star-icon"
         style={{
-          width: "8vw",
+          width: "8rem",
           height: "25vh",
           position: "absolute",
           top: 0,
@@ -186,7 +179,7 @@ const Signup = () => {
         alt="wheel"
         className="star-icon"
         style={{
-          width: "14vw",
+          width: "12rem",
           height: "14vh",
           position: "absolute",
           top: -10,
@@ -201,7 +194,7 @@ const Signup = () => {
         style={{
           zIndex: "100",
           width: "100rem",
-          minWidth: "40rem",
+          minWidth: "35rem",
           maxWidth: "100rem",
         }}
       >
@@ -212,7 +205,7 @@ const Signup = () => {
               backgroundColor: "#fff",
               borderRadius: "8px",
               boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.1)",
-              width: "60%",
+              width: "70%",
               marginTop: "4rem",
             }}
           >

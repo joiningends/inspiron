@@ -1,15 +1,15 @@
 .therapist-container {
   display: flex;
   flex-wrap: wrap;
-  margin: 0.2rem;
+  margin: 0.7rem;
   height: 21.8rem;
+  min-width: 37rem;
 }
 
-.therapist-expertList{
+.therapist-expertList {
   height: 1.5rem;
   font-size: 1px;
 }
-
 
 .therapistImage {
   min-height: 8rem;
@@ -23,9 +23,8 @@
   border-radius: 15px;
   padding: 15px;
   margin: 8px;
-  min-width: 12rem;
+  /* min-width: 12rem; */
   width: 100%;
-  max-width: 100%;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
@@ -55,7 +54,6 @@
   height: 98%;
   min-width: 45%;
   min-height: 98%;
-
 }
 
 .therapist-image-container img {
@@ -71,7 +69,7 @@
   align-self: stretch;
   text-align: left;
   color: #000000;
-  font-family: 'Poppins';
+  font-family: "Poppins";
   font-weight: 600;
   font-style: normal;
 }
@@ -79,7 +77,7 @@
 .therapist-desig {
   font-size: 0.6rem;
   align-self: stretch;
-  font-family: 'Poppins';
+  font-family: "Poppins";
   text-align: left;
   font-weight: 500;
 }
@@ -213,26 +211,31 @@ ul {
   margin: 0;
 }
 
-/* Mobile View Styles */
-@media (max-width: 768px) {
+@media (max-width: 415px) {
   .therapist-container {
-    max-width: 100%;
-    min-width: 50%;
     margin: 0.5rem;
+    margin-left:3rem;
+    min-width:32rem;
+  }
+}
+
+@media (min-width: 416px) and (max-width: 768px) {
+  .therapist-container {
+    margin: 0.5rem;
+
+    min-width:37rem
   }
 
-  .therapist-image-container{
-max-height: 42.5vh;
+  .therapist-image-container {
+    max-height: 42.5vh;
   }
-
-
 
   .therapist-card {
     padding: 10px;
     margin: 5px;
-    min-width: 100%;
+    min-width: 20rem;
     max-height: 50vh;
-
+    border: "10px solid red";
   }
 
   .therapistName {

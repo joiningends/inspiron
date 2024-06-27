@@ -30,6 +30,7 @@ body {
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  margin-top:10rem;
 }
 
 .signin-form .form-group {
@@ -47,7 +48,7 @@ body {
 
 .signin-form input {
   flex-grow: 1;
-  height: 40px;
+
   padding: 12px;
   border: none;
   border-radius: 0;
@@ -93,17 +94,15 @@ body {
 @media screen and (max-width: 768px) {
   .signin-container {
     height: auto;
-    background: #68B545; /* Change background color for smaller screens */
-    margin-top: 0;
     padding: 20px; /* Add padding for better spacing */
   }
 
   .signin-form {
     width: 100%;
-    max-width: 350px; /* Limit the form width */
+    max-width: 25rem; /* Limit the form width */
     margin: 0 auto; /* Center the form horizontally */
+    margin-top:10rem;
     padding: 20px;
-    background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   }

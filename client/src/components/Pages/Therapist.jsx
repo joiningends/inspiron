@@ -5,19 +5,6 @@ import { Link } from "react-router-dom";
 import start from "./star.png";
 
 function Therapist({ therapist }) {
-  const nextAvailableDateTime = new Date(therapist?.nextAvailableDateTime);
-
-  const formattedDate = nextAvailableDateTime.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-
-  const formattedTime = nextAvailableDateTime.toLocaleTimeString("en-IN", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
   const showAllExpertise = therapist.expertise.length <= 5;
 
   const [earliestDate, setEarliestDate] = useState("");
@@ -55,7 +42,9 @@ function Therapist({ therapist }) {
   return (
     <div
       className="therapist-container"
-      style={{ position: "relative", minWidth:"37rem"}}
+      style={{
+        position: "relative",
+      }}
     >
       <img
         src={start}

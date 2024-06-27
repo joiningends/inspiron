@@ -473,127 +473,134 @@ const DoctorProfile = () => {
       </Paper>
 
       <Grid container spacing={0.5} alignItems="center">
-        <Grid item xs={14}>
-          <Typography
-            variant="h6"
-            gutterBottom
-            style={{
-              fontFamily: "Poppins, sans-serif",
-              color: "black",
-              fontSize: "1.2rem",
-              textAlign: "left",
-              fontWeight: "800", // More weight for the heading
-              marginTop: "20px",
-              border: "1px solid #68B545",
-              borderRadius: "1rem",
-              padding: "1rem",
-            }}
-          >
-            {`${therapist.name}'s Offerings`}
-          </Typography>
-        </Grid>
+  <Grid item xs={12}>
+    <Typography
+      variant="h6"
+      gutterBottom
+      style={{
+        fontFamily: "Poppins, sans-serif",
+        color: "black",
+        fontSize: "1.2rem",
+        textAlign: "left",
+        fontWeight: "800", // More weight for the heading
+        marginTop: "20px",
+        border: "1px solid #68B545",
+        borderRadius: "1rem",
+        padding: "1rem",
+      }}
+    >
+      {`${therapist.name}'s Offerings`}
+    </Typography>
+  </Grid>
 
-        {/* Mode of Therapy */}
-        <Grid item xs={3.5} sm={4} style={{ marginLeft: "1rem" }}>
-          <div style={boxStyle}>
-            <div style={iconStyle}>
-              <img
-                src={ModeOfMeetingIcon}
-                alt="Mode of Therapy Icon"
-                style={{ width: "100%", minWidth: "1rem" }}
-              />
+  {/* Mode of Therapy */}
+  <Grid item xs={12} sm={4} style={{ marginBottom: "1rem" }}>
+    <div style={{ ...boxStyle, width: "100%" }}>
+      <div style={iconStyle}>
+        <img
+          src={ModeOfMeetingIcon}
+          alt="Mode of Therapy Icon"
+          style={{ width: "100%", minWidth: "1rem" }}
+        />
+      </div>
+      <div style={contentStyle}>
+        <Typography
+          variant="h6"
+          style={{
+            marginBottom: "10px",
+            fontWeight: "600",
+            textAlign: "left",
+            color: "white",
+          }}
+        >
+          Mode of Therapy
+        </Typography>
+        <div style={borderDivStyle}>
+          {therapist.modeOfSession.map((mode, index) => (
+            <div key={index} style={borderDivStylee}>
+              {mode}
             </div>
-            <div style={contentStyle}>
-              <Typography
-                variant="h6"
-                style={{
-                  marginBottom: "10px",
-                  fontWeight: "600",
-                  textAlign: "left",
-                  color: "white",
-                }}
-              >
-                Mode of Therapy
-              </Typography>
+          ))}
+        </div>
+      </div>
+    </div>
+  </Grid>
 
-              <div style={borderDivStyle}>
-                {therapist.modeOfSession.map((mode, index) => (
-                  <div key={index} style={borderDivStylee}>
-                    {mode}
-                  </div>
-                ))}
-              </div>
+  {/* Expertise */}
+  <Grid item xs={12} sm={4} style={{ marginBottom: "1rem" }}>
+    <div style={{ ...boxStyle, width: "100%" }}>
+      <div style={iconStyle}>
+        <img
+          src={ExpertiseIcon}
+          alt="Expertise Icon"
+          style={{ width: "100%", minWidth: "1rem" }}
+        />
+      </div>
+      <div style={contentStyle}>
+        <Typography
+          variant="h6"
+          style={{
+            marginBottom: "10px",
+            fontWeight: "600",
+            textAlign: "left",
+            color: "white",
+          }}
+        >
+          Expertise
+        </Typography>
+        <div style={borderDivStyle}>
+          {therapist.expertise.map((item, index) => (
+            <div key={index} style={borderDivStylee}>
+              {item.type.join(", ")}
             </div>
-          </div>
-        </Grid>
+          ))}
+        </div>
+      </div>
+    </div>
+  </Grid>
 
-        {/* Expertise */}
-        <Grid item xs={4} sm={4}>
-          <div style={boxStyle}>
-            <div style={iconStyle}>
-              <img
-                src={ExpertiseIcon}
-                alt="Expertise Icon"
-                style={{ width: "100%", minWidth: "1rem" }}
-              />
+  {/* Languages Known */}
+  <Grid item xs={12} sm={4} style={{ marginBottom: "1rem" }}>
+    <div style={{ ...boxStyle, width: "100%" }}>
+      <div style={iconStyle}>
+        <img
+          src={LanguagesIcon}
+          alt="Languages Known Icon"
+          style={{ width: "100%", minWidth: "1rem" }}
+        />
+      </div>
+      <div style={contentStyle}>
+        <Typography
+          variant="h6"
+          style={{
+            marginBottom: "10px",
+            fontWeight: "600",
+            textAlign: "left",
+            color: "white",
+          }}
+        >
+          Languages Known
+        </Typography>
+        <div style={borderDivStyle}>
+          {therapist.languages.map((language, index) => (
+            <div key={index} style={borderDivStylee}>
+              {language}
             </div>
-            <div style={contentStyle}>
-              <Typography
-                variant="h6"
-                style={{
-                  marginBottom: "10px",
-                  fontWeight: "600",
-                  textAlign: "left",
-                  color: "white",
-                }}
-              >
-                Expertise
-              </Typography>
-              <div style={borderDivStyle}>
-                {therapist.expertise.map((item, index) => (
-                  <div key={index} style={borderDivStylee}>
-                    {item.type.join(", ")}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Grid>
+          ))}
+        </div>
+      </div>
+    </div>
+  </Grid>
+</Grid>
 
-        {/* Languages Known */}
-        <Grid item xs={4} sm={3}>
-          <div style={boxStyle}>
-            <div style={iconStyle}>
-              <img
-                src={LanguagesIcon}
-                alt="Languages Known Icon"
-                style={{ width: "100%", minWidth: "1rem" }}
-              />
-            </div>
-            <div style={contentStyle}>
-              <Typography
-                variant="h6"
-                style={{
-                  marginBottom: "10px",
-                  fontWeight: "600",
-                  textAlign: "left",
-                  color: "white",
-                  width: "100%",
-                }}
-              >
-                Languages Known
-              </Typography>
-              <div style={borderDivStyle}>
-                {therapist.languages.map((language, index) => (
-                  <div key={index} style={borderDivStylee}>
-                    {language}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Grid>
-      </Grid>
+<style jsx>{`
+  @media (max-width: 800px) {
+    .MuiGrid-item {
+      padding-bottom: 1rem !important;
+    }
+  }
+`}</style>
+
 
       <Box
         style={{ ...containerStyle, display: "flex", flexDirection: "column" }}

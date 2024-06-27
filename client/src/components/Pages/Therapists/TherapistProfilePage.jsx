@@ -695,118 +695,71 @@ function TherapistProfilePage() {
         </div> */}
       </div>
 
-      <div className="personalDetailsDIV">
-        <div
-          className="primaryDetailsDiv"
-          style={{ width: "36%", marginRight: "-1rem" }}
-        >
-          <div className="primaryDetalsUpperPart">
-            <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
-              PRIMARY DETAILS
-            </span>
-            <span
-              className="editIcon"
-              style={{
-                padding: "0.1rem",
-                margin: "0.2rem",
-                borderRadius: "30%",
-                width: "4.5rem",
-              }}
-              onClick={openEditForm}
-            >
-              <FaEdit style={{ width: "1.3rem" }} />
-              <span className="editText">EDIT</span>
-            </span>
-          </div>
-          <div className="primaryDetailsLowerPart1">
-            <div className="primaryDetailsLowerPart1div1">
-              <h1 className="fullnameH1">Full Name</h1>
-              <h1 className="itemsOfPrimaryDetails">{therapist?.name}</h1>
-              <h1 className="fullnameH1" style={{ paddingTop: "1rem" }}>
-                Date Of Birth
-              </h1>
-              <h1 className="itemsOfPrimaryDetails">
-                {formatDate(therapist?.dob)}
-              </h1>
-            </div>
-            <div className="primaryDetailsLowerPart1div2">
-              <h1 className="fullnameH1">Gender</h1>
-              <h1 className="itemsOfPrimaryDetails">{therapist?.gender}</h1>
-            </div>
-          </div>
-        </div>
-        <div className="primaryDetailsDiv" style={{ width: "36%" }}>
-          <div className="primaryDetalsUpperPart">
-            <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
-              CONTACT DETAILS
-            </span>
-            <span
-              className="editIcon"
-              style={{
-                padding: "0.1rem",
-                margin: "0.2rem",
-                borderRadius: "30%",
-                width: "4.5rem",
-              }}
-              onClick={openContactForm}
-            >
-              <FaEdit style={{ width: "1.3rem" }} />
-              <span className="editText">EDIT</span>
-            </span>
-          </div>
-          <div className="primaryDetailsLowerPart1">
-            <div className="primaryDetailsLowerPart1div1">
-              <h1 className="fullnameH1">EMAIL</h1>
-              <h1 className="itemsOfPrimaryDetails">{therapist?.email}</h1>
-              <h1 className="fullnameH1" style={{ paddingTop: "1rem" }}>
-                Mobile
-              </h1>
-              <h1 className="itemsOfPrimaryDetails">{therapist?.mobile}</h1>
-            </div>
-            <div className="primaryDetailsLowerPart1div2">
-              <h1 className="fullnameH1">emergency contact</h1>
-              <h1 className="itemsOfPrimaryDetails">
-                {therapist?.emergencymobile}
-              </h1>
-            </div>
-          </div>
-        </div>
+      <div className="personalDetailsDIV" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+  <div className="primaryDetailsDiv" style={{ flex: '1 1 36%', marginRight: '-1rem', marginBottom: '1rem', boxSizing: 'border-box' }}>
+    <div className="primaryDetalsUpperPart" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', boxSizing: 'border-box' }}>
+      <span className="primaryDetailsTitle" style={{ padding: '1rem' }}>PRIMARY DETAILS</span>
+      <span className="editIcon" onClick={openEditForm} style={{ display: 'flex', alignItems: 'center', padding: '0.1rem', margin: '0.2rem', borderRadius: '30%', width: '4.5rem', cursor: 'pointer' }}>
+        <FaEdit style={{ width: '1.3rem' }} />
+        <span className="editText">EDIT</span>
+      </span>
+    </div>
+    <div className="primaryDetailsLowerPart1" style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div className="primaryDetailsLowerPart1div1" style={{ flex: '1 1 0' }}>
+        <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem' }}>Full Name</h1>
+        <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.name}</h1>
+        <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem', paddingTop: '1rem' }}>Date Of Birth</h1>
+        <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{formatDate(therapist?.dob)}</h1>
       </div>
+      <div className="primaryDetailsLowerPart1div2" style={{ flex: '1 1 0', marginLeft: '4rem' }}>
+        <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem' }}>Gender</h1>
+        <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.gender}</h1>
+      </div>
+    </div>
+  </div>
+  <div className="primaryDetailsDiv" style={{ flex: '1 1 35%', marginBottom: '1rem', marginRight: '3rem', boxSizing: 'border-box' }}>
+    <div className="primaryDetalsUpperPart" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', boxSizing: 'border-box' }}>
+      <span className="primaryDetailsTitle" style={{ padding: '1rem' }}>CONTACT DETAILS</span>
+      <span className="editIcon" onClick={openContactForm} style={{ display: 'flex', alignItems: 'center', padding: '0.1rem', margin: '0.2rem', borderRadius: '30%', width: '4.5rem', cursor: 'pointer' }}>
+        <FaEdit style={{ width: '1.3rem' }} />
+        <span className="editText">EDIT</span>
+      </span>
+    </div>
+    <div className="primaryDetailsLowerPart1" style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div className="primaryDetailsLowerPart1div1" style={{ flex: '1 1 0' }}>
+        <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem' }}>EMAIL</h1>
+        <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.email}</h1>
+        <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem', paddingTop: '1rem' }}>Mobile</h1>
+        <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.mobile}</h1>
+      </div>
+      <div className="primaryDetailsLowerPart1div2" style={{ flex: '1 1 0', marginLeft: '4rem' }}>
+        <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem' }}>Emergency Contact</h1>
+        <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.emergencymobile}</h1>
+      </div>
+    </div>
+  </div>
+</div>
 
-      <div className="addressesDetailsDiv" style={{ marginTop: "4rem" }}>
-        <div className="primaryDetalsUpperPart">
-          <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
-            ADDRESS
-          </span>
-          <span
-            className="editIcon"
-            style={{
-              padding: "0.1rem",
-              margin: "0.2rem",
-              borderRadius: "30%",
-              width: "4.5rem",
-            }}
-            onClick={openAddressForm}
-          >
-            <FaEdit style={{ width: "1.3rem" }} />
-            <span className="editText">EDIT</span>
-          </span>
-        </div>
-        <div className="addressesDetailBottomsDiv">
-          <div>
-            <h1 className="fullnameH1">CURRENT ADDRESS</h1>
-            <h1 className="itemsOfPrimaryDetails">
-              {therapist?.currentaddress}
-            </h1>
-          </div>
-          <div>
-            <h1 className="fullnameH1">PERMANENT ADDRESS</h1>
-            <h1 className="itemsOfPrimaryDetails">
-              {therapist?.permanentaddress}
-            </h1>
-          </div>
-        </div>
-      </div>
+<div className="addressesDetailsDiv" style={{ marginTop: '4rem' }}>
+  <div className="primaryDetalsUpperPart" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <span className="primaryDetailsTitle" style={{ padding: '1rem' }}>ADDRESS</span>
+    <span className="editIcon" onClick={openAddressForm} style={{ display: 'flex', alignItems: 'center', padding: '0.1rem', margin: '0.2rem', borderRadius: '30%', width: '4.5rem', cursor: 'pointer' }}>
+      <FaEdit style={{ width: '1.3rem' }} />
+      <span className="editText">EDIT</span>
+    </span>
+  </div>
+  <div className="addressesDetailBottomsDiv" style={{ display: 'flex', justifyContent: 'space-between' }}>
+    <div>
+      <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem' }}>CURRENT ADDRESS</h1>
+      <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.currentaddress}</h1>
+    </div>
+    <div>
+      <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem' }}>PERMANENT ADDRESS</h1>
+      <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.permanentaddress}</h1>
+    </div>
+  </div>
+</div>
+
 
       <div
         className="educationDetailsDiv"

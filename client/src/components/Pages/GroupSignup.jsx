@@ -229,8 +229,8 @@ const GroupSignUp = () => {
           alt="wheel"
           className="star-icon"
           style={{
-            width: "8vw",
-            height: "25vh",
+            width: "4rem",
+            height: "10rem",
             position: "absolute",
             top: 0,
             left: -10,
@@ -242,8 +242,8 @@ const GroupSignUp = () => {
           alt="wheel"
           className="star-icon"
           style={{
-            width: "14vw",
-            height: "14vh",
+            width: "7rem",
+            height: "5rem",
             position: "absolute",
             top: -10,
             right: -10,
@@ -258,7 +258,7 @@ const GroupSignUp = () => {
                 backgroundColor: "#fff",
                 borderRadius: "8px",
                 boxShadow: "0px 0px 20px rgba(0, 0, 0, 0.1)",
-                width: "60%",
+                width: "70%",
                 marginTop: "4rem",
               }}
             >
@@ -380,7 +380,7 @@ const GroupSignUp = () => {
                 className="form-group"
                 variant="standard"
                 fullWidth
-                style={{ marginBottom: "10px", width: "25vw" }}
+                style={{ marginBottom: "10px" }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
