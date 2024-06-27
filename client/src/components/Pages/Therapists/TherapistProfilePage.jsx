@@ -696,7 +696,7 @@ function TherapistProfilePage() {
       </div>
 
       <div className="personalDetailsDIV" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-  <div className="primaryDetailsDiv" style={{ flex: '1 1 36%', marginRight: '-1rem', marginBottom: '1rem', boxSizing: 'border-box' }}>
+  <div className="primaryDetailsDiv" style={{ flex: '1 1 36%', marginRight: '3rem', marginBottom: '1rem', boxSizing: 'border-box' }}>
     <div className="primaryDetalsUpperPart" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', boxSizing: 'border-box' }}>
       <span className="primaryDetailsTitle" style={{ padding: '1rem' }}>PRIMARY DETAILS</span>
       <span className="editIcon" onClick={openEditForm} style={{ display: 'flex', alignItems: 'center', padding: '0.1rem', margin: '0.2rem', borderRadius: '30%', width: '4.5rem', cursor: 'pointer' }}>
