@@ -77,17 +77,11 @@ function Therapist({ therapist }) {
       <div className="therapist-card">
         <div
           className="therapist-image-container"
-          style={{ width: "150px", height: "100%", overflow: "hidden" }}
         >
           {therapist?.image && (
             <img
               src={therapist.image}
-              alt="Rounded"
-              style={{
-                maxWidth: "100%",
-                objectFit: "cover",
-                objectPosition: "center",
-              }}
+              alt={therapist?.name}
             />
           )}
           {!therapist?.image && (
@@ -98,7 +92,6 @@ function Therapist({ therapist }) {
                 justifyContent: "center",
                 width: "100%",
                 height: "100%",
-                backgroundColor: "lightgray",
               }}
             ></span>
           )}

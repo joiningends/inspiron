@@ -429,7 +429,6 @@ export const TherapistsWithFilter = () => {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           height: "10rem",
-          minWidth: "39rem",
           marginTop: "-2rem",
         }}
       >
@@ -447,7 +446,7 @@ export const TherapistsWithFilter = () => {
 
       <Grid container spacing={2} style={{ marginTop: "-1.1rem" }}>
         {/* Merged Part for Labels, Options, and Selected Filters */}
-        <Grid item xs={12} style={{ minWidth: "40rem" }}>
+        <Grid item xs={12} >
           <Paper
             elevation={3}
             style={{

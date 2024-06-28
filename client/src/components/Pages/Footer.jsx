@@ -36,7 +36,7 @@ export default function Footer() {
         color: "white",
         padding: "2rem",
         marginTop: "3rem",
-        minWidth:"40rem"
+
       }}
     >
       <Container>

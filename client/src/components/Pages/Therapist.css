@@ -2,13 +2,12 @@
   display: flex;
   flex-wrap: wrap;
   margin: 0.7rem;
-  height: 21.8rem;
   min-width: 37rem;
 }
 
 .therapist-expertList {
   height: 1.5rem;
-  font-size: 1px;
+  font-size: 1rem;
 }
 
 .therapistImage {
@@ -23,16 +22,12 @@
   border-radius: 15px;
   padding: 15px;
   margin: 8px;
-  /* min-width: 12rem; */
   width: 100%;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-
+  height: auto;
   min-height: 100%;
 }
 
@@ -51,17 +46,22 @@
 .therapist-image-container {
   flex: 1;
   margin-right: 10px;
-  height: 98%;
-  min-width: 45%;
-  min-height: 98%;
+  height: 17rem; /* Fixed height for image container */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: lightgray;
+  border-radius: 6px;
+  overflow: hidden;
+  width: 150px;
+  object-fit: cover;
 }
 
 .therapist-image-container img {
-  width: 100%;
-  height: 97%;
+  width: auto;
+  height: 100%; /* Ensures the image covers the container */
   object-fit: cover;
   border-radius: 6px;
-  flex-shrink: 0;
 }
 
 .therapistName {
@@ -91,7 +91,7 @@ ul {
   flex-direction: row;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
-  height: 3.3rem;
+  height: auto;
 }
 
 .therapist-elements {
@@ -211,39 +211,42 @@ ul {
   margin: 0;
 }
 
-@media (max-width: 415px) {
+@media (max-width: 768px) {
   .therapist-container {
-    margin: 0.5rem;
-    margin-left:3rem;
-    min-width:32rem;
-  }
-}
-
-@media (min-width: 416px) and (max-width: 768px) {
-  .therapist-container {
-    margin: 0.5rem;
-
-    min-width:37rem
-  }
-
-  .therapist-image-container {
-    max-height: 42.5vh;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100%;
   }
 
   .therapist-card {
-    padding: 10px;
-    margin: 5px;
-    min-width: 20rem;
-    max-height: 50vh;
-    border: "10px solid red";
+    padding-top: 2rem;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .therapist-image-container {
+    margin-top: 4rem;
+    margin: 0;
+    height: 25rem;
+    width: 20rem;
+  }
+
+  .therapist-image-container img {
+    object-fit: cover;
+    width: 100%;
+    height: 23rem;
+  }
+
+  .therapist-content-container {
+    width: 100%;
   }
 
   .therapistName {
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
 
   .therapist-desig {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
   }
 
   .therapist-expertList,
@@ -253,12 +256,12 @@ ul {
   .therapist-language,
   .therapist-lang,
   .therapist-session {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
   }
 
   .therapist-know-more-button,
   .therapist-book-now-button {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     padding: 0.5rem;
   }
 }
