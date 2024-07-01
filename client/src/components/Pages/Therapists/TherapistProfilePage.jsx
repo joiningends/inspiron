@@ -117,6 +117,9 @@ function TherapistProfilePage() {
     alignItems: "center",
     maxWidth: "120vw",
     margin: "0 auto",
+    width: "31rem",
+    border: "1px solid #f0f0f0",
+    marginBottom: "5rem",
   };
 
   const dropzoneStyle = {
@@ -630,140 +633,284 @@ function TherapistProfilePage() {
 
   return (
     <>
-      <div className="rounded-image-container" style={{ position: "relative" }}>
-        <div
-          className="rounded-image-container"
-          style={{ position: "relative" }}
-        >
-          <div className="rounded-image">
-            <img src={therapist?.image} alt="Therapist_image" />
-            <div
-              className="edit-button"
+      <div
+        style={{
+          position: "relative",
+          textAlign: "center",
+          marginBottom: "1rem",
+        }}
+      >
+        <div style={{ position: "relative", display: "inline-block" }}>
+          <img
+            src={therapist?.image}
+            alt="Therapist_image"
+            style={{
+              borderRadius: "50%",
+              width: "120px",
+              height: "120px",
+              objectFit: "cover",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: "calc(100% - 20px)",
+              right: "5px",
+              background: "#f0f0f0", // Original color
+              padding: "5px",
+              borderRadius: "50%",
+              cursor: "pointer",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <FontAwesomeIcon icon={faEdit} style={{ fontSize: "14px" }} />
+            <input
+              type="file"
+              id="upload"
+              accept="image/*"
+              onChange={handleImageChange}
               style={{
                 position: "absolute",
-                top: "calc(100% - 40px)", // Adjust the distance from the top here
-                right: "10px",
-                background: "white",
-                padding: "5px",
-                borderRadius: "50%",
+                width: "100%",
+                height: "100%",
+                opacity: "0",
                 cursor: "pointer",
-                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+              }}
+            />
+          </div>
+        </div>
+        <div style={{ marginTop: "10px", fontSize: "12px", color: "red" }}>
+          Image size should be less than 1 MB
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: "1rem",
+          padding: "0 7rem",
+        }}
+      >
+        <div
+          style={{
+            flex: "1 1 40%",
+            padding: "0.5rem",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            boxSizing: "border-box",
+            marginBottom: "1rem",
+            minWidth: "250px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "0.5rem",
+              borderBottom: "1px solid #D9D9D9",
+            }}
+          >
+            <span style={{ fontSize: "1.3rem", fontWeight: "bold" }}>
+              PRIMARY DETAILS
+            </span>
+            <span
+              onClick={openEditForm}
+              style={{
                 display: "flex",
-                justifyContent: "center",
                 alignItems: "center",
+                padding: "0.3rem",
+                margin: "0.2rem",
+                borderRadius: "30%",
+                cursor: "pointer",
+                backgroundColor: "#D67449",
               }}
             >
-              <FontAwesomeIcon icon={faEdit} style={{ fontSize: "16px" }} />
-              <input
-                type="file"
-                id="upload"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{
-                  position: "absolute",
-                  width: "100%", // Make the input element cover the whole container
-                  height: "100%", // Make the input element cover the whole container
-                  opacity: "0", // Visually hide the input element
-                  cursor: "pointer",
-                }}
-              />
-            </div>
+              <FaEdit style={{ fontSize: "1rem", marginRight: "0.3rem" }} />
+              <span style={{ fontSize: "0.8rem" }}>EDIT</span>
+            </span>
           </div>
           <div
             style={{
-              position: "relative",
-              textAlign: "center",
-              marginTop: "10px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.3rem",
+              backgroundColor: "#f8f9fa",
             }}
           >
-            <div style={{ fontSize: "12px", color: "red" }}>
-              Image size should be less than 1 MB
+            <div>
+              <h1 style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>
+                Full Name
+              </h1>
+              <p style={{ margin: 0, fontSize: "0.9rem" }}>{therapist?.name}</p>
+            </div>
+            <div>
+              <h1 style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>
+                Date Of Birth
+              </h1>
+              <p style={{ margin: 0, fontSize: "0.9rem" }}>
+                {formatDate(therapist?.dob)}
+              </p>
+            </div>
+            <div>
+              <h1 style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>
+                Gender
+              </h1>
+              <p style={{ margin: 0, fontSize: "0.9rem" }}>
+                {therapist?.gender}
+              </p>
             </div>
           </div>
         </div>
-
-        {/* <div
+        <div
           style={{
-            position: "absolute",
-            bottom: "5px",
-            right: "5px",
-            fontSize: "12px",
-            color: "red",
+            flex: "1 1 40%",
+            padding: "0.5rem",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            boxSizing: "border-box",
+            marginBottom: "1rem",
+            minWidth: "250px",
           }}
         >
-          Image size should be less than 5 MB
-        </div> */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "0.5rem",
+              borderBottom: "1px solid #D9D9D9",
+            }}
+          >
+            <span style={{ fontSize: "1.3rem", fontWeight: "bold" }}>
+              CONTACT DETAILS
+            </span>
+            <span
+              onClick={openContactForm}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                padding: "0.3rem",
+                margin: "0.2rem",
+                borderRadius: "30%",
+                cursor: "pointer",
+                backgroundColor: "#D67449",
+              }}
+            >
+              <FaEdit style={{ fontSize: "1rem", marginRight: "0.3rem" }} />
+              <span style={{ fontSize: "0.8rem" }}>EDIT</span>
+            </span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.3rem",
+              backgroundColor: "#f8f9fa",
+            }}
+          >
+            <div>
+              <h1 style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>
+                Email
+              </h1>
+              <p style={{ margin: 0, fontSize: "0.9rem" }}>
+                {therapist?.email}
+              </p>
+            </div>
+            <div>
+              <h1 style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>
+                Mobile
+              </h1>
+              <p style={{ margin: 0, fontSize: "0.9rem" }}>
+                {therapist?.mobile}
+              </p>
+            </div>
+            <div>
+              <h1 style={{ margin: 0, fontSize: "0.9rem", color: "#666" }}>
+                Emergency Contact
+              </h1>
+              <p style={{ margin: 0, fontSize: "0.9rem" }}>
+                {therapist?.emergencymobile}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div className="personalDetailsDIV" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-  <div className="primaryDetailsDiv" style={{ flex: '1 1 36%', marginRight: '3rem', marginBottom: '1rem', boxSizing: 'border-box' }}>
-    <div className="primaryDetalsUpperPart" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', boxSizing: 'border-box' }}>
-      <span className="primaryDetailsTitle" style={{ padding: '1rem' }}>PRIMARY DETAILS</span>
-      <span className="editIcon" onClick={openEditForm} style={{ display: 'flex', alignItems: 'center', padding: '0.1rem', margin: '0.2rem', borderRadius: '30%', width: '4.5rem', cursor: 'pointer' }}>
-        <FaEdit style={{ width: '1.3rem' }} />
-        <span className="editText">EDIT</span>
-      </span>
-    </div>
-    <div className="primaryDetailsLowerPart1" style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div className="primaryDetailsLowerPart1div1" style={{ flex: '1 1 0' }}>
-        <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem' }}>Full Name</h1>
-        <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.name}</h1>
-        <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem', paddingTop: '1rem' }}>Date Of Birth</h1>
-        <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{formatDate(therapist?.dob)}</h1>
+      <div className="addressesDetailsDiv" style={{ marginTop: "4rem" }}>
+        <div
+          className="primaryDetalsUpperPart"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span className="primaryDetailsTitle" style={{ padding: "1rem" }}>
+            ADDRESS
+          </span>
+          <span
+            className="editIcon"
+            onClick={openAddressForm}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "0.1rem",
+              margin: "0.2rem",
+              borderRadius: "30%",
+              width: "4.5rem",
+              cursor: "pointer",
+            }}
+          >
+            <FaEdit style={{ width: "1.3rem" }} />
+            <span className="editText">EDIT</span>
+          </span>
+        </div>
+        <div
+          className="addressesDetailBottomsDiv"
+          style={{ display: "flex", justifyContent: "space-between" }}
+        >
+          <div>
+            <h1 className="fullnameH1" style={{ margin: 0, fontSize: "1rem" }}>
+              CURRENT ADDRESS
+            </h1>
+            <h1
+              className="itemsOfPrimaryDetails"
+              style={{ margin: 0, fontSize: "1rem" }}
+            >
+              {therapist?.currentaddress}
+            </h1>
+          </div>
+          <div>
+            <h1 className="fullnameH1" style={{ margin: 0, fontSize: "1rem" }}>
+              PERMANENT ADDRESS
+            </h1>
+            <h1
+              className="itemsOfPrimaryDetails"
+              style={{ margin: 0, fontSize: "1rem" }}
+            >
+              {therapist?.permanentaddress}
+            </h1>
+          </div>
+        </div>
       </div>
-      <div className="primaryDetailsLowerPart1div2" style={{ flex: '1 1 0', marginLeft: '4rem' }}>
-        <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem' }}>Gender</h1>
-        <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.gender}</h1>
-      </div>
-    </div>
-  </div>
-  <div className="primaryDetailsDiv" style={{ flex: '1 1 35%', marginBottom: '1rem', marginRight: '3rem', boxSizing: 'border-box' }}>
-    <div className="primaryDetalsUpperPart" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', boxSizing: 'border-box' }}>
-      <span className="primaryDetailsTitle" style={{ padding: '1rem' }}>CONTACT DETAILS</span>
-      <span className="editIcon" onClick={openContactForm} style={{ display: 'flex', alignItems: 'center', padding: '0.1rem', margin: '0.2rem', borderRadius: '30%', width: '4.5rem', cursor: 'pointer' }}>
-        <FaEdit style={{ width: '1.3rem' }} />
-        <span className="editText">EDIT</span>
-      </span>
-    </div>
-    <div className="primaryDetailsLowerPart1" style={{ display: 'flex', justifyContent: 'space-between' }}>
-      <div className="primaryDetailsLowerPart1div1" style={{ flex: '1 1 0' }}>
-        <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem' }}>EMAIL</h1>
-        <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.email}</h1>
-        <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem', paddingTop: '1rem' }}>Mobile</h1>
-        <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.mobile}</h1>
-      </div>
-      <div className="primaryDetailsLowerPart1div2" style={{ flex: '1 1 0', marginLeft: '4rem' }}>
-        <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem' }}>Emergency Contact</h1>
-        <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.emergencymobile}</h1>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div className="addressesDetailsDiv" style={{ marginTop: '4rem' }}>
-  <div className="primaryDetalsUpperPart" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-    <span className="primaryDetailsTitle" style={{ padding: '1rem' }}>ADDRESS</span>
-    <span className="editIcon" onClick={openAddressForm} style={{ display: 'flex', alignItems: 'center', padding: '0.1rem', margin: '0.2rem', borderRadius: '30%', width: '4.5rem', cursor: 'pointer' }}>
-      <FaEdit style={{ width: '1.3rem' }} />
-      <span className="editText">EDIT</span>
-    </span>
-  </div>
-  <div className="addressesDetailBottomsDiv" style={{ display: 'flex', justifyContent: 'space-between' }}>
-    <div>
-      <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem' }}>CURRENT ADDRESS</h1>
-      <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.currentaddress}</h1>
-    </div>
-    <div>
-      <h1 className="fullnameH1" style={{ margin: 0, fontSize: '1rem' }}>PERMANENT ADDRESS</h1>
-      <h1 className="itemsOfPrimaryDetails" style={{ margin: 0, fontSize: '1rem' }}>{therapist?.permanentaddress}</h1>
-    </div>
-  </div>
-</div>
-
-
       <div
         className="educationDetailsDiv"
-        style={{ width: "80%", marginLeft: "8rem", paddingTop: "2rem" }}
+        style={{
+          width: "80%",
+          marginLeft: "8rem",
+          paddingTop: "2rem",
+          margin: "auto",
+          "@media (max-width: 550px)": {
+            width: "100%",
+            marginLeft: "1rem",
+            paddingTop: "1rem",
+          },
+        }}
       >
         <div
           className="educationHeader"
@@ -771,6 +918,12 @@ function TherapistProfilePage() {
             display: "flex",
             alignItems: "center",
             marginBottom: "1rem",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            "@media (max-width: 768px)": {
+              flexDirection: "column",
+              alignItems: "flex-start",
+            },
           }}
         >
           <h2 style={{ flex: "1", fontSize: "1.5rem", color: "black" }}>
@@ -778,7 +931,11 @@ function TherapistProfilePage() {
           </h2>
           <div
             className="editEducationIcon"
-            style={{ cursor: "pointer", fontSize: "1rem", color: "#007BFF" }}
+            style={{
+              cursor: "pointer",
+              fontSize: "1rem",
+              color: "#007BFF",
+            }}
             onClick={openEducationForm}
           >
             <span
@@ -799,7 +956,12 @@ function TherapistProfilePage() {
           <div
             className="educationItem"
             key={index}
-            style={{ marginBottom: "1rem" }}
+            style={{
+              marginBottom: "1rem",
+              "@media (max-width: 768px)": {
+                padding: "0.5rem",
+              },
+            }}
           >
             <div>
               <span
@@ -808,6 +970,9 @@ function TherapistProfilePage() {
                   marginLeft: "0.5rem",
                   fontSize: "1rem",
                   color: "#555",
+                  "@media (max-width: 768px)": {
+                    fontSize: "0.9rem",
+                  },
                 }}
               >
                 UNIVERSITY / COLLEGE:{" "}
@@ -818,6 +983,9 @@ function TherapistProfilePage() {
                   marginLeft: "0.5rem",
                   fontSize: "1rem",
                   color: "#555",
+                  "@media (max-width: 768px)": {
+                    fontSize: "0.9rem",
+                  },
                 }}
               >
                 {item?.collegeName}
@@ -830,6 +998,9 @@ function TherapistProfilePage() {
                   marginLeft: "0.5rem",
                   fontSize: "1rem",
                   color: "#555",
+                  "@media (max-width: 768px)": {
+                    fontSize: "0.9rem",
+                  },
                 }}
               >
                 Field of Study:{" "}
@@ -840,6 +1011,9 @@ function TherapistProfilePage() {
                   marginLeft: "0.5rem",
                   fontSize: "1rem",
                   color: "#555",
+                  "@media (max-width: 768px)": {
+                    fontSize: "0.9rem",
+                  },
                 }}
               >
                 {item?.educationLevel}
@@ -1010,6 +1184,7 @@ function TherapistProfilePage() {
           margin: "0 auto",
           textAlign: "center",
           marginBottom: "8vh",
+          minWidth: "25rem",
         }}
       >
         <h2>About yourself</h2>

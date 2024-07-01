@@ -23,17 +23,11 @@ const TherapistHomePage = () => {
   const [therapistId, setTherapistId] = useState(null);
 
   useEffect(() => {
-    // Assuming you have the JWT token stored in local storage under the key "jwtToken"
     const token = localStorage.getItem("token");
 
     if (token) {
-      // Decoding the token
       const decodedToken = jwt_decode(token);
-
-      // Accessing the 'id' from the payload
       const id = decodedToken.userId;
-
-      // Setting the therapistId state with the extracted ID
       setTherapistId(id);
     }
   }, []);
@@ -42,7 +36,6 @@ const TherapistHomePage = () => {
     const fetchTherapistData = async () => {
       if (therapistId) {
         try {
-          // Call the API to fetch therapist data with the therapistId
           const apiUrlUpcoming = `${process.env.REACT_APP_SERVER_URL}/appointments/therapists/${therapistId}/upcoming`;
 
           axios
@@ -59,7 +52,6 @@ const TherapistHomePage = () => {
           await dispatch(getAppointmentsByTherapist(therapistId));
           await dispatch(getUpcomingAppointmentsByTherapist(therapistId));
         } catch (error) {
-          // Handle the error here (e.g., show an error message)
           console.error("Error fetching therapist data:", error);
         }
       }
@@ -68,12 +60,7 @@ const TherapistHomePage = () => {
     fetchTherapistData();
   }, [therapistId]);
 
-
-  console.log(todayAppointments);
-  useEffect(() => {}, []);
-
   const handleDetails = appointmentId => {
-    // Handle details button click for the given appointmentId
     console.log("Details button clicked for appointment:", appointmentId);
     window.open(`/patient-details/${appointmentId}`, "_blank");
   };
@@ -81,19 +68,7 @@ const TherapistHomePage = () => {
   return (
     <>
       <div className="centerTherapistsDetails">
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignContent: "center",
-            flexDirection: "column",
-            alignItems: "center",
-            backgroundColor: "#68B545",
-            padding: "1rem",
-            position: "relative",
-          }}
-        >
+        <div className="therapistHeader">
           <div className="therapistDetailsDiv">
             <img
               src={therapist?.image}
@@ -101,134 +76,83 @@ const TherapistHomePage = () => {
               className="therapistImage"
             />
           </div>
-          <img
-            src={inspironWheel}
-            alt="watermark"
-            style={{
-              position: "absolute",
-              width: "7rem",
-              left: "1px",
-            }}
-          />
-          <div className="therapistsName" style={{ color: "white" }}>
-            {therapist?.name}
-          </div>
-          <span className="therapistsDetails" style={{ color: "white" }}>
-            {therapist?.designation}
-          </span>
+          <img src={inspironWheel} alt="watermark" className="inspironWheel" />
+          <div className="therapistsName">{therapist?.name}</div>
+          <span className="therapistsDetails">{therapist?.designation}</span>
         </div>
         <div className="tehrapistsSessionsDetails">
-          <div
-            className="tehrapistsSessionsDetailsDivs1"
-            style={{
-              backgroundColor: "#5179BD",
-              borderRadius: "2rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-            }}
-          >
-            <div
-              style={{ fontSize: "2rem", color: "white", fontWeight: "bold" }}
-            >
+          <div className="tehrapistsSessionsDetailsDivs1 sessions1">
+            <div className="sessionCount">
               {todayAppointments?.totalPatients}
             </div>
-            <div style={{ fontSize: "1rem", color: "white" }}>
-              Todays Patients
-            </div>
+            <div className="sessionLabel">Today's Patients</div>
           </div>
-          <div
-            className="tehrapistsSessionsDetailsDivs1"
-            style={{
-              backgroundColor: "#43AEB4",
-              borderRadius: "2rem",
-              margin: "1rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-            }}
-          >
-            <div
-              style={{ fontSize: "2rem", color: "white", fontWeight: "bold" }}
-            >
+          <div className="tehrapistsSessionsDetailsDivs1 sessions2">
+            <div className="sessionCount">
               {upcomingAppointments?.totalUpcomingPatients}
             </div>
-            <div style={{ fontSize: "1rem", color: "white" }}>
-              Upcoming appointments
-            </div>
+            <div className="sessionLabel">Upcoming appointments</div>
           </div>
-          <div
-            className="tehrapistsSessionsDetailsDivs1"
-            style={{
-              backgroundColor: "#4690B4",
-              borderRadius: "2rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-            }}
-          >
-            <div
-              style={{ fontSize: "2rem", color: "white", fontWeight: "bold" }}
-            >
-              {allAppointments?.totalPatients}
-            </div>
-            <div style={{ fontSize: "1rem", color: "white" }}>
-              Total appointments
-            </div>
+          <div className="tehrapistsSessionsDetailsDivs1 sessions3">
+            <div className="sessionCount">{allAppointments?.totalPatients}</div>
+            <div className="sessionLabel">Total appointments</div>
           </div>
         </div>
       </div>
       <div>
         <span>Today Appointment</span>
-        <table className="today-appointments-table">
-          <thead>
-            <tr>
-              <th className="table-header-cell">Patient Name</th>
-              <th className="table-header-cell">Gender</th>
-              <th className="table-header-cell">Age</th>
-              <th className="table-header-cell">Date</th>
-              <th className="table-header-cell">Time</th>
-              <th className="table-header-cell">Session Mode</th>
-              <th className="table-header-cell">Actions</th>
-              <th className="table-header-cell">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {todayAppointments?.appointments?.map(appointment => (
-              <tr key={appointment._id} className="table-body-row">
-                <td className="table-body-cell">{appointment?.user?.name}</td>
-                <td className="table-body-cell">{appointment?.user?.gender}</td>
-                <td className="table-body-cell">{appointment?.user?.age}</td>
-                <td className="table-body-cell">
-                  {new Date(appointment?.dateTime).toLocaleDateString()}
-                </td>
-                <td className="table-body-cell">{appointment?.startTime}</td>
-                <td className="table-body-cell">{appointment?.sessionMode}</td>
-                <td
-                  className="table-body-cell"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <button
-                    className="button details-button"
-                    onClick={() => handleDetails(appointment?._id)}
-                  >
-                    <span className="button-icon">&#9432;</span>Details
-                  </button>
-                </td>
-                <td className="table-body-cell">
-                  {appointment?.googleMeetCallStatus}
-                </td>
+        <div className="table-container">
+          <table className="today-appointments-table">
+            <thead>
+              <tr>
+                <th className="table-header-cell">Patient Name</th>
+                <th className="table-header-cell">Gender</th>
+                <th className="table-header-cell">Age</th>
+                <th className="table-header-cell">Date</th>
+                <th className="table-header-cell">Time</th>
+                <th className="table-header-cell">Session Mode</th>
+                <th className="table-header-cell">Actions</th>
+                <th className="table-header-cell">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {todayAppointments?.appointments?.map(appointment => (
+                <tr key={appointment._id} className="table-body-row">
+                  <td className="table-body-cell">{appointment?.user?.name}</td>
+                  <td className="table-body-cell">
+                    {appointment?.user?.gender}
+                  </td>
+                  <td className="table-body-cell">{appointment?.user?.age}</td>
+                  <td className="table-body-cell">
+                    {new Date(appointment?.dateTime).toLocaleDateString()}
+                  </td>
+                  <td className="table-body-cell">{appointment?.startTime}</td>
+                  <td className="table-body-cell">
+                    {appointment?.sessionMode}
+                  </td>
+                  <td
+                    className="table-body-cell"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <button
+                      className="button details-button"
+                      onClick={() => handleDetails(appointment?._id)}
+                    >
+                      <span className="button-icon">&#9432;</span>Details
+                    </button>
+                  </td>
+                  <td className="table-body-cell">
+                    {appointment?.googleMeetCallStatus}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       <Footer />
     </>

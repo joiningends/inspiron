@@ -13,13 +13,10 @@ import {
   ListItemText,
   Chip,
 } from "@material-ui/core";
-import groupDiscuss from "./groupDiscuss.jpg";
 import discussNew from "./newDiscuss.JPG";
 
 import { useSelector, useDispatch } from "react-redux";
 
-import { fetchTherapists } from "../redux/Action";
-import SearchIcon from "@mui/icons-material/Search";
 import Rating from "./Rating";
 
 export const TherapistsWithFilter = () => {

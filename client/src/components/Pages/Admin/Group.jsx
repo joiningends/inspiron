@@ -250,6 +250,7 @@ function Groups() {
           </div>
         )}
         
+        <div style={{ overflowX: "auto" }}></div>
         <table className="groups-table">
           <thead>
             <tr>

@@ -234,309 +234,316 @@ function TherapistAppointment() {
           </button>
         </div>
         {activeButton === 1 && (
-          <div>
-            <table className="today-appointments-table">
-              <thead>
-                <tr>
-                  <th className="table-header-cell">Patient Name</th>
-                  <th className="table-header-cell">Gender</th>
-                  <th className="table-header-cell">Age</th>
-                  <th className="table-header-cell">Date</th>
-                  <th className="table-header-cell">Time</th>
-                  <th className="table-header-cell">Session Mode</th>
-                  <th className="table-header-cell">Actions</th>
-                  <th className="table-header-cell">Session Note Status</th>
-                  {therapist?.therapisttype === "Psychiatrist" && (
-                    <th className="table-header-cell">Prescription</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {todayAppointments?.appointments
-                  ?.slice(
-                    (currentPageToday - 1) * itemsPerPage,
-                    currentPageToday * itemsPerPage
-                  )
-                  .map(appointment => (
-                    <tr key={appointment?._id} className="table-body-row">
-                      <td className="table-body-cell">
-                        {appointment?.user?.name}
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.user?.gender}
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.user?.age}
-                      </td>
-                      <td className="table-body-cell">
-                        {new Date(appointment?.dateTime).toLocaleDateString()}
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.startTime}
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.sessionMode}
-                      </td>
-                      <td
-                        className="table-body-cell"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <button
-                          className="button details-button"
-                          style={{
-                            background: "#D67449",
-                            color: "#fff",
-                            borderRadius: "4px",
-                            padding: "8px",
-                            margin: "4px",
-                            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
-                          }}
-                          onClick={() => handleDetailsClick(appointment?._id)}
-                        >
-                          <span
-                            className="button-icon"
-                            style={{ color: "white", display: "block" }}
-                          >
-                            &#9432;
-                          </span>
-                          Details
-                        </button>
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.sessionstatus}
-                      </td>
-                      {therapist?.therapisttype === "psychiatrist" ? (
-                        <td className="table-body-cell">
-                          <button
-                            className="button fill-prescription-button"
-                            onClick={() =>
-                              handleFillPrescriptionClick(appointment?._id)
-                            }
-                          >
-                            Fill Prescription
-                          </button>
-                        </td>
-                      ) : (
-                        <td className="table-body-cell"></td>
-                      )}
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-            {renderPaginationControls(
-              currentPageToday,
-              handlePageChangeToday,
-              todayAppointmentCount
+  <div>
+    <div className="table-container">
+      <table className="today-appointments-table">
+        <thead>
+          <tr>
+            <th className="table-header-cell">Patient Name</th>
+            <th className="table-header-cell">Gender</th>
+            <th className="table-header-cell">Age</th>
+            <th className="table-header-cell">Date</th>
+            <th className="table-header-cell">Time</th>
+            <th className="table-header-cell">Session Mode</th>
+            <th className="table-header-cell">Actions</th>
+            <th className="table-header-cell">Session Note Status</th>
+            {therapist?.therapisttype === "Psychiatrist" && (
+              <th className="table-header-cell">Prescription</th>
             )}
-          </div>
-        )}
-        {activeButton === 2 && (
-          <div>
-            <table className="upcoming-appointments-table">
-              <thead>
-                <tr>
-                  <th className="table-header-cell">Patient Name</th>
-                  <th className="table-header-cell">Gender</th>
-                  <th className="table-header-cell">Age</th>
-                  <th className="table-header-cell">Date</th>
-                  <th className="table-header-cell">Time</th>
-                  <th className="table-header-cell">Session Mode</th>
-                  <th className="table-header-cell">Actions</th>
-                  <th className="table-header-cell">Session Note Status</th>
-                  {therapist?.therapisttype === "Psychiatrist" && (
-                    <th className="table-header-cell">Prescription</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {upcomingAppointments?.upcomingAppointments
-                  ?.slice(
-                    (currentPageUpcoming - 1) * itemsPerPage,
-                    currentPageUpcoming * itemsPerPage
-                  )
-                  .map(appointment => (
-                    <tr key={appointment?._id} className="table-body-row">
-                      <td className="table-body-cell">
-                        {appointment?.user?.name}
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.user?.gender}
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.user?.age}
-                      </td>
-                      <td className="table-body-cell">
-                        {new Date(appointment?.dateTime).toLocaleDateString()}
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.startTime}
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.sessionMode}
-                      </td>
-                      <td
-                        className="table-body-cell"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <button
-                          className="button details-button"
-                          style={{
-                            background: "#D67449",
-                            color: "#fff",
-                            borderRadius: "4px",
-                            padding: "8px",
-                            margin: "4px",
-                            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
-                          }}
-                          onClick={() => handleDetailsClick(appointment?._id)}
-                        >
-                          <span
-                            className="button-icon"
-                            style={{ color: "white", display: "block" }}
-                          >
-                            &#9432;
-                          </span>
-                          Details
-                        </button>
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.sessionstatus}
-                      </td>
-                      {therapist?.therapisttype === "Psychiatrist" ? (
-                        <td className="table-body-cell">
-                          <button
-                            className="button fill-prescription-button"
-                            onClick={() =>
-                              handleFillPrescriptionClick(appointment?._id)
-                            }
-                          >
-                            Fill Prescription
-                          </button>
-                        </td>
-                      ) : (
-                        <td className="table-body-cell"></td>
-                      )}
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-            {renderPaginationControls(
-              currentPageUpcoming,
-              handlePageChangeUpcoming,
-              upcomingAppointmentCount
+          </tr>
+        </thead>
+        <tbody>
+          {todayAppointments?.appointments
+            ?.slice(
+              (currentPageToday - 1) * itemsPerPage,
+              currentPageToday * itemsPerPage
+            )
+            .map(appointment => (
+              <tr key={appointment?._id} className="table-body-row">
+                <td className="table-body-cell">
+                  {appointment?.user?.name}
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.user?.gender}
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.user?.age}
+                </td>
+                <td className="table-body-cell">
+                  {new Date(appointment?.dateTime).toLocaleDateString()}
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.startTime}
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.sessionMode}
+                </td>
+                <td
+                  className="table-body-cell"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <button
+                    className="button details-button"
+                    style={{
+                      background: "#D67449",
+                      color: "#fff",
+                      borderRadius: "4px",
+                      padding: "8px",
+                      margin: "4px",
+                      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+                    }}
+                    onClick={() => handleDetailsClick(appointment?._id)}
+                  >
+                    <span
+                      className="button-icon"
+                      style={{ color: "white", display: "block" }}
+                    >
+                      &#9432;
+                    </span>
+                    Details
+                  </button>
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.sessionstatus}
+                </td>
+                {therapist?.therapisttype === "Psychiatrist" ? (
+                  <td className="table-body-cell">
+                    <button
+                      className="button fill-prescription-button"
+                      onClick={() =>
+                        handleFillPrescriptionClick(appointment?._id)
+                      }
+                    >
+                      Fill Prescription
+                    </button>
+                  </td>
+                ) : (
+                  <td className="table-body-cell"></td>
+                )}
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    </div>
+    {renderPaginationControls(
+      currentPageToday,
+      handlePageChangeToday,
+      todayAppointmentCount
+    )}
+  </div>
+)}
+{activeButton === 2 && (
+  <div>
+    <div className="table-container">
+      <table className="upcoming-appointments-table">
+        <thead>
+          <tr>
+            <th className="table-header-cell">Patient Name</th>
+            <th className="table-header-cell">Gender</th>
+            <th className="table-header-cell">Age</th>
+            <th className="table-header-cell">Date</th>
+            <th className="table-header-cell">Time</th>
+            <th className="table-header-cell">Session Mode</th>
+            <th className="table-header-cell">Actions</th>
+            <th className="table-header-cell">Session Note Status</th>
+            {therapist?.therapisttype === "Psychiatrist" && (
+              <th className="table-header-cell">Prescription</th>
             )}
-          </div>
-        )}
+          </tr>
+        </thead>
+        <tbody>
+          {upcomingAppointments?.upcomingAppointments
+            ?.slice(
+              (currentPageUpcoming - 1) * itemsPerPage,
+              currentPageUpcoming * itemsPerPage
+            )
+            .map(appointment => (
+              <tr key={appointment?._id} className="table-body-row">
+                <td className="table-body-cell">
+                  {appointment?.user?.name}
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.user?.gender}
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.user?.age}
+                </td>
+                <td className="table-body-cell">
+                  {new Date(appointment?.dateTime).toLocaleDateString()}
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.startTime}
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.sessionMode}
+                </td>
+                <td
+                  className="table-body-cell"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <button
+                    className="button details-button"
+                    style={{
+                      background: "#D67449",
+                      color: "#fff",
+                      borderRadius: "4px",
+                      padding: "8px",
+                      margin: "4px",
+                      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+                    }}
+                    onClick={() => handleDetailsClick(appointment?._id)}
+                  >
+                    <span
+                      className="button-icon"
+                      style={{ color: "white", display: "block" }}
+                    >
+                      &#9432;
+                    </span>
+                    Details
+                  </button>
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.sessionstatus}
+                </td>
+                {therapist?.therapisttype === "Psychiatrist" ? (
+                  <td className="table-body-cell">
+                    <button
+                      className="button fill-prescription-button"
+                      onClick={() =>
+                        handleFillPrescriptionClick(appointment?._id)
+                      }
+                    >
+                      Fill Prescription
+                    </button>
+                  </td>
+                ) : (
+                  <td className="table-body-cell"></td>
+                )}
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    </div>
+    {renderPaginationControls(
+      currentPageUpcoming,
+      handlePageChangeUpcoming,
+      upcomingAppointmentCount
+    )}
+  </div>
+)}
 
-        {activeButton === 3 && (
-          <div>
-            <table className="all-appointments-table">
-              <thead>
-                <tr>
-                  <th className="table-header-cell">Patient Name</th>
-                  <th className="table-header-cell">Gender</th>
-                  <th className="table-header-cell">Age</th>
-                  <th className="table-header-cell">Date</th>
-                  <th className="table-header-cell">Time</th>
-                  <th className="table-header-cell">Session Mode</th>
-                  <th className="table-header-cell">Actions</th>
-                  <th className="table-header-cell">Session Note Status</th>
-                  {therapist?.therapisttype === "Psychiatrist" && (
-                    <th className="table-header-cell">Prescription</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {allAppointments?.appointments
-                  ?.slice(
-                    (currentPageAll - 1) * itemsPerPage,
-                    currentPageAll * itemsPerPage
-                  )
-                  .map(appointment => (
-                    <tr key={appointment?._id} className="table-body-row">
-                      <td className="table-body-cell">
-                        {appointment?.user?.name}
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.user?.gender}
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.user?.age}
-                      </td>
-                      <td className="table-body-cell">
-                        {new Date(appointment?.dateTime).toLocaleDateString()}
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.startTime}
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.sessionMode}
-                      </td>
-                      <td
-                        className="table-body-cell"
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <button
-                          className="button details-button"
-                          style={{
-                            background: "#D67449",
-                            color: "#fff",
-                            borderRadius: "4px",
-                            padding: "8px",
-                            margin: "4px",
-                            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
-                          }}
-                          onClick={() => handleDetailsClick(appointment?._id)}
-                        >
-                          <span
-                            className="button-icon"
-                            style={{ color: "white", display: "block" }}
-                          >
-                            &#9432;
-                          </span>
-                          Details
-                        </button>
-                      </td>
-                      <td className="table-body-cell">
-                        {appointment?.sessionstatus}
-                      </td>
-                      {therapist?.therapisttype === "Psychiatrist" ? (
-                        <td className="table-body-cell">
-                          <button
-                            className="button fill-prescription-button"
-                            onClick={() =>
-                              handleFillPrescriptionClick(appointment?._id)
-                            }
-                          >
-                            Fill Prescription
-                          </button>
-                        </td>
-                      ) : (
-                        <td className="table-body-cell"></td>
-                      )}
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-            {renderPaginationControls(
-              currentPageAll,
-              handlePageChangeAll,
-              allAppointmentCount
+{activeButton === 3 && (
+  <div>
+    <div className="table-container">
+      <table className="all-appointments-table">
+        <thead>
+          <tr>
+            <th className="table-header-cell">Patient Name</th>
+            <th className="table-header-cell">Gender</th>
+            <th className="table-header-cell">Age</th>
+            <th className="table-header-cell">Date</th>
+            <th className="table-header-cell">Time</th>
+            <th className="table-header-cell">Session Mode</th>
+            <th className="table-header-cell">Actions</th>
+            <th className="table-header-cell">Session Note Status</th>
+            {therapist?.therapisttype === "Psychiatrist" && (
+              <th className="table-header-cell">Prescription</th>
             )}
-          </div>
-        )}
+          </tr>
+        </thead>
+        <tbody>
+          {allAppointments?.appointments
+            ?.slice(
+              (currentPageAll - 1) * itemsPerPage,
+              currentPageAll * itemsPerPage
+            )
+            .map(appointment => (
+              <tr key={appointment?._id} className="table-body-row">
+                <td className="table-body-cell">
+                  {appointment?.user?.name}
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.user?.gender}
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.user?.age}
+                </td>
+                <td className="table-body-cell">
+                  {new Date(appointment?.dateTime).toLocaleDateString()}
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.startTime}
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.sessionMode}
+                </td>
+                <td
+                  className="table-body-cell"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <button
+                    className="button details-button"
+                    style={{
+                      background: "#D67449",
+                      color: "#fff",
+                      borderRadius: "4px",
+                      padding: "8px",
+                      margin: "4px",
+                      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+                    }}
+                    onClick={() => handleDetailsClick(appointment?._id)}
+                  >
+                    <span
+                      className="button-icon"
+                      style={{ color: "white", display: "block" }}
+                    >
+                      &#9432;
+                    </span>
+                    Details
+                  </button>
+                </td>
+                <td className="table-body-cell">
+                  {appointment?.sessionstatus}
+                </td>
+                {therapist?.therapisttype === "Psychiatrist" ? (
+                  <td className="table-body-cell">
+                    <button
+                      className="button fill-prescription-button"
+                      onClick={() =>
+                        handleFillPrescriptionClick(appointment?._id)
+                      }
+                    >
+                      Fill Prescription
+                    </button>
+                  </td>
+                ) : (
+                  <td className="table-body-cell"></td>
+                )}
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    </div>
+    {renderPaginationControls(
+      currentPageAll,
+      handlePageChangeAll,
+      allAppointmentCount
+    )}
+  </div>
+)}
+
       </div>
       <Footer />
     </>

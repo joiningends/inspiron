@@ -79,51 +79,57 @@ function CorporateUser() {
           style={{ margin: "0.5rem", width: "88%" }}
         />
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Employee Id</th>
-            <th>Group Id</th>
-            <th>Email</th>
-            <th>Phone Number</th>
-            <th>Credit</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentUsers.map(user => (
-            <tr key={user._id}>
-              <td>{user.name}</td>
-              <td>{user.empid}</td>
-              <td>{user.groupid}</td>
-              <td>{user.email}</td>
-              <td>{user.mobile}</td>
-              <td>{user.credits}</td>
-              <td>
-                {user.types === "approved" ? (
-                  <Button onClick={() => handleAction(user._id, "disabled")}>
-                    Disable
-                  </Button>
-                ) : user.types === "disabled" ? (
-                  <Button onClick={() => handleAction(user._id, "approved")}>
-                    Enable
-                  </Button>
-                ) : (
-                  <Stack direction="row" spacing={1}>
-                    <Button onClick={() => handleAction(user._id, "approved")}>
-                      Approve
-                    </Button>
+      <div style={{ overflowX: "auto" }}>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Employee Id</th>
+              <th>Group Id</th>
+              <th>Email</th>
+              <th>Phone Number</th>
+              <th>Credit</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentUsers.map(user => (
+              <tr key={user._id}>
+                <td>{user.name}</td>
+                <td>{user.empid}</td>
+                <td>{user.groupid}</td>
+                <td>{user.email}</td>
+                <td>{user.mobile}</td>
+                <td>{user.credits}</td>
+                <td>
+                  {user.types === "approved" ? (
                     <Button onClick={() => handleAction(user._id, "disabled")}>
                       Disable
                     </Button>
-                  </Stack>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  ) : user.types === "disabled" ? (
+                    <Button onClick={() => handleAction(user._id, "approved")}>
+                      Enable
+                    </Button>
+                  ) : (
+                    <Stack direction="row" spacing={1}>
+                      <Button
+                        onClick={() => handleAction(user._id, "approved")}
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        onClick={() => handleAction(user._id, "disabled")}
+                      >
+                        Disable
+                      </Button>
+                    </Stack>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="pagination-container">
         <Pagination
           count={Math.ceil(filteredUsers.length / usersPerPage)}

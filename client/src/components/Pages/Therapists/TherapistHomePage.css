@@ -5,6 +5,18 @@
   flex-direction: column;
 }
 
+.therapistHeader {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  align-items: center;
+  background-color: #68b545;
+  padding: 1rem;
+  position: relative;
+}
+
 .therapistDetailsDiv {
   width: 200px;
   height: 200px;
@@ -34,12 +46,20 @@
   border-radius: 50%;
 }
 
+.inspironWheel {
+  position: absolute;
+  width: 7rem;
+  left: 1px;
+}
+
 .therapistsName {
   font-size: 2rem;
+  color: white;
 }
 
 .therapistsDetails {
   font-size: 1rem;
+  color: white;
 }
 
 .tehrapistsSessionsDetails {
@@ -49,17 +69,47 @@
   justify-content: center;
 }
 
-.tehrapistsSessionsDetailsDivs {
-  width: 25rem;
-  height: 10rem;
-}
-
 .tehrapistsSessionsDetailsDivs1 {
   width: 25rem;
   height: 5rem;
+  border-radius: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.sessions1 {
+  background-color: #5179bd;
+}
+
+.sessions2 {
+  background-color: #43aeb4;
+  margin: 1rem;
+}
+
+.sessions3 {
+  background-color: #4690b4;
+}
+
+.sessionCount {
+  font-size: 2rem;
+  color: white;
+  font-weight: bold;
+}
+
+.sessionLabel {
+  font-size: 1rem;
+  color: white;
 }
 
 /* Table Styles */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
 .today-appointments-table {
   border-collapse: separate;
   border-spacing: 0;
@@ -74,8 +124,8 @@
 
 /* Table Header Styles */
 .table-header-cell {
-  background-color: #5179BD;
-  color: #FFFFFF;
+  background-color: #5179bd;
+  color: #ffffff;
   font-weight: bold;
   padding: 8px;
   height: 4rem;
@@ -90,22 +140,11 @@
 
 .table-body-cell {
   padding: 8px;
-  position: relative;
+  text-align: center;
 }
 
-.table-body-cell::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  height: 80%;
-  width: 1px;
-  background-color: #CCCCCC;
-}
-
-.table-body-cell {
-  padding: 8px;
+.table-body-row:hover {
+  background-color: #e8f0fe;
 }
 
 /* Button Styles */
@@ -142,37 +181,153 @@
   transform: translateY(-1px);
 }
 
-/* Table Responsive Styles */
-@media (max-width: 600px) {
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .therapistHeader {
+    flex-direction: row;
+    padding: 0.5rem;
+  }
+  .therapistsName {
+    font-size: 1.5rem;
+  }
+  .therapistsDetails {
+    font-size: 0.875rem;
+  }
+  .tehrapistsSessionsDetailsDivs1 {
+    width: 20rem;
+    height: 4rem;
+  }
+  .sessionCount {
+    font-size: 1.5rem;
+  }
+  .sessionLabel {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .therapistHeader {
+    flex-direction: column;
+  }
+  .therapistsName {
+    font-size: 1.25rem;
+  }
+  .therapistsDetails {
+    font-size: 0.75rem;
+  }
+  .tehrapistsSessionsDetailsDivs1 {
+    width: 15rem;
+    height: 3.5rem;
+  }
+  .sessionCount {
+    font-size: 1.25rem;
+  }
+  .sessionLabel {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .therapistHeader {
+    padding: 0.25rem;
+  }
+  .therapistsName {
+    font-size: 1rem;
+  }
+  .therapistsDetails {
+    font-size: 0.625rem;
+  }
+  .tehrapistsSessionsDetailsDivs1 {
+    width: 12rem;
+    height: 3rem;
+  }
+  .sessionCount {
+    font-size: 1rem;
+  }
+  .sessionLabel {
+    font-size: 0.625rem;
+  }
   .today-appointments-table {
-    max-width: 100%;
-    margin: 10px;
-    box-shadow: none;
     font-size: 12px;
   }
-
   .table-header-cell,
   .table-body-cell {
     padding: 6px;
   }
 }
 
-/* Table Hover Animation */
-@keyframes table-row-hover {
-  0% {
-    transform: translateY(0);
+/* Responsive Styles */
+@media (max-width: 1200px) {
+  .therapistHeader {
+    flex-direction: row;
+    padding: 0.5rem;
   }
-  50% {
-    transform: translateY(-2px);
+  .therapistsName {
+    font-size: 1.5rem;
   }
-  100% {
-    transform: translateY(0);
+  .therapistsDetails {
+    font-size: 0.875rem;
+  }
+  .tehrapistsSessionsDetailsDivs1 {
+    width: 20rem;
+    height: 4rem;
+  }
+  .sessionCount {
+    font-size: 1.5rem;
+  }
+  .sessionLabel {
+    font-size: 0.875rem;
   }
 }
 
-.table-body-row:hover {
-  animation: table-row-hover 0.3s ease-in-out infinite;
+@media (max-width: 768px) {
+  .therapistHeader {
+    flex-direction: column;
+  }
+  .therapistsName {
+    font-size: 1.25rem;
+  }
+  .therapistsDetails {
+    font-size: 0.75rem;
+  }
+  .tehrapistsSessionsDetailsDivs1 {
+    width: 15rem;
+    height: 3.5rem;
+  }
+  .sessionCount {
+    font-size: 1.25rem;
+  }
+  .sessionLabel {
+    font-size: 0.75rem;
+  }
 }
 
-
+@media (max-width: 480px) {
+  .therapistHeader {
+    padding: 0.25rem;
+  }
+  .therapistsName {
+    font-size: 1rem;
+  }
+  .therapistsDetails {
+    font-size: 0.625rem;
+  }
+  .tehrapistsSessionsDetailsDivs1 {
+    width: 12rem;
+    height: 3rem;
+  }
+  .sessionCount {
+    font-size: 1rem;
+  }
+  .sessionLabel {
+    font-size: 0.625rem;
+  }
+  .today-appointments-table {
+    font-size: 12px;
+  }
+  .table-header-cell,
+  .table-body-cell {
+    padding: 6px;
+  }
+}
 

@@ -206,7 +206,7 @@ function PatientDetails() {
     <>
       <div
         className="profile-container"
-        style={{ display: "flex", flexDirection: "column" }}
+        style={{ display: "flex", flexDirection: "column" , padding:"2rem"}}
       >
         <h1 className="profile-title">Patient Details</h1>
         <ToastContainer />
